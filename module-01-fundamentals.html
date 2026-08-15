@@ -488,7 +488,7 @@
       </div>
     </div>
     <h1>Capital Markets Fundamentals</h1>
-    <p class="dek">The five distinctions that every trade record you'll ever look at is built on top of — who's involved, who owns the risk, and where the trade actually happens.</p>
+    <p class="dek">The core distinctions every trade record you'll ever look at is built on top of — who's involved, who owns the risk, where the trade happens, and when/how it actually settles.</p>
     <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
   </div>
 
@@ -500,8 +500,12 @@
       <li><a href="#dealer-broker"><span class="toc-num">03</span>Dealer vs Broker</a></li>
       <li><a href="#offices"><span class="toc-num">04</span>Front / Middle / Back</a></li>
       <li><a href="#exchange-otc"><span class="toc-num">05</span>Exchange vs OTC</a></li>
+      <li><a href="#settlement"><span class="toc-num">06</span>T, T+1, T+2 with dates</a></li>
+      <li><a href="#custodian-csd"><span class="toc-num">07</span>Custodian vs CSD</a></li>
+      <li><a href="#notional-swap"><span class="toc-num">08</span>Notional &amp; IR Swaps</a></li>
       <li><a href="#actors"><span class="toc-num">—</span>Full Cast Reference</a></li>
       <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
     </ol>
   </nav>
 
@@ -873,6 +877,120 @@ BACK OFFICE
       <div class="takeaway"><b>Takeaway.</b> If a product trades OTC, assume its data doesn't exist anywhere centrally unless someone's reporting pipeline puts it there — that pipeline is your job.</div>
     </section>
 
+    <section class="mod" id="settlement">
+      <p class="sec-eyebrow"><span class="n">06</span> · When cash and securities actually move</p>
+      <h2>Settlement Conventions — T, T+1, T+2 with real dates</h2>
+      <p class="lede"><b>T</b> ("Trade Date") is the day the trade is agreed. <b>T+n</b> ("Settlement Date") is n <b>business days</b> later — weekends and market holidays don't count, which is why T+2 isn't just "add 2 to the calendar date."</p>
+
+      <table>
+        <thead><tr><th>Product</th><th>Standard settlement</th></tr></thead>
+        <tbody>
+          <tr><td><b>US &amp; Canadian equities</b></td><td>T+1 (moved from T+2 in May 2024)</td></tr>
+          <tr><td><b>Government / corporate bonds</b></td><td>T+1 or T+2, depending on market</td></tr>
+          <tr><td><b>FX spot</b></td><td>T+2 for most pairs (T+1 for USD/CAD)</td></tr>
+          <tr><td><b>OTC derivatives (e.g. IR Swaps)</b></td><td>No notional settles — only periodic net cash flows (Section 08)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Example 1 — no weekend in the way</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Calendar · Clean Week</span><span class="t-id">T+2</span></div>
+        <pre>Trade Date (T)  : Monday,    17 August 2026
+T+1             : Tuesday,   18 August 2026
+T+2             : Wednesday, 19 August 2026   &lt;- Settlement Date</pre>
+      </div>
+
+      <h3>Example 2 — a weekend sits in the middle</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Calendar · Weekend Crossed</span><span class="t-id">T+2</span></div>
+        <pre>Trade Date (T)  : Thursday, 20 August 2026
+T+1             : Friday,   21 August 2026
+                   Saturday, 22 August 2026  &lt;- not a business day, skipped
+                   Sunday,   23 August 2026  &lt;- not a business day, skipped
+T+2             : Monday,   24 August 2026   &lt;- Settlement Date</pre>
+      </div>
+
+      <h3>Example 3 — a public holiday also sits in the way</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Calendar · Holiday Crossed</span><span class="t-id">T+2</span></div>
+        <pre>Trade Date (T)  : Thursday,  3 September 2026
+T+1             : Friday,    4 September 2026
+                   Saturday,  5 September 2026  &lt;- weekend, skipped
+                   Sunday,    6 September 2026  &lt;- weekend, skipped
+                   Monday,    7 September 2026  &lt;- Labour Day (holiday), skipped
+T+2             : Tuesday,   8 September 2026    &lt;- Settlement Date</pre>
+        <div class="result">T+2 landed <b>5 calendar days</b> after T, not 2 — because only business days count, and this stretch had both a weekend AND a holiday.</div>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If a "Settlement Date" field is more than 2 calendar days after "Trade Date," that's not automatically a data bug — check whether a weekend or market holiday fell in between before assuming something's broken.</div>
+    </section>
+
+    <section class="mod" id="custodian-csd">
+      <p class="sec-eyebrow"><span class="n">07</span> · Who physically holds/moves the securities</p>
+      <h2>Custodian vs CSD</h2>
+      <p class="lede">An investor never holds an account directly at the central ledger — there's always a custodian in between.</p>
+
+      <div class="explainer">
+        <h5>Custodian</h5>
+        <p style="margin-bottom: 8px;">A bank that holds securities in safekeeping on behalf of a client (an investor or dealer), carries out settlement instructions, collects coupon/dividend payments on the client's behalf, and produces account statements. Example real-world custodians: <b>BNY Mellon, State Street, Northern Trust</b>.</p>
+        <h5>CSD (Central Securities Depository)</h5>
+        <p style="margin-bottom: 0;">The single, central electronic ledger for a given market that records the <i>ultimate legal ownership</i> of securities in book-entry form (no paper certificates) — the place where final transfer of ownership actually happens on Settlement Date. Each market typically has one main CSD: <b>CDS</b> (Canada), <b>DTC</b> (US), <b>Euroclear / Clearstream</b> (international/Eurobonds).</p>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Flow · Custody Chain</span><span class="t-id">Settlement Date, T+2</span></div>
+        <pre>Bank Of Toronto  ---(client of)---&gt;  Custodian (e.g. BNY Mellon)
+                                            |
+                                  (custodian holds an account at)
+                                            v
+                                  CSD (e.g. CDS / DTC)  &lt;- master ledger
+                                            ^
+                                  (custodian holds an account at)
+                                            |
+Goldman Sachs    ---(client of)---&gt;  Custodian (its own, or same one)
+
+On Settlement Date (T+2):
+  1. Both custodians instruct the CSD to move the bond, on their
+     clients' behalf, from Goldman Sachs' custody account to
+     Bank Of Toronto's custody account.
+  2. The CSD updates its central book-entry record — this is the
+     LEGAL moment ownership changes.
+  3. Cash moves separately via the banking payment system, ideally
+     at the same time (Delivery vs Payment - DvP) so neither side
+     is left holding one leg without the other.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "Custodian" = your own bank holding your positions and dealing with settlement on your behalf. "CSD" = the one central record-of-truth ledger for a market that every custodian ultimately plugs into. When reconciling positions (Back Office, Section 04), your internal books should tie out to your custodian's statement — which itself ties out to the CSD.</div>
+    </section>
+
+    <section class="mod" id="notional-swap">
+      <p class="sec-eyebrow"><span class="n">08</span> · What actually settles on a derivative</p>
+      <h2>Notional Amount &amp; a first look at Interest Rate Swaps</h2>
+      <p class="lede"><b>Notional amount</b> is the reference principal used only to <i>calculate</i> periodic interest cash flows on a derivative — it is never physically exchanged. That's the key difference from a bond trade: a bond's face value is actually delivered (Section 01); a swap's notional is just a number used for arithmetic.</p>
+
+      <p>Revisiting the OTC swap from Section 05 — Bank Of Toronto and Goldman Sachs, Notional CAD 100,000,000, 5-year maturity, quarterly payments, Bank Of Toronto pays a <b>fixed</b> rate, Goldman Sachs pays a <b>floating</b> rate (CORRA + spread):</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · One Quarterly Payment</span><span class="t-id">Notional CAD 100,000,000</span></div>
+        <pre>Notional (reference only, NEVER exchanged): CAD 100,000,000
+Period: ~91 days (one quarter), day count actual/365
+
+Bank Of Toronto's FIXED leg:
+  100,000,000 x 4.00% x (91 / 365) = CAD 997,260
+
+Goldman Sachs' FLOATING leg (CORRA averaged 3.20% + 0.05% spread = 3.25%):
+  100,000,000 x 3.25% x (91 / 365) = CAD 810,068
+
+NETTING  (only the difference actually moves, one direction):
+  997,260 - 810,068 = CAD 187,192</pre>
+        <div class="result"><b>Result:</b> Bank Of Toronto pays Goldman Sachs <b>CAD 187,192 net</b> on this date. The CAD 100,000,000 notional itself never moves — on this date or any other — it only ever exists to compute the two legs above. This repeats every quarter for 5 years, with the floating leg reset each period to whatever CORRA + spread then is.</div>
+      </div>
+
+      <div class="callout">This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in <b>Module 7: FX &amp; Interest Rate Products</b>. For now, keep two things: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> If you see a derivative trade record with a huge "Notional" value (e.g. CAD 100,000,000) and no corresponding settlement of that amount anywhere in cash/custody systems, that's expected — notional isn't supposed to settle. Only the periodic net cash flows do.</div>
+    </section>
+
     <section class="mod" id="actors">
       <p class="sec-eyebrow">Reference</p>
       <h2>Actors — Full Cast Reference</h2>
@@ -887,7 +1005,7 @@ BACK OFFICE
           <tr><td><b>Goldman Sachs</b></td><td><span class="side-tag sell">Sell-side</span></td><td>Counterparty on secondary market and OTC trades</td></tr>
           <tr><td><b>Stock Exchange (e.g., NYSE)</b></td><td><span class="side-tag infra">Infra</span></td><td>Central venue for exchange-traded products</td></tr>
           <tr><td><b>Trade Repository</b></td><td><span class="side-tag infra">Infra</span></td><td>Central registry OTC trades must be reported to</td></tr>
-          <tr><td><b>Custodian / CSD</b></td><td><span class="side-tag infra">Infra</span></td><td>Holds/settles securities on owners' behalf (Module 11 goes deeper)</td></tr>
+          <tr><td><b>Custodian / CSD</b></td><td><span class="side-tag infra">Infra</span></td><td>Holds/settles securities on owners' behalf (Section 07 above; Module 11 goes deeper)</td></tr>
         </tbody>
       </table>
     </section>
@@ -903,8 +1021,71 @@ BACK OFFICE
           <li>A pension fund sells CAD 8,000,000 face value of a bond through Bank Of Toronto acting purely as broker, at a price of 97.75, for a flat commission of CAD 1,500. How much cash does the pension fund receive, and how much does Bank Of Toronto earn?</li>
           <li>A trade is agreed on Monday (T) and bonds settle T+2. If Monday is the trade date, which calendar day is the settlement date, and which "office" (front/middle/back) is active on each of those days?</li>
           <li>Why doesn't a trade of Apple shares on NASDAQ need to be separately reported to a Trade Repository, while a CAD 100,000,000 Interest Rate Swap between Bank Of Toronto and Goldman Sachs does?</li>
+          <li>A trade is agreed on Thursday, 3 September 2026 and settles T+2. Monday, 7 September 2026 is a market holiday. What calendar date is the actual Settlement Date, and why isn't it Saturday, 5 September 2026?</li>
+          <li>What's the difference between what a custodian does and what a CSD does — and why does an investor's custodian need its own account at the CSD rather than the investor holding one directly?</li>
+          <li>On a CAD 100,000,000 notional Interest Rate Swap, Bank Of Toronto pays fixed 4.00% and Goldman Sachs pays floating 3.10% (already including spread) for a 91-day quarter (actual/365). Who pays whom, how much net cash actually moves, and does any part of the CAD 100,000,000 notional itself settle?</li>
         </ol>
         <p class="quiz-cta">Answer whenever ready — then we move to <b>Module 2: Asset Class → Product → Instrument → Trade</b>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Profit = CAD 140,000; Bank Of Toronto acted as dealer</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Dealer Spread</span><span class="t-id">CAD 20,000,000</span></div>
+          <pre>Profit = (99.10 - 98.40) / 100 x 20,000,000
+       = 0.70 / 100 x 20,000,000
+       = CAD 140,000</pre>
+        </div>
+        <p>Bank Of Toronto bought the bond first and held it before selling it on later — that's taking principal risk, the defining trait of a dealer. A broker never takes the position onto its own book, so "buy low, sell high on the same bond" only makes sense for a dealer.</p>
+
+        <h5>Q2 — Pension fund receives CAD 7,818,500; Bank Of Toronto earns CAD 1,500</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Broker Payout</span><span class="t-id">CAD 8,000,000</span></div>
+          <pre>Market value = 8,000,000 x 97.75 / 100 = CAD 7,820,000
+Pension fund receives = 7,820,000 - 1,500 (commission) = CAD 7,818,500
+Bank Of Toronto earns  = CAD 1,500 commission only</pre>
+        </div>
+        <p>As broker/agent, Bank Of Toronto never owns the bond, so its only income is the flat commission — it carries zero market risk on the trade itself.</p>
+
+        <h5>Q3 — Settlement Date = Wednesday</h5>
+        <p style="margin-bottom: 8px;">Monday (T) → Tuesday (T+1) → Wednesday (T+2) — no weekend falls in between since all three days are weekdays.</p>
+        <ul style="margin: 0 0 14px; padding-left: 20px; color: var(--ink-soft);">
+          <li><b style="color: var(--ink);">Front Office</b> is active on T (Monday) — executes the trade.</li>
+          <li><b style="color: var(--ink);">Middle Office</b> is active on T, same day (Monday) — risk checks, valuation, confirmation/affirmation.</li>
+          <li><b style="color: var(--ink);">Back Office</b> is active on T+2 (Wednesday) — delivers bonds, receives cash, books ledger entries, reconciles, reports.</li>
+        </ul>
+
+        <h5>Q4 — The exchange itself is the public record; OTC has no such record</h5>
+        <p>An Apple/NASDAQ trade doesn't need separate Trade Repository reporting because the exchange is already a public, regulated, central venue — regulators see every trade through the exchange's own data feed in real time. The CAD 100,000,000 IR Swap is OTC: a private, bilateral contract between exactly two parties, with no central venue recording it. Regulators would have zero visibility into it unless both counterparties are legally required to separately report the trade to a Trade Repository (e.g. under EMIR / MiFID II) — which is exactly the requirement that exists.</p>
+
+        <h5>Q5 — Settlement Date = Tuesday, 8 September 2026</h5>
+        <div class="ticket gold">
+          <div class="ticket-head"><span class="t-label">Calendar · Holiday Crossed</span><span class="t-id">T+2</span></div>
+          <pre>T          : Thursday,  3 September 2026
+T+1        : Friday,    4 September 2026
+(skipped)  : Saturday,  5 Sept / Sunday, 6 Sept  - weekend
+(skipped)  : Monday,    7 Sept - Labour Day, market holiday
+T+2        : Tuesday,   8 September 2026</pre>
+        </div>
+        <p>It isn't Saturday, 5 September, because Saturday was never a candidate at all — T+2 counts only business days forward from T. This stretch had to skip both the weekend <i>and</i> the following Monday's holiday, pushing the true T+2 a full five calendar days past the trade date.</p>
+
+        <h5>Q6 — A custodian is client-facing; a CSD is the one central ledger the whole market shares</h5>
+        <p>A <b>custodian</b> is the bank that holds an investor's or dealer's securities in safekeeping, executes settlement instructions on their behalf, and produces statements — many different custodians exist, each serving their own roster of clients. A <b>CSD</b> is the single central ledger for a market that records the ultimate legal ownership of every security issued in that market. An investor's custodian needs its own CSD account because the CSD doesn't deal directly with every individual investor — it only maintains a manageable number of large participant accounts (custodians, clearing members, major banks), each of which aggregates and nets the positions of many underlying clients beneath it. The investor's true legal ownership is only as good as this whole chain reconciling correctly, end to end.</p>
+
+        <h5>Q7 — Bank Of Toronto pays Goldman Sachs CAD 224,384 net; no notional settles</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Swap Netting</span><span class="t-id">Notional CAD 100,000,000</span></div>
+          <pre>Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+Floating leg (Goldman Sachs pays) : 100,000,000 x 3.10% x (91/365) = CAD 772,877
+Net = 997,260 - 772,877 = CAD 224,384</pre>
+        </div>
+        <div class="takeaway"><b>Bank Of Toronto pays Goldman Sachs CAD 224,384 net</b> on this payment date. No part of the CAD 100,000,000 notional itself settles — it only ever exists as the number both legs are calculated from. Only the netted cash difference actually moves.</div>
       </div>
     </section>
 
