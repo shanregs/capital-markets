@@ -483,6 +483,7 @@
 
 <div class="shell">
   <div class="masthead">
+    <a href="./index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
       <div class="eyebrow">Capital Markets — Self-Paced Path · Module 3 of 12</div>
       <div class="theme-switch" role="group" aria-label="Theme">
@@ -659,7 +660,7 @@ Status              : NEW</pre>
 Status: CONFIRMED -&gt; AFFIRMED</pre>
       </div>
 
-      <p>For cash securities (bonds, equities), this typically happens through platforms such as <b>CTM</b> (Central Trade Manager, DTCC) or <b>Omgeo/Alert</b>. For OTC derivatives, the equivalent step usually runs through <b>MarkitWire</b> or direct <b>FpML</b> message exchange between the two counterparties' systems, feeding the ISDA Master Agreement's legal framework referenced in Module 2, Section 07.</p>
+      <p>For cash securities (bonds, equities), this typically happens through platforms such as <b>CTM</b> (Central Trade Manager, DTCC) or <b>Omgeo/Alert</b>. For OTC derivatives, the equivalent step usually runs through <b>MarkitWire</b> or direct <b>FpML</b> message exchange between the two counterparties' systems, feeding the ISDA Master Agreement's legal framework referenced in <a href="./module-02-hierarchy.html">Module 2</a>, Section 07.</p>
 
       <div class="takeaway"><b>Takeaway.</b> A trade sitting in "CONFIRMED" but not yet "AFFIRMED" status for an unusually long time is a strong signal something's wrong — either the counterparty disagrees with a term (a break, Section 05) or an operational delay is quietly eating into the T+2 settlement runway.</div>
     </section>
@@ -731,7 +732,7 @@ AFTER NOVATION  —  the CCP steps in; TWO trades now exist
      Bank Of Toronto's trade with the CCP is unaffected.</pre>
       </div>
 
-      <p>Novation is not free — both sides must post <b>Initial Margin (IM)</b> to the CCP to cover potential future losses, plus daily <b>Variation Margin (VM)</b> as the trade's value moves. Full mechanics belong to Module 10 (Collateral &amp; Margin); here's the shape of the numbers just to make "clearing has a cost" concrete:</p>
+      <p>Novation is not free — both sides must post <b>Initial Margin (IM)</b> to the CCP to cover potential future losses, plus daily <b>Variation Margin (VM)</b> as the trade's value moves. Full mechanics belong to <a href="./module-12-collateral-margin.html">Module 12</a> (Collateral &amp; Margin); here's the shape of the numbers just to make "clearing has a cost" concrete:</p>
 
       <div class="ticket gold">
         <div class="ticket-head"><span class="t-label">Math · Illustrative Margin</span><span class="t-id">CAD 100,000,000 notional</span></div>
@@ -745,7 +746,7 @@ the swap's mark-to-market value shifts by CAD 180,000 in
 Bank Of Toronto's favor:
   CCP collects CAD 180,000 from Goldman Sachs' VM account
   CCP pays CAD 180,000 to Bank Of Toronto's VM account
-  (VM is exchanged DAILY for the life of the trade — Module 10)</pre>
+  (VM is exchanged DAILY for the life of the trade — Module 12)</pre>
       </div>
 
       <div class="takeaway"><b>Takeaway.</b> The reason a cleared trade's record shows a <b>CCP as counterparty</b>, not the original bank, is novation — it's not a data error or a proxy field, it's what legally happened at the Clearing stage. Bilateral (uncleared) products, like the plain bond trade in Sections 02–05, simply skip this stage entirely.</div>
@@ -1028,7 +1029,7 @@ Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day late
     <section class="mod" id="quiz" style="border-bottom: none;">
       <p class="sec-eyebrow">Self-check</p>
       <h2>Recap Quiz — Numbers Edition</h2>
-      <p class="lede">Work these with real figures before moving to Module 4.</p>
+      <p class="lede">Work these with real figures before moving to <a href="./module-04-equity.html">Module 4</a>.</p>
 
       <div class="quiz">
         <ol>
@@ -1043,7 +1044,7 @@ Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day late
           <li>Bank Of Toronto's bond trade fails to settle by 1 business day instead of 2, under the illustrative CSDR-style penalty in Section 13, on CAD 10,000,000 face value at reference price 99.20 and rate 0.10bps/day. What's the cash penalty for that 1 day?</li>
           <li>Put these five statuses in the correct chronological order for a normal (no-break) bilateral bond trade: <code>SETTLED</code>, <code>NEW</code>, <code>RECONCILED</code>, <code>MATCHED</code>, <code>AFFIRMED</code>.</li>
         </ol>
-        <p class="quiz-cta">Answer whenever ready — then we move to <b>Module 4: Fixed Income / Bonds</b>.</p>
+        <p class="quiz-cta">Answer whenever ready — then we move to <b><a href="./module-04-equity.html">Module 4</a>: Fixed Income / Bonds</b>.</p>
       </div>
     </section>
 
@@ -1069,7 +1070,7 @@ Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day late
         <p>From Bank Of Toronto's perspective specifically, its only remaining counterparty after novation is the CCP — the original Goldman Sachs relationship on this trade is fully replaced (Section 06). Bank Of Toronto is not a party to IRS #2 at all; that trade exists purely between the CCP and Goldman Sachs.</p>
 
         <h5>Q6 — Reaches CLEARED, not SETTLED — followed by ongoing daily VM and periodic net cash flows</h5>
-        <p>Unlike a bond, where one DvP event on T+2 fully discharges the trade (Section 07), a cleared swap has no notional to deliver (Module 1 §8) — there's nothing that constitutes a single "settlement" event. Instead, Section 11 shows the trade moving into an ongoing relationship with the CCP: margin calls the next day, and then a recurring cash-flow schedule for the full 5-year tenor.</p>
+        <p>Unlike a bond, where one DvP event on T+2 fully discharges the trade (Section 07), a cleared swap has no notional to deliver (<a href="./module-01-fundamentals.html">Module 1</a> §8) — there's nothing that constitutes a single "settlement" event. Instead, Section 11 shows the trade moving into an ongoing relationship with the CCP: margin calls the next day, and then a recurring cash-flow schedule for the full 5-year tenor.</p>
 
         <h5>Q7 — Most likely something else entirely — an internal processing/messaging error</h5>
         <p>This mirrors the Section 08 worked example exactly: when the custodian and the CSD (two independent, external sources) agree with each other but disagree with internal books, the far more likely explanation is that the firm's own internal position-keeping system failed to process a downstream event (e.g., a dropped settlement confirmation message) — not that money actually went missing, and not that the custodian's own records are wrong.</p>
@@ -1093,7 +1094,7 @@ Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day
 
   </main>
 
-  <footer>Capital Markets — Self-Paced Learning Path · Module 3 of 12</footer>
+  <footer>Capital Markets — Self-Paced Learning Path · Module 3 of 12 &middot; <a href="./index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
 </div>
 
 <script>

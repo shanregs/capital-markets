@@ -1,5 +1,7 @@
 # Module 1 — Capital Markets Fundamentals
 
+[← Back to Index](./index.md)
+
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
 
@@ -60,7 +62,7 @@ COUPON RATE  vs.  YIELD  (the "true APR-like" number)
                  - Buy above par (101.80)-> Yield  <  Coupon Rate
 ```
 
-Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in Module 4/8 — for now, just don't conflate the two.
+Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in [Module 4](./module-04-equity.md)/8 — for now, just don't conflate the two.
 
 ### Worked example — Bank Of Toronto buys a different 5%-coupon bond each year
 
@@ -90,7 +92,7 @@ What stays constant vs. what moves, and why it matters for reporting systems:
 - **Yield** — always a *derived* field: `Annual Coupon Cash Flow ÷ Price Paid`. If a system ever stores Yield as static, it's already wrong the moment Price moves.
 - Reading "is Bank Of Toronto better or worse off" off the coupon rate alone is meaningless — 2028 and 2029 both show a 5% coupon, yet one is Bank Of Toronto's best year and the other its worst, purely from price paid.
 
-This uses simple **Current Yield** for clarity. **Yield to Maturity (YTM)** — which also folds in the gain/loss recovered when the discount or premium unwinds back to par at maturity — is covered properly in Module 4/8.
+This uses simple **Current Yield** for clarity. **Yield to Maturity (YTM)** — which also folds in the gain/loss recovered when the discount or premium unwinds back to par at maturity — is covered properly in [Module 4](./module-04-equity.md)/8.
 
 ### One Issuance, Many Investors — can multiple investors buy slices of the same bond?
 
@@ -198,7 +200,7 @@ Later, market interest rates rise to ~5.30%:
  attractive, and its price would rise ABOVE par, e.g. 101.80.)
 ```
 
-98.50 isn't an arbitrary discount — it's the market's real-time answer to "given today's interest rates, what does this fixed 5% cash-flow stream have to cost so a buyer earns a fair, competitive return?" (Full mechanics — yield, duration — are covered properly in Module 4/8. For now: **price moves opposite to interest rates**.)
+98.50 isn't an arbitrary discount — it's the market's real-time answer to "given today's interest rates, what does this fixed 5% cash-flow stream have to cost so a buyer earns a fair, competitive return?" (Full mechanics — yield, duration — are covered properly in [Module 4](./module-04-equity.md)/8. For now: **price moves opposite to interest rates**.)
 
 **Is the seller (Goldman Sachs) actually taking a loss?**
 You cannot tell from 98.50 alone — it depends on what the seller originally paid, plus coupons collected along the way.
@@ -279,7 +281,7 @@ BUY-SIDE  <-->  SELL-SIDE  FLOW
         |     Bonds, CAD 50,000,000       |                              |
         |     face value                 |                              |
 
-Bank Of Toronto's spread (a preview of "valuation" — Module 8):
+Bank Of Toronto's spread (a preview of "valuation" — Module 10):
    Sold @ 98.50, bought @ 98.40  ->  0.10 x 50,000,000 / 100 = CAD 50,000 profit
 ```
 
@@ -454,7 +456,7 @@ OTC  —  bilateral, privately negotiated
     regulators have visibility that would otherwise not exist.
 ```
 
-**Takeaway:** this exchange-vs-OTC gap is *the* reason "regulatory reporting" (Module 12) exists as a discipline at all — regulators trust the exchange to be the record for exchange-traded products, but for OTC they need firms to actively report trade data.
+**Takeaway:** this exchange-vs-OTC gap is *the* reason "regulatory reporting" ([Module 14](./module-14-regulatory-reporting.md)) exists as a discipline at all — regulators trust the exchange to be the record for exchange-traded products, but for OTC they need firms to actively report trade data.
 
 ---
 
@@ -576,7 +578,7 @@ RESULT on this payment date:
     reset each period to whatever CORRA + spread then is.
 ```
 
-This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in **Module 7: FX & Interest Rate Products**. For now, the two things worth keeping: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.
+This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in **[Module 7](./module-07-commodities.md): FX & Interest Rate Products**. For now, the two things worth keeping: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.
 
 **Takeaway:** if you ever see a derivative trade record showing a huge "Notional" value (e.g. CAD 100,000,000) with no corresponding settlement of that amount anywhere in cash/custody systems, that's expected — notional isn't supposed to settle. Only the periodic net cash flows do.
 
@@ -592,7 +594,7 @@ This is deliberately just the mechanics of one cash flow, not the theory of swap
 | Goldman Sachs | Sell-side (in these examples, acting as a counterparty/dealer) | Counterparty on secondary market and OTC trades |
 | Stock Exchange (e.g., NYSE) | Market infrastructure | Central venue for exchange-traded products |
 | Trade Repository | Market infrastructure | Central registry OTC trades must be reported to |
-| Custodian / CSD | Market infrastructure | Holds/settles securities on behalf of owners (Section 7 above; Module 11 goes deeper) |
+| Custodian / CSD | Market infrastructure | Holds/settles securities on behalf of owners (Section 7 above; [Module 13](./module-13-parties-leis.md) goes deeper) |
 
 ---
 
@@ -606,7 +608,7 @@ This is deliberately just the mechanics of one cash flow, not the theory of swap
 6. What's the difference between what a custodian does and what a CSD does — and why does an investor's custodian need its own account at the CSD rather than the investor holding one directly?
 7. On a CAD 100,000,000 notional Interest Rate Swap, Bank Of Toronto pays fixed 4.00% and Goldman Sachs pays floating 3.10% (already including spread) for a 91-day quarter (actual/365). Who pays whom, how much net cash actually moves, and does any part of the CAD 100,000,000 notional itself settle?
 
-Answer whenever ready — then we move to **Module 2: Asset Class → Product → Instrument → Trade**.
+Answer whenever ready — then we move to **[Module 2](./module-02-hierarchy.md): Asset Class → Product → Instrument → Trade**.
 
 ---
 
@@ -669,3 +671,7 @@ Net = 997,260 - 772,877 = CAD 224,384
 ```
 
 Since the fixed leg is larger, **Bank Of Toronto pays Goldman Sachs CAD 224,384 net** on this payment date. No part of the CAD 100,000,000 notional itself settles — it only ever exists as the number both legs are calculated from. Only the netted cash difference actually moves.
+
+---
+
+[← Back to Index](./index.md)

@@ -1,5 +1,7 @@
 # Module 4 — Equity
 
+[← Back to Index](./index.md)
+
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
 > **Asset Class Roadmap 1 of 6** — Equity → Fixed Income → FX → Commodities → Rates → Credit. Each asset class is studied through the same eight-part pattern below before moving to the next.
@@ -8,7 +10,7 @@
 
 ## 1. What Is Equity? — Theory &amp; Terminology
 
-**Definition:** Equity represents **fractional ownership** in a company. A shareholder owns a proportional claim on the company's assets and future earnings, evidenced by shares. Unlike the Fixed Income instruments covered in Module 5, equity has **no maturity date, no fixed coupon, and no promise to return principal** — the return comes entirely from price appreciation and dividends, both of which are variable and, for dividends, discretionary rather than contractual.
+**Definition:** Equity represents **fractional ownership** in a company. A shareholder owns a proportional claim on the company's assets and future earnings, evidenced by shares. Unlike the Fixed Income instruments covered in [Module 5](./module-05-fixed-income.md), equity has **no maturity date, no fixed coupon, and no promise to return principal** — the return comes entirely from price appreciation and dividends, both of which are variable and, for dividends, discretionary rather than contractual.
 
 | Term | Meaning |
 |---|---|
@@ -21,14 +23,14 @@
 
 ### Equity vs Fixed Income — the contrast that matters most
 
-| | Equity | Fixed Income (Module 5) |
+| | Equity | Fixed Income ([Module 5](./module-05-fixed-income.md)) |
 |---|---|---|
 | Ownership claim | Yes — a residual claim on the company | No — a creditor claim (a loan to the issuer) |
 | Maturity | None — held indefinitely | Fixed — bond matures on a set date |
 | Return | Price appreciation + dividends (variable, not guaranteed) | Coupon (fixed, contractual) + principal at maturity |
 | Priority in bankruptcy | **Last** — paid only after all creditors | Ahead of equity — bondholders are creditors |
 
-**Takeaway:** every other section in this module — products, trade lifecycle, identifiers, regulation — traces back to this one fact: a share is a piece of the company itself, not a promise from it. That's the opposite of a bond, and it's why equity valuation (Module 10) looks completely different from bond valuation.
+**Takeaway:** every other section in this module — products, trade lifecycle, identifiers, regulation — traces back to this one fact: a share is a piece of the company itself, not a promise from it. That's the opposite of a bond, and it's why equity valuation ([Module 10](./module-10-valuation.md)) looks completely different from bond valuation.
 
 ---
 
@@ -59,7 +61,7 @@ EQUITY
 
 ## 3. What Exactly Is Being Traded? — Security vs Contract
 
-**Definition:** For Common or Preferred Stock, you are trading an **actual security** — a real, transferable ownership claim, recorded in book-entry form at a CSD (Module 1 §7), that exists independently of any particular trade. For Equity Futures or Options, you are trading a **contract** whose value derives from that underlying security's price — the contract itself is created at execution and typically extinguished at expiry or exercise.
+**Definition:** For Common or Preferred Stock, you are trading an **actual security** — a real, transferable ownership claim, recorded in book-entry form at a CSD ([Module 1](./module-01-fundamentals.md) §7), that exists independently of any particular trade. For Equity Futures or Options, you are trading a **contract** whose value derives from that underlying security's price — the contract itself is created at execution and typically extinguished at expiry or exercise.
 
 ```text
 SECURITY vs CONTRACT
@@ -78,7 +80,7 @@ Equity Option (CONTRACT):
   a CLAIM on Apple shares.
 ```
 
-**Takeaway:** this is exactly the "Quantity vs Notional" distinction from Module 2 §3, restated for equity specifically. A cash equity trade's Quantity (shares) is a real, deliverable amount. An equity derivative's underlying share count is closer to a reference amount used to size the contract's payoff — whether it ever results in real shares moving depends entirely on whether the contract is physically settled and actually exercised (Section 5).
+**Takeaway:** this is exactly the "Quantity vs Notional" distinction from [Module 2](./module-02-hierarchy.md) §3, restated for equity specifically. A cash equity trade's Quantity (shares) is a real, deliverable amount. An equity derivative's underlying share count is closer to a reference amount used to size the contract's payoff — whether it ever results in real shares moving depends entirely on whether the contract is physically settled and actually exercised (Section 5).
 
 ---
 
@@ -98,6 +100,8 @@ COMMON STOCK  —  Coca-Cola Company (NYSE: KO)
   Trade: 10,000 shares @ USD 68.40
   Trade Value = 10,000 x 68.40 = USD 684,000
 ```
+
+**Schema:** `EquityTrade.avsc` — Trade only. There's no `EquityValuation.avsc` in the work data model taxonomy: cash equity is marked using a shared/generic security-pricing model (Section 5's daily mark-to-market just needs a market price, not product-specific valuation logic the way an option or swap needs).
 
 ### 4b. Preferred Stock
 
@@ -124,6 +128,8 @@ PREFERRED STOCK  —  Bank Of Toronto Preferred Shares, Series A
   instrument, is never a legal obligation the way a bond coupon is.
 ```
 
+**Schema:** `EquityTrade.avsc` — same schema as Common Stock. The taxonomy doesn't split Common vs. Preferred; both are "Cash Equity" and share one Trade schema (Section 2), with the fixed-vs-discretionary dividend distinction living in reference/economic-terms data, not a different schema.
+
 ### 4c. Equity Future
 
 ```text
@@ -149,6 +155,8 @@ EQUITY FUTURE  —  E-mini S&amp;P 500 Future (CME)
        swap's quarterly cash flow — Module 1 §8)
 ```
 
+**Schema:** `FuturesTrade.avsc` / `FuturesValuation.avsc` — **not** an equity-specific schema. In the work data model taxonomy, all exchange-traded futures (equity index, rate, commodity, FX — any underlying) sit under the cross-cutting **"7. Listed Derivatives"** node ([Module 15](./module-15-listed-derivatives.md)), not under "4. Equity." This equity index future is taught here for the underlying concept, but its actual schema mapping lives in [Module 15](./module-15-listed-derivatives.md).
+
 ### 4d. Equity Option
 
 ```text
@@ -173,13 +181,15 @@ EQUITY OPTION  —  AAPL 15-Jan-2027 250 Call
        ever — never more than the premium paid.
 ```
 
+**Schema:** `ListedOptionsTrade.avsc` / `ListedOptionValuation.avsc` — not `EquityOptionTrade.avsc`. This AAPL call is **exchange-listed** and clears via the OCC (Section 5), so in the taxonomy it belongs to the cross-cutting "7. Listed Derivatives" node ([Module 15](./module-15-listed-derivatives.md)) alongside Futures, same as Section 4c. `EquityOptionTrade.avsc` / `EquityOptionValuation.avsc` is reserved for a **bilateral OTC** equity option — same economic product, different schema, and the deciding factor is Exchange vs. OTC (Section 7), not "is it an equity option."
+
 **Takeaway:** notice the buyer/seller relationship changes shape across these four examples — a bilateral dealer trade (4a), a primary issuance (4b), an exchange trade against a CCP (4c), and a bilateral option written by a dealer (4d). All four are still "Equity," but the actors and the settlement mechanics already look different before Section 5 even gets to lifecycle.
 
 ---
 
 ## 5. Trade Lifecycle — Equity-Specific Walkthrough
 
-Applying the pattern from the Asset Class Roadmap — **Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting** — to the Coca-Cola common stock trade from Section 4a. This is the same nine-stage backbone as Module 3, with two extra stages made explicit (**Position** and **Valuation/P&amp;L**) that sit between Module 3's "Settlement" and "Reconciliation/Reporting" stages.
+Applying the pattern from the Asset Class Roadmap — **Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting** — to the Coca-Cola common stock trade from Section 4a. This is the same nine-stage backbone as [Module 3](./module-03-trade-lifecycle.md), with two extra stages made explicit (**Position** and **Valuation/P&amp;L**) that sit between [Module 3](./module-03-trade-lifecycle.md)'s "Settlement" and "Reconciliation/Reporting" stages.
 
 ```text
 COCA-COLA COMMON STOCK  —  FULL LIFECYCLE
@@ -223,19 +233,19 @@ COCA-COLA COMMON STOCK  —  FULL LIFECYCLE
 
 | Product | CCP | What "Clearing" adds |
 |---|---|---|
-| Common/Preferred Stock | NSCC (US example above) / CDCC / LCH / Eurex, per country (systems-landscape §04–07) | Multilateral netting before one T+1/T+2 DvP settlement |
-| Equity Future | CME Clearing | Novation (Module 3 §06) plus **daily** Variation Margin for the life of the contract — Position and Valuation/P&amp;L are not a one-time check, they run every business day |
+| Common/Preferred Stock | NSCC (US example above) / CDCC / LCH / Eurex, per country ([systems-landscape](./systems-landscape.md) §04–07) | Multilateral netting before one T+1/T+2 DvP settlement |
+| Equity Future | CME Clearing | Novation ([Module 3](./module-03-trade-lifecycle.md) §06) plus **daily** Variation Margin for the life of the contract — Position and Valuation/P&amp;L are not a one-time check, they run every business day |
 | Listed Equity Option | **OCC (Options Clearing Corporation)** | Novation of the option contract itself; premium settles T+1; if exercised, a *separate* physical stock settlement follows T+1 after exercise |
 
-> **A naming collision worth flagging:** "OCC" means two completely different things in US capital markets. Here, in an equities/derivatives context, it's the **Options Clearing Corporation** — the CCP for all US-listed equity options. In a banking/prudential context (systems-landscape §10), "OCC" instead means the **Office of the Comptroller of the Currency** — the regulator that charters and supervises national banks. Same acronym, same country, unrelated organizations — always check context.
+> **A naming collision worth flagging:** "OCC" means two completely different things in US capital markets. Here, in an equities/derivatives context, it's the **Options Clearing Corporation** — the CCP for all US-listed equity options. In a banking/prudential context ([systems-landscape](./systems-landscape.md) §10), "OCC" instead means the **Office of the Comptroller of the Currency** — the regulator that charters and supervises national banks. Same acronym, same country, unrelated organizations — always check context.
 
-**Takeaway:** the "Position" and "Valuation/P&amp;L" stages aren't new concepts — they're Module 3 §08 (Reconciliation) and a preview of Module 10 (Valuation), made explicit here because equity is where they're easiest to see: a stock position just sits there being marked to a public, constantly-moving market price, with no coupon or notional math to obscure it.
+**Takeaway:** the "Position" and "Valuation/P&amp;L" stages aren't new concepts — they're [Module 3](./module-03-trade-lifecycle.md) §08 (Reconciliation) and a preview of [Module 10](./module-10-valuation.md) (Valuation), made explicit here because equity is where they're easiest to see: a stock position just sits there being marked to a public, constantly-moving market price, with no coupon or notional math to obscure it.
 
 ---
 
 ## 6. Identifiers — ISIN, CUSIP, SEDOL, Ticker, LEI, UPI, FIGI
 
-Module 2 §2 introduced ISIN, CUSIP, and Ticker. Equity is where the remaining four — SEDOL, LEI, UPI, FIGI — earn their place.
+[Module 2](./module-02-hierarchy.md) §2 introduced ISIN, CUSIP, and Ticker. Equity is where the remaining four — SEDOL, LEI, UPI, FIGI — earn their place.
 
 | Identifier | Identifies | Scope | Example (Coca-Cola / Apple, unless noted) |
 |---|---|---|---|
@@ -245,7 +255,7 @@ Module 2 §2 introduced ISIN, CUSIP, and Ticker. Equity is where the remaining f
 | **SEDOL** | The instrument | Historically UK/Ireland-specific (7 characters); still embedded inside most UK ISINs the same way a CUSIP is embedded in a US/CA ISIN | `0008373` (Tesco PLC on LSE, illustrative) |
 | **FIGI** | The instrument — but at *multiple levels* (share class, or a specific trading venue/exchange line) | Global, open-source (Bloomberg-originated, now an industry standard) | `BBG000B9XRY4` (Apple Inc., Composite Global FIGI — commonly published reference data) |
 | **LEI** | The **legal entity** itself — not an instrument at all | Global | `5493001KJTIIGC8Y1R12` (illustrative — Bank Of Toronto) |
-| **UPI** | An OTC derivative *product template* (Module 2 §12) | Global | Relevant only for an OTC equity derivative (e.g. a Total Return Swap on KO) — a listed Equity Future or Option instead gets an exchange-specific contract code, not a UPI |
+| **UPI** | An OTC derivative *product template* ([Module 2](./module-02-hierarchy.md) §12) | Global | Relevant only for an OTC equity derivative (e.g. a Total Return Swap on KO) — a listed Equity Future or Option instead gets an exchange-specific contract code, not a UPI |
 
 ```text
 INSTRUMENT IDENTIFIERS  vs  ENTITY IDENTIFIER
@@ -272,7 +282,7 @@ INSTRUMENT IDENTIFIERS  vs  ENTITY IDENTIFIER
 
 ## 7. Exchange vs OTC vs Bilateral vs Centrally Cleared
 
-**Definition:** these are **two separate questions**, easy to conflate. "Exchange vs OTC" asks *where the trade was negotiated* (Module 1 §5). "Bilateral vs Centrally Cleared" asks *what the counterparty risk looks like after execution* (Module 3 §6) — even an OTC-negotiated trade can end up centrally cleared if it's later novated to a CCP.
+**Definition:** these are **two separate questions**, easy to conflate. "Exchange vs OTC" asks *where the trade was negotiated* ([Module 1](./module-01-fundamentals.md) §5). "Bilateral vs Centrally Cleared" asks *what the counterparty risk looks like after execution* ([Module 3](./module-03-trade-lifecycle.md) §6) — even an OTC-negotiated trade can end up centrally cleared if it's later novated to a CCP.
 
 ```text
 TWO AXES, NOT ONE
@@ -302,7 +312,7 @@ TWO AXES, NOT ONE
 | Listed Equity Option | Exchange-traded | Centrally cleared (OCC) |
 | OTC Equity Option / Total Return Swap | OTC | Bilateral (typically) — or centrally cleared if the specific product has been mandated/elected for clearing |
 
-**Takeaway:** for cash equity and listed derivatives, "exchange-traded" and "centrally cleared" travel together so consistently that people often treat them as synonyms — but Section 8's regulatory reporting obligations (EMIR, SFTR) exist specifically because the bottom-right cell of that table (bilateral OTC) is where a trade can otherwise go completely unseen by a regulator, exactly as Module 1 §5 first established for OTC products generally.
+**Takeaway:** for cash equity and listed derivatives, "exchange-traded" and "centrally cleared" travel together so consistently that people often treat them as synonyms — but Section 8's regulatory reporting obligations (EMIR, SFTR) exist specifically because the bottom-right cell of that table (bilateral OTC) is where a trade can otherwise go completely unseen by a regulator, exactly as [Module 1](./module-01-fundamentals.md) §5 first established for OTC products generally.
 
 ---
 
@@ -312,14 +322,14 @@ Only now, with the products, trade mechanics, and identifiers already concrete, 
 
 | Regulation / Body | How it touches Equity specifically |
 |---|---|
-| **MiFID II / MiFIR** (EU) | Pre- and post-trade transparency for equity trading, best-execution obligations, the Systematic Internalizer regime for OTC-like equity trading outside an exchange, and T+1 transaction reporting (Module 3 §09, systems-landscape §07) |
-| **EMIR** | Applies only if the equity derivative is OTC (e.g. a Total Return Swap on KO) — reported to a Trade Repository (Module 2 §07, systems-landscape §04–07). Does **not** apply to Common/Preferred Stock or to listed Futures/Options, which aren't OTC |
-| **SFTR** | Applies specifically when equity shares are lent or borrowed, or used as repo collateral — e.g. Bank Of Toronto lending out its Coca-Cola position to a short-seller (systems-landscape §12) |
-| **FCA** (UK) | Conduct regulator for UK equity trading — administers UK MiFIR equity transaction reporting (systems-landscape §10) |
-| **CIRO** (Canada) | The SRO overseeing Canadian equity dealer conduct and trading activity (systems-landscape §10) |
+| **MiFID II / MiFIR** (EU) | Pre- and post-trade transparency for equity trading, best-execution obligations, the Systematic Internalizer regime for OTC-like equity trading outside an exchange, and T+1 transaction reporting ([Module 3](./module-03-trade-lifecycle.md) §09, [systems-landscape](./systems-landscape.md) §07) |
+| **EMIR** | Applies only if the equity derivative is OTC (e.g. a Total Return Swap on KO) — reported to a Trade Repository ([Module 2](./module-02-hierarchy.md) §07, [systems-landscape](./systems-landscape.md) §04–07). Does **not** apply to Common/Preferred Stock or to listed Futures/Options, which aren't OTC |
+| **SFTR** | Applies specifically when equity shares are lent or borrowed, or used as repo collateral — e.g. Bank Of Toronto lending out its Coca-Cola position to a short-seller ([systems-landscape](./systems-landscape.md) §12) |
+| **FCA** (UK) | Conduct regulator for UK equity trading — administers UK MiFIR equity transaction reporting ([systems-landscape](./systems-landscape.md) §10) |
+| **CIRO** (Canada) | The SRO overseeing Canadian equity dealer conduct and trading activity ([systems-landscape](./systems-landscape.md) §10) |
 | **HKMA / SFC** (Hong Kong) | Worth a careful distinction: the **HKMA (Hong Kong Monetary Authority)** is Hong Kong's central-bank-equivalent — banking supervision and monetary policy, analogous to the Bank of England. The **SFC (Securities and Futures Commission)** is Hong Kong's actual securities/equities market-conduct regulator — the closer analog to the FCA or the SEC for equity trading specifically |
-| **DTCC** (US) | Its subsidiaries NSCC and DTC clear and settle US cash equities (Section 5 above; systems-landscape §05) |
-| **DMO** (UK Debt Management Office) | Issues UK government bonds (Gilts) — **not** an equity-relevant body; included here because you listed it, but its full treatment belongs in Module 5 (Fixed Income) |
+| **DTCC** (US) | Its subsidiaries NSCC and DTC clear and settle US cash equities (Section 5 above; [systems-landscape](./systems-landscape.md) §05) |
+| **DMO** (UK Debt Management Office) | Issues UK government bonds (Gilts) — **not** an equity-relevant body; included here because you listed it, but its full treatment belongs in [Module 5](./module-05-fixed-income.md) (Fixed Income) |
 
 **Takeaway:** every regulation above attaches to a *specific mechanic* already covered in Sections 1–7 — MiFID to where/how the trade executed, EMIR to whether the derivative is OTC, SFTR to whether shares themselves (not just a derivative on them) were lent or used as collateral. None of these rules apply uniformly to "Equity" as a whole; each one is scoped to a particular slice of what this module just walked through.
 
@@ -348,7 +358,7 @@ Only now, with the products, trade mechanics, and identifiers already concrete, 
 6. A Total Return Swap on Coca-Cola shares, negotiated bilaterally between two dealers, is later voluntarily submitted for central clearing. Does it change from "OTC" to "Exchange-Traded" as a result? Explain using Section 7's two-axis model.
 7. If Bank Of Toronto lends its Coca-Cola shares to another firm that wants to short-sell them, which regulation from Section 8 governs the reporting of that specific transaction — MiFID, EMIR, or SFTR — and why do the other two not apply to it?
 
-Answer whenever ready — then move to **Module 5: Fixed Income**, the next stop on the Asset Class Roadmap.
+Answer whenever ready — then move to **[Module 5](./module-05-fixed-income.md): Fixed Income**, the next stop on the Asset Class Roadmap.
 
 ---
 
@@ -382,6 +392,10 @@ Section 6's diagram states this directly — LEI answers "who," while ISIN/CUSIP
 
 Section 7's two-axis model draws this distinction precisely: "where the trade was negotiated" (OTC, since it was a bilateral dealer negotiation) is permanently fixed by how the trade originated, regardless of what happens to it afterward. Submitting it for clearing only moves it from the "OTC + Bilateral" cell to the "OTC + Centrally Cleared" cell in Section 7's table — it never becomes "Exchange-Traded," because it was never executed on an exchange.
 
-**7. SFTR governs it — because lending the actual shares (not a derivative referencing them) is a Securities Financing Transaction, exactly the product family SFTR exists for (systems-landscape §12). MiFID doesn't apply because this isn't a MiFID-scope "executed transaction" on the shares — no sale/purchase happened. EMIR doesn't apply because a securities lending transaction is not an OTC *derivative* — there's no notional-referencing contract here, just the shares themselves changing hands temporarily.**
+**7. SFTR governs it — because lending the actual shares (not a derivative referencing them) is a Securities Financing Transaction, exactly the product family SFTR exists for ([systems-landscape](./systems-landscape.md) §12). MiFID doesn't apply because this isn't a MiFID-scope "executed transaction" on the shares — no sale/purchase happened. EMIR doesn't apply because a securities lending transaction is not an OTC *derivative* — there's no notional-referencing contract here, just the shares themselves changing hands temporarily.**
 
-Section 8's table flags SFTR as covering exactly this scenario. The key distinguishing test, consistent with Module 2's asset-class hierarchy: is this a trade in the security itself (potentially SFTR, if it's a financing-type transaction like lending/repo, or ordinary MiFID transaction reporting if it's an outright buy/sell) or a contract referencing the security (potentially EMIR, if OTC)? Securities lending is squarely the former, and specifically the financing sub-category SFTR was built for.
+Section 8's table flags SFTR as covering exactly this scenario. The key distinguishing test, consistent with [Module 2](./module-02-hierarchy.md)'s asset-class hierarchy: is this a trade in the security itself (potentially SFTR, if it's a financing-type transaction like lending/repo, or ordinary MiFID transaction reporting if it's an outright buy/sell) or a contract referencing the security (potentially EMIR, if OTC)? Securities lending is squarely the former, and specifically the financing sub-category SFTR was built for.
+
+---
+
+[← Back to Index](./index.md)

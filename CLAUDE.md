@@ -18,6 +18,29 @@ It is organized into 14 modules. Modules 1–3 are foundational (Fundamentals, A
 
 Stated priorities for the current work focus (see the "Priority for My Current Work" table near the end of the doc): Trade Lifecycle, Fixed Income + Rates + Credit, Valuation, and Collateral + Exposure are weighted highest. Within the Asset Class Roadmap, build **one asset class at a time**, in the order given (Equity first), rather than all six at once.
 
+## Work data model reference — Avro schema taxonomy
+
+The user's actual job works against a Trade/Valuation Avro schema taxonomy, organized by asset class → product, one `.avsc` per Trade and (usually) one per Valuation:
+
+```
+CAPITAL MARKETS
+├── 1. Fixed Income        — Bond (Trade only: BondTrade.avsc)
+├── 2. Interest Rate       — Cap/Floor, IR Forward Debt, FRA, Interest Rate Swap, Swaption
+│                            (each: <Product>Trade.avsc + <Product>Valuation.avsc)
+├── 3. Foreign Exchange    — FX, FX Option, FX/IR Exotic (each: Trade + Valuation)
+├── 4. Equity              — Equity (Trade only), Equity Option, Equity Swap (Trade + Valuation)
+├── 5. Commodities         — Commodity Option, Commodity Spot/Forward, Commodity Swap
+│                            (each: Trade + Valuation), Commodity Warrant (Trade only)
+├── 6. Credit              — Credit Default Swap (Trade + Valuation)
+└── 7. Listed Derivatives  — Futures, Listed Options (each: Trade + Valuation)
+                             — cross-cutting: not one of the 6 asset classes above,
+                               a Future/Listed Option can reference any underlying
+```
+
+This taxonomy is the reason Module 8 (Rates) and Module 9 (Credit) exist and what they must cover product-for-product. It's also why **Module 15: Listed Derivatives** exists as a standalone, non-asset-class module — Futures and Listed Options are traded across every asset class, so they don't belong folded into just one.
+
+**Schema-mapping convention:** every module's trade examples (Section 4 of the eight-part pattern) should include a short callout naming the corresponding `.avsc` file(s) from this taxonomy, e.g. `Schema: EquityOptionTrade.avsc / EquityOptionValuation.avsc`. This ties the conceptual material directly back to the user's real data model. Two asset-class nodes deliberately have **no Valuation schema** for their plain product (`BondTrade.avsc`, `CommodityWarrantTrade.avsc`) — when writing those sections, call out *why* (valuation is handled by a shared/generic pricing model rather than a product-specific one) rather than silently omitting the mapping.
+
 ## Content conventions
 
 - Never use "BMO" as the example bank in explanations or examples, even though this repo lives under a `bmo` folder path. Use a fictional example bank called **"Bank Of Toronto"** instead.

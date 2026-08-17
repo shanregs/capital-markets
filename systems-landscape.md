@@ -1,14 +1,16 @@
 # Systems Landscape — Front, Middle &amp; Back Office Across Canada, US, UK &amp; EU
 
+[← Back to Index](./index.md)
+
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
-> This is a **reference module** — it sits alongside Modules 1–3, naming the actual systems, message formats, and market infrastructure that carry out the trade lifecycle (Module 3) in four jurisdictions: **Canada, United States, United Kingdom, European Union**.
+> This is a **reference module** — it sits alongside Modules 1–3, naming the actual systems, message formats, and market infrastructure that carry out the trade lifecycle ([Module 3](./module-03-trade-lifecycle.md)) in four jurisdictions: **Canada, United States, United Kingdom, European Union**.
 
 ---
 
 ## 1. Why This Module Exists — The Systems Behind Modules 1–3
 
-Module 1 introduced Front/Middle/Back Office as three *roles*. Module 3 walked through the nine-stage trade lifecycle as a *process*. Neither named the actual **systems** that implement that process, or explained that "T+2" is not one universal rule — it's a per-market, per-asset-class convention enforced by different market infrastructure in different countries. This module closes that gap: for each of Canada, the US, the UK, and the EU, it names the systems a trade actually flows through, the message formats connecting them, and the settlement cycle each market currently runs on.
+[Module 1](./module-01-fundamentals.md) introduced Front/Middle/Back Office as three *roles*. [Module 3](./module-03-trade-lifecycle.md) walked through the nine-stage trade lifecycle as a *process*. Neither named the actual **systems** that implement that process, or explained that "T+2" is not one universal rule — it's a per-market, per-asset-class convention enforced by different market infrastructure in different countries. This module closes that gap: for each of Canada, the US, the UK, and the EU, it names the systems a trade actually flows through, the message formats connecting them, and the settlement cycle each market currently runs on.
 
 ```text
 WHERE THIS MODULE SITS
@@ -20,7 +22,7 @@ THIS MODULE -> The actual SYSTEMS + MARKET INFRASTRUCTURE that process runs on,
                country by country, plus who regulates each one
 ```
 
-**Takeaway:** if Module 3 told you *what* happens at "Settlement," this module tells you *which system* actually does it in each market — CDSX in Canada, DTC in the US, CREST in the UK, and Euroclear/Clearstream over T2S in the EU are not interchangeable synonyms; they're genuinely different platforms with different rulebooks, different regulators, and (as Section 8 shows) different settlement cycles.
+**Takeaway:** if [Module 3](./module-03-trade-lifecycle.md) told you *what* happens at "Settlement," this module tells you *which system* actually does it in each market — CDSX in Canada, DTC in the US, CREST in the UK, and Euroclear/Clearstream over T2S in the EU are not interchangeable synonyms; they're genuinely different platforms with different rulebooks, different regulators, and (as Section 8 shows) different settlement cycles.
 
 ---
 
@@ -73,7 +75,7 @@ BACK OFFICE
 
 ## 3. T, T+1, T+2 — Where the Clock Lives Across These Systems
 
-**Definition:** Module 1 §6 explained T+n counts business days from Trade Date to Settlement Date. What it didn't cover: **which system actually enforces that clock**, and that the number of days is a *market/product convention*, not a law of physics — different countries, and different asset classes within the same country, run different cycles.
+**Definition:** [Module 1](./module-01-fundamentals.md) §6 explained T+n counts business days from Trade Date to Settlement Date. What it didn't cover: **which system actually enforces that clock**, and that the number of days is a *market/product convention*, not a law of physics — different countries, and different asset classes within the same country, run different cycles.
 
 ```text
 WHO OWNS THE CLOCK, AT EACH STAGE
@@ -103,7 +105,7 @@ WHO OWNS THE CLOCK, AT EACH STAGE
 | United Kingdom | Gilts (government bonds) | **T+1** (gilts have long settled faster than equities) |
 | United Kingdom | Equities | **T+2** (a move to T+1 is targeted for **October 2027**) |
 | European Union | Equities & bonds | **T+2** (a coordinated EU/UK/Switzerland move to **T+1 is targeted for October 2027**) |
-| OTC derivatives (any market) | Interest Rate Swaps, CDS, etc. | No notional settlement at all — only margin/cash flows (Module 1 §8, Module 3 §11) |
+| OTC derivatives (any market) | Interest Rate Swaps, CDS, etc. | No notional settlement at all — only margin/cash flows ([Module 1](./module-01-fundamentals.md) §8, [Module 3](./module-03-trade-lifecycle.md) §11) |
 
 **Takeaway:** "T+2" is not a global default with occasional exceptions — as of 2026 it's already the *minority* case for equities (Canada and the US both moved to T+1 in 2024), and the UK/EU are actively converging toward T+1 for 2027. A reporting system hard-coding "settlement = trade date + 2" will already be wrong for a large share of real trades.
 
@@ -122,9 +124,9 @@ WHO OWNS THE CLOCK, AT EACH STAGE
 
 ### Back Office — Market Infrastructure
 
-- **CDS (Canadian Depository for Securities)** operates **CDSX**, Canada's central securities depository and settlement system — the Canadian equivalent of the CSD role from Module 1 §7. CDS is a subsidiary of **TMX Group**.
+- **CDS (Canadian Depository for Securities)** operates **CDSX**, Canada's central securities depository and settlement system — the Canadian equivalent of the CSD role from [Module 1](./module-01-fundamentals.md) §7. CDS is a subsidiary of **TMX Group**.
 - **CDCC (Canadian Derivatives Clearing Corporation)**, also a TMX Group subsidiary, is the CCP for exchange-traded derivatives and, since 2012, for the fixed income repo market.
-- Custodians (e.g. RBC Investor Services, CIBC Mellon) hold client positions and connect into CDSX on their clients' behalf, exactly as described generically in Module 1 §7.
+- Custodians (e.g. RBC Investor Services, CIBC Mellon) hold client positions and connect into CDSX on their clients' behalf, exactly as described generically in [Module 1](./module-01-fundamentals.md) §7.
 
 ### Worked example — Bank Of Toronto buys Canadian equity, T+1
 
@@ -177,9 +179,9 @@ CANADA  —  DATA FLOW FOR ONE EQUITY TRADE
 - **DTCC (Depository Trust &amp; Clearing Corporation)** is the umbrella parent of the US post-trade infrastructure:
   - **NSCC (National Securities Clearing Corporation)** — the CCP that clears and nets equity and corporate bond trades.
   - **FICC (Fixed Income Clearing Corporation)** — the CCP for US Treasuries and the repo market (mandatory central clearing for most Treasury cash and repo trades has been phased in through 2025–2026).
-  - **DTC (Depository Trust Company)** — the CSD that holds securities in book-entry form and performs final DvP settlement, the US equivalent of Module 1 §7's CSD role.
+  - **DTC (Depository Trust Company)** — the CSD that holds securities in book-entry form and performs final DvP settlement, the US equivalent of [Module 1](./module-01-fundamentals.md) §7's CSD role.
 - **Fedwire** (operated by the Federal Reserve) is the real-time gross settlement system that moves the cash leg for large-value, same-day payments — the "cash rail" underneath DTC's securities-side settlement.
-- **Swap Data Repositories (SDRs)** — e.g. **DTCC GTR**, **ICE Trade Vault** — are the US trade repositories that OTC derivatives get reported to under CFTC rules (the US implementation of the Trade Repository concept from Module 1 §5 and Module 2 §12).
+- **Swap Data Repositories (SDRs)** — e.g. **DTCC GTR**, **ICE Trade Vault** — are the US trade repositories that OTC derivatives get reported to under CFTC rules (the US implementation of the Trade Repository concept from [Module 1](./module-01-fundamentals.md) §5 and [Module 2](./module-02-hierarchy.md) §12).
 
 ### Worked example — Bank Of Toronto's US desk buys Apple shares, T+1
 
@@ -223,7 +225,7 @@ Largely the same vendor landscape as Canada and the US (Bloomberg AIM/EMSX, Char
 ### Back Office — Market Infrastructure
 
 - **CREST**, operated by **Euroclear UK &amp; International** (Euroclear acquired the CREST business from the Bank of England in 2002), is the UK's CSD — settling UK equities, gilts, and money market instruments in book-entry form.
-- **LCH (London Clearing House)**, part of the London Stock Exchange Group, is the dominant CCP for UK (and much broader European/global) interest rate swap clearing — this is the same "LCH" named as the illustrative CCP in Module 3 §6 and §11.
+- **LCH (London Clearing House)**, part of the London Stock Exchange Group, is the dominant CCP for UK (and much broader European/global) interest rate swap clearing — this is the same "LCH" named as the illustrative CCP in [Module 3](./module-03-trade-lifecycle.md) §6 and §11.
 - **CHAPS** (Clearing House Automated Payment System), operated by the Bank of England, is the UK's real-time high-value cash payment system — the UK's equivalent of Fedwire.
 - Since Brexit, the UK runs its own **UK EMIR** and **UK MiFIR** reporting regimes, distinct from (though closely mirroring) the EU's versions (Section 7) — trade repositories such as **DTCC Derivatives Repository Ltd** and **UnaVista** (LSEG) serve the UK market specifically.
 
@@ -400,8 +402,8 @@ Sections 4–7 named the front/middle/back office systems *per country*. This se
 |---|---|
 | Front-to-back OTC derivatives platform | **Calypso** (now part of **Adenza**, owned by Nasdaq) — trade capture, valuation, collateral/margin (including Uncleared Margin Rules), and regulatory-reporting connectivity, all in one platform; **Murex**; **Summit** (Finastra) |
 | Real-time risk &amp; margin engine | **ION IMAGINE** — widely used by prime brokers, futures commission merchants (FCMs), and clearing firms for cross-margining OTC and listed derivatives positions in real time |
-| Trade confirmation / eConfirmation | **MarkitWire** (S&amp;P Global) — this is the platform **SwapsWire** became after Markit acquired it in 2007; still the most common name for OTC derivative electronic confirmation, and the same system referenced in Module 3 §04 |
-| CCP clearing service (interest rate swaps) | **SwapClear** — LCH's specific clearing service for interest rate swaps; this is the concrete, named service behind the generic "LCH" mentioned as the illustrative CCP in Module 3 §06 and §11 |
+| Trade confirmation / eConfirmation | **MarkitWire** (S&amp;P Global) — this is the platform **SwapsWire** became after Markit acquired it in 2007; still the most common name for OTC derivative electronic confirmation, and the same system referenced in [Module 3](./module-03-trade-lifecycle.md) §04 |
+| CCP clearing service (interest rate swaps) | **SwapClear** — LCH's specific clearing service for interest rate swaps; this is the concrete, named service behind the generic "LCH" mentioned as the illustrative CCP in [Module 3](./module-03-trade-lifecycle.md) §06 and §11 |
 | Portfolio compression &amp; reconciliation | **triReduce** / **triResolve** (now part of **OSTTRA**, a joint venture of CME Group and S&amp;P Global formed from MarkitServ, TriOptima, and Reset) |
 | Collateral management &amp; margin messaging | **AcadiaSoft** (the industry-standard margin call messaging utility for Uncleared Margin Rules), plus collateral modules within Calypso/Adenza |
 | Analytics / pricing libraries | **Numerix**, **FINCAD** |
@@ -431,7 +433,7 @@ Sections 4–7 named the front/middle/back office systems *per country*. This se
 
 ## 12. Securities Financing Transaction Reporting — SFTR &amp; Country Equivalents
 
-**Definition:** **SFTR (Securities Financing Transactions Regulation)** is the EU's reporting regime — effective since 2020, extended to the UK post-Brexit as **UK SFTR** — specifically for **SFTs (Securities Financing Transactions)**: repos, reverse repos, buy-sell backs, securities/commodities lending &amp; borrowing, and margin lending. It sits alongside EMIR (Module 2 §07, Module 3 §09) and MiFIR (Module 3 §09) as a third reporting regime, but for a product family neither of those two covers.
+**Definition:** **SFTR (Securities Financing Transactions Regulation)** is the EU's reporting regime — effective since 2020, extended to the UK post-Brexit as **UK SFTR** — specifically for **SFTs (Securities Financing Transactions)**: repos, reverse repos, buy-sell backs, securities/commodities lending &amp; borrowing, and margin lending. It sits alongside EMIR ([Module 2](./module-02-hierarchy.md) §07, [Module 3](./module-03-trade-lifecycle.md) §09) and MiFIR ([Module 3](./module-03-trade-lifecycle.md) §09) as a third reporting regime, but for a product family neither of those two covers.
 
 ```text
 WHERE SFTR SITS AMONG THE REPORTING REGIMES
@@ -490,7 +492,7 @@ SFTR REPORTING  —  Overnight Repo, Bank Of Toronto with Goldman Sachs
 | United States | **SEC Rule 10c-1a**, via FINRA's **SLATE** (Securities Lending and Transparency Engine) | Securities lending only — narrower than SFTR, does **not** cover repo, buy-sell back, or margin lending | Adopted 2023, phasing in through 2025–2026; the closest US analog, but deliberately narrower in product scope |
 | Canada | No dedicated SFTR-equivalent as of 2026 | — | Repo activity is captured indirectly through CDCC's central clearing records; existing provincial OTC derivatives rules (e.g. CSA Multilateral Instrument 96-101) don't extend to plain repo — a genuine gap relative to the EU/UK/US |
 
-**Takeaway:** SFTR reporting happens at the same lifecycle stage as EMIR/MiFIR reporting (Module 3 §09) — it's still the "Regulatory Reporting" stage of the nine-stage lifecycle — just for a different product family, with its own T+1 deadline, and with an extra ongoing obligation (collateral reuse reporting) that has no equivalent for a plain cash bond or a cleared swap. If you're asked to build reporting logic for repo/securities lending, do not simply extend an existing EMIR or MiFIR reporting pipeline — the schema, the reuse-reporting requirement, and (per the table above) the regulator can all differ.
+**Takeaway:** SFTR reporting happens at the same lifecycle stage as EMIR/MiFIR reporting ([Module 3](./module-03-trade-lifecycle.md) §09) — it's still the "Regulatory Reporting" stage of the nine-stage lifecycle — just for a different product family, with its own T+1 deadline, and with an extra ongoing obligation (collateral reuse reporting) that has no equivalent for a plain cash bond or a cleared swap. If you're asked to build reporting logic for repo/securities lending, do not simply extend an existing EMIR or MiFIR reporting pipeline — the schema, the reuse-reporting requirement, and (per the table above) the regulator can all differ.
 
 ---
 
@@ -506,7 +508,7 @@ SFTR REPORTING  —  Overnight Repo, Bank Of Toronto with Goldman Sachs
 8. Bank Of Toronto's overnight repo with Goldman Sachs (Section 12) pays 3.15% on EUR 50,000,000 for one day, actual/365. What's the interest amount, and by when must both counterparties report the trade under SFTR?
 9. Which jurisdiction's securities-financing reporting regime is narrower in product scope than the others — covering only securities lending and not repo, buy-sell back, or margin lending — and which system actually collects those reports?
 
-Answer whenever ready — then return to the main curriculum sequence at **Module 4: Fixed Income / Bonds**.
+Answer whenever ready — then return to the main curriculum sequence at **[Module 4](./module-04-equity.md): Fixed Income / Bonds**.
 
 ---
 
@@ -536,7 +538,7 @@ Section 3's table and Section 6/7's takeaways both flag this pairing — it's no
 
 Section 6 states this directly: since Brexit, the UK runs its own UK EMIR and UK MiFIR, separate from the EU versions in Section 7, each served by its own set of authorized trade repositories. A trade between a UK-booked entity and an EU-booked entity could, in principle, need reporting under both regimes — but a breach of the *UK* deadline specifically is a breach of the FCA's rulebook, not ESMA's.
 
-**7. Charles River IMS = Front Office (OMS). Murex = Middle Office (risk/valuation engine). DTC = Back Office (CSD/settlement). CDSX matching module = Middle Office (confirmation/matching) — even though CDS itself is a Back Office/CSD organization, the matching function specifically sits at the Middle Office stage of the lifecycle (Module 3 §5). Fedwire = Back Office (cash settlement rail).**
+**7. Charles River IMS = Front Office (OMS). Murex = Middle Office (risk/valuation engine). DTC = Back Office (CSD/settlement). CDSX matching module = Middle Office (confirmation/matching) — even though CDS itself is a Back Office/CSD organization, the matching function specifically sits at the Middle Office stage of the lifecycle ([Module 3](./module-03-trade-lifecycle.md) §5). Fedwire = Back Office (cash settlement rail).**
 
 This traces Section 2's generic architecture: Front Office produces the Order/Execution (Charles River); Middle Office confirms, matches, and prices risk (Murex, and the CDSX matching function specifically, distinct from CDSX's separate DvP settlement role); Back Office physically settles securities (DTC) and cash (Fedwire). The CDSX example is deliberately included to show that one *organization* (CDS) can operate systems spanning more than one lifecycle stage — the matching module and the DvP settlement engine are different functions under the same corporate roof.
 
@@ -546,8 +548,12 @@ This traces Section 2's generic architecture: Front Office produces the Order/Ex
 Overnight interest = 50,000,000 x 3.15% x (1/365) = EUR 4,315
 ```
 
-Section 12's worked example uses the same actual/365 day-count convention as Module 1 §08's swap example. SFTR runs the same T+1 reporting-window discipline as EMIR/MiFIR (Module 3 §09), and like EMIR it's a dual-sided obligation — both Bank Of Toronto and Goldman Sachs independently report their side of the same repo.
+Section 12's worked example uses the same actual/365 day-count convention as [Module 1](./module-01-fundamentals.md) §08's swap example. SFTR runs the same T+1 reporting-window discipline as EMIR/MiFIR ([Module 3](./module-03-trade-lifecycle.md) §09), and like EMIR it's a dual-sided obligation — both Bank Of Toronto and Goldman Sachs independently report their side of the same repo.
 
 **9. The United States, via SEC Rule 10c-1a — reports are collected by FINRA's SLATE (Securities Lending and Transparency Engine).**
 
 Section 12's country-equivalents table flags this explicitly: SFTR (EU) and UK SFTR both cover the full SFT product family — repo, reverse repo, buy-sell back, securities/commodities lending, and margin lending — while the US rule is deliberately scoped to securities lending only, leaving repo and buy-sell back transactions outside SLATE's collection. Canada, as the table also notes, has no dedicated regime of any scope yet.
+
+---
+
+[← Back to Index](./index.md)

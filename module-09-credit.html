@@ -1,0 +1,918 @@
+<!doctype html>
+<title>Module 9 — Credit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="./index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 9 of 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Credit</h1>
+    <p class="dek">Credit Default Swaps — trading default risk itself, separately from owning the underlying debt. The Asset Class Roadmap's final stop, and the first module with an industry self-governance body deciding the trade's most consequential event.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Asset Class Roadmap 6 of 6</b> — Equity → Fixed Income → FX → Commodities → Rates → Credit. This closes the roadmap.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is Credit?</a></li>
+      <li><a href="#products"><span class="toc-num">02</span>What Are The Products?</a></li>
+      <li><a href="#contracts"><span class="toc-num">03</span>Contract, With One Exception</a></li>
+      <li><a href="#trade-examples"><span class="toc-num">04</span>Real-World Trade Examples</a></li>
+      <li><a href="#lifecycle"><span class="toc-num">05</span>Trade Lifecycle</a></li>
+      <li><a href="#identifiers"><span class="toc-num">06</span>Identifiers</a></li>
+      <li><a href="#structure"><span class="toc-num">07</span>Exchange vs OTC vs Bilateral vs Cleared</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>Regulatory Perspective</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · Trading default risk itself</p>
+      <h2>What Is Credit? — Theory &amp; Terminology</h2>
+      <p class="lede">Credit is about trading default risk itself — the risk that a specific borrower fails to pay what it owes — separately from owning that borrower's actual debt. The core product is the Credit Default Swap (CDS) — economically closest to insurance: one party pays a periodic premium, the other pays out if a defined bad event happens.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Reference Entity</td><td>The specific company or sovereign whose default risk the CDS references</td></tr>
+          <tr><td>Reference Obligation</td><td>A specific bond issued by the Reference Entity, used to define what counts as "the debt" for settlement purposes</td></tr>
+          <tr><td>Credit Event</td><td>A defined trigger (default, bankruptcy, or restructuring) that causes the CDS to pay out</td></tr>
+          <tr><td>Running Coupon</td><td>The periodic premium the protection buyer pays — standardized since 2009's ISDA "Big Bang" Protocol to fixed levels (typically 100bps or 500bps)</td></tr>
+          <tr><td>Upfront Payment</td><td>A one-time payment, either direction, reconciling the market's actual credit spread vs. the standardized Running Coupon (Section 04)</td></tr>
+          <tr><td>Recovery Rate</td><td>The fraction of face value creditors are expected to recover after a default — directly determines how much a CDS pays out</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · CDS as Insurance</span><span class="t-id">Core mental model</span></div>
+        <pre>Protection BUYER (Bank Of Toronto):
+  Pays a periodic Running Coupon (like an insurance premium)
+  -&gt; in exchange for protection against the Reference Entity
+     defaulting
+
+Protection SELLER (Goldman Sachs):
+  Receives the Running Coupon
+  -&gt; pays out a large amount ONLY IF a Credit Event happens
+     (like an insurer paying a claim)
+
+-&gt; Critically: Bank Of Toronto does NOT need to own any bond
+   issued by the Reference Entity to buy this protection -- a
+   "naked" CDS position is possible, unlike home insurance,
+   where you generally must own the home to insure it.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The insurance analogy has one famous, important limit — you can buy CDS protection on a company's debt without owning any of that debt, a structural difference from real insurance that made CDS central to the 2008 financial crisis (large protection sellers, like AIG, owed far more in potential payouts than they held in reserves) and is exactly why Section 08's regulatory response was so significant.</div>
+    </section>
+
+    <section class="mod" id="products">
+      <p class="sec-eyebrow"><span class="n">02</span> · One schema, two flavours</p>
+      <h2>What Are The Products? — Single-Name CDS and Index CDS</h2>
+      <p class="lede">Unlike every other module in the roadmap, the taxonomy doesn't split these into separate schema nodes.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Credit Product Tree</span><span class="t-id">One Avro schema pair covers both</span></div>
+        <pre>CREDIT
+│
+└── Credit Default Swap (CDS)
+    ├── Single-Name CDS      (references ONE Reference Entity)
+    └── CDS Index            (references a BASKET of Reference Entities,
+                               e.g. CDX, iTraxx — same mechanic, many names)</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Product</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><b>Single-Name CDS</b></td><td>Protection on one specific Reference Entity's default risk — the worked example in Section 04</td></tr>
+          <tr><td><b>CDS Index</b></td><td>A standardized basket of single-name CDS (e.g. CDX in North America, iTraxx in Europe) traded as one instrument — economically a portfolio of the same mechanic</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> One <code>CreditDefaultSwapTrade.avsc</code> / <code>CreditDefaultSwapValuation.avsc</code> pair covers both Single-Name and Index CDS, with "how many Reference Entities" as a field on the trade rather than a different product type. This module's worked example uses Single-Name CDS throughout, since the mechanic is identical either way — just multiplied across more names for an Index.</div>
+    </section>
+
+    <section class="mod" id="contracts">
+      <p class="sec-eyebrow"><span class="n">03</span> · The second product referencing a real security without being one</p>
+      <h2>What Exactly Is Being Traded? — A Pure Contract, With One Familiar Exception</h2>
+      <p class="lede">A CDS is a contract, not a security — the same "contracts all the way down" pattern <a href="./module-06-fx.html">Module 6</a> §3 established for FX. But exactly like <a href="./module-08-rates.html">Module 8</a> §3's IR Forward Debt, a CDS's Reference Obligation is a real bond, with a real ISIN, that the contract's settlement mechanics point back to.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · CDS vs Reference Obligation</span><span class="t-id">Contract vs the security it points to</span></div>
+        <pre>Credit Default Swap (CONTRACT):
+  Bank Of Toronto and Goldman Sachs create this contract at trade
+  date. It has no existence before the trade, and (barring a
+  credit event) ceases to exist at its maturity date. Nothing
+  about the Reference Entity's actual debt changes hands.
+
+Reference Obligation (SECURITY):
+  A specific bond issued by the Reference Entity -- e.g. a
+  Northstar Resources Inc. 6% Bond 2031 -- named in the CDS
+  contract purely to define what "the debt" means for settlement
+  (Section 05's credit-event auction references THIS obligation's
+  market price, post-default, to determine the payout).
+
+-&gt; The CDS itself never delivers this bond in modern practice
+   (Section 05's cash-settlement-via-auction convention replaced
+   the older physical-settlement norm after the 2009 Big Bang
+   Protocol) -- but the bond's ISIN still appears on the CDS
+   trade record as a reference field (Section 06).</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is the second product family in the roadmap (after <a href="./module-08-rates.html">Module 8</a>'s IR Forward Debt) where a genuinely "contract, not security" product legitimately carries a real ISIN on its trade record — for the same reason in both cases: the contract's settlement mechanics are defined in terms of a specific, real security, even though the contract itself is what's actually traded.</div>
+    </section>
+
+    <section class="mod" id="trade-examples">
+      <p class="sec-eyebrow"><span class="n">04</span> · Buyer → Seller → Trade</p>
+      <h2>Real-World Trade Examples</h2>
+      <p class="lede">One trade, two moments — inception, and the credit event that ends it early.</p>
+
+      <h3>4a. Single-Name CDS — Trade Inception</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">5Y Protection on Northstar Resources Inc.</span><span class="t-id">Single-Name CDS</span></div>
+        <pre>Protection Buyer:  Bank Of Toronto
+Protection Seller: Goldman Sachs
+
+Reference Entity: Northstar Resources Inc. (fictional corporate)
+Reference Obligation: Northstar Resources Inc. 6% Bond 2031
+Notional: USD 10,000,000
+Term: 5 years
+Standardized Running Coupon: 100bps (1.00%), paid quarterly
+Market-quoted credit spread today: 250bps (2.50%)
+
+Because the market spread (2.50%) is well above the standardized
+coupon (1.00%), Bank Of Toronto must pay an UPFRONT amount to
+Goldman Sachs to compensate for the below-market running coupon
+it'll actually receive going forward (a full ISDA CDS Standard
+Model calculation is beyond this module's scope; the commonly
+used approximation is shown for intuition):
+
+Approx. Upfront = (Market Spread - Running Coupon) x Risky Duration x Notional
+                 = (2.50% - 1.00%) x ~4.5 x 10,000,000
+                 = 1.50% x 4.5 x 10,000,000
+                 = USD 675,000 (paid by Bank Of Toronto at inception)
+
+Quarterly Running Coupon payment thereafter:
+  10,000,000 x 1.00% x 91/360 (CDS convention is act/360, unlike
+  the act/365 convention Module 8 used for CORRA) = USD 2,527.78</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>CreditDefaultSwapTrade.avsc</code> / <code>CreditDefaultSwapValuation.avsc</code>.</div>
+
+      <h3>4b. Single-Name CDS — Credit Event, Two Years Later</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Credit Event · Northstar Resources Inc. Defaults</span><span class="t-id">Cash settlement via auction</span></div>
+        <pre>Trigger: Northstar Resources Inc. misses a bond coupon payment
+and files for bankruptcy protection
+
+ISDA Determinations Committee (Section 08) formally rules a
+"Credit Event" has occurred -- this is a genuinely different
+kind of body from any regulator in this roadmap so far: an
+INDUSTRY body, not a government regulator, that decides the
+single most consequential fact in this whole trade's lifecycle
+
+CREDIT EVENT AUCTION determines the Reference Obligation's
+post-default market price: settles at 35 (i.e. 35% of face value
+-- bondholders expected to recover roughly 35 cents on the dollar)
+
+Cash Settlement (the modern, standard mechanic post-2009 Big
+Bang Protocol -- NOT physical delivery of the defaulted bond):
+  Payout = Notional x (100% - Recovery Rate)
+         = 10,000,000 x (100% - 35%)
+         = 10,000,000 x 65%
+         = USD 6,500,000
+
+Goldman Sachs (protection seller) PAYS Bank Of Toronto (protection
+buyer) USD 6,500,000 -- the CDS's entire purpose realized: Bank Of
+Toronto is made economically whole for a USD 10,000,000 exposure
+to Northstar Resources Inc. it may never have even held as a bond,
+receiving 65% of face value in cash rather than a defaulted bond
+worth only 35 cents on the dollar.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The credit-event auction mechanic is Credit's single most distinctive lifecycle event — nothing in Equity, Fixed Income, FX, Commodities, or Rates has an equivalent "an industry committee formally declares a defined bad thing happened, then an auction sets the payout price" sequence. A Credit Event is where Credit genuinely diverges from every other asset class in this roadmap.</div>
+    </section>
+
+    <section class="mod" id="lifecycle">
+      <p class="sec-eyebrow"><span class="n">05</span> · The first product an external event can end early</p>
+      <h2>Trade Lifecycle — Credit-Specific Walkthrough</h2>
+      <p class="lede">Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting, applied to the CDS from Section 04a, through to the Credit Event in Section 04b.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Full Lifecycle · 5Y CDS on Northstar Resources Inc.</span><span class="t-id">BOT-CDS-2026-041127</span></div>
+        <pre>YEAR 0
+10:40:00  ORDER — Bank Of Toronto's credit desk instructed to buy
+          5Y protection, USD 10,000,000, Northstar Resources Inc.
+
+10:40:15  EXECUTION @ 250bps market spread vs Goldman Sachs
+
+10:40:15  TRADE CAPTURE — Trade ID BOT-CDS-2026-041127
+          Upfront payment calculated: USD 675,000 (Section 04a)
+
+10:55:00  CONFIRMATION/MATCHING -&gt; MATCHED
+
+CLEARING — for a standardized single-name or index CDS, novated
+          to a CCP (ICE Clear Credit or LCH CDSClear) under a
+          clearing mandate that parallels EMIR/Dodd-Frank's
+          Rates mandate (Module 8 §07-08) but scoped specifically
+          to CDS index products and the most liquid single names
+
+QUARTERLY RUNNING COUPON — USD 2,527.78 paid by Bank Of Toronto
+          to Goldman Sachs each quarter, for as long as the trade
+          survives without a Credit Event (Section 04a)
+
+YEAR 2
+          CREDIT EVENT — Northstar Resources Inc. defaults
+          (Section 04b)
+
+          ISDA DETERMINATIONS COMMITTEE rules the event is a
+          valid Credit Event under the contract's terms
+
+          CREDIT EVENT AUCTION sets the Reference Obligation's
+          settlement price at 35
+
+SETTLEMENT — Goldman Sachs pays Bank Of Toronto USD 6,500,000
+          cash (Section 04b); the CDS contract TERMINATES --
+          unlike an IRS (Module 8 §5), which runs its full term
+          regardless of what happens to interest rates, a CDS
+          can end early, permanently, the moment its one defined
+          trigger event occurs
+
+REPORTING — trade reported to a Trade Repository (DTCC GTR)
+          throughout its life, with a final settlement/
+          termination event reported once the Credit Event
+          auction concludes</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every other product in this roadmap either runs to its stated maturity or is closed out/rolled voluntarily (<a href="./module-07-commodities.html">Module 7</a> §4b's futures roll). A CDS is the first product where an external event outside either counterparty's control can end the trade early — the Reference Entity's own solvency, not a market price move, is what terminates it.</div>
+    </section>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">06</span> · LEI plays two roles on the same record</p>
+      <h2>Identifiers — UPI, UTI, LEI (for TWO different roles), and a Reference Obligation ISIN</h2>
+      <p class="lede">CDS reuses the familiar OTC derivative identifier set, but with a genuine twist: LEI shows up in two structurally different roles on the same trade record.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Identifier</th><th>Applies to CDS?</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN</td><td><b>No</b>, for the CDS contract itself — but <b>yes</b>, for the Reference Obligation it points to (Section 03)</td><td>— for the CDS; a real ISIN for the Northstar Resources Inc. 6% Bond 2031</td></tr>
+          <tr><td><b>UPI</b></td><td>Yes, as an OTC derivative product template (<a href="./module-02-hierarchy.html">Module 2</a> §12)</td><td>One UPI for "5Y USD Single-Name CDS, Northstar Resources Inc."</td></tr>
+          <tr><td><b>UTI</b></td><td>Yes — every individual CDS trade gets its own</td><td>A fresh UTI per trade</td></tr>
+          <tr><td><b>LEI — Counterparty role</b></td><td>Yes — identifies Bank Of Toronto and Goldman Sachs as the two trading parties</td><td>Same role LEI plays in every prior module (<a href="./module-04-equity.html">Module 4</a> §6)</td></tr>
+          <tr><td><b>LEI — Reference Entity role</b></td><td>Yes, and this is new: Northstar Resources Inc. also carries its own LEI, a completely separate field from the counterparty LEIs</td><td>Identifies WHAT the contract references, not WHO is trading it</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · LEI's Two Roles</span><span class="t-id">One CDS trade record</span></div>
+        <pre>Counterparty LEI (Buyer)  : identifies Bank Of Toronto
+Counterparty LEI (Seller) : identifies Goldman Sachs
+Reference Entity LEI      : identifies Northstar Resources Inc.
+
+-&gt; every prior module's LEI only ever answered "WHO is trading
+   this?" (Module 4 §6). Credit is the first product where LEI
+   ALSO answers "WHAT is the contract about?" -- a role every
+   other module gave to an instrument identifier (ISIN, Ticker,
+   currency pair) instead.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A CDS trade record with three populated LEI fields and one populated ISIN field (for the Reference Obligation) isn't over-populated or wrong — it's the fullest expression yet in this roadmap of how many distinct "who" and "what" questions one OTC derivative trade record needs to answer at once.</div>
+    </section>
+
+    <section class="mod" id="structure">
+      <p class="sec-eyebrow"><span class="n">07</span> · The same pattern, a third time</p>
+      <h2>Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p class="lede">Credit follows the exact structural pattern <a href="./module-08-rates.html">Module 8</a> §7 established for Rates — OTC-negotiated by default, with the most standardized instruments pulled into mandatory central clearing.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
+        <tbody>
+          <tr><td>CDS Index (CDX, iTraxx)</td><td>OTC-negotiated</td><td><b>Mandatorily</b> centrally cleared (ICE Clear Credit, LCH CDSClear) for the most liquid indices, under an EMIR/Dodd-Frank-style clearing mandate</td></tr>
+          <tr><td>Single-Name CDS (liquid, standardized names)</td><td>OTC-negotiated</td><td>Increasingly centrally cleared</td></tr>
+          <tr><td>Single-Name CDS (bespoke/illiquid Reference Entity)</td><td>OTC-negotiated</td><td>Bilateral (the norm) — the Northstar Resources Inc. trade in Section 04 is written as this case</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is the third module in a row (after Rates, <a href="./module-08-rates.html">Module 8</a> §7, and echoing Commodities, <a href="./module-07-commodities.html">Module 7</a> §7) where the same underlying pattern repeats — one standardized slice of the asset class carries the central-clearing volume, while a long tail of bespoke, illiquid instruments stays bilateral OTC. By this point, that pattern itself is worth recognizing as a general truth about OTC derivatives markets, not a coincidence specific to any one asset class.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · A split US jurisdiction and an industry body</p>
+      <h2>Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <p class="lede">Two genuinely new regulatory concepts appear for the first time in this roadmap's final module.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regulation / Body</th><th>How it touches Credit specifically</th></tr></thead>
+        <tbody>
+          <tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Trading-venue and transparency rules for standardized CDS, similar in shape to its Rates treatment (<a href="./module-08-rates.html">Module 8</a> §08)</td></tr>
+          <tr><td><b>EMIR</b></td><td>Mandates central clearing for the most liquid CDS Indices specifically (e.g. iTraxx Europe Main and Crossover) — a narrower clearing mandate than Rates' broader IRS mandate (<a href="./module-08-rates.html">Module 8</a> §08), reflecting how much less standardized most single-name CDS remain</td></tr>
+          <tr><td><b>SFTR</b></td><td>Not applicable — a CDS is a derivative, not a securities financing transaction</td></tr>
+          <tr><td><b>FCA</b> (UK)</td><td>UK conduct regulator for CDS trading and clearing activity</td></tr>
+          <tr><td><b>CIRO</b> (Canada)</td><td>SRO overseeing Canadian credit derivatives dealer conduct</td></tr>
+          <tr><td><b>HKMA</b> (Hong Kong)</td><td>Runs Hong Kong's OTC derivatives reporting regime for CDS alongside Rates (<a href="./module-08-rates.html">Module 8</a> §08), under the same Securities and Futures Ordinance framework</td></tr>
+          <tr><td><b>CFTC / SEC</b> (US) — new to this module</td><td>The first split jurisdiction in this roadmap: broad-based CDS Indices are regulated by the <b>CFTC</b> as "swaps," while <b>single-name CDS and narrow-based indices are "security-based swaps," regulated instead by the SEC</b> — a genuine US jurisdictional fork this roadmap hasn't seen in any other asset class</td></tr>
+          <tr><td><b>ISDA Determinations Committees</b> — new to this module</td><td>Not a government regulator at all, but an industry self-governance body (Section 04b, Section 05) whose ruling on whether a Credit Event occurred is the single most consequential decision in a CDS's entire lifecycle</td></tr>
+          <tr><td><b>DTCC</b></td><td>Its GTR is a major trade repository for CDS reporting, same infrastructure role as <a href="./module-08-rates.html">Module 8</a> §08</td></tr>
+          <tr><td><b>DMO</b> (UK Debt Management Office)</td><td>Not Credit-relevant in the way it was for Rates (IR Forward Debt on Gilts, <a href="./module-08-rates.html">Module 8</a> §08) — sovereign CDS exists but isn't this module's worked example; included here for completeness</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A split CFTC/SEC jurisdiction and an industry body (ISDA's Determinations Committees) making the single most consequential call in the entire trade lifecycle both exist specifically because of what makes Credit different from every prior asset class: a contract whose entire purpose is to trigger on a discrete, disputable event rather than settling against a continuously observable market price.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">Reference · Full cast</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>Protection buyer on the Northstar Resources Inc. CDS</td></tr>
+          <tr><td>Goldman Sachs</td><td>Protection seller on the Northstar Resources Inc. CDS</td></tr>
+          <tr><td>Northstar Resources Inc.</td><td>The Reference Entity (fictional corporate) — not a counterparty to the trade at all, just the subject of it</td></tr>
+          <tr><td>ISDA Determinations Committee</td><td>Industry body ruling on whether a Credit Event occurred</td></tr>
+          <tr><td>ICE Clear Credit / LCH CDSClear</td><td>CCPs performing central clearing for standardized CDS Indices and liquid single names</td></tr>
+          <tr><td>CFTC / SEC</td><td>Split US regulators — swaps vs. security-based swaps</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these with real figures — this closes the Asset Class Roadmap.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>On the CDS in Section 04a, if the market-quoted spread had instead been 60bps (below the 100bps standardized Running Coupon), would Bank Of Toronto pay or receive the upfront amount, and roughly how much (using the same approximation formula and Risky Duration of ~4.5)?</li>
+          <li>Why does Section 04b's Credit Event payout use a Recovery Rate of 35% rather than assuming Bank Of Toronto simply loses the entire USD 10,000,000 notional?</li>
+          <li>Using Section 03, is it correct to say a CDS trade record should NEVER carry an ISIN? Why or why not?</li>
+          <li>On the LEI discussion in Section 06, if a single trade record shows the SAME LEI populated in both the "Counterparty (Seller)" field and the "Reference Entity" field, what real-world scenario would that represent, and is it a data error?</li>
+          <li>Why is the ISDA Determinations Committee described in Section 08 as not fitting "the acronym + jurisdiction pattern" of every other row in that table?</li>
+          <li>Contrast the US CFTC/SEC jurisdictional split for Credit (Section 08) with the single-regulator (CFTC-only) pattern <a href="./module-08-rates.html">Module 8</a> §08 described for Rates — what specifically causes CDS to split where IRS doesn't?</li>
+          <li>Why does Section 07 call the OTC-default-with-a-mandatorily-cleared-standardized-slice pattern "worth recognizing as a general truth" rather than a coincidence specific to Credit?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — this closes the <b>Asset Class Roadmap</b>. Modules 10-14 and <a href="./module-15-listed-derivatives.html">Module 15</a> (Listed Derivatives) build on all six asset classes covered so far.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Bank Of Toronto would RECEIVE the upfront amount, roughly USD 180,000</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Spread Below Coupon</span><span class="t-id">CDS Upfront</span></div>
+          <pre>Approx. Upfront = (Market Spread - Running Coupon) x Risky Duration x Notional
+                 = (0.60% - 1.00%) x 4.5 x 10,000,000
+                 = -0.40% x 4.5 x 10,000,000
+                 = -USD 180,000 (negative = Bank Of Toronto RECEIVES)</pre>
+        </div>
+        <p>When the market spread is BELOW the standardized Running Coupon, Bank Of Toronto would be overpaying relative to the market's actual pricing of Northstar Resources Inc.'s credit risk every quarter — so Goldman Sachs compensates Bank Of Toronto upfront for locking into that above-market coupon, the mirror image of Section 04a's worked example.</p>
+
+        <h5>Q2 — A Credit Event Auction determines the Reference Obligation's actual post-default market price; bondholders typically still recover something, so the payout is calibrated to the ACTUAL loss, not an assumed total loss</h5>
+        <p>Section 04b's payout formula, <code>Notional x (100% - Recovery Rate)</code>, only reduces to a full notional payout in the extreme case of a 0% Recovery Rate — the auction mechanism exists specifically to discover what recovery rate applies to this particular default, rather than assuming the worst case by default.</p>
+
+        <h5>Q3 — No, it's not correct — the CDS contract itself has no ISIN, but the Reference Obligation it names legitimately carries its own ISIN as a reference field on the CDS trade record</h5>
+        <p>This is exactly the same nuance <a href="./module-08-rates.html">Module 8</a> §6 established for IR Forward Debt: "no ISIN for the contract itself, but yes for the real security the contract's mechanics point to" is a recurring, healthy pattern for contracts that reference — without necessarily delivering — an actual security, not a universal "derivatives never have ISINs" rule.</p>
+
+        <h5>Q4 — That would represent Goldman Sachs having sold protection on ITS OWN default risk — a real (if unusual and risky) scenario, not automatically a data error</h5>
+        <p>Section 06's two-roles explanation makes clear that Counterparty LEI and Reference Entity LEI are populated independently and can, in principle, coincide — the systems don't structurally prevent it, even though a risk or compliance function would likely flag it given the concentrated risk it represents ("wrong-way risk," previewed for <a href="./module-11-risk-exposure.html">Module 11</a>: Risk &amp; Exposure): if Goldman Sachs itself defaults, it's simultaneously unable to pay out AND the very trigger event.</p>
+
+        <h5>Q5 — Every other row names a government-affiliated regulator operating within a defined jurisdiction; the ISDA Determinations Committee is an industry body whose authority comes from the CDS contract's own documentation, not from statute</h5>
+        <div class="takeaway">Section 08's takeaway flags this explicitly as one of two genuinely new regulatory concepts in this module — a private, contractually-designated decision-making body sitting alongside (not replacing) the actual government regulators in the same table.</div>
+
+        <h5>Q6 — Dodd-Frank drew a legal line between "swaps" (CFTC) and "security-based swaps" (SEC); single-name/narrow CDS reference an individual company's debt securities, triggering SEC jurisdiction, while a vanilla IRS references a pure rate benchmark with no securities-law hook</h5>
+        <p>Section 08's table states this split directly, contrasting it with <a href="./module-08-rates.html">Module 8</a> §08's clean CFTC-only picture for Rates — the deciding factor is whether the underlying reference is a security-linked concept (triggering SEC jurisdiction) or a pure rate/benchmark (staying with the CFTC alone).</p>
+
+        <h5>Q7 — The same shape has now appeared independently in three asset classes, each reached via a different specific mechanism</h5>
+        <p>Commodities' Futures (<a href="./module-07-commodities.html">Module 7</a> §07, venue design), Rates' IRS (<a href="./module-08-rates.html">Module 8</a> §07, regulatory mandate), and Credit's CDS Indices/liquid names (this module's Section 07, a narrower regulatory mandate) all show the same structural pattern. Section 07's takeaway draws this conclusion explicitly: by the third independent occurrence across genuinely different products and causal mechanisms, it stops looking like asset-class-specific detail and starts looking like a general truth about how OTC derivatives markets evolve toward partial standardization.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 9 of 14 &middot; <a href="./index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

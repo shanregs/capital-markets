@@ -1,5 +1,7 @@
 # Module 3 — Trade Lifecycle
 
+[← Back to Index](./index.md)
+
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
 
@@ -148,7 +150,7 @@ CONFIRMATION & AFFIRMATION
   Status: CONFIRMED -> AFFIRMED
 ```
 
-For cash securities (bonds, equities), this typically happens through platforms such as **CTM** (Central Trade Manager, DTCC) or **Omgeo/Alert**. For OTC derivatives, the equivalent step usually runs through **MarkitWire** or direct **FpML** message exchange between the two counterparties' systems, and is what feeds the ISDA Master Agreement's legal framework referenced in Module 2, Section 7.
+For cash securities (bonds, equities), this typically happens through platforms such as **CTM** (Central Trade Manager, DTCC) or **Omgeo/Alert**. For OTC derivatives, the equivalent step usually runs through **MarkitWire** or direct **FpML** message exchange between the two counterparties' systems, and is what feeds the ISDA Master Agreement's legal framework referenced in [Module 2](./module-02-hierarchy.md), Section 7.
 
 **Takeaway:** a trade sitting in "CONFIRMED" but not yet "AFFIRMED" status for an unusually long time is a strong signal something's wrong — either the counterparty disagrees with a term (a break, Section 5) or an operational delay is quietly eating into the T+2 settlement runway.
 
@@ -203,7 +205,7 @@ A 15-basis-point price break on CAD 10,000,000 face value is a difference of `10
 
 **Definition:** **Clearing** only applies to products that are routed through a **CCP (Central Counterparty)** — mandatory for most standardized OTC derivatives since the post-2008 reforms, and standard practice for exchange-traded products. The CCP performs **novation**: it steps into the middle of the original bilateral trade, becoming the legal buyer to the original seller and the legal seller to the original buyer. The two original counterparties end up with no direct exposure to each other at all — only to the CCP.
 
-### Worked example — Bank Of Toronto's 5Y CAD IRS from Module 2 §12, cleared via a CCP
+### Worked example — Bank Of Toronto's 5Y CAD IRS from [Module 2](./module-02-hierarchy.md) §12, cleared via a CCP
 
 ```text
 BEFORE CLEARING  —  one bilateral trade
@@ -226,7 +228,7 @@ AFTER NOVATION  —  the CCP steps in; TWO trades now exist
      Bank Of Toronto's trade with the CCP is unaffected.
 ```
 
-Novation is not free — both sides must post **Initial Margin (IM)** to the CCP to cover potential future losses, plus daily **Variation Margin (VM)** as the trade's value moves. Full mechanics of margin calculation belong to Module 10 (Collateral & Margin); here's the shape of the numbers just to make "clearing has a cost" concrete:
+Novation is not free — both sides must post **Initial Margin (IM)** to the CCP to cover potential future losses, plus daily **Variation Margin (VM)** as the trade's value moves. Full mechanics of margin calculation belong to [Module 12](./module-12-collateral-margin.md) (Collateral & Margin); here's the shape of the numbers just to make "clearing has a cost" concrete:
 
 ```text
 CLEARING — ILLUSTRATIVE MARGIN ON THE CAD 100,000,000 IRS
@@ -242,7 +244,7 @@ CLEARING — ILLUSTRATIVE MARGIN ON THE CAD 100,000,000 IRS
   Bank Of Toronto's favor:
     CCP collects CAD 180,000 from Goldman Sachs' VM account
     CCP pays CAD 180,000 to Bank Of Toronto's VM account
-    (VM is exchanged DAILY for the life of the trade — Module 10)
+    (VM is exchanged DAILY for the life of the trade — Module 12)
 ```
 
 **Takeaway:** the reason a cleared trade's record shows a **CCP as counterparty**, not the original bank, is novation — it's not a data error or a proxy field, it's what legally happened at the Clearing stage. Bilateral (uncleared) products, like the plain bond trade in Sections 2–5, simply skip this stage entirely and go straight from Matching to Settlement.
@@ -251,7 +253,7 @@ CLEARING — ILLUSTRATIVE MARGIN ON THE CAD 100,000,000 IRS
 
 ## 7. Settlement — DvP mechanics, revisited with real numbers
 
-**Definition:** **Settlement** is where the trade stops being a promise and becomes reality — securities move from seller to buyer, cash moves from buyer to seller, ideally simultaneously via **DvP (Delivery versus Payment)** so neither side is ever left holding one leg without the other. Module 1, Sections 6 and 7 covered the T+2 timing and the custodian/CSD chain; here's that mechanism applied to the actual trade this module has been following.
+**Definition:** **Settlement** is where the trade stops being a promise and becomes reality — securities move from seller to buyer, cash moves from buyer to seller, ideally simultaneously via **DvP (Delivery versus Payment)** so neither side is ever left holding one leg without the other. [Module 1](./module-01-fundamentals.md), Sections 6 and 7 covered the T+2 timing and the custodian/CSD chain; here's that mechanism applied to the actual trade this module has been following.
 
 ### Worked example — BOT-2026-000901 settles
 
@@ -329,7 +331,7 @@ custodian and CDS agree on.
 
 ## 9. Regulatory Reporting — the T+1 deadline
 
-**Definition:** Once a trade is executed, most jurisdictions require it to be reported to a regulator or Trade Repository within a strict deadline — commonly **T+1** (by the end of the next business day), though some in-scope products/venues require **same-day** or even **near-real-time** reporting. This is the final stage of the lifecycle and, as Module 1 §5 and Module 2 §12 established, applies differently depending on whether the trade is exchange-traded (the exchange itself is often treated as the report) or OTC (the firm must actively report).
+**Definition:** Once a trade is executed, most jurisdictions require it to be reported to a regulator or Trade Repository within a strict deadline — commonly **T+1** (by the end of the next business day), though some in-scope products/venues require **same-day** or even **near-real-time** reporting. This is the final stage of the lifecycle and, as [Module 1](./module-01-fundamentals.md) §5 and [Module 2](./module-02-hierarchy.md) §12 established, applies differently depending on whether the trade is exchange-traded (the exchange itself is often treated as the report) or OTC (the firm must actively report).
 
 ### Worked example — reporting BOT-2026-000901 and the cleared IRS from Section 6
 
@@ -550,7 +552,7 @@ The cash penalty here looks small, but the real cost of a fail is rarely the pen
 9. Bank Of Toronto's bond trade fails to settle by 3 business days instead of 2 (i.e., 1 day late) under the illustrative CSDR-style penalty in Section 13, on CAD 10,000,000 face value at reference price 99.20 and rate 0.10bps/day. What's the cash penalty for that 1 day?
 10. Put these five statuses in the correct chronological order for a normal (no-break) bilateral bond trade: `SETTLED`, `NEW`, `RECONCILED`, `MATCHED`, `AFFIRMED`.
 
-Answer whenever ready — then we move to **Module 4: Fixed Income / Bonds**.
+Answer whenever ready — then we move to **[Module 4](./module-04-equity.md): Fixed Income / Bonds**.
 
 ---
 
@@ -578,7 +580,7 @@ From Bank Of Toronto's perspective specifically, its only remaining counterparty
 
 **6. It reaches `CLEARED`, not `SETTLED` — and what keeps happening afterward is daily Variation Margin exchange plus periodic (quarterly, in this example) net cash-flow payments, for the life of the trade.**
 
-Unlike a bond, where one DvP event on T+2 fully discharges the trade (Section 7), a cleared swap has no notional to deliver (Module 1 §8) — there's nothing that constitutes a single "settlement" event. Instead, Section 11 shows the trade moving into an ongoing relationship with the CCP: margin calls the next day, and then a recurring cash-flow schedule for the full 5-year tenor.
+Unlike a bond, where one DvP event on T+2 fully discharges the trade (Section 7), a cleared swap has no notional to deliver ([Module 1](./module-01-fundamentals.md) §8) — there's nothing that constitutes a single "settlement" event. Instead, Section 11 shows the trade moving into an ongoing relationship with the CCP: margin calls the next day, and then a recurring cash-flow schedule for the full 5-year tenor.
 
 **7. Most likely something else entirely — an internal processing/messaging error, not a real economic loss and not a custodian mistake.**
 
@@ -601,3 +603,7 @@ The daily penalty rate itself doesn't change with how many days a trade is late 
 **10. `NEW` → `AFFIRMED` → `MATCHED` → `SETTLED` → `RECONCILED`.**
 
 This follows the Section 1 stage order directly: Trade Capture sets `NEW` (Sec 3); Confirmation produces `AFFIRMED` once the counterparty agrees (Sec 4); Matching then confirms both independently-keyed records agree, `MATCHED` (Sec 5); Settlement moves it to `SETTLED` on T+2 (Sec 7); and the end-of-day tie-out finally lands it at `RECONCILED` (Sec 8) — exactly the sequence walked through in Section 10's end-to-end timeline.
+
+---
+
+[← Back to Index](./index.md)

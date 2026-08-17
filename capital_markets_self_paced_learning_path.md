@@ -85,6 +85,8 @@ CAPITAL MARKETS
     └── Structured Credit
 ```
 
+> **Work data model note:** the Avro schema taxonomy actually used at work organizes Futures and Listed Options (e.g. Module 8's "Rate Futures", Module 4's Equity Futures, Module 7's Commodity Futures) as a **separate, cross-cutting "Listed Derivatives" category** spanning all six asset classes above, rather than folding them into each asset class individually. See **[Module 15 — Listed Derivatives](./module-15-listed-derivatives.md)** ([HTML](./module-15-listed-derivatives.html)), placed after Module 9 since it builds on all six asset classes rather than being a seventh one. Every expanded module write-up (4 onward) also calls out the specific `.avsc` Trade/Valuation schema its worked examples map to.
+
 ### The eight-part pattern, repeated for every asset class
 
 1. **What is it?** — theory and terminology
@@ -246,6 +248,8 @@ Maturity = 2035
 
 Understand how these values contribute to the bond's valuation.
 
+Full expanded write-up: [`module-05-fixed-income.md`](./module-05-fixed-income.md) ([HTML](./module-05-fixed-income.html))
+
 ### Deep Dive — Coupon Rate vs. Yield: what does "5%" actually mean?
 
 Two different numbers hide behind the same "5%":
@@ -303,6 +307,8 @@ Market Rate = 1.38 CAD/USD
 
 Learn how the difference creates a positive or negative valuation.
 
+Full expanded write-up: [`module-06-fx.md`](./module-06-fx.md) ([HTML](./module-06-fx.html))
+
 ---
 
 # Module 7 — Commodities
@@ -314,6 +320,8 @@ Learn how the difference creates a positive or negative valuation.
 ### Goal
 
 Understand why most of a bank's commodity exposure is accessed via derivatives (futures/swaps) rather than physical delivery, and how that changes what settles.
+
+Full expanded write-up: [`module-07-commodities.md`](./module-07-commodities.md) ([HTML](./module-07-commodities.html))
 
 ---
 
@@ -343,6 +351,8 @@ Party B pays floating
 Maturity = 5 years
 ```
 
+Full expanded write-up: [`module-08-rates.md`](./module-08-rates.md) ([HTML](./module-08-rates.html)) — covers all five Interest Rate products (Cap/Floor, IR Forward Debt, FRA, IRS, Swaption); Rate Futures are covered separately in Module 15 (Listed Derivatives).
+
 ---
 
 # Module 9 — Credit
@@ -354,6 +364,24 @@ Maturity = 5 years
 ### Goal
 
 Build on the CDS mechanics already introduced in Module 2 §09 (protection buyer/seller, spread, recovery rate) and extend to credit derivatives more broadly and structured credit (CLOs, tranching).
+
+Full expanded write-up: [`module-09-credit.md`](./module-09-credit.md) ([HTML](./module-09-credit.html))
+
+---
+
+# Module 15 — Listed Derivatives
+
+### Learn
+
+- Futures and Listed Options, standardized and centrally cleared, on ANY underlying from Modules 4-9 (equity index, commodity, interest rate, FX, or a single security)
+- Contract Specification, Tick Size/Value, Contract Month Codes, Open Interest
+- Cheapest-to-Deliver (CTD) and delivery baskets for bond futures
+
+### Goal
+
+Recognize that "Futures" and "Listed Options" aren't asset-class-specific products — they're a cross-cutting venue/clearing category, matching the work data model's "7. Listed Derivatives" taxonomy node, which sits apart from the six asset-class nodes above.
+
+Full expanded write-up: [`module-15-listed-derivatives.md`](./module-15-listed-derivatives.md) ([HTML](./module-15-listed-derivatives.html))
 
 ---
 
@@ -385,6 +413,8 @@ This is one of the highest-priority modules.
 
 When seeing a valuation field, understand **why that number exists**.
 
+Full expanded write-up: [`module-10-valuation.md`](./module-10-valuation.md) ([HTML](./module-10-valuation.html)) — delivers the full YTM/Duration/DV01 math previewed in Module 5 §1 and Module 8 §1, plus DCF/option-pricing/credit-spread valuation for derivatives, the Fair Value Level 1/2/3 hierarchy, and a full cross-asset-class comparison table.
+
 ---
 
 # Module 11 — Risk & Exposure
@@ -410,6 +440,8 @@ Exposure           =  $2.0M
 ```
 
 Understand why these numbers can be different.
+
+Full expanded write-up: [`module-11-risk-exposure.md`](./module-11-risk-exposure.md) ([HTML](./module-11-risk-exposure.html)) — delivers Current Exposure/PFE, ISDA netting math, CVA and wrong-way risk, a bilateral-vs-CCP exposure reference, and a worked Value at Risk calculation.
 
 ---
 
@@ -459,6 +491,8 @@ Remaining Exposure   =  $0.2M
 
 Understand why each number exists and how they relate.
 
+Full expanded write-up: [`module-12-collateral-margin.md`](./module-12-collateral-margin.md) ([HTML](./module-12-collateral-margin.html)) — runs the exact MTM $2.4M → Exposure $2.0M → Collateral $1.8M → Remaining Exposure $0.2M chain end to end, with IM/VM mechanics, haircuts, tri-party custody, and the UMR phase-in.
+
 ---
 
 # Module 13 — Parties, LEIs & Market Infrastructure
@@ -498,6 +532,8 @@ Do not just memorize LEI definitions. Understand:
 
 > **Which legal entity does this field identify, and why is that entity relevant to the trade?**
 
+Full expanded write-up: [`module-13-parties-leis.md`](./module-13-parties-leis.md) ([HTML](./module-13-parties-leis.html)) — covers Clearing Members and client clearing, a full seven-LEI-field worked trade, dual-sided vs single-sided reporting, Golden Source reference data, and the "No LEI, No Trade" rule.
+
 ---
 
 # Module 14 — Regulatory Reporting + IT View
@@ -524,6 +560,8 @@ Understand:
 > **What happened in the trade → what data describes it → why does the regulator need that data?**
 
 You do not need to become a regulatory lawyer. The focus is on the business and data perspective.
+
+Full expanded write-up: [`module-14-regulatory-reporting.md`](./module-14-regulatory-reporting.md) ([HTML](./module-14-regulatory-reporting.html)) — disambiguates Trade/Transaction/Position/Derivatives/Securities Financing Reporting, covers EMIR pairing/reconciliation and MiFID II Transaction Reporting in depth, and closes with a full field-by-field annotation of the `IRS12345` record below, tracing every value back to the module and section that built it.
 
 ---
 

@@ -479,6 +479,7 @@
 
 <div class="shell">
   <div class="masthead">
+    <a href="./index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
       <div class="eyebrow">Capital Markets — Self-Paced Path · Module 1 of 12</div>
       <div class="theme-switch" role="group" aria-label="Theme">
@@ -558,7 +559,7 @@ Yield        = the REAL annualized return, given what you actually paid
                                            money back at par -&gt; better return)
                - Buy above par (101.80)-&gt; Yield  &lt;  Coupon Rate</pre>
         </div>
-        <p>Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in Module 4/8 — for now, just don't conflate the two.</p>
+        <p>Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in <a href="./module-04-equity.html">Module 4</a>/8 — for now, just don't conflate the two.</p>
 
         <h5>Worked example — Bank Of Toronto buys a different 5%-coupon bond each year</h5>
         <p style="margin-bottom: 8px;">The clearest way to see "coupon rate never changes, yield always does" is to watch the same 5% coupon behave differently every year, purely because the price paid and the face value bought are different each time.</p>
@@ -587,7 +588,7 @@ Price Paid = Face Value x (Market Price / 100)</pre>
           <li><b>Price</b> — a market-driven field, refreshed daily; the only reason the same 5% coupon produces four different outcomes above.</li>
           <li><b>Yield</b> — always a <i>derived</i> field: <code>Coupon Cash Flow ÷ Price Paid</code>. If a system stores Yield as static, it's already wrong the moment Price moves.</li>
         </ul>
-        <div class="callout">Reading "is Bank Of Toronto better or worse off" off the coupon rate alone is meaningless — 2028 and 2029 both show a 5% coupon, yet one is Bank Of Toronto's best year and the other its worst, purely from price paid. This uses simple <b>Current Yield</b> for clarity; <b>Yield to Maturity (YTM)</b> — which also folds in the gain/loss recovered when price unwinds back to par at maturity — is covered properly in Module 4/8.</div>
+        <div class="callout">Reading "is Bank Of Toronto better or worse off" off the coupon rate alone is meaningless — 2028 and 2029 both show a 5% coupon, yet one is Bank Of Toronto's best year and the other its worst, purely from price paid. This uses simple <b>Current Yield</b> for clarity; <b>Yield to Maturity (YTM)</b> — which also folds in the gain/loss recovered when price unwinds back to par at maturity — is covered properly in <a href="./module-04-equity.html">Module 4</a>/8.</div>
 
         <h5>One Issuance, Many Investors — can multiple investors buy slices of the same bond?</h5>
         <p style="margin-bottom: 8px;">Yes — this is the normal case, not the exception. The total CAD 500,000,000 face value is one big pool that gets <b>split across many investors</b>, each taking whatever face-value slice they want (in minimum denominations, e.g. CAD 1,000 or CAD 5,000 lots). Every slice shares the exact same ISIN, coupon rate (5%), and maturity (2035) — they're fungible units of one security, the same way every share of Apple stock is identical regardless of who holds how many.</p>
@@ -674,7 +675,7 @@ Later, market interest rates rise to ~5.30%:
 (If rates had instead FALLEN to ~4.70%, this bond's fixed 5% would look
  attractive, and its price would rise ABOVE par, e.g. 101.80.)</pre>
         </div>
-        <div class="callout"><b>Not an arbitrary discount</b> — 98.50 is the market's real-time answer to "given today's interest rates, what does this fixed 5% cash-flow stream have to cost so a buyer earns a fair, competitive return?" Full mechanics (yield, duration) are covered in Module 4/8. For now: <b>price moves opposite to interest rates.</b></div>
+        <div class="callout"><b>Not an arbitrary discount</b> — 98.50 is the market's real-time answer to "given today's interest rates, what does this fixed 5% cash-flow stream have to cost so a buyer earns a fair, competitive return?" Full mechanics (yield, duration) are covered in <a href="./module-04-equity.html">Module 4</a>/8. For now: <b>price moves opposite to interest rates.</b></div>
 
         <h5>Is the seller (Goldman Sachs) actually taking a loss?</h5>
         <p style="margin-bottom: 8px;">You cannot tell from 98.50 alone — it depends on what the seller originally paid, plus coupons collected along the way.</p>
@@ -747,7 +748,7 @@ Net result over the holding period:
        |&lt;------------------------------|                              |
        |     Bonds, CAD 50,000,000     |                              |
        |     face value                |                              |</pre>
-        <div class="result"><b>Bank Of Toronto's spread</b> (a preview of "valuation" — Module 8): sold @ 98.50, bought @ 98.40 → 0.10 × 50,000,000 / 100 = <b>CAD 50,000 profit</b>.</div>
+        <div class="result"><b>Bank Of Toronto's spread</b> (a preview of "valuation" — <a href="./module-10-valuation.html">Module 10</a>): sold @ 98.50, bought @ 98.40 → 0.10 × 50,000,000 / 100 = <b>CAD 50,000 profit</b>.</div>
       </div>
 
       <div class="takeaway"><b>Takeaway.</b> Buy-side = deploying someone's capital (pension holders, fund investors). Sell-side = providing the market/liquidity buy-side clients trade against.</div>
@@ -1015,7 +1016,7 @@ NETTING  (only the difference actually moves, one direction):
         <div class="result"><b>Result:</b> Bank Of Toronto pays Goldman Sachs <b>CAD 187,192 net</b> on this date. The CAD 100,000,000 notional itself never moves — on this date or any other — it only ever exists to compute the two legs above. This repeats every quarter for 5 years, with the floating leg reset each period to whatever CORRA + spread then is.</div>
       </div>
 
-      <div class="callout">This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in <b>Module 7: FX &amp; Interest Rate Products</b>. For now, keep two things: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.</div>
+      <div class="callout">This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in <b><a href="./module-07-commodities.html">Module 7</a>: FX &amp; Interest Rate Products</b>. For now, keep two things: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.</div>
 
       <div class="takeaway"><b>Takeaway.</b> If you see a derivative trade record with a huge "Notional" value (e.g. CAD 100,000,000) and no corresponding settlement of that amount anywhere in cash/custody systems, that's expected — notional isn't supposed to settle. Only the periodic net cash flows do.</div>
     </section>
@@ -1034,7 +1035,7 @@ NETTING  (only the difference actually moves, one direction):
           <tr><td><b>Goldman Sachs</b></td><td><span class="side-tag sell">Sell-side</span></td><td>Counterparty on secondary market and OTC trades</td></tr>
           <tr><td><b>Stock Exchange (e.g., NYSE)</b></td><td><span class="side-tag infra">Infra</span></td><td>Central venue for exchange-traded products</td></tr>
           <tr><td><b>Trade Repository</b></td><td><span class="side-tag infra">Infra</span></td><td>Central registry OTC trades must be reported to</td></tr>
-          <tr><td><b>Custodian / CSD</b></td><td><span class="side-tag infra">Infra</span></td><td>Holds/settles securities on owners' behalf (Section 07 above; Module 11 goes deeper)</td></tr>
+          <tr><td><b>Custodian / CSD</b></td><td><span class="side-tag infra">Infra</span></td><td>Holds/settles securities on owners' behalf (Section 07 above; <a href="./module-13-parties-leis.html">Module 13</a> goes deeper)</td></tr>
         </tbody>
       </table>
     </section>
@@ -1042,7 +1043,7 @@ NETTING  (only the difference actually moves, one direction):
     <section class="mod" id="quiz" style="border-bottom: none;">
       <p class="sec-eyebrow">Self-check</p>
       <h2>Recap Quiz — Numbers Edition</h2>
-      <p class="lede">Work these with real figures before moving to Module 2.</p>
+      <p class="lede">Work these with real figures before moving to <a href="./module-02-hierarchy.html">Module 2</a>.</p>
 
       <div class="quiz">
         <ol>
@@ -1054,7 +1055,7 @@ NETTING  (only the difference actually moves, one direction):
           <li>What's the difference between what a custodian does and what a CSD does — and why does an investor's custodian need its own account at the CSD rather than the investor holding one directly?</li>
           <li>On a CAD 100,000,000 notional Interest Rate Swap, Bank Of Toronto pays fixed 4.00% and Goldman Sachs pays floating 3.10% (already including spread) for a 91-day quarter (actual/365). Who pays whom, how much net cash actually moves, and does any part of the CAD 100,000,000 notional itself settle?</li>
         </ol>
-        <p class="quiz-cta">Answer whenever ready — then we move to <b>Module 2: Asset Class → Product → Instrument → Trade</b>.</p>
+        <p class="quiz-cta">Answer whenever ready — then we move to <b><a href="./module-02-hierarchy.html">Module 2</a>: Asset Class → Product → Instrument → Trade</b>.</p>
       </div>
     </section>
 
@@ -1120,7 +1121,7 @@ Net = 997,260 - 772,877 = CAD 224,384</pre>
 
   </main>
 
-  <footer>Capital Markets — Self-Paced Learning Path · Module 1 of 12</footer>
+  <footer>Capital Markets — Self-Paced Learning Path · Module 1 of 12 &middot; <a href="./index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
 </div>
 
 <script>
