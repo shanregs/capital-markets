@@ -62,6 +62,36 @@ COUPON RATE  vs.  YIELD  (the "true APR-like" number)
 
 Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in Module 4/8 — for now, just don't conflate the two.
 
+### Worked example — Bank Of Toronto buys a different 5%-coupon bond each year
+
+The clearest way to see "coupon rate never changes, yield always does" is to watch the same 5% coupon behave differently every year, purely because the price paid and the face value bought are different each time.
+
+```text
+COUPON RATE vs YIELD  —  the two formulas
+============================================
+
+  Annual Coupon Cash Flow = Face Value x Coupon Rate       <- FIXED, issuer decides
+  Current Yield            = Annual Coupon Cash Flow / Price Paid   <- VARIES, market decides
+
+  Price Paid = Face Value x (Market Price / 100)
+```
+
+| Year | Face Value Bought (CAD) | Coupon Rate | Market Price (per 100) | Price Paid | Annual Coupon Cash Flow | Current Yield | Yield vs. Coupon | Bank Of Toronto's Position |
+|---|---|---|---|---|---|---|---|---|
+| 2026 | 10,000,000 | 5% | 98.50 (discount) | 9,850,000 | 500,000 | 500,000 / 9,850,000 = **5.08%** | Yield > Coupon | **More profit** — paid below face value, so the fixed CAD 500,000 coupon is a bigger return on the cash actually put down. |
+| 2027 | 15,000,000 | 5% | 101.25 (premium) | 15,187,500 | 750,000 | 750,000 / 15,187,500 = **4.94%** | Yield < Coupon | **Less profit** — paid above face value, so the same 5% coupon is a smaller return on the cash actually put down. Still positive income, just less efficient. |
+| 2028 | 8,000,000 | 5% | 95.00 (deep discount) | 7,600,000 | 400,000 | 400,000 / 7,600,000 = **5.26%** | Yield > Coupon | **Best year of the four** — biggest discount to par means the biggest gap between coupon rate and real return, in Bank Of Toronto's favor. |
+| 2029 | 20,000,000 | 5% | 103.75 (premium) | 20,750,000 | 1,000,000 | 1,000,000 / 20,750,000 = **4.82%** | Yield < Coupon | **Worst year of the four** — largest premium paid, so real return is furthest below the printed 5% coupon rate. |
+
+What stays constant vs. what moves, and why it matters for reporting systems:
+
+- **Coupon Rate (5%)** — identical in every row, because it's a static field on the bond/security master, fixed at issuance. It never gets recalculated.
+- **Price** — a market-driven field, refreshed daily, and the only reason the same 5% coupon produces four different outcomes above.
+- **Yield** — always a *derived* field: `Annual Coupon Cash Flow ÷ Price Paid`. If a system ever stores Yield as static, it's already wrong the moment Price moves.
+- Reading "is Bank Of Toronto better or worse off" off the coupon rate alone is meaningless — 2028 and 2029 both show a 5% coupon, yet one is Bank Of Toronto's best year and the other its worst, purely from price paid.
+
+This uses simple **Current Yield** for clarity. **Yield to Maturity (YTM)** — which also folds in the gain/loss recovered when the discount or premium unwinds back to par at maturity — is covered properly in Module 4/8.
+
 ### One Issuance, Many Investors — can multiple investors buy slices of the same bond?
 
 Yes — this is the normal case, not the exception. A single bond issuance is almost never bought by one investor. The total CAD 500,000,000 face value is one big pool that gets **split across many investors**, each taking whatever face-value slice they want (in minimum denominations, e.g. CAD 1,000 or CAD 5,000 lots). Every slice shares the exact same ISIN, coupon rate (5%), and maturity (2035) — they're fungible units of one security, the same way every share of Apple stock is identical regardless of who holds how many.

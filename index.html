@@ -267,6 +267,14 @@
     box-shadow: var(--shadow);
   }
   .conventions h2 { font-size: 1.05rem; margin: 0 0 10px; font-family: -apple-system, sans-serif; }
+
+  .ref-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 12px 0 12px;
+  }
   .conventions ul { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.92rem; }
   .conventions li { margin-bottom: 6px; }
   .conventions b { color: var(--ink); }
@@ -290,12 +298,12 @@
     </div>
     <h1>Capital Markets — Module Index</h1>
     <p class="dek">Business concept → Trade lifecycle → Valuation → Exposure/Risk → Collateral/Margin → Clearing &amp; Settlement → Regulatory Reporting, taught from an IT/reporting perspective.</p>
-    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only). Also see the <a href="./abbreviations.html">Abbreviations Glossary</a> for a lookup of commonly used acronyms.</div>
   </div>
 
   <div class="progress">
-    <div class="progress-track"><div class="progress-fill"></div></div>
-    <div class="progress-label"><b class="mono">1</b> / 12 modules written</div>
+    <div class="progress-track"><div class="progress-fill" style="width: 28.5%;"></div></div>
+    <div class="progress-label"><b class="mono">4</b> / 14 modules written</div>
   </div>
 
   <div class="modlist">
@@ -310,41 +318,41 @@
       <a class="mod-link" href="./module-01-fundamentals.html">Open →</a>
     </div>
 
-    <div class="mod-row">
+    <div class="mod-row is-available">
       <span class="mod-num mono">02</span>
       <div class="mod-title">
         <span class="t">Asset Class → Product → Instrument → Trade</span>
         <span class="p high">High priority</span>
       </div>
-      <span class="status-pill planned">Planned</span>
-      <a class="mod-link disabled">—</a>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./module-02-hierarchy.html">Open →</a>
     </div>
 
-    <div class="mod-row">
+    <div class="mod-row is-available">
       <span class="mod-num mono">03</span>
       <div class="mod-title">
         <span class="t">Trade Lifecycle</span>
         <span class="p high">High priority · 20%</span>
       </div>
-      <span class="status-pill planned">Planned</span>
-      <a class="mod-link disabled">—</a>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./module-03-trade-lifecycle.html">Open →</a>
     </div>
 
-    <div class="mod-row">
+    <div class="mod-row is-available">
       <span class="mod-num mono">04</span>
       <div class="mod-title">
-        <span class="t">Fixed Income / Bonds</span>
-        <span class="p high">High priority · 20%</span>
+        <span class="t">Equity <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· Asset Class Roadmap 1/6</span></span>
+        <span class="p">Standard priority</span>
       </div>
-      <span class="status-pill planned">Planned</span>
-      <a class="mod-link disabled">—</a>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./module-04-equity.html">Open →</a>
     </div>
 
     <div class="mod-row">
       <span class="mod-num mono">05</span>
       <div class="mod-title">
-        <span class="t">Equity</span>
-        <span class="p">Standard priority</span>
+        <span class="t">Fixed Income <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· Asset Class Roadmap 2/6</span></span>
+        <span class="p high">High priority · 20%</span>
       </div>
       <span class="status-pill planned">Planned</span>
       <a class="mod-link disabled">—</a>
@@ -353,8 +361,8 @@
     <div class="mod-row">
       <span class="mod-num mono">06</span>
       <div class="mod-title">
-        <span class="t">Derivatives Fundamentals</span>
-        <span class="p high">High priority · 20%</span>
+        <span class="t">FX <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· Asset Class Roadmap 3/6</span></span>
+        <span class="p">Standard priority</span>
       </div>
       <span class="status-pill planned">Planned</span>
       <a class="mod-link disabled">—</a>
@@ -363,8 +371,8 @@
     <div class="mod-row">
       <span class="mod-num mono">07</span>
       <div class="mod-title">
-        <span class="t">FX &amp; Interest Rate Products</span>
-        <span class="p high">High priority · 20%</span>
+        <span class="t">Commodities <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· Asset Class Roadmap 4/6</span></span>
+        <span class="p">Standard priority</span>
       </div>
       <span class="status-pill planned">Planned</span>
       <a class="mod-link disabled">—</a>
@@ -373,8 +381,8 @@
     <div class="mod-row">
       <span class="mod-num mono">08</span>
       <div class="mod-title">
-        <span class="t">Valuation</span>
-        <span class="p high">Highest priority</span>
+        <span class="t">Rates <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· Asset Class Roadmap 5/6</span></span>
+        <span class="p high">High priority · 20%</span>
       </div>
       <span class="status-pill planned">Planned</span>
       <a class="mod-link disabled">—</a>
@@ -383,7 +391,7 @@
     <div class="mod-row">
       <span class="mod-num mono">09</span>
       <div class="mod-title">
-        <span class="t">Risk &amp; Exposure</span>
+        <span class="t">Credit <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· Asset Class Roadmap 6/6</span></span>
         <span class="p high">High priority · 20%</span>
       </div>
       <span class="status-pill planned">Planned</span>
@@ -393,6 +401,26 @@
     <div class="mod-row">
       <span class="mod-num mono">10</span>
       <div class="mod-title">
+        <span class="t">Valuation</span>
+        <span class="p high">Highest priority</span>
+      </div>
+      <span class="status-pill planned">Planned</span>
+      <a class="mod-link disabled">—</a>
+    </div>
+
+    <div class="mod-row">
+      <span class="mod-num mono">11</span>
+      <div class="mod-title">
+        <span class="t">Risk &amp; Exposure</span>
+        <span class="p high">High priority · 20%</span>
+      </div>
+      <span class="status-pill planned">Planned</span>
+      <a class="mod-link disabled">—</a>
+    </div>
+
+    <div class="mod-row">
+      <span class="mod-num mono">12</span>
+      <div class="mod-title">
         <span class="t">Collateral &amp; Margin</span>
         <span class="p high">Major focus · 20%</span>
       </div>
@@ -401,7 +429,7 @@
     </div>
 
     <div class="mod-row">
-      <span class="mod-num mono">11</span>
+      <span class="mod-num mono">13</span>
       <div class="mod-title">
         <span class="t">Parties, LEIs &amp; Market Infrastructure</span>
         <span class="p">Standard priority · 10%</span>
@@ -411,7 +439,7 @@
     </div>
 
     <div class="mod-row">
-      <span class="mod-num mono">12</span>
+      <span class="mod-num mono">14</span>
       <div class="mod-title">
         <span class="t">Regulatory Reporting + IT View</span>
         <span class="p">Standard priority</span>
@@ -420,6 +448,28 @@
       <a class="mod-link disabled">—</a>
     </div>
 
+  </div>
+
+  <div class="modlist">
+    <p class="ref-label">Reference</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Abbreviations Glossary</span>
+        <span class="p">Identifiers, market structure, products, rates, valuation, settlement, risk, regulation</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./abbreviations.html">Open →</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Systems Landscape</span>
+        <span class="p">Front/Middle/Back Office systems, data flows &amp; settlement cycles — Canada, US, UK &amp; EU</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./systems-landscape.html">Open →</a>
+    </div>
   </div>
 
   <div class="conventions">

@@ -14,9 +14,9 @@ The learning path follows one core mental model, repeated throughout the doc:
 Asset Class → Product → Instrument/Security → Trade → Valuation → Exposure/Risk → Collateral/Margin → Clearing & Settlement → Regulatory Reporting
 ```
 
-It is organized into 12 modules (Fundamentals, Asset Class/Product/Instrument/Trade hierarchy, Trade Lifecycle, Fixed Income, Equity, Derivatives, FX/Rates, Valuation, Risk & Exposure, Collateral & Margin, Parties/LEIs, Regulatory Reporting), followed by an end-to-end case study and a self-study pacing guide.
+It is organized into 14 modules. Modules 1–3 are foundational (Fundamentals, Asset Class/Product/Instrument/Trade hierarchy, Trade Lifecycle). Modules 4–9 are the **Asset Class Roadmap** — one module per asset class (Equity, Fixed Income, FX, Commodities, Rates, Credit), each studied through the same eight-part pattern before moving to the next: (1) What is it? (2) What are the products? (3) What exactly is being traded (security vs. contract)? (4) Real-world trade example (Buyer → Seller → Trade) (5) Trade lifecycle (Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&L → Reporting) (6) Identifiers (ISIN, CUSIP, SEDOL, Ticker, LEI, UPI, FIGI) (7) Exchange vs OTC vs Bilateral vs Centrally Cleared (8) Regulatory perspective (MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO, etc.). Modules 10–14 cover cross-cutting topics that build on the asset classes (Valuation, Risk & Exposure, Collateral & Margin, Parties/LEIs, Regulatory Reporting), followed by an end-to-end case study and a self-study pacing guide. Standalone **reference modules** outside this numbering (Abbreviations Glossary, Systems Landscape) cover material that cuts across every module.
 
-Stated priorities for the current work focus (see the "Priority for My Current Work" table near the end of the doc): Trade Lifecycle, Fixed Income + Derivatives, Valuation, and Collateral + Exposure are weighted highest.
+Stated priorities for the current work focus (see the "Priority for My Current Work" table near the end of the doc): Trade Lifecycle, Fixed Income + Rates + Credit, Valuation, and Collateral + Exposure are weighted highest. Within the Asset Class Roadmap, build **one asset class at a time**, in the order given (Equity first), rather than all six at once.
 
 ## Content conventions
 

@@ -560,6 +560,35 @@ Yield        = the REAL annualized return, given what you actually paid
         </div>
         <p>Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in Module 4/8 — for now, just don't conflate the two.</p>
 
+        <h5>Worked example — Bank Of Toronto buys a different 5%-coupon bond each year</h5>
+        <p style="margin-bottom: 8px;">The clearest way to see "coupon rate never changes, yield always does" is to watch the same 5% coupon behave differently every year, purely because the price paid and the face value bought are different each time.</p>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Formulas · Coupon vs. Yield</span><span class="t-id">Fixed vs. Derived</span></div>
+          <pre>Annual Coupon Cash Flow = Face Value x Coupon Rate       &lt;- FIXED, issuer decides
+Current Yield            = Annual Coupon Cash Flow / Price Paid   &lt;- VARIES, market decides
+
+Price Paid = Face Value x (Market Price / 100)</pre>
+        </div>
+
+        <div style="overflow-x: auto; margin: 4px 0 18px;">
+        <table style="min-width: 840px; margin: 0;">
+          <thead><tr><th>Year</th><th>Face Value (CAD)</th><th>Coupon</th><th>Market Price</th><th>Price Paid</th><th>Coupon Cash Flow</th><th>Current Yield</th><th>Yield vs. Coupon</th><th>Bank Of Toronto's Position</th></tr></thead>
+          <tbody>
+            <tr><td><b>2026</b></td><td>10,000,000</td><td>5%</td><td>98.50 (discount)</td><td>9,850,000</td><td>500,000</td><td><b>5.08%</b></td><td>Yield &gt; Coupon</td><td><b>More profit</b> — paid below face value, so the fixed coupon is a bigger return on cash actually put down.</td></tr>
+            <tr><td><b>2027</b></td><td>15,000,000</td><td>5%</td><td>101.25 (premium)</td><td>15,187,500</td><td>750,000</td><td><b>4.94%</b></td><td>Yield &lt; Coupon</td><td><b>Less profit</b> — paid above face value; same coupon, smaller return on cash put down.</td></tr>
+            <tr><td><b>2028</b></td><td>8,000,000</td><td>5%</td><td>95.00 (deep discount)</td><td>7,600,000</td><td>400,000</td><td><b>5.26%</b></td><td>Yield &gt; Coupon</td><td><b>Best year of the four</b> — biggest discount to par, biggest gap in Bank Of Toronto's favor.</td></tr>
+            <tr><td><b>2029</b></td><td>20,000,000</td><td>5%</td><td>103.75 (premium)</td><td>20,750,000</td><td>1,000,000</td><td><b>4.82%</b></td><td>Yield &lt; Coupon</td><td><b>Worst year of the four</b> — largest premium paid, real return furthest below the printed rate.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <ul style="margin: 0 0 14px; padding-left: 20px; color: var(--ink-soft);">
+          <li><b>Coupon Rate (5%)</b> — identical in every row; a static field on the security master, fixed at issuance, never recalculated.</li>
+          <li><b>Price</b> — a market-driven field, refreshed daily; the only reason the same 5% coupon produces four different outcomes above.</li>
+          <li><b>Yield</b> — always a <i>derived</i> field: <code>Coupon Cash Flow ÷ Price Paid</code>. If a system stores Yield as static, it's already wrong the moment Price moves.</li>
+        </ul>
+        <div class="callout">Reading "is Bank Of Toronto better or worse off" off the coupon rate alone is meaningless — 2028 and 2029 both show a 5% coupon, yet one is Bank Of Toronto's best year and the other its worst, purely from price paid. This uses simple <b>Current Yield</b> for clarity; <b>Yield to Maturity (YTM)</b> — which also folds in the gain/loss recovered when price unwinds back to par at maturity — is covered properly in Module 4/8.</div>
+
         <h5>One Issuance, Many Investors — can multiple investors buy slices of the same bond?</h5>
         <p style="margin-bottom: 8px;">Yes — this is the normal case, not the exception. The total CAD 500,000,000 face value is one big pool that gets <b>split across many investors</b>, each taking whatever face-value slice they want (in minimum denominations, e.g. CAD 1,000 or CAD 5,000 lots). Every slice shares the exact same ISIN, coupon rate (5%), and maturity (2035) — they're fungible units of one security, the same way every share of Apple stock is identical regardless of who holds how many.</p>
         <div class="ticket gold">

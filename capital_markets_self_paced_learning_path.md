@@ -36,7 +36,71 @@ Regulatory Reporting
 
 ---
 
-# 12-Module Self-Paced Learning Path
+# Asset Class Roadmap (Modules 4–9)
+
+Modules 4–9 are organized **by asset class**, not by topic — each one is studied through the same eight-part pattern before moving to the next, one asset class at a time.
+
+```text
+CAPITAL MARKETS
+│
+├── 4. EQUITY
+│   ├── Cash Equity
+│   │   ├── Common Stock
+│   │   └── Preferred Stock
+│   │
+│   └── Equity Derivatives
+│       ├── Equity Futures
+│       └── Equity Options
+│
+├── 5. FIXED INCOME
+│   ├── Government Bonds
+│   ├── Corporate Bonds
+│   ├── Municipal Bonds
+│   └── Other Debt Instruments
+│
+├── 6. FX
+│   ├── FX Spot
+│   ├── FX Forward
+│   ├── FX Swap
+│   └── FX Options
+│
+├── 7. COMMODITIES
+│   ├── Physical Commodities
+│   ├── Commodity Futures
+│   ├── Commodity Options
+│   └── Commodity Swaps
+│
+├── 8. RATES
+│   ├── Interest Rate Products
+│   ├── IRS
+│   ├── OIS
+│   ├── FRA
+│   ├── Swaptions
+│   └── Rate Futures
+│
+└── 9. CREDIT
+    ├── Corporate Credit
+    ├── CDS
+    ├── Credit Derivatives
+    └── Structured Credit
+```
+
+### The eight-part pattern, repeated for every asset class
+
+1. **What is it?** — theory and terminology
+2. **What are the products?** — e.g. in Equity: stock, preferred stock, future, option
+3. **What exactly is being traded?** — the actual security vs. a contract
+4. **Real-world trade example** — Buyer → Seller → Trade
+5. **Trade lifecycle** — Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting
+6. **Identifiers** — introduced gradually: ISIN, CUSIP, SEDOL, Ticker, LEI, UPI, FIGI
+7. **Exchange vs OTC vs Bilateral vs Centrally Cleared**
+8. **Regulatory perspective** — only after the product itself is clear: MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO
+
+Doing it this way means acronyms in Step 8 never get memorized in a vacuum — by the time a regulation shows up, the product and trade it applies to are already familiar.
+
+---
+
+# 14-Module Self-Paced Learning Path
 
 ## Module 1 — Capital Markets Fundamentals
 
@@ -70,7 +134,7 @@ Instrument: Canada 5% Bond 2035
         ↓
 ISIN: Identifies the specific security
         ↓
-Trade: BMO buys CAD 10M from Goldman Sachs
+Trade: Bank Of Toronto buys CAD 10M from Goldman Sachs
 ```
 
 ### Learn
@@ -130,13 +194,36 @@ Given a trade record, explain where it came from and what happens next.
 
 ---
 
-# Module 4 — Fixed Income / Bonds
+# Module 4 — Equity
 
 ### Learn
 
-- Government Bonds
-- Corporate Bonds
-- Treasury Bills
+- Cash Equity: Common Stock, Preferred Stock
+- Equity Derivatives: Equity Futures, Equity Options
+- What's actually being traded: a real ownership security vs. a contract whose value derives from one
+
+### Example
+
+```text
+Buyer:  Maple Leaf Pension Fund
+Seller: Goldman Sachs
+Trade:  10,000 shares, Coca-Cola Company (NYSE: KO) @ USD 68.40
+        via Bank Of Toronto (dealer)
+```
+
+### Goal
+
+Work through the full eight-part pattern (see the Asset Class Roadmap above) for Cash Equity and Equity Derivatives before moving to Fixed Income.
+
+Full expanded write-up: [`module-04-equity.md`](./module-04-equity.md) ([HTML](./module-04-equity.html))
+
+---
+
+# Module 5 — Fixed Income
+
+### Learn
+
+- Government Bonds, Corporate Bonds, Municipal Bonds, Other Debt Instruments
 - Coupon
 - Face Value
 - Maturity
@@ -159,45 +246,49 @@ Maturity = 2035
 
 Understand how these values contribute to the bond's valuation.
 
+### Deep Dive — Coupon Rate vs. Yield: what does "5%" actually mean?
+
+Two different numbers hide behind the same "5%":
+
+- **Coupon Rate** — a fixed percentage of **Face Value**, set once at issuance, printed on the bond, and never changes for the life of the bond. It only tells you the cash the issuer pays each year — it says nothing about whether the bond was a good buy.
+- **Yield** — the actual return the buyer earns, based on the **price actually paid**, not the face value. Yield moves every time the market price moves, even though the coupon rate never does.
+
+```text
+Annual Coupon Cash Flow = Face Value × Coupon Rate      (fixed, from the issuer)
+Current Yield            = Annual Coupon Cash Flow / Price Paid   (varies, from the market)
+```
+
+If the buyer pays **below** par (a discount, Price < 100), Yield > Coupon Rate — the buyer is getting more income per dollar invested than the coupon rate suggests.
+If the buyer pays **above** par (a premium, Price > 100), Yield < Coupon Rate — the buyer is getting less income per dollar invested than the coupon rate suggests.
+
+#### Worked example: Bank Of Toronto buys a different 5%-coupon bond each year
+
+Same coupon rate (5%) every year, but different Face Value and different market Price each time — this is the situation an IT/reporting system actually sees: `Coupon Rate` sits static on the security master, while `Price` and `Yield` are refreshed from the market feed every day.
+
+| Year | Face Value (CAD) | Coupon Rate | Market Price (% of par) | Price Paid (Purchase Cost) | Annual Coupon Cash Flow | Current Yield | Yield vs. Coupon | Bank Of Toronto's Position |
+|---|---|---|---|---|---|---|---|---|
+| 2026 | 10,000,000 | 5% | 98.50 (discount) | 9,850,000 | 500,000 | 500,000 / 9,850,000 = **5.08%** | Yield > Coupon | **Better off** — paid less than face value, so the fixed CAD 500,000 coupon represents a higher return on the actual cash invested. More profit. |
+| 2027 | 15,000,000 | 5% | 101.25 (premium) | 15,187,500 | 750,000 | 750,000 / 15,187,500 = **4.94%** | Yield < Coupon | **Slightly worse off** — paid more than face value, so the same 5% coupon represents a lower return on the actual cash invested. Less profit, though still positive income. |
+| 2028 | 8,000,000 | 5% | 95.00 (deep discount) | 7,600,000 | 400,000 | 400,000 / 7,600,000 = **5.26%** | Yield > Coupon | **Best outcome of the three** — biggest discount to par means the biggest gap between coupon rate and actual yield, in the buyer's favor. |
+| 2029 | 20,000,000 | 5% | 103.75 (premium) | 20,750,000 | 1,000,000 | 1,000,000 / 20,750,000 = **4.82%** | Yield < Coupon | **Worst outcome of the four** — largest premium paid, so the real return is furthest below the printed coupon rate. Still profitable, just least efficient use of capital. |
+
+Key takeaways for the IT/reporting angle:
+
+- The **Coupon Rate** field never changes after issuance — it is static reference data on the bond/security master.
+- **Price** is a market-driven field that changes daily — it's what actually decides whether the buyer is winning or losing relative to the coupon.
+- **Yield** is a *derived* field (Coupon Cash Flow ÷ Price Paid) — never store it as if it were static; it must be recalculated whenever price updates.
+- "Is Bank Of Toronto profiting more or less?" is answered by comparing **Yield to Coupon Rate**, not by looking at the coupon rate alone — a 5% coupon can mean a great deal (2028) or a mediocre one (2029) depending purely on the price paid.
+- This worked example uses **Current Yield** (simple, price-based) for clarity. In practice, valuation/reporting systems more often use **Yield to Maturity (YTM)**, which also accounts for the gain/loss recovered at redemption (buying at a discount pulls the price back up to 100 at maturity; buying at a premium pulls it back down to 100) — YTM is covered in Module 10 (Valuation).
+
 ---
 
-# Module 5 — Equity
+# Module 6 — FX
 
 ### Learn
 
-- Shares
-- Quantity
-- Price
-- Market Value
-- Dividends
-- Corporate Actions
-- Settlement
+- FX Spot, FX Forward, FX Swap, FX Options
 
-### Goal
-
-Use Equity as a simpler asset class to compare with Fixed Income and Derivatives.
-
----
-
-# Module 6 — Derivatives Fundamentals
-
-### Learn
-
-- Forward
-- Future
-- Option
-- Swap
-- OTC vs Exchange-Traded Derivatives
-
-### Important Concept
-
-Understand why a derivative can have a **Notional** amount without that notional necessarily being exchanged.
-
----
-
-# Module 7 — FX & Interest Rate Products
-
-## FX Forward Example
+### FX Forward Example
 
 ```text
 Buy USD 10M
@@ -212,17 +303,25 @@ Market Rate = 1.38 CAD/USD
 
 Learn how the difference creates a positive or negative valuation.
 
-## Interest Rate Swap Example
+---
 
-```text
-Notional = CAD 100M
-Party A pays fixed 4%
-Party B pays floating
-Maturity = 5 years
-```
+# Module 7 — Commodities
 
 ### Learn
 
+- Physical Commodities, Commodity Futures, Commodity Options, Commodity Swaps
+
+### Goal
+
+Understand why most of a bank's commodity exposure is accessed via derivatives (futures/swaps) rather than physical delivery, and how that changes what settles.
+
+---
+
+# Module 8 — Rates
+
+### Learn
+
+- Interest Rate Products, IRS, OIS, FRA, Swaptions, Rate Futures
 - Fixed Leg
 - Floating Leg
 - Reference Rate
@@ -231,9 +330,34 @@ Maturity = 5 years
 - Maturity
 - MTM
 
+### Important Concept
+
+Understand why a derivative can have a **Notional** amount without that notional necessarily being exchanged.
+
+### Interest Rate Swap Example
+
+```text
+Notional = CAD 100M
+Party A pays fixed 4%
+Party B pays floating
+Maturity = 5 years
+```
+
 ---
 
-# Module 8 — Valuation
+# Module 9 — Credit
+
+### Learn
+
+- Corporate Credit, CDS, Credit Derivatives, Structured Credit
+
+### Goal
+
+Build on the CDS mechanics already introduced in Module 2 §09 (protection buyer/seller, spread, recovery rate) and extend to credit derivatives more broadly and structured credit (CLOs, tranching).
+
+---
+
+# Module 10 — Valuation
 
 This is one of the highest-priority modules.
 
@@ -263,7 +387,7 @@ When seeing a valuation field, understand **why that number exists**.
 
 ---
 
-# Module 9 — Risk & Exposure
+# Module 11 — Risk & Exposure
 
 ### Learn
 
@@ -289,7 +413,7 @@ Understand why these numbers can be different.
 
 ---
 
-# Module 10 — Collateral & Margin
+# Module 12 — Collateral & Margin
 
 This is a major focus because it relates directly to Capital Markets reporting.
 
@@ -337,7 +461,7 @@ Understand why each number exists and how they relate.
 
 ---
 
-# Module 11 — Parties, LEIs & Market Infrastructure
+# Module 13 — Parties, LEIs & Market Infrastructure
 
 ### Learn the roles of
 
@@ -376,7 +500,7 @@ Do not just memorize LEI definitions. Understand:
 
 ---
 
-# Module 12 — Regulatory Reporting + IT View
+# Module 14 — Regulatory Reporting + IT View
 
 ### Learn the purpose of
 
@@ -391,7 +515,7 @@ Do not just memorize LEI definitions. Understand:
 - EMIR
 - MiFID II
 - SFTR
-- Local regulatory regimes
+- Local regulatory regimes — see [Systems Landscape](./systems-landscape.md) for how MiFID/EMIR/SFTR map to specific regulators and systems in Canada, the US, the UK, and the EU
 
 ### Goal
 
@@ -415,7 +539,7 @@ Product: Interest Rate Swap
 
 Notional: CAD 100M
 
-Party A: BMO
+Party A: Bank Of Toronto
 Party B: Goldman Sachs
 
 Maturity: 5Y
@@ -438,7 +562,7 @@ An Interest Rate Swap.
 
 ### What are the parties?
 
-BMO and Goldman Sachs.
+Bank Of Toronto and Goldman Sachs.
 
 ### What is CAD 100M?
 
@@ -497,11 +621,11 @@ The objective is to learn how to:
 | Topic | Priority |
 |---|---:|
 | Trade Lifecycle | 20% |
-| Fixed Income + Derivatives | 20% |
+| Fixed Income + Rates + Credit (Derivatives) | 20% |
 | Valuation | 20% |
 | Collateral + Exposure | 20% |
 | Parties / LEIs / Settlement | 10% |
-| General Capital Markets | 10% |
+| General Capital Markets (incl. Equity, FX, Commodities) | 10% |
 
 ---
 
@@ -515,4 +639,4 @@ Pay particular attention to:
 
 > **Asset Class → Product → Instrument → Trade**
 
-Once this hierarchy is clear, the later topics — valuation, collateral, exposure and regulatory reporting — will be much easier to connect.
+Once this hierarchy is clear, move into the Asset Class Roadmap **one asset class at a time**, starting with **Module 4: Equity** — it's the simplest product set to see the full eight-part pattern (Section header above) work end to end before applying it to Fixed Income, FX, Commodities, Rates, and Credit. The later topics — valuation, collateral, exposure and regulatory reporting — will be much easier to connect once a couple of asset classes are familiar.
