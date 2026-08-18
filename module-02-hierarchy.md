@@ -228,6 +228,29 @@ This is the derivatives counterpart to Section 6's cash-instrument table — sam
 
 **Definition:** A CDS is insurance-like protection against a company defaulting. The **protection buyer** pays a periodic premium (the "spread," quoted in basis points per year) to the **protection seller**. If the **reference entity** (the company being insured against) suffers a defined **credit event** (default, bankruptcy, restructuring), the protection seller pays the buyer a loss amount — otherwise, the seller collects premium and pays nothing.
 
+**A CDS has only two parties — the reference entity isn't one of them.** Northern Rail Corp is the *subject* of this contract, not a *party* to it: it signs nothing, pays nothing, receives nothing, and typically has no idea the trade exists. The link is purely referential — its credit behavior is the trigger condition the two real counterparties' cash flows depend on, the same way an insurance policy on someone else's house pays out based on that house, without the homeowner being a party to the policy.
+
+```text
+THREE NAMES, ONLY TWO PARTIES TO THE CONTRACT
+========================================================================
+
+  Bank Of Toronto  &lt;====  CDS CONTRACT  ====&gt;  Goldman Sachs
+  (protection buyer)     (bilateral,            (protection seller)
+                          just these two)
+
+                    Northern Rail Corp
+                 (reference entity -- outside the
+                  contract, referenced BY it, not
+                  a party TO it)
+
+  -&gt; Bank Of Toronto pays Goldman Sachs premium; Goldman Sachs pays
+     Bank Of Toronto a loss amount IF Northern Rail Corp defaults.
+     Northern Rail Corp itself pays or receives NOTHING under this
+     contract, ever.
+```
+
+In practice, a protection buyer usually has *some other* exposure to the reference entity it's hedging — e.g. Bank Of Toronto might hold Northern Rail Corp bonds or have lent it money directly — and uses the CDS to transfer that separate credit risk to Goldman Sachs. Nothing about the CDS contract itself requires that exposure to exist, though; a CDS can equally be bought purely to speculate on Northern Rail Corp's credit quality with no underlying position at all.
+
 ```text
 CREDIT DEFAULT SWAP  —  Bank Of Toronto buys protection from Goldman Sachs
 ================================================================================
@@ -246,7 +269,7 @@ SCENARIO A — No default this quarter (the normal case)
   Bank Of Toronto  ---- pays CAD 59,836 ---->  Goldman Sachs
   (repeats every quarter for 5 years = 20 payments, unless default happens first)
 
-SCENARIO B — Reference entity defaults during the 5 years
+SCENARIO B — Northern Rail Corp (the reference entity) defaults during the 5 years
 ----------------------------------------------------------
   Loss Given Default = Notional x (1 - Recovery Rate)
                       = 20,000,000 x (1 - 0.40)
