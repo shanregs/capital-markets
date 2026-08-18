@@ -10,6 +10,10 @@ Also see: [**Abbreviations Glossary**](./abbreviations.md) ([HTML](./abbreviatio
 
 Also see: [**Systems Landscape**](./systems-landscape.md) ([HTML](./systems-landscape.html)) — the actual Front/Middle/Back Office systems, data flows, and settlement cycles used in Canada, the US, the UK, and the EU, plus the regulatory bodies in each.
 
+Also see: [**SFTR Reporting Deep Dive**](./sftr-reporting.md) ([HTML](./sftr-reporting.html)) — what SFTR is, exactly which trades must be reported, the lifecycle-event reporting model, and links to the primary regulatory sources.
+
+Also see: [**UK DMO Reporting Deep Dive**](./dmo-uk-reporting.md) ([HTML](./dmo-uk-reporting.html)) — how Gilt-Edged Market Makers (GEMMs) report gilt auctions and secondary-market trading to the UK Debt Management Office: Auction, Daily, Weekly, and Aggregated reports, worked with real numbers.
+
 ---
 
 ## Modules
@@ -42,6 +46,8 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 |---|---|---|
 | Abbreviations Glossary — identifiers, market structure, products, rates, valuation, settlement, risk, regulation | [abbreviations.md](./abbreviations.md) | [abbreviations.html](./abbreviations.html) |
 | Systems Landscape — Front/Middle/Back Office systems, data flows &amp; settlement cycles in Canada, US, UK &amp; EU, plus regulators | [systems-landscape.md](./systems-landscape.md) | [systems-landscape.html](./systems-landscape.html) |
+| SFTR Reporting Deep Dive — what SFTR is, which trades must be reported, lifecycle-event reporting model &amp; official links | [sftr-reporting.md](./sftr-reporting.md) | [sftr-reporting.html](./sftr-reporting.html) |
+| UK DMO Reporting Deep Dive — how GEMMs report gilt auctions &amp; secondary-market trading to the UK DMO (Auction/Daily/Weekly/Aggregated reports) | [dmo-uk-reporting.md](./dmo-uk-reporting.md) | [dmo-uk-reporting.html](./dmo-uk-reporting.html) |
 
 ---
 
