@@ -551,6 +551,20 @@ On Settlement Date (T+2):
 
 **Definition:** **Notional amount** is the reference principal used only to *calculate* periodic interest cash flows on a derivative — it is never physically exchanged between the two parties. This is the key difference from a bond trade: a bond's face value is actually delivered (Section 1); a swap's notional is just a number used for arithmetic.
 
+**A closely related but genuinely different concept: the Underlier.** The **Underlier** (also called the "Underlying") is the actual reference asset, rate, index, or entity whose value or level *drives* a derivative's cash flows — as opposed to Notional, which is just the *size* multiplier applied to whatever the Underlier does. Every derivative has exactly one (or, occasionally, a small basket of) Underlier, but the *kind* of thing it is changes completely by asset class:
+
+| Asset Class | What the Underlier typically is | Example |
+|---|---|---|
+| Rates (this section) | A reference interest rate | **CORRA** (see callout below) |
+| Equity ([Module 4](./module-04-equity.md)) | A stock, or a basket/index of stocks | Apple Inc. common stock |
+| Credit ([Module 9](./module-09-credit.md)) | A company's creditworthiness (the "Reference Entity") | Northern Rail Corp |
+| FX ([Module 6](./module-06-fx.md)) | A currency pair | USD/CAD |
+| Commodity ([Module 7](./module-07-commodities.md)) | A published price index | ICE Brent Crude |
+
+For the IRS worked out below, **Notional (CAD 100,000,000) and Underlier (CORRA) are two separate numbers describing the same trade, answering two separate questions**: Notional answers "how big is this trade," Underlier answers "what does the floating leg actually reset against." Confusing the two is a common beginner mistake — a CAD 100,000,000 notional swap and a CAD 10,000,000 notional swap can reference the *identical* Underlier (CORRA), and two swaps with the *identical* Notional can reference completely different Underliers.
+
+> **What actually IS CORRA?** **CORRA (Canadian Overnight Repo Rate Average)** is Canada's risk-free reference rate — calculated and published each business day by the **Bank of Canada**, derived from actual overnight repurchase (repo) transactions collateralized by Government of Canada securities, not from bank *estimates* the way the now-discontinued CDOR and LIBOR benchmarks were. Because it's built from real, observable transactions rather than a survey of banks' opinions, it's far harder to manipulate — precisely why global regulators pushed every major currency onto a rate like it (SOFR in the US, SONIA in the UK, €STR in the EU) after the LIBOR-rigging scandals. [Module 8](./module-08-rates.md) §1 covers the full CDOR-to-CORRA transition story; this module just needs CORRA as "the number this trade's floating leg resets against."
+
 Revisiting the OTC swap from Section 5 — Bank Of Toronto and Goldman Sachs, Notional CAD 100,000,000, 5-year maturity, quarterly payments, Bank Of Toronto pays a **fixed** rate, Goldman Sachs pays a **floating** rate (CORRA + spread):
 
 ```text
@@ -578,7 +592,7 @@ RESULT on this payment date:
     reset each period to whatever CORRA + spread then is.
 ```
 
-This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in **[Module 7](./module-07-commodities.md): FX & Interest Rate Products**. For now, the two things worth keeping: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.
+This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in **[Module 10](./module-10-valuation.md): Valuation**. For now, the two things worth keeping: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.
 
 **Takeaway:** if you ever see a derivative trade record showing a huge "Notional" value (e.g. CAD 100,000,000) with no corresponding settlement of that amount anywhere in cash/custody systems, that's expected — notional isn't supposed to settle. Only the periodic net cash flows do.
 
@@ -607,6 +621,7 @@ This is deliberately just the mechanics of one cash flow, not the theory of swap
 5. A trade is agreed on Thursday, 3 September 2026 and settles T+2. Monday, 7 September 2026 is a market holiday. What calendar date is the actual Settlement Date, and why isn't it Saturday, 5 September 2026?
 6. What's the difference between what a custodian does and what a CSD does — and why does an investor's custodian need its own account at the CSD rather than the investor holding one directly?
 7. On a CAD 100,000,000 notional Interest Rate Swap, Bank Of Toronto pays fixed 4.00% and Goldman Sachs pays floating 3.10% (already including spread) for a 91-day quarter (actual/365). Who pays whom, how much net cash actually moves, and does any part of the CAD 100,000,000 notional itself settle?
+8. Two Interest Rate Swaps both reference CORRA as their Underlier — one has Notional CAD 50,000,000, the other CAD 500,000,000. Does sharing the same Underlier mean these two trades are economically similar in size? Why or why not — and what's the one-sentence distinction between what Notional answers and what Underlier answers?
 
 Answer whenever ready — then we move to **[Module 2](./module-02-hierarchy.md): Asset Class → Product → Instrument → Trade**.
 
@@ -671,6 +686,10 @@ Net = 997,260 - 772,877 = CAD 224,384
 ```
 
 Since the fixed leg is larger, **Bank Of Toronto pays Goldman Sachs CAD 224,384 net** on this payment date. No part of the CAD 100,000,000 notional itself settles — it only ever exists as the number both legs are calculated from. Only the netted cash difference actually moves.
+
+**8. No — sharing an Underlier says nothing about economic size. Notional answers "how big is this trade" (CAD 50,000,000 vs. CAD 500,000,000 — a 10x difference in the actual cash flows each period); Underlier answers "what does the floating leg reset against" (CORRA, identical on both trades).**
+
+Two trades can share the exact same Underlier while being wildly different in size, and two trades can share the exact same Notional while referencing completely different Underliers (e.g. one CAD 100,000,000 swap against CORRA, another CAD 100,000,000 swap against a completely different rate) — the two fields are independent inputs to the cash-flow calculation, not two ways of describing the same thing. This is exactly the distinction Section 8's Underlier callout draws explicitly.
 
 ---
 

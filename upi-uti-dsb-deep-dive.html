@@ -609,6 +609,8 @@ Rule 4 (alphabetical LEI tie-break):
 
       <p><b>Critical rule, restated from <a href="./module-02-hierarchy.html">Module 2</a> §12:</b> two trades generate the SAME UPI if and only if every product-defining field matches. Trade-specific details — notional amount, price/rate, counterparty, trade date — are deliberately excluded from what defines a UPI.</p>
 
+      <div class="callout"><b>What's an "Underlier"?</b> Every worked example below has an <code>Underlier</code> field — <a href="./module-01-fundamentals.html">Module 1</a> §8 defines this general concept in full (it's the reference asset/rate/index/entity a derivative's cash flows are driven by, distinct from Notional, which is just the size), including what <b>CORRA</b> (the Interest Rate template's Underlier below) actually is and how it's calculated. <a href="./module-08-rates.html">Module 8</a> §1 has the full CDOR-to-CORRA transition story.</div>
+
       <h3>One UPI reference-data template per asset class</h3>
       <p>Different asset classes describe "the product" using different fields. Reusing trades already built elsewhere in this curriculum:</p>
 

@@ -23,7 +23,9 @@
 
 ### The LIBOR-to-RFR transition — why "CORRA" and not "CDOR" or "LIBOR"
 
-**IT/reporting angle:** until the early 2020s, almost every floating leg in this asset class referenced **LIBOR** (London Interbank Offered Rate) or a local equivalent. LIBOR was discontinued (it was based on interbank *estimates*, not actual transactions, and proved manipulable) and replaced globally by **Risk-Free Rates (RFRs)** computed from real overnight transactions: SOFR in the US, €STR in the EU, SONIA in the UK, and CORRA in Canada. This module uses CORRA throughout, consistent with [Module 1](./module-01-fundamentals.md) §8's original worked example — but any reporting system built before ~2022 that still has a hardcoded "LIBOR" reference-rate field is carrying legacy debt from this exact transition, one of the largest coordinated data-migration events the industry has ever run.
+**IT/reporting angle:** until the early 2020s, almost every floating leg in this asset class referenced **LIBOR** (London Interbank Offered Rate) or a local equivalent — in Canada, that local equivalent was **CDOR** (Canadian Dollar Offered Rate), a survey-based rate submitted daily by a panel of banks. Both LIBOR and CDOR shared the same fatal flaw: they were based on interbank *estimates* of what a bank believed it *could* borrow at, not actual observed transactions — and both proved manipulable (the LIBOR-rigging scandals of the early 2010s). CDOR itself was **discontinued after June 2024**, following LIBOR's own phase-out a couple of years earlier.
+
+**What CORRA actually measures.** CORRA (Canadian Overnight Repo Rate Average) replaced CDOR as Canada's benchmark. Unlike CDOR, CORRA isn't a survey of opinions — it's calculated by the **Bank of Canada**, each business day, directly from the prior day's actual **overnight repo transactions** ([Module 5](./module-05-fixed-income.md) §3's repo mechanic) collateralized by **Government of Canada securities**. Because every input is a real, executed trade at an observable rate rather than a bank's self-reported estimate, CORRA is structurally far harder to manipulate — the same reasoning behind SOFR (US), €STR (EU), and SONIA (UK) all replacing their own local IBOR-style predecessors around the same time. This module uses CORRA throughout, consistent with [Module 1](./module-01-fundamentals.md) §8's original worked example (which also introduces the general **Underlier** concept CORRA is one instance of) — but any reporting system built before ~2022 that still has a hardcoded "LIBOR" or "CDOR" reference-rate field is carrying legacy debt from this exact transition, one of the largest coordinated data-migration events the industry has ever run.
 
 **Takeaway:** every product in this module is a variation on one theme — fixed vs. floating, or the *option* to enter into fixed vs. floating — with Notional as a pure calculation input. Keeping that one sentence in mind is enough to correctly reason about every worked example in Section 4.
 
@@ -432,12 +434,12 @@ Answer whenever ready — then move to **[Module 9](./module-09-credit.md): Cred
 
 ## Answers — Recap Quiz, with Explanations
 
-**1. Goldman Sachs pays Bank Of Toronto CAD 87,739.73 — a reversal of direction from the worked example.**
+**1. Goldman Sachs pays Bank Of Toronto CAD 87,260.28 — a reversal of direction from the worked example.**
 
 ```text
 Bank Of Toronto's FIXED leg = 100,000,000 x 4.00% x 91/365 = CAD 997,260.27
-Goldman Sachs' FLOATING leg = 100,000,000 x 4.35% x 91/365 = CAD 1,085,000.00
-Net: Goldman Sachs PAYS Bank Of Toronto = 1,085,000.00 - 997,260.27 = CAD 87,739.73
+Goldman Sachs' FLOATING leg = 100,000,000 x 4.35% x 91/365 = CAD 1,084,520.55
+Net: Goldman Sachs PAYS Bank Of Toronto = 1,084,520.55 - 997,260.27 = CAD 87,260.28
 ```
 
 Whenever the floating rate settles above the fixed rate, the fixed-rate payer (Bank Of Toronto) becomes the net *receiver* — the same fixed-vs-floating netting mechanic [Module 1](./module-01-fundamentals.md) §8 established, just running in the opposite direction because CORRA came in higher this quarter.

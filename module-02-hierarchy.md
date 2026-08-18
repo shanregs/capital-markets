@@ -409,6 +409,48 @@ ONE PRODUCT (ONE UPI) -- THREE UNRELATED TRADES (THREE UTIs)
 
 ---
 
+## 13. Worked Example — Interest Rate Swap (IRS)
+
+**Definition:** an IRS is an agreement to exchange a **fixed** stream of interest payments for a **floating** stream, both calculated off the same **Notional** ([Module 1](./module-01-fundamentals.md) §8), which itself never changes hands. Unlike Section 9's CDS (a contingent payout that may never happen) or Section 10's FX Forward (two real currency amounts that eventually settle), an IRS's notional **never settles at all** — only a small net difference moves, and it moves **every single period**, not once at maturity.
+
+```text
+INTEREST RATE SWAP  —  Bank Of Toronto pays fixed, receives floating vs CORRA
+================================================================================
+
+  Notional          : CAD 100,000,000  (reference only — never exchanged)
+  Fixed Rate         : 4.00% (Bank Of Toronto pays)
+  Floating Rate      : 3-month CORRA + 0.05% spread (Goldman Sachs pays)
+  Term               : 5 years, quarterly payment dates (20 settlements total)
+
+SCENARIO A — CORRA averages 3.20% this quarter (the normal case)
+----------------------------------------------------------
+  Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+  Floating leg (Goldman Sachs pays) : 100,000,000 x 3.25% x (91/365) = CAD 810,068
+                                       (3.20% CORRA + 0.05% spread)
+
+  Bank Of Toronto  ---- pays CAD 187,192 net ---->  Goldman Sachs
+
+SCENARIO B — CORRA instead averages 4.30% this quarter (rates moved up)
+----------------------------------------------------------
+  Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+  Floating leg (Goldman Sachs pays) : 100,000,000 x 4.35% x (91/365) = CAD 1,084,521
+                                       (4.30% CORRA + 0.05% spread)
+
+  Goldman Sachs  ---- pays CAD 87,261 net ---->  Bank Of Toronto
+  (the direction FLIPS — same trade, same two parties, opposite net payer,
+  purely because CORRA reset higher this quarter)
+
+  -> This repeats every quarter for 5 years — 20 separate net settlements,
+     each independently determined by that period's own CORRA reset. The
+     CAD 100,000,000 notional itself never moves on ANY of those 20 dates.
+```
+
+**ISDA classification for this trade:** Asset Class = **Interest Rate**, Base Product = **IRSwap**, Sub-Product = **FixedFloat**, Transaction Type = **Swap**. This is the exact four-level label behind the "Interest Rate / IRSwap / FixedFloat / Swap" shorthand already used in Section 11's cross-reference table.
+
+**Takeaway:** put side by side with Sections 9 and 10, this trade completes a genuinely useful three-way contrast in "what actually settles": an IRS's notional **never** settles (only a net difference, repeatedly); an FX Forward's notional **does** eventually settle (both full currency amounts, once, Section 10); a CDS's notional **may never** settle at all (a contingent lump sum, only if a credit event occurs, Section 9). Three OTC derivatives, three completely different relationships between "Notional" and "what actually moves in cash" — exactly the kind of field-level nuance a reporting system has to encode per product, not assume uniformly.
+
+---
+
 ## Recap Quiz — Numbers Edition
 
 1. Using Trade 1 above, if Bank Of Toronto instead bought CAD 25,000,000 face value at the same Price 98.50, what's the new market value — and which fields in the record changed versus the original trade?
@@ -421,6 +463,7 @@ ONE PRODUCT (ONE UPI) -- THREE UNRELATED TRADES (THREE UTIs)
 8. Name the four levels of the ISDA Product Taxonomy in order. At which level would the label "Credit" sit, and at which level would "CreditDefaultSwap" sit?
 9. In the FX Forward example (Section 10), suppose Bank Of Toronto instead needed to *sell* USD 10,000,000 in 3 months (not buy) and locked in the same 1.3545 forward rate. If spot later moves to 1.3700, is that a good or bad outcome for Bank Of Toronto compared to waiting and selling at spot — and how is this the mirror image of the original example?
 10. In the Section 12 worked example, Trade A and Trade C share the same UPI, same counterparty (Goldman Sachs), and are both CAD-denominated — yet they are unambiguously two separate trades. What two identifiers prove they're separate, and why doesn't sharing a UPI make them "the same trade"?
+11. Using Section 13's Scenario B, if CORRA instead averaged exactly 3.95% this quarter (+0.05% spread = 4.00% floating, precisely equal to the fixed rate), what would the net settlement be — and does that mean nothing happens on that payment date?
 
 Answer whenever ready — then we move to **[Module 3](./module-03-trade-lifecycle.md): Trade Lifecycle**.
 
@@ -492,6 +535,17 @@ Trade C: UTI CA1B0T20261014003, Trade ID BOT-2026-000725, Notional CAD 250,000,0
 ```
 
 A UPI is deliberately built only from product-defining fields (Asset Class, Instrument Type, Underlier, Notional Currency, Tenor) — Section 12 lists exactly which fields those are, and counterparty/notional/rate/date are not among them. That's by design: the UPI's job is to let a regulator group "all 5Y CAD fixed-vs-CORRA swaps" together across the whole market, which only works if trade-specific details are excluded from what defines it. UTI (and, internally, Trade ID) exist precisely to carry the trade-specific identity that UPI intentionally leaves out — every real transaction gets a fresh one, even when a thousand other transactions share its exact product template.
+
+**11. Net settlement = CAD 0 — but that does NOT mean nothing happens on that date.**
+
+```text
+Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+Floating leg (Goldman Sachs pays) : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+                                     (3.95% CORRA + 0.05% spread)
+Net = 997,260 - 997,260 = CAD 0
+```
+
+Both legs still get independently calculated off that quarter's CORRA reset — the netting step just happens to produce a zero result this particular quarter, purely by coincidence of where CORRA landed. The trade doesn't pause, terminate, or skip processing; the next quarter's settlement is calculated completely independently, off whatever CORRA does next. A reporting system that only books an entry when net cash actually moves would silently miss recording this period's settlement altogether — the correct behavior is to always compute and report both legs and the net, even when the net happens to equal zero.
 
 ---
 
