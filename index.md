@@ -14,6 +14,8 @@ Also see: [**SFTR Reporting Deep Dive**](./sftr-reporting.md) ([HTML](./sftr-rep
 
 Also see: [**UK DMO Reporting Deep Dive**](./dmo-uk-reporting.md) ([HTML](./dmo-uk-reporting.html)) — how Gilt-Edged Market Makers (GEMMs) report gilt auctions and secondary-market trading to the UK Debt Management Office: Auction, Daily, Weekly, and Aggregated reports, worked with real numbers.
 
+Also see: [**UPI, UTI &amp; ANNA-DSB Deep Dive**](./upi-uti-dsb-deep-dive.md) ([HTML](./upi-uti-dsb-deep-dive.html)) — derivative identifiers explained end to end: UTI structure and generation waterfall, UPI reference-data templates across five asset classes, the ANNA-DSB organization that runs the system, and exactly which reporting regimes need which identifier.
+
 ---
 
 ## Modules
@@ -48,6 +50,7 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 | Systems Landscape — Front/Middle/Back Office systems, data flows &amp; settlement cycles in Canada, US, UK &amp; EU, plus regulators | [systems-landscape.md](./systems-landscape.md) | [systems-landscape.html](./systems-landscape.html) |
 | SFTR Reporting Deep Dive — what SFTR is, which trades must be reported, lifecycle-event reporting model &amp; official links | [sftr-reporting.md](./sftr-reporting.md) | [sftr-reporting.html](./sftr-reporting.html) |
 | UK DMO Reporting Deep Dive — how GEMMs report gilt auctions &amp; secondary-market trading to the UK DMO (Auction/Daily/Weekly/Aggregated reports) | [dmo-uk-reporting.md](./dmo-uk-reporting.md) | [dmo-uk-reporting.html](./dmo-uk-reporting.html) |
+| UPI, UTI &amp; ANNA-DSB Deep Dive — derivative identifiers explained: UTI generation waterfall, UPI reference-data templates, ANNA-DSB, where each is used | [upi-uti-dsb-deep-dive.md](./upi-uti-dsb-deep-dive.md) | [upi-uti-dsb-deep-dive.html](./upi-uti-dsb-deep-dive.html) |
 
 ---
 
