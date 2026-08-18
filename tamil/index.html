@@ -1,0 +1,529 @@
+<!doctype html>
+<title>மூலதனச் சந்தைகள் — தொகுதி அட்டவணை</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans Tamil", "Nirmala UI", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  h1, h2 {
+    font-family: "Noto Sans Tamil", "Nirmala UI", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  .mono, .num, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+  }
+
+  @media (max-width: 600px) {
+    .shell { padding: 40px 18px 72px; }
+  }
+
+  .masthead {
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); }
+
+  .masthead h1 { font-size: 2.15rem; line-height: 1.15; margin: 0 0 12px; }
+  .masthead .dek { color: var(--ink-soft); font-size: 1.02rem; max-width: 58ch; margin: 0 0 18px; }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag { color: var(--accent-2); font-family: "Cascadia Code", "SF Mono", Consolas, monospace; }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+  }
+
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0 4px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--paper-sunken);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 8.3%;
+    background: var(--accent);
+  }
+  .progress-label {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .progress-label b { color: var(--ink); }
+
+  .modlist { margin-top: 36px; }
+
+  .mod-row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mod-row:first-child { border-top: 1px solid var(--line); }
+
+  .mod-row.is-available {
+    background: linear-gradient(90deg, var(--accent-soft), transparent 60%);
+    margin: 0 -12px;
+    padding: 16px 12px;
+    border-radius: 4px;
+    border-bottom-color: var(--line);
+  }
+
+  .mod-num {
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  .is-available .mod-num { color: var(--accent); font-weight: 700; }
+
+  .mod-title { min-width: 0; }
+  .mod-title .t { font-weight: 600; color: var(--ink); display: block; }
+  .is-available .mod-title .t { color: var(--ink); }
+  .mod-title .p {
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .mod-title .p.high { color: var(--accent-2); }
+
+  .status-pill {
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .status-pill.available { color: var(--accent); background: var(--accent-soft); border-color: var(--accent); }
+  .status-pill.planned { color: var(--ink-faint); background: var(--paper-sunken); border-color: var(--line); }
+
+  .mod-link {
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .mod-link:hover { text-decoration: underline; }
+  .mod-link.disabled {
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  @media (max-width: 560px) {
+    .mod-row { grid-template-columns: 28px 1fr; row-gap: 8px; }
+    .status-pill, .mod-link { grid-column: 2; }
+  }
+
+  .conventions {
+    margin-top: 48px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent-2);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+  }
+  .conventions h2 { font-size: 1.05rem; margin: 0 0 10px; font-family: "Noto Sans Tamil", "Nirmala UI", -apple-system, sans-serif; }
+
+  .ref-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 12px 0 12px;
+  }
+  .conventions ul { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.92rem; }
+  .conventions li { margin-bottom: 6px; }
+  .conventions b { color: var(--ink); }
+
+  footer {
+    margin-top: 40px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">சுய-வேகக் கற்றல் பாதை · தமிழ்</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>மூலதனச் சந்தைகள் — தொகுதி அட்டவணை</h1>
+    <p class="dek">வணிகக் கருத்து → வர்த்தக வாழ்க்கைச் சுழற்சி → மதிப்பீடு → வெளிப்பாடு/இடர் → பிணையம்/மார்ஜின் → கிளியரிங் &amp; தீர்வு → ஒழுங்குமுறை அறிக்கையிடல், IT/அறிக்கையிடல் பார்வையில் கற்பிக்கப்படுகிறது.</p>
+    <div class="audience-note">நிதி/மூலதனச் சந்தைகளுக்குப் புதியவரான <b>ஒரு மென்பொருள் கட்டமைப்பாளருக்காக (Java பின்னணி)</b> எழுதப்பட்டது. இந்தத் தொகுதிகள் முழுவதும் பயன்படுத்தப்படும் உதாரண வங்கி: <span class="bank-tag">Bank Of Toronto</span> (கற்பனை, விளக்கத்திற்காக மட்டும்). பொதுவாகப் பயன்படுத்தப்படும் சுருக்கக் குறியீடுகளுக்கு <a href="./abbreviations.html">சுருக்கக் கலைச்சொல் அகராதியை</a>ப் பார்க்கவும்.</div>
+  </div>
+
+  <div class="progress">
+    <div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div>
+    <div class="progress-label"><b class="mono">14</b> / 14 தொகுதிகள் எழுதப்பட்டன <span class="mono" style="font-size:0.85em;color:var(--ink-faint);">(+ தொகுதி 15, குறுக்குவெட்டு) — முழுமையானது</span></div>
+  </div>
+
+  <div class="modlist">
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">01</span>
+      <div class="mod-title">
+        <span class="t">மூலதனச் சந்தைகள் அடிப்படைகள்</span>
+        <span class="p">இயல்பான முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-01-fundamentals.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">02</span>
+      <div class="mod-title">
+        <span class="t">சொத்து வகை → தயாரிப்பு → கருவி → வர்த்தகம்</span>
+        <span class="p high">உயர் முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-02-hierarchy.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">03</span>
+      <div class="mod-title">
+        <span class="t">வர்த்தக வாழ்க்கைச் சுழற்சி</span>
+        <span class="p high">உயர் முன்னுரிமை · 20%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-03-trade-lifecycle.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">04</span>
+      <div class="mod-title">
+        <span class="t">பங்கு (Equity) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· சொத்து வகை பாதைவரைபடம் 1/6</span></span>
+        <span class="p">இயல்பான முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-04-equity.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">05</span>
+      <div class="mod-title">
+        <span class="t">நிலையான வருமானம் (Fixed Income) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· சொத்து வகை பாதைவரைபடம் 2/6</span></span>
+        <span class="p high">உயர் முன்னுரிமை · 20%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-05-fixed-income.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">06</span>
+      <div class="mod-title">
+        <span class="t">அந்நிய செலாவணி (FX) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· சொத்து வகை பாதைவரைபடம் 3/6</span></span>
+        <span class="p">இயல்பான முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-06-fx.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">07</span>
+      <div class="mod-title">
+        <span class="t">பண்டங்கள் (Commodities) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· சொத்து வகை பாதைவரைபடம் 4/6</span></span>
+        <span class="p">இயல்பான முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-07-commodities.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">08</span>
+      <div class="mod-title">
+        <span class="t">வட்டி விகிதங்கள் (Rates) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· சொத்து வகை பாதைவரைபடம் 5/6</span></span>
+        <span class="p high">உயர் முன்னுரிமை · 20%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-08-rates.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">09</span>
+      <div class="mod-title">
+        <span class="t">கடன் (Credit) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· சொத்து வகை பாதைவரைபடம் 6/6</span></span>
+        <span class="p high">உயர் முன்னுரிமை · 20%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-09-credit.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">10</span>
+      <div class="mod-title">
+        <span class="t">மதிப்பீடு (Valuation)</span>
+        <span class="p high">மிக உயர்ந்த முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-10-valuation.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">11</span>
+      <div class="mod-title">
+        <span class="t">இடர் &amp; வெளிப்பாடு (Risk &amp; Exposure)</span>
+        <span class="p high">உயர் முன்னுரிமை · 20%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-11-risk-exposure.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">12</span>
+      <div class="mod-title">
+        <span class="t">பிணையம் &amp; மார்ஜின் (Collateral &amp; Margin)</span>
+        <span class="p high">முக்கிய கவனம் · 20%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-12-collateral-margin.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">13</span>
+      <div class="mod-title">
+        <span class="t">தரப்பினர், LEI-கள் &amp; சந்தை உள்கட்டமைப்பு</span>
+        <span class="p">இயல்பான முன்னுரிமை · 10%</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-13-parties-leis.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">14</span>
+      <div class="mod-title">
+        <span class="t">ஒழுங்குமுறை அறிக்கையிடல் + IT பார்வை</span>
+        <span class="p">இயல்பான முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-14-regulatory-reporting.html">திற →</a>
+    </div>
+
+    <div class="mod-row is-available">
+      <span class="mod-num mono">15</span>
+      <div class="mod-title">
+        <span class="t">பட்டியலிடப்பட்ட வழித்தோன்றல்கள் (Listed Derivatives) <span class="mono" style="font-size:0.7em;color:var(--ink-faint);">· குறுக்குவெட்டு, 6-சொத்து-வகை பாதைவரைபடத்தின் பகுதி இல்லை</span></span>
+        <span class="p">இயல்பான முன்னுரிமை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./module-15-listed-derivatives.html">திற →</a>
+    </div>
+
+  </div>
+
+  <div class="modlist">
+    <p class="ref-label">குறிப்பு</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">சுருக்கக் கலைச்சொல் அகராதி</span>
+        <span class="p">அடையாளங்கள், சந்தை அமைப்பு, தயாரிப்புகள், வட்டி விகிதங்கள், மதிப்பீடு, தீர்வு, இடர், ஒழுங்குமுறை</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./abbreviations.html">திற →</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">அமைப்புகள் நிலப்பரப்பு (Systems Landscape)</span>
+        <span class="p">முன்/நடு/பின் அலுவலக அமைப்புகள், தரவுப் பாய்வுகள் &amp; தீர்வு சுழற்சிகள் — கனடா, அமெரிக்கா, இங்கிலாந்து &amp; ஐரோப்பிய ஒன்றியம்</span>
+      </div>
+      <span class="status-pill available">கிடைக்கிறது</span>
+      <a class="mod-link" href="./systems-landscape.html">திற →</a>
+    </div>
+  </div>
+
+  <div class="conventions">
+    <h2>ஒவ்வொரு தொகுதிக்குமான மரபுகள்</h2>
+    <ul>
+      <li>ஒவ்வொரு தொகுதியும் இந்த வடிவத்தைப் பின்பற்றுகிறது: <b>கருத்து → நிஜ-உலக வர்த்தக எடுத்துக்காட்டு (எண்களுடன்) → ஈடுபட்ட பங்கேற்பாளர்கள் → ASCII பாய்வு வரைபடம் → முக்கிய கருத்து → மறுநினைவு வினாடி வினா.</b></li>
+      <li>உதாரண வங்கி எப்போதும் <b>Bank Of Toronto</b> — இந்த களஞ்சியம் <span class="mono">bmo</span> எனும் பாதையின் கீழ் இருந்தாலும், உண்மையான வங்கியின் பெயர் ஒருபோதும் பயன்படுத்தப்படவில்லை.</li>
+      <li>முன்னுரிமை நெடுவரிசை, மூல பாடத்திட்ட ஆவணத்தின் "எனது தற்போதைய வேலைக்கான முன்னுரிமை" எடையீட்டைப் பிரதிபலிக்கிறது.</li>
+    </ul>
+  </div>
+
+  <footer>மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தமிழ் <span class="mono" style="color:var(--ink-faint);">·</span> <a href="../index.html" style="color:var(--ink-faint);">English version</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

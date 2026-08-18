@@ -1,0 +1,1132 @@
+<!doctype html>
+<title>தொகுதி 3 — வர்த்தக வாழ்க்கைச் சுழற்சி</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans Tamil", "Nirmala UI", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: "Noto Sans Tamil", "Nirmala UI", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  .id-tag {
+    display: inline-block;
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .id-tag.gold { color: var(--accent-2); background: var(--accent-2-soft); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="./index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; அட்டவணைக்குத் திரும்பு</a>
+    <div class="masthead-top">
+      <div class="eyebrow">மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தொகுதி 3 / 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">கணினி</button>
+        <button type="button" data-mode="light" aria-pressed="false">வெளிர்</button>
+        <button type="button" data-mode="dark" aria-pressed="false">இருள்</button>
+      </div>
+    </div>
+    <h1>வர்த்தக வாழ்க்கைச் சுழற்சி</h1>
+    <p class="dek">ஒவ்வொரு வர்த்தகமும் ஆர்டரிலிருந்து ஒழுங்குமுறை அறிக்கையிடல் வரை கடந்து செல்லும் ஒன்பது-நிலைப் பயணம் — உண்மையான காலமுத்திரைகள் (timestamps), மார்ஜின் எண்கள், செட்டில்மென்ட் தோல்விகள் (settlement fails), மற்றும் ஒவ்வொரு அறிக்கைப் பதிவுக்குப் பின்னாலும் உள்ள முழுமையான நிலை-நிலை இயந்திரம் (status state machine) ஆகியவற்றுடன்.</p>
+    <div class="audience-note">நிதி/மூலதனச் சந்தைகளுக்குப் புதியவரான ஒரு <b>மென்பொருள் கட்டமைப்பாளருக்காக (Java பின்னணி)</b> எழுதப்பட்டது. இந்தத் தொகுதி முழுவதும் பயன்படுத்தப்படும் உதாரண வங்கி: <span class="bank-tag">Bank Of Toronto</span> (கற்பனை, விளக்கத்திற்காக மட்டும்).</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">இந்தப் பக்கத்தில்</p>
+    <ol>
+      <li><a href="#nine-stages"><span class="toc-num">01</span>ஒன்பது நிலைகள், ஒரே படம்</a></li>
+      <li><a href="#order-execution"><span class="toc-num">02</span>ஆர்டர் vs செயல்படுத்தல் (Execution)</a></li>
+      <li><a href="#trade-capture"><span class="toc-num">03</span>வர்த்தகப் பதிவு (Trade Capture)</a></li>
+      <li><a href="#confirmation"><span class="toc-num">04</span>உறுதிப்படுத்தல் &amp; ஏற்புறுதி</a></li>
+      <li><a href="#matching"><span class="toc-num">05</span>பொருத்தல் &amp; வர்த்தக முரண்பாடுகள்</a></li>
+      <li><a href="#clearing"><span class="toc-num">06</span>கிளியரிங் — நோவேஷன் (Novation)</a></li>
+      <li><a href="#settlement"><span class="toc-num">07</span>செட்டில்மென்ட் — DvP</a></li>
+      <li><a href="#reconciliation"><span class="toc-num">08</span>சமன்படுத்தல் (Reconciliation)</a></li>
+      <li><a href="#reg-reporting"><span class="toc-num">09</span>ஒழுங்குமுறை அறிக்கையிடல்</a></li>
+      <li><a href="#e2e-bond"><span class="toc-num">10</span>தொடக்கம் முதல் முடிவு வரை — பத்திர வர்த்தகம்</a></li>
+      <li><a href="#e2e-swap"><span class="toc-num">11</span>தொடக்கம் முதல் முடிவு வரை — கிளியர் செய்யப்பட்ட ஸ்வாப்</a></li>
+      <li><a href="#state-machine"><span class="toc-num">12</span>நிலை-நிலை இயந்திரம் (Status State Machine)</a></li>
+      <li><a href="#fail-example"><span class="toc-num">13</span>செட்டில்மென்ட் தோல்வி, எண்களுடன்</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>மறுநினைவு வினாடி வினா</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>வினாடி வினா பதில்கள்</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="nine-stages">
+      <p class="sec-eyebrow"><span class="n">01</span> · முழு பயணமும், தொடக்கம் முதல் இறுதி வரை</p>
+      <h2>வர்த்தக வாழ்க்கைச் சுழற்சி — ஒன்பது நிலைகள், ஒரே படம்</h2>
+      <p class="lede">ஒரு அறிக்கையிடல் அமைப்பில் நீங்கள் காணும் ஒவ்வொரு வர்த்தகமும், சொத்து வகை எதுவாக இருந்தாலும், ஒரே ஒன்பது நிலைகளை, ஒரே வரிசையில் கடந்து செல்கிறது. ஒவ்வொரு சொத்து வகைக்கும் வேறுபடுவது <b>ஒவ்வொரு நிலையும் எப்படி செயல்படுத்தப்படுகிறது</b> என்பதுதான் — வரிசை ஒருபோதும் மாறாது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · ஒன்பது-நிலை வாழ்க்கைச் சுழற்சி</span><span class="t-id">ஒவ்வொரு வர்த்தகமும், ஒவ்வொரு சொத்து வகையும்</span></div>
+        <pre>  1. ORDER            "I want to buy/sell X" — intent, not yet a trade
+        |
+  2. EXECUTION         Order meets a counterparty at an agreed price -&gt; a TRADE now exists
+        |
+  3. TRADE CAPTURE      The trade is recorded as data (Trade ID assigned)
+        |
+  4. CONFIRMATION       Both sides formally state what they believe was agreed
+        |
+  5. MATCHING           Automated comparison: do both sides' records agree exactly?
+        |
+  6. CLEARING           (derivatives/some cash products) CCP steps in as buyer-to-
+        |                every-seller and seller-to-every-buyer; margin is posted
+        |
+  7. SETTLEMENT         Securities and cash actually change hands (DvP)
+        |
+  8. RECONCILIATION     Internal books vs custodian/CCP records are tied out
+        |
+  9. REGULATORY         Trade details submitted to a Trade Repository / regulator
+     REPORTING</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>நிலை</th><th>எந்த அலுவலகம் இதற்குப் பொறுப்பு</th><th>உருவாக்குவது</th></tr></thead>
+        <tbody>
+          <tr><td>ஆர்டர் (Order)</td><td>Front Office</td><td>ஒரு ஆணை, இன்னும் வர்த்தகம் அல்ல</td></tr>
+          <tr><td>செயல்படுத்தல் (Execution)</td><td>Front Office</td><td>சட்டப்படி ஒப்புக்கொள்ளப்பட்ட ஒரு வர்த்தகம் (விலை, அளவு, தரப்பினர், நேரம்)</td></tr>
+          <tr><td>வர்த்தகப் பதிவு (Trade Capture)</td><td>Front Office / Middle Office</td><td>Trade ID உடன் கூடிய முதல் மின்னணு வர்த்தகப் பதிவு</td></tr>
+          <tr><td>உறுதிப்படுத்தல் (Confirmation)</td><td>Middle Office</td><td>தரப்பினருக்கு அனுப்பப்படும் வர்த்தக பொருளாதாரங்களின் முறையான அறிக்கை</td></tr>
+          <tr><td>பொருத்தல் (Matching)</td><td>Middle Office</td><td>MATCHED அல்லது BROKEN நிலை</td></tr>
+          <tr><td>கிளியரிங் (Clearing)</td><td>Middle Office / CCP</td><td>பொருந்தும் இடங்களில், இரு நோவேஷன் செய்யப்பட்ட வர்த்தகங்கள் (CCP-க்கு எதிராக) + மார்ஜின் தேவை</td></tr>
+          <tr><td>செட்டில்மென்ட் (Settlement)</td><td>Back Office</td><td>பத்திரங்கள் வழங்கப்பட்டு, பணம் செலுத்தப்பட்டு, லெட்ஜர் பதிவுகள் பதிவு செய்யப்படுகின்றன</td></tr>
+          <tr><td>சமன்படுத்தல் (Reconciliation)</td><td>Back Office</td><td>சரிபடுத்தப்பட்ட ஒரு நிலை (position), அல்லது கண்டறியப்பட்ட ஒரு முரண்பாடு</td></tr>
+          <tr><td>ஒழுங்குமுறை அறிக்கையிடல் (Regulatory Reporting)</td><td>Back Office / Compliance</td><td>Trade Repository / ஒழுங்குமுறையாளருக்குச் சமர்ப்பிக்கப்பட்ட ஒரு அறிக்கை</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு வர்த்தகப் பதிவில் உங்களுக்குப் பரிச்சயமில்லாத ஒரு புலம் கிடைத்து, "இது எங்கிருந்து வருகிறது?" என்று கேட்கப்பட்டால், அதைக் கண்டறிய வேகமான வழி இந்த ஒன்பது-நிலை காலவரிசையில் அதை வைத்துப் பார்ப்பதுதான் — எந்த அலுவலகம் அதை உருவாக்கியது என்பதையும், மூல-உண்மையை வைத்திருக்கும் மேல்நிலை அமைப்பு எது என்பதையும் அந்த நிலை உங்களுக்குக் கூறும்.</div>
+    </section>
+
+    <section class="mod" id="order-execution">
+      <p class="sec-eyebrow"><span class="n">02</span> · "வர்த்தகம்" உண்மையில் எங்கு தொடங்குகிறது</p>
+      <h2>ஆர்டர் vs செயல்படுத்தல் (Order vs Execution)</h2>
+      <p class="lede">ஒரு <b>ஆர்டர் (Order)</b> என்பது வாங்க அல்லது விற்க வேண்டும் என்ற ஒரு ஆணை — தரப்பினர் உறுதிப்பாடு எதுவும் இல்லை, சுதந்திரமாக மாற்றியமைக்கலாம் அல்லது ரத்து செய்யலாம். ஒரு <b>செயல்படுத்தல் (Execution)</b> என்பது ஒரு ஆர்டர் ஒரு பொருந்தும் தரப்பினரை ஒப்புக்கொள்ளப்பட்ட விலையில் சந்திக்கும் தருணம் — அந்தத் தருணத்திலிருந்தே, எந்த அமைப்பும் அதைப் பதிவு செய்யும் முன்பே, சட்டப்பூர்வமாகக் கட்டுப்படுத்தும் ஒரு வர்த்தகம் உள்ளது.</p>
+
+      <h3>செய்முறை உதாரணம் — Maple Leaf Pension Fund, Bank Of Toronto வழியாக ஒரு ஆர்டரை அனுப்புகிறது</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">காலவரிசை · ஆர்டரிலிருந்து செயல்படுத்தல் வரை</span><span class="t-id">09:02 – 09:03 UTC</span></div>
+        <pre>09:02:00  ORDER placed
+  Maple Leaf Pension Fund instructs Bank Of Toronto:
+    "BUY CAD 50,000,000 face value, Canada 5% Bond 2035,
+     LIMIT price 98.60 or better"
+  -&gt; No trade exists yet. This is pure intent.
+
+09:03:12  EXECUTION
+  Bank Of Toronto's trading desk finds a seller in the interbank
+  market willing to sell at 98.55 (better than the fund's 98.60 limit)
+  -&gt; A TRADE now exists, legally, at 09:03:12 — before any
+     system has captured it as a data record.
+
+  Trade economics agreed at execution:
+    Instrument : Canada 5% Bond 2035 (ISIN CA1358XXXXX)
+    Quantity   : CAD 50,000,000 face value
+    Price      : 98.55
+    Counterparty: Maple Leaf Pension Fund
+    Side       : Bank Of Toronto sells / Maple Leaf Pension Fund buys</pre>
+      </div>
+
+      <p>ஒரு ஆர்டர் <b>பகுதியளவு நிறைவேற்றப்படுவதும் (partially filled)</b> நடக்கலாம் — உதாரணமாக, டெஸ்க் முதல் கட்டத்தில் 98.60-க்கு சமமாகவோ அல்லது சிறப்பாகவோ CAD 30,000,000 ஃபேஸ் மதிப்பு மட்டுமே கிடைக்கக்கூடியதாகக் கண்டறிந்து, அந்த பகுதியை உடனடியாக செயல்படுத்தி, மீதமுள்ள CAD 20,000,000-ஐ மேலும் விநியோகம் வரும் வரை <b>வேலை செய்யும் ஆர்டராக (working order)</b> வைத்திருக்கலாம். நடக்கும் ஒவ்வொரு ஃபில்லும் அதன் சொந்த செயல்படுத்தலாகவும், மேல்நிலையில் அதன் சொந்த வர்த்தகப் பதிவாகவும் இருக்கும் — ஒரு ஆர்டர் பல வர்த்தகங்களை உருவாக்கலாம்.</p>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> "ஆர்டர்" மற்றும் "வர்த்தகம்" ஒரே பொருள் அல்ல, அவற்றை ஒன்றாகக் கருதும் ஒரு அறிக்கையிடல் அமைப்பு ரத்து செய்யப்பட்ட/நிறைவேறாத ஆர்டர்களுக்குப் பேய் வர்த்தகங்களைக் காட்டலாம், அல்லது ஒரு ஆர்டர் மூன்று தனித்தனி வர்த்தகப் பதிவுகளாக மாறியதைத் தவறவிடலாம். சட்டப்படி ஒப்பந்தம் ஏற்பட்ட தருணம் செயல்படுத்தல் காலமுத்திரை (Execution timestamp) தான் — ஆர்டர் காலமுத்திரையோ, வர்த்தகப் பதிவு காலமுத்திரையோ அல்ல.</div>
+    </section>
+
+    <section class="mod" id="trade-capture">
+      <p class="sec-eyebrow"><span class="n">03</span> · வர்த்தகம் தரவாக மாறுகிறது</p>
+      <h2>வர்த்தகப் பதிவு (Trade Capture) — ஒரு வர்த்தகப் பதிவின் அமைப்பு</h2>
+      <p class="lede">செயல்படுத்தல் ஒரு மின்னணு பதிவாக மாறும் தருணம் — ஒரு Trade ID ஒதுக்கப்படுகிறது, மேல்நிலையில் தேவைப்படும் (செட்டில்மென்ட், மதிப்பீடு, ஒழுங்குமுறை அறிக்கையிடல்) ஒவ்வொரு புலமும் முதன்முறையாக நிரப்பப்படுகிறது.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">வர்த்தகப் பதிவு · BOT-2026-000901</span><span class="t-id">Status: NEW</span></div>
+        <pre>Trade ID          : BOT-2026-000901
+Execution Time     : 2026-08-17 09:03:12.184 UTC
+Trade Date         : 2026-08-17  (Monday)
+Settlement Date     : 2026-08-19  (T+2 — see Module 1 §6)
+Instrument         : Canada 5% Bond 2035
+ISIN               : CA1358XXXXX
+Quantity            : CAD 50,000,000 face value
+Price              : 98.55
+Currency            : CAD
+Counterparty        : Maple Leaf Pension Fund
+Side (Bank Of Toronto): SELL
+Trader ID           : T-4471
+Desk/Book           : Government Bonds Flow Desk
+Gross Consideration : 50,000,000 x 98.55 / 100 = CAD 49,275,000
+Status              : NEW</pre>
+      </div>
+
+      <div class="explainer">
+        <h5>Trade Date vs Execution Time</h5>
+        <p style="margin-bottom: 8px;">Trade Date என்பது ஒரு <i>காலண்டர் நாள்</i>; Execution Time என்பது ஒரு <i>துல்லியமான காலமுத்திரை</i>, இது சிறந்த-செயல்படுத்தல் பகுப்பாய்விற்கும், நாட்களில் அல்ல நிமிடங்களில் அளவிடப்படும் ஒழுங்குமுறை அறிக்கையிடல் காலக்கெடுக்களுக்கும் தேவைப்படுகிறது (பிரிவு 09).</p>
+        <h5>Status = NEW</h5>
+        <p style="margin-bottom: 0;">ஒவ்வொரு வர்த்தகப் பதிவும் ஒரு நிலையுடன் (status) தொடங்குகிறது, இந்தத் தொகுதியின் மீதமுள்ள பகுதி (பிரிவுகள் 04–09) அந்த நிலைப் புலத்தையே முன்னேற்றுகிறது. பிரிவு 12 முழுமையான நிலை-இயந்திரத்தை (state machine) விவரிக்கிறது.</p>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு Trade பதிவும் அதன் மூல ஆர்டரும் வெவ்வேறு அளவுகளைக் கொண்டிருந்தால், அது தானாகவே ஒரு பிழை அல்ல — ஆர்டர் பல தனித்தனி Trade Capture நிகழ்வுகளாக பகுதியளவு நிறைவேற்றப்பட்டிருக்கலாம், ஒவ்வொன்றும் அதன் சொந்த Trade ID உடன்.</div>
+    </section>
+
+    <section class="mod" id="confirmation">
+      <p class="sec-eyebrow"><span class="n">04</span> · எழுத்தில் வைப்பது</p>
+      <h2>உறுதிப்படுத்தல் &amp; ஏற்புறுதி (Confirmation &amp; Affirmation)</h2>
+      <p class="lede"><b>உறுதிப்படுத்தல் (Confirmation)</b> என்பது ஒரு தரப்பினர் தான் என்ன ஒப்புக்கொள்ளப்பட்டதாக நம்புகிறார் என்பதைக் கூறி அனுப்பும் செய்தி. <b>ஏற்புறுதி (Affirmation)</b> என்பது அந்த விதிமுறைகள் பொருந்துகின்றன என்று தரப்பினர் அளிக்கும் முறையான ஒப்புதல். இரு படிகளும் நிறைவடைந்த பின்னரே ஒரு வர்த்தகம் சட்டப்படி-கொள்கையளவில் தீர்க்கப்பட்டதாகக் கருதப்படுகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · உறுதிப்படுத்தல் &amp; ஏற்புறுதி</span><span class="t-id">09:15 – 10:31 UTC</span></div>
+        <pre>Bank Of Toronto                                Maple Leaf Pension Fund
+     |                                                    |
+     | 09:15  Sends CONFIRMATION                            |
+     |   Trade ID BOT-2026-000901                            |
+     |   Canada 5% Bond 2035, CAD 50,000,000 @ 98.55         |
+     |   Settlement Date 19-Aug-2026                        |
+     |------------------------------------------------------&gt;|
+     |                                                    |
+     |                                    10:30  Reviews terms
+     |                                    against its own order
+     |                                    record -&gt; MATCHES
+     |                                                    |
+     |                              10:31  Sends AFFIRMATION|
+     |&lt;------------------------------------------------------|
+     |                                                    |
+Status: CONFIRMED -&gt; AFFIRMED</pre>
+      </div>
+
+      <p>பணப் பத்திரங்களுக்கு (பாண்டுகள், பங்குகள்), இது பொதுவாக <b>CTM</b> (Central Trade Manager, DTCC) அல்லது <b>Omgeo/Alert</b> போன்ற தளங்கள் வழியாக நடைபெறுகிறது. OTC வழித்தோன்றல்களுக்கு, இணையான படி பொதுவாக <b>MarkitWire</b> வழியாகவோ அல்லது தரப்பினர்கள் இருவரின் அமைப்புகளுக்கு இடையேயான நேரடி <b>FpML</b> செய்தி பரிமாற்றம் வழியாகவோ நடைபெறுகிறது, இது <a href="./module-02-hierarchy.html">தொகுதி 2</a>, பிரிவு 07-இல் குறிப்பிடப்பட்ட ISDA Master Agreement-இன் சட்டகட்டமைப்பை நோக்கிச் செல்கிறது.</p>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு வர்த்தகம் "CONFIRMED" நிலையில் இருந்து, "AFFIRMED" நிலைக்கு வழக்கத்திற்கு மாறாக நீண்ட நேரம் செல்லாமல் இருப்பது ஏதோ தவறு நடக்கிறது என்பதற்கான வலுவான அறிகுறி — ஒன்று தரப்பினர் ஒரு விதிமுறையை ஏற்கவில்லை (ஒரு முரண்பாடு, பிரிவு 05), அல்லது ஒரு செயல்பாட்டு தாமதம் மௌனமாக T+2 செட்டில்மென்ட் காலத்தை உண்டுகொண்டிருக்கிறது.</div>
+    </section>
+
+    <section class="mod" id="matching">
+      <p class="sec-eyebrow"><span class="n">05</span> · இருதரப்பும் உண்மையில் ஒப்புக்கொள்கிறார்களா?</p>
+      <h2>பொருத்தல் (Matching) — இருதரப்பு பொருத்தலும் வர்த்தக முரண்பாடுகளும்</h2>
+      <p class="lede">இருதரப்பினரின் வர்த்தகப் பதிவுகளையும் புலம்-புலமாக ஒப்பிடும் தானியங்கு செயல். ஒவ்வொரு புலமும் சரியாகப் பொருந்தினால் -&gt; MATCHED. ஒரே ஒரு புலம் கூட பொருந்தவில்லை என்றாலும் -&gt; ஒரு BREAK, ஒரு மனிதர் அதைத் தீர்க்கும் வரை நிறுத்தி வைக்கப்படுகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">ஒப்பீடு · ஒரு தூய பொருத்தம்</span><span class="t-id">BOT-2026-000901</span></div>
+        <pre>FIELD                 BANK OF TORONTO SIDE       PENSION FUND SIDE
+-------------------------------------------------------------------
+Trade ID (internal)   BOT-2026-000901            MLPF-77213
+Instrument (ISIN)     CA1358XXXXX                CA1358XXXXX          OK
+Quantity               50,000,000                 50,000,000           OK
+Price                  98.55                       98.55                OK
+Settlement Date        2026-08-19                  2026-08-19           OK
+Currency               CAD                          CAD                  OK
+-------------------------------------------------------------------
+RESULT: MATCHED  -&gt;  proceeds straight to Settlement (Section 07)</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">ஒப்பீடு · ஒரு உடைந்த பொருத்தம்</span><span class="t-id">15bp விலை முரண்பாடு</span></div>
+        <pre>FIELD                 BANK OF TORONTO SIDE       COUNTERPARTY SIDE
+-------------------------------------------------------------------
+Instrument (ISIN)     CA1358XXXXX                CA1358XXXXX          OK
+Quantity               10,000,000                  10,000,000          OK
+Price                  98.50                        98.65               MISMATCH (15bp)
+Settlement Date        2026-08-19                   2026-08-19          OK
+-------------------------------------------------------------------
+RESULT: BROKEN  -&gt;  held, routed to an Ops queue for investigation
+
+  Root cause found: the counterparty's trader fat-fingered 98.65
+  instead of 98.50 when keying the trade into their own system.
+  Corrected, re-submitted, re-matched -&gt; MATCHED at 98.50, one
+  business hour later than a clean trade would have taken.</pre>
+        <div class="result">CAD 10,000,000 ஃபேஸ் மதிப்பில் 15-அடிப்படை-புள்ளி (basis-point) விலை முரண்பாடு என்பது <b>10,000,000 x 0.15 / 100 = CAD 15,000</b> கருதுதொகை வேறுபாடு — தனியாகப் பார்க்கும்போது சொற்பமாகத் தோன்றும் அளவு, ஆனால் தீர்க்கப்படாமல் விடப்பட்டால், சரியாக இரண்டு நாட்களுக்குப் பிறகு ஒரு தோல்வியுற்ற செட்டில்மென்டாக (பிரிவு 13) பெருகும் வகையான முரண்பாடு இதுவே.</div>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> "பொருத்தப்பட்டது (Matched)" மற்றும் "உறுதிப்படுத்தப்பட்டது (Confirmed)" ஒரே பொருள் கொண்ட வார்த்தைகள் அல்ல — உறுதிப்படுத்தல் என்பது ஒரு தரப்பினர் விதிமுறைகளைக் கூறுவது; பொருத்தல் என்பது <i>இரு</i> தரப்பினரும் தனித்தனியாகப் பதிவு செய்த பதிவுகள் ஒப்புக்கொள்கின்றன என்பதற்கான தானியங்கு ஆதாரம். தரப்பினரின் சொந்த பதிவில் ஒரு பிழை இருந்தால், ஒரு வர்த்தகம் உறுதிப்படுத்தப்பட்ட நிலையிலும் பொருத்தப்பட முடியாமல் போகலாம்.</div>
+    </section>
+
+    <section class="mod" id="clearing">
+      <p class="sec-eyebrow"><span class="n">06</span> · CCP நடுவில் நுழைகிறது</p>
+      <h2>கிளியரிங் (Clearing) — CCP வழியான நோவேஷன் (Novation)</h2>
+      <p class="lede">கிளியரிங் <b>CCP (Central Counterparty)</b> வழியாகச் செல்லும் தயாரிப்புகளுக்கு மட்டுமே பொருந்தும் — பெரும்பாலான தரப்படுத்தப்பட்ட OTC வழித்தோன்றல்களுக்கு இது கட்டாயமாகும். CCP <b>நோவேஷன் (novation)</b> செய்கிறது: அது மூல விற்பனையாளருக்கு சட்டப்படி வாங்குபவராகவும், மூல வாங்குபவருக்கு சட்டப்படி விற்பனையாளராகவும் மாறுகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · நோவேஷன்</span><span class="t-id">5Y CAD IRS, CAD 100,000,000</span></div>
+        <pre>BEFORE CLEARING  —  one bilateral trade
+========================================================================
+
+  Bank Of Toronto  &lt;====  5Y CAD IRS, Notional CAD 100,000,000  ====&gt;  Goldman Sachs
+       (pays fixed 4.00% / receives floating CORRA)
+
+AFTER NOVATION  —  the CCP steps in; TWO trades now exist
+========================================================================
+
+  Bank Of Toronto  &lt;====  IRS #1, CAD 100,000,000  ====&gt;   CCP (e.g. LCH)
+       (pays fixed 4.00% / receives floating)
+
+  CCP (e.g. LCH)   &lt;====  IRS #2, CAD 100,000,000  ====&gt;   Goldman Sachs
+       (pays fixed 4.00% / receives floating — mirror of IRS #1)
+
+  -&gt; Bank Of Toronto's counterparty risk is now the CCP, not Goldman
+     Sachs. If Goldman Sachs defaulted, the CCP absorbs the loss and
+     Bank Of Toronto's trade with the CCP is unaffected.</pre>
+      </div>
+
+      <p>நோவேஷன் இலவசம் அல்ல — சாத்தியமான எதிர்கால நஷ்டங்களை ஈடுகட்ட இருதரப்பினரும் CCP-க்கு <b>ஆரம்ப மார்ஜின் (Initial Margin, IM)</b> செலுத்த வேண்டும், மேலும் வர்த்தகத்தின் மதிப்பு நகரும்போது தினசரி <b>மாறுபாடு மார்ஜின் (Variation Margin, VM)</b> செலுத்த வேண்டும். முழு பொறிமுறையும் <a href="./module-12-collateral-margin.html">தொகுதி 12</a>-இல் (பிணையம் &amp; மார்ஜின்) உள்ளது; "கிளியரிங்-க்கு ஒரு செலவு உண்டு" என்பதை உறுதிப்படுத்த இங்கு எண்களின் தோற்றம் மட்டும்:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">கணிதம் · விளக்கமான மார்ஜின்</span><span class="t-id">CAD 100,000,000 நோஷனல்</span></div>
+        <pre>Initial Margin (IM) — illustrative rate ~2% of notional for a 5Y IRS:
+  100,000,000 x 2.00% = CAD 2,000,000
+  Bank Of Toronto posts CAD 2,000,000 to the CCP at trade inception.
+  Goldman Sachs separately posts its own CAD 2,000,000 to the CCP.
+
+Variation Margin (VM) — next business day, market rates move,
+the swap's mark-to-market value shifts by CAD 180,000 in
+Bank Of Toronto's favor:
+  CCP collects CAD 180,000 from Goldman Sachs' VM account
+  CCP pays CAD 180,000 to Bank Of Toronto's VM account
+  (VM is exchanged DAILY for the life of the trade — Module 12)</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> கிளியர் செய்யப்பட்ட ஒரு வர்த்தகப் பதிவு <b>CCP-ஐ தரப்பினராகக்</b> காட்டுவதற்குக் காரணம், மூல வங்கியை அல்ல, நோவேஷன் ஆகும் — இது ஒரு தரவுப் பிழை அல்லது ஒரு பதிலீட்டுப் புலம் அல்ல, கிளியரிங் நிலையில் சட்டப்படி நடந்தது இதுவே. பிரிவுகள் 02–05-இல் உள்ள எளிய பாண்டு வர்த்தகம் போன்ற இருதரப்பு (கிளியர் செய்யப்படாத) தயாரிப்புகள், இந்த நிலையை முழுவதுமாகத் தவிர்க்கின்றன.</div>
+    </section>
+
+    <section class="mod" id="settlement">
+      <p class="sec-eyebrow"><span class="n">07</span> · வாக்குறுதி நிஜமாகிறது</p>
+      <h2>செட்டில்மென்ட் (Settlement) — உண்மையான எண்களுடன் மீண்டும் DvP பொறிமுறை</h2>
+      <p class="lede">பத்திரங்கள் விற்பனையாளரிடமிருந்து வாங்குபவருக்கும், பணம் வாங்குபவரிடமிருந்து விற்பனையாளருக்கும் ஒரே நேரத்தில் <b>DvP (Delivery versus Payment)</b> வழியாக நகர்கின்றன, அதனால் எந்தத் தரப்பும் மற்றொரு பக்கம் இல்லாமல் ஒரு பக்கத்தை மட்டும் வைத்திருக்க நேரிடாது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">செட்டில்மென்ட் · BOT-2026-000901</span><span class="t-id">T+2 · 19-Aug-2026</span></div>
+        <pre>Bank Of Toronto (Seller)                Maple Leaf Pension Fund (Buyer)
+Custodian: BNY Mellon                    Custodian: State Street
+     |                                                    |
+     | Instructs BNY Mellon to deliver                     |
+     | CAD 50,000,000 face value                          |
+     | Canada 5% Bond 2035 (ISIN CA1358XXXXX)               |
+     |                                                    |
+     |         Both custodians instruct the CSD (CDS)      |
+     |         to move bond + cash SIMULTANEOUSLY (DvP)    |
+     v                                                    v
+--------------------------------------------------------------------
+|                    CDS — Central Securities Depository            |
+|  09:00:14 (T+2)  Bond: CAD 50,000,000 face value moves from        |
+|                   Bank Of Toronto's account to Maple Leaf's        |
+|  09:00:14 (T+2)  Cash: CAD 49,275,000 moves from Maple Leaf's      |
+|                   cash account to Bank Of Toronto's cash account   |
+|                   (50,000,000 x 98.55 / 100)                       |
+--------------------------------------------------------------------
+
+RESULT: both legs move in the same instant. Neither party is ever
+exposed to "I delivered/paid and the other side didn't."
+Status: MATCHED -&gt; SETTLED</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> நவீன சந்தைகளில் பத்திரங்களுக்கு "செட்டில்மென்ட் ரிஸ்க்" (Herstatt risk) கையாளக்கூடியதாக இருப்பதற்கு DvP-தான் முழுக் காரணம் — இரு கால்களும் CSD-இல் இயந்திரத்தனமாக ஒன்றுடன் ஒன்று பிணைக்கப்பட்டுள்ளதால், இந்த வழியாக செட்டில் ஆகும் தயாரிப்புகளுக்கு ஒரு பகுதி தோல்வி என்பதே நிகழவே முடியாது. <i>முழு வர்த்தகமும்</i> செட்டில் ஆகாமல் தோல்வியடையும்போது என்ன நடக்கும் என்பதை பிரிவு 13 விவரிக்கிறது.</div>
+    </section>
+
+    <section class="mod" id="reconciliation">
+      <p class="sec-eyebrow"><span class="n">08</span> · மூன்று ஆதாரங்கள் ஒப்புக்கொள்கின்றன என்பதை நிரூபித்தல்</p>
+      <h2>சமன்படுத்தல் (Reconciliation) — முப்பக்க சரிபார்ப்பு</h2>
+      <p class="lede">ஒரே வர்த்தகம்/நிலையை நிறுவனத்தின் சொந்த உள் புத்தகங்கள், கஸ்டோடியனின் அறிக்கை, மற்றும் (பொருந்தும் இடங்களில்) CCP-இன் பதிவுகளுடன் ஒப்பிட்டு — அவை அனைத்தும் ஒப்புக்கொள்கின்றன என்பதை நிரூபிக்கிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">சமன்படுத்தல் · ஒரு தூய சரிபார்ப்பு</span><span class="t-id">EOD, 19-Aug-2026</span></div>
+        <pre>                    Internal Books      Custodian (BNY Mellon)   CDS Record
+Position in Canada
+5% Bond 2035 (CAD)  450,000,000         450,000,000               450,000,000
+
+RESULT: TIED OUT — all three sources agree. No action needed.</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">சமன்படுத்தல் · ஒரு முரண்பாடு</span><span class="t-id">CAD 1,000,000 வேறுபாடு</span></div>
+        <pre>                    Internal Books      Custodian (BNY Mellon)   CDS Record
+Position in Bank Of
+Toronto 4.5% Bond
+2030 (CAD)          120,000,000         119,000,000               119,000,000
+
+RESULT: BREAK — internal books show CAD 1,000,000 more than the
+custodian and CDS agree on.
+
+  Investigation finds: a CAD 1,000,000 face value SELL trade settled
+  correctly at the custodian two days ago, but the internal position-
+  keeping system never received the settlement confirmation message
+  that would have decremented the internal position.
+  -&gt; Internal books corrected to 119,000,000. Root cause: a dropped
+     message between the settlement system and the position-keeping
+     system — flagged for the platform team, not a real economic loss.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> சமன்படுத்தல் முரண்பாடுகள் தானாகவே "கஸ்டோடியன் தவறு" அல்லது "நாங்கள் வர்த்தகத் தவறு செய்தோம்" என்பதைக் குறிக்காது — நடைமுறையில் மிகவும் பொதுவான மூலக் காரணம், ஒரு உள் அமைப்பு ஒரு மேல்நிலை நிகழ்வை (downstream event) செயலாக்கத் தவறியிருப்பதுதான். இதுவே ஒரு IT/அறிக்கையிடல் பொறியாளர் ஈடுபடும் வகையான பிழை — பணம் சரியாகவே உள்ளது, <i>தரவு</i> தான் முரண்படுகிறது.</div>
+    </section>
+
+    <section class="mod" id="reg-reporting">
+      <p class="sec-eyebrow"><span class="n">09</span> · ஒழுங்குமுறையாளர் கவனிக்கும் கடிகாரம்</p>
+      <h2>ஒழுங்குமுறை அறிக்கையிடல் (Regulatory Reporting) — T+1 காலக்கெடு</h2>
+      <p class="lede">ஒரு வர்த்தகம் செயல்படுத்தப்பட்டவுடன், பெரும்பாலான அதிகார எல்லைகள் அதை ஒரு கடுமையான காலக்கெடுக்குள் — பொதுவாக <b>T+1</b> — ஒரு ஒழுங்குமுறையாளருக்கு அல்லது Trade Repository-க்கு அறிவிக்குமாறு கோருகின்றன, இருப்பினும் சில எல்லைக்குள் வரும் தயாரிப்புகள்/தளங்களுக்கு அதே நாள் அல்லது நிகழ்நேரத்திற்கு நெருக்கமான அறிக்கையிடல் தேவைப்படுகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">காலக்கெடு சரிபார்ப்பு · இரண்டு வர்த்தகங்கள்</span><span class="t-id">T+1 = அடுத்த வணிக நாள் EOD</span></div>
+        <pre>TRADE 1 — Bond, BOT-2026-000901
+  Executed          : Mon 17-Aug-2026, 09:03:12 UTC
+  Reporting Deadline : Tue 18-Aug-2026, 23:59:59 UTC   (T+1)
+  Reported            : Mon 17-Aug-2026, 18:40:00 UTC   -&gt; WELL WITHIN DEADLINE
+  Report includes     : Trade ID, ISIN, Quantity, Price, Counterparty LEI,
+                        Trade Date/Time, Venue (OTC)
+
+TRADE 2 — Cleared 5Y CAD IRS (Section 06)
+  Executed            : Mon 17-Aug-2026, 14:12:05 UTC
+  Reporting Deadline   : Tue 18-Aug-2026, 23:59:59 UTC   (T+1)
+  Reported              : Tue 18-Aug-2026, 08:15:00 UTC   -&gt; WITHIN DEADLINE
+  Report includes       : UTI (Section 12, Module 2), UPI (Module 2 §12),
+                          Notional, Fixed Rate, Counterparty LEI,
+                          CCP LEI (post-novation), ISDA Taxonomy fields
+
+MISSED DEADLINE EXAMPLE
+  If Trade 2 wasn't reported until Wed 19-Aug-2026, 09:00:00 UTC,
+  that's a LATE report — a regulatory breach in itself, independent
+  of whether the trade settled/cleared correctly.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒழுங்குமுறை அறிக்கையிடல் காலக்கெடுக்கள் <b>Execution Time</b>-லிருந்து (பிரிவு 02) அளவிடப்படுகின்றன, Trade Capture நேரத்திலிருந்தோ செட்டில்மென்ட் தேதியிலிருந்தோ அல்ல — இரண்டு நாட்களுக்குப் பிறகு சரியாக செட்டில் ஆகும் ஒரு வர்த்தகம் கூட, முதல் நாளிலேயே அறிக்கை T+1 காலக்கெடுவை தவறவிட்டிருந்தால், ஒரு அறிக்கையிடல் மீறலாகவே இருக்கும்.</div>
+    </section>
+
+    <section class="mod" id="e2e-bond">
+      <p class="sec-eyebrow"><span class="n">10</span> · ஒவ்வொரு நிலையும், ஒரே வர்த்தகம்</p>
+      <h2>தொடக்கம் முதல் முடிவு வரையிலான காலவரிசை — ஒரு பாண்டு வர்த்தகம், ஆர்டரிலிருந்து அறிக்கை வரை</h2>
+      <p class="lede">இந்தத் தொகுதி முழுவதும் பின்பற்றிய ஒரே வர்த்தகத்திற்கு, மேலே கண்ட ஒவ்வொரு நிலையையும் ஒன்றாகக் கொண்டு வருகிறோம்.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">முழு வாழ்க்கைச் சுழற்சி · BOT-2026-000901</span><span class="t-id">Happy path</span></div>
+        <pre>Mon 17-Aug-2026 (T)
+  09:02:00   ORDER placed by Maple Leaf Pension Fund               [Sec 02]
+  09:03:12   EXECUTION — trade agreed at 98.55                     [Sec 02]
+  09:03:12   TRADE CAPTURE — Trade ID BOT-2026-000901 assigned      [Sec 03]
+  09:15:00   CONFIRMATION sent to Maple Leaf Pension Fund           [Sec 04]
+  10:31:00   AFFIRMATION received                                  [Sec 04]
+  10:32:00   MATCHING — fields agree, status MATCHED                [Sec 05]
+             (no Clearing stage — plain bond trade, bilateral)      [Sec 06]
+  18:40:00   Reported to Trade Repository (well within T+1)        [Sec 09]
+
+Wed 19-Aug-2026 (T+2)
+  09:00:14   SETTLEMENT — DvP at the CDS, bond + cash both move      [Sec 07]
+  17:00:00   RECONCILIATION — internal books tie out to custodian    [Sec 08]
+             and CDS record. Status: SETTLED -&gt; RECONCILED.
+
+Total elapsed time, Order to fully reconciled: ~56 hours, spanning
+one weekday plus the standard T+2 settlement cycle. Every stage
+above ran cleanly — no breaks, no fails.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒவ்வொரு அறிக்கையிடல் அமைப்பும் இந்த "வெற்றி பாதையை" (happy path) மையமாகக் கொண்டே வடிவமைக்கப்படுகிறது. பிரிவுகள் 05, 08, மற்றும் 13 ஒவ்வொரு நிலையின் <i>தோல்வி பாதை</i> எப்படி இருக்கும் என்பதைக் காட்டுகின்றன — அந்தப் பிரிவுகளைப் படித்த பின், இந்தக் காலவரிசையை மீண்டும் படித்து, ஒரு முரண்பாடு அல்லது தோல்வி எங்கு கூடுதல் நாட்களைச் சேர்த்திருக்கும் என்பதைத் துல்லியமாகக் காண்பது பயனுள்ளதாக இருக்கும்.</div>
+    </section>
+
+    <section class="mod" id="e2e-swap">
+      <p class="sec-eyebrow"><span class="n">11</span> · கிளியரிங் ஒரு முழு கூடுதல் நிலையைச் சேர்க்கிறது</p>
+      <h2>தொடக்கம் முதல் முடிவு வரையிலான காலவரிசை — ஒரு கிளியர் செய்யப்பட்ட வட்டி விகித ஸ்வாப்</h2>
+      <p class="lede">பிரிவு 06-இன் IRS-க்கு அதே பயிற்சி — மேலே உள்ள எளிய பாண்டு வர்த்தகத்திற்கு ஒருபோதும் தேவைப்படாத உண்மையான கூடுதல் படிகளை (மற்றும் ஒரு தொடர் உறவை) கிளியரிங் எப்படிச் சேர்க்கிறது என்பதைக் கவனிக்கவும்.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">முழு வாழ்க்கைச் சுழற்சி · 5Y CAD IRS</span><span class="t-id">CAD 100,000,000 நோஷனல்</span></div>
+        <pre>Mon 17-Aug-2026 (T)
+  14:10:00   EXECUTION — Bank Of Toronto &amp; Goldman Sachs agree      [Sec 02]
+             terms bilaterally (fixed 4.00% vs floating CORRA)
+  14:12:05   TRADE CAPTURE in both firms' systems                   [Sec 03]
+  14:20:00   CONFIRMATION exchanged via FpML/MarkitWire              [Sec 04]
+  14:45:00   AFFIRMATION received, MATCHED                          [Sec 05]
+  15:00:00   Submitted to CCP (e.g. LCH) for clearing                [Sec 06]
+  16:30:00   NOVATION completes — CCP is now legal counterparty
+             to both sides. Two new trades exist (IRS #1, IRS #2).
+  17:00:00   Initial Margin call: CAD 2,000,000 due from each side   [Sec 06]
+
+Tue 18-Aug-2026 (T+1)
+  09:00:00   Bank Of Toronto posts CAD 2,000,000 IM to the CCP
+  08:15:00   Reported to Trade Repository — UTI + UPI included       [Sec 09]
+             (within T+1 deadline)
+  17:00:00   First Variation Margin call: CAD 180,000 moves from
+             Goldman Sachs' account to Bank Of Toronto's account
+             via the CCP (Section 06)
+
+Every business day thereafter, for 5 years:
+  - Daily VM exchanged based on the swap's mark-to-market movement
+  - Quarterly net cash flow paid per Module 1 §8's mechanics
+    (~CAD 187,192 per quarter in that worked example)
+
+Total elapsed time, Execution to fully cleared + margined:
+~27 hours — one extra full stage (Clearing) versus the bond trade,
+plus an ongoing daily margin-exchange relationship that a plain
+bond trade never has.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> கிளியர் செய்யப்பட்ட ஒரு வழித்தோன்றலுக்கு "செட்டில்மென்ட்" என்பது ஒரு பாண்டுக்கு உள்ளதைப் போல ஒரே ஒரு T+2 நிகழ்வைக் குறிக்காது — அது நோவேஷன், ஒரு ஆரம்ப மார்ஜின் கோரிக்கை, பின்னர் CCP-உடன் வர்த்தகத்தின் ஆயுள் முழுவதும் தொடரும் ஒரு தினசரி/காலாண்டு பணப்புழக்க உறவைக் குறிக்கிறது. ஒரு வழித்தோன்றல் வர்த்தகத்தை ஒரு தனி தேதியில் "செட்டில் ஆனது" எனக் காட்டும் எந்த அறிக்கையும் அந்த வார்த்தையை தளர்வாகவே பயன்படுத்துகிறது என்பது கிட்டத்தட்ட உறுதி; இதற்கான துல்லியமான நிலை "கிளியர் செய்யப்பட்டது" (cleared) என்பதும், அதன் கீழ் தொடர்ந்து மார்ஜின் நடவடிக்கை நடந்துகொண்டிருப்பதும்தான்.</div>
+    </section>
+
+    <section class="mod" id="state-machine">
+      <p class="sec-eyebrow"><span class="n">12</span> · status புலம் உண்மையில் எதைக் கண்காணிக்கிறது</p>
+      <h2>வர்த்தக நிலை-நிலை இயந்திரம் (Status State Machine) — குறிப்பு அட்டவணை</h2>
+      <p class="lede">பிரிவுகள் 01–09-இல் உள்ள ஒவ்வொரு நிலையும் ஒரு status மதிப்பை விட்டுச் செல்கிறது. ஒரு வர்த்தகப் பதிவின் <code>status</code> புலம் முதல் பார்வையில் புரியாதபோது சரிபார்க்க வேண்டிய குறிப்பு அட்டவணை இதுவே.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Status</th><th>பொருள்</th><th>எந்த நிலையில் அமைக்கப்படுகிறது</th><th>வழக்கமான அடுத்த status</th></tr></thead>
+        <tbody>
+          <tr><td><code>NEW</code></td><td>வர்த்தகம் பதிவு செய்யப்பட்டது, இன்னும் எதுவும் சரிபார்க்கப்படவில்லை</td><td>Trade Capture (Sec 03)</td><td><code>CONFIRMED</code></td></tr>
+          <tr><td><code>CONFIRMED</code></td><td>இந்த நிறுவனத்தின் விதிமுறைகள் தரப்பினருக்கு அனுப்பப்பட்டன</td><td>Confirmation (Sec 04)</td><td><code>AFFIRMED</code> அல்லது <code>DISPUTED</code></td></tr>
+          <tr><td><code>AFFIRMED</code></td><td>தரப்பினர் கூறப்பட்ட விதிமுறைகளுக்கு ஒப்புக்கொண்டார்</td><td>Confirmation (Sec 04)</td><td><code>MATCHED</code></td></tr>
+          <tr><td><code>DISPUTED</code></td><td>தரப்பினர் ஒரு விதிமுறையை மறுத்தார்</td><td>Confirmation (Sec 04)</td><td><code>CONFIRMED</code> (திருத்தலுக்குப் பின்)</td></tr>
+          <tr><td><code>MATCHED</code></td><td>இருதரப்பினரின் சுயாதீன பதிவுகளும் சரியாகப் பொருந்துகின்றன</td><td>Matching (Sec 05)</td><td><code>CLEARED</code> அல்லது <code>SETTLED</code></td></tr>
+          <tr><td><code>BROKEN</code></td><td>பொருத்தலின்போது ஒரு புலம் முரண்பாடு கண்டறியப்பட்டது</td><td>Matching (Sec 05)</td><td><code>MATCHED</code> (திருத்தலுக்குப் பின்)</td></tr>
+          <tr><td><code>PENDING CLEARING</code></td><td>CCP-க்குச் சமர்ப்பிக்கப்பட்டது, நோவேஷன் இன்னும் முடியவில்லை</td><td>Clearing (Sec 06)</td><td><code>CLEARED</code></td></tr>
+          <tr><td><code>CLEARED</code></td><td>CCP வர்த்தகத்தை நோவேட் செய்துவிட்டது; மார்ஜின் கடமைகள் செயலில் உள்ளன</td><td>Clearing (Sec 06)</td><td><code>SETTLED</code> (அரிது) அல்லது தொடர்கிறது</td></tr>
+          <tr><td><code>SETTLED</code></td><td>பத்திரங்களும் பணமும் பரிமாறப்பட்டன (DvP நிறைவு)</td><td>Settlement (Sec 07)</td><td><code>RECONCILED</code></td></tr>
+          <tr><td><code>FAILED</code></td><td>நிறைவு இல்லாமல் Settlement Date கடந்துவிட்டது</td><td>Settlement (Sec 07)</td><td><code>SETTLED</code> (தீர்க்கப்பட்டதும்) — Sec 13</td></tr>
+          <tr><td><code>RECONCILED</code></td><td>உள் புத்தகங்கள் கஸ்டோடியன்/CCP பதிவுகளுடன் சரிபடுகின்றன</td><td>Reconciliation (Sec 08)</td><td>இறுதி (வெற்றி பாதை)</td></tr>
+          <tr><td><code>BREAK (RECON)</code></td><td>உள் புத்தகங்கள் ஒரு வெளிப்புற பதிவுடன் முரண்படுகின்றன</td><td>Reconciliation (Sec 08)</td><td><code>RECONCILED</code> (விசாரணைக்குப் பின்)</td></tr>
+          <tr><td><code>REPORTED</code></td><td>Trade Repository/ஒழுங்குமுறையாளருக்குச் சமர்ப்பிக்கப்பட்டது</td><td>Reg. Reporting (Sec 09)</td><td>இறுதி</td></tr>
+          <tr><td><code>CANCELLED</code></td><td>செட்டில்மென்ட்டை அடையும் முன்பே வர்த்தகம் ரத்து செய்யப்பட்டது</td><td>Settlement-க்கு முந்தைய எந்த நிலையும்</td><td>இறுதி</td></tr>
+          <tr><td><code>AMENDED</code></td><td>பதிவுக்குப் பின் ஒரு புலம் திருத்தப்பட்டது, ஒரு தணிக்கைத் தடய பதிவை உருவாக்குகிறது</td><td>எந்த நிலையும்</td><td>முந்தைய status-க்குத் திரும்புகிறது</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு ஆரோக்கியமான வர்த்தகம் இந்த நிலைகளில் சுமார் ஏழினை, எந்தத் திசைதிருப்பலும் இல்லாமல் வரிசையாகச் சந்திக்கும் (பிரிவுகள் 10–11-இன் காலவரிசைகள்). இந்த அட்டவணையில் உள்ள மற்ற ஒவ்வொரு status-ம் — <code>DISPUTED</code>, <code>BROKEN</code>, <code>FAILED</code>, <code>BREAK (RECON)</code> — ஒரு மனிதர் தலையிட்டு வெற்றி பாதையில் தொடர வேண்டுமெனும் வர்த்தகத்தை நிறுத்தி வைக்கவே இருக்கின்றன.</div>
+    </section>
+
+    <section class="mod" id="fail-example">
+      <p class="sec-eyebrow"><span class="n">13</span> · தோல்வி பாதை, உண்மையான செலவுடன்</p>
+      <h2>தவறு நடக்கும்போது — எண்களுடன் ஒரு செட்டில்மென்ட் தோல்வி</h2>
+      <p class="lede">ஒரு <b>செட்டில்மென்ட் தோல்வி (settlement fail)</b> என்பது ஒரு வர்த்தகத்தின் Settlement Date வந்தும் ஒரு பக்கம் நிறைவேற முடியாதபோது நிகழ்கிறது — பொதுவாக விற்பனையாளரிடம் போதுமான பாதுகாப்பில் அந்தப் பத்திரம் இல்லாததால். DvP இயந்திரத்தனமாக ஒரு <i>பகுதி</i> தோல்வியைத் தடுப்பதால், முழு செட்டில்மென்டும் அப்படியே நடக்காமல் போகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">செட்டில்மென்ட் தோல்வி · BOT-2026-000955</span><span class="t-id">CAD 1,000,000 குறைவு</span></div>
+        <pre>Instrument  : Bank Of Toronto 4.5% Bond 2030
+Quantity     : CAD 10,000,000 face value
+Price        : 99.20
+Counterparty : Goldman Sachs (buyer)
+Settlement Date (T+2): Wed 19-Aug-2026
+
+19-Aug-2026, 09:00: DvP instruction sent to the CDS.
+19-Aug-2026, 09:00: FAILS — Bank Of Toronto's custody account only
+                     holds CAD 9,000,000 face value of this bond,
+                     CAD 1,000,000 short (a separate internal
+                     position error, exactly the flavor of bug
+                     described in Section 08).
+
+Status: SETTLED -&gt; FAILED
+
+Trade re-attempted daily; actually settles 2 business days late,
+on Fri 21-Aug-2026.</pre>
+      </div>
+
+      <p><b>CSDR</b> போன்ற செட்டில்மென்ட்-ஒழுங்குமுறை நிர்வாகங்களின் கீழ் (EU-இல்), தாமதமான ஒரு செட்டில்மென்ட், தோல்வியடைந்த தரப்பிற்கு, தோல்வி தொடரும் ஒவ்வொரு வணிக நாளுக்கும் ஒரு <b>தினசரி பண அபராதத்தை</b> உருவாக்குகிறது:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">கணிதம் · விளக்கமான பண அபராதம்</span><span class="t-id">0.10 bps / நாள்</span></div>
+        <pre>Daily Penalty = Reference Price x Quantity x (Penalty Rate / 10,000)
+
+Reference Price   = 99.20 (per 100 face value)
+Quantity           = CAD 10,000,000 face value
+Penalty Rate        = 0.10 bps = 0.0010%
+
+Market Value used for the calc = 10,000,000 x 99.20 / 100
+                                = CAD 9,920,000
+
+Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day late
+
+2 business days late (settled 21-Aug instead of 19-Aug):
+  Total penalty = 99.20 x 2 = CAD 198.40
+
+-&gt; Charged to Bank Of Toronto, the failing (delivering) party.</pre>
+      </div>
+
+      <p>இங்குள்ள பண அபராதம் சிறியதாகத் தோன்றினாலும், ஒரு தோல்வியின் உண்மையான செலவு அரிதாகவே அபராதத்தில் மட்டும் இருக்கும் — அது <b>மேல்நிலை இடர் (downstream risk)</b>: Goldman Sachs அந்தப் பத்திரங்களை தன் சொந்த <i>வேறொரு</i> வர்த்தகத்திற்கு வழங்க வேண்டியிருந்தால், Bank Of Toronto-இன் தோல்வி சந்தையில் வேறு எங்காவது இரண்டாவது தோல்வியாகப் பெருகலாம் ("fails chain"), மேலும் ஒரு குறிப்பிட்ட கருணைக் காலத்திற்குப் பிறகு, வாங்குபவர் ஒரு <b>buy-in</b>-ஐப் பயன்படுத்தலாம் — வேறு இடத்திலிருந்து பத்திரங்களைப் பெற்று, ஏதேனும் விலை வேறுபாட்டையும் செலவுகளையும் மூல விற்பனையாளரிடம் வசூலிக்கலாம்.</p>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு செட்டில்மென்ட் அமைப்பில் <code>FAILED</code> status என்பது மேல்நிலையில் நிகழ்ந்த ஒரு முரண்பாட்டின் நேரடியான, கண்டறியக்கூடிய விளைவு — பெரும்பாலும் பிரிவு 08-இன் சமன்படுத்தல் முரண்பாட்டில் விவரிக்கப்பட்ட அதே வகை உள் நிலை-கண்காணிப்புப் பிழையே. "இந்த வர்த்தகம் ஏன் தோல்வியடைந்தது?" என்பதைத் துரத்துவது பொதுவாக நேராக "நாம் உண்மையில் வைத்திருந்ததை விட எங்கள் புத்தகங்கள் ஏன் அதிகமாகக் காட்டின?" என்பதற்கே இட்டுச் செல்கிறது — சமன்படுத்தலும் செட்டில்மென்டும் வாழ்க்கைச் சுழற்சியில் தொலைவான நிலைகள் அல்ல, அருகருகே உள்ள நிலைகள் என்பதற்குச் சரியான காரணம் இதுவே.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">குறிப்பு · முழு பட்டியல்</p>
+      <h2>பங்கேற்பாளர்கள் — முழு பட்டியல் குறிப்பு</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>பங்கேற்பாளர்</th><th>இந்தத் தொகுதியில் பங்கு</th></tr></thead>
+        <tbody>
+          <tr><td>Maple Leaf Pension Fund</td><td>Trade BOT-2026-000901 ஆக மாறும் ஆர்டரை வைக்கும் buy-side வாடிக்கையாளர்</td></tr>
+          <tr><td>Bank Of Toronto</td><td>வர்த்தகங்களை செயல்படுத்தி, பதிவு செய்து, உறுதிப்படுத்தி, கிளியர் செய்து, செட்டில் செய்யும் sell-side டீலர்</td></tr>
+          <tr><td>Goldman Sachs</td><td>கிளியர் செய்யப்பட்ட IRS-இலும், தோல்வியுற்ற பாண்டு வர்த்தக உதாரணத்திலும் தரப்பினர்</td></tr>
+          <tr><td>BNY Mellon / State Street</td><td>தத்தமது வாடிக்கையாளர்கள் சார்பாக செட்டில்மென்ட்டிற்கு உத்தரவிடும் கஸ்டோடியன்கள்</td></tr>
+          <tr><td>CDS (Canadian Depository for Securities)</td><td>பாண்டு வர்த்தகத்தின் DvP செட்டில்மென்ட் உண்மையில் நடைபெறும் CSD</td></tr>
+          <tr><td>CCP (எ.கா. LCH)</td><td>கிளியர் செய்யப்பட்ட IRS-ஐ நோவேட் செய்து, தொடர் மார்ஜினை நிர்வகிக்கும் Central Counterparty</td></tr>
+          <tr><td>Trade Repository</td><td>பிரிவு 09-இல் உள்ள T+1 ஒழுங்குமுறை அறிக்கைகளின் இலக்கிடம்</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">சுய-பரிசோதனை</p>
+      <h2>மறுநினைவு வினாடி வினா — எண் பதிப்பு</h2>
+      <p class="lede"><a href="./module-04-equity.html">தொகுதி 4</a>-க்குச் செல்லும் முன் இவற்றை உண்மையான எண்களுடன் செய்யவும்.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>Maple Leaf Pension Fund 98.60 அல்லது சிறப்பாக வாங்க ஒரு லிமிட் ஆர்டரை வைக்கிறது, Bank Of Toronto 98.55-இல் செயல்படுத்துகிறது. ஃபில் யாருக்குச் சாதகமாக நடந்தது, CAD 100 ஃபேஸ் மதிப்பிற்கு எவ்வளவு?</li>
+          <li>Trade BOT-2026-000901-இல், ஆர்டர் வைக்கப்பட்ட தருணத்தில் (09:02:00) இன்னும் null/தெரியாததாக இருந்து, ஒரு வினாடிக்குப் பிறகு செயல்படுத்தல்/வர்த்தகப் பதிவின்போது (09:03:12) முழுமையாக நிரப்பப்பட்ட நான்கு புலங்களைப் பெயரிடவும்.</li>
+          <li>ஒரு வர்த்தகம் <code>CONFIRMED</code> ஆக இருந்து, நிறுவனத்தின் வழக்கமான காலத்தைத் தாண்டி ஆறு மணி நேரமாக <code>AFFIRMED</code> ஆகவில்லை. இது குறிப்பாக என்ன நடந்தது (அல்லது நடக்கவில்லை) என்பதைக் காட்டுகிறது — உறுதிப்படுத்தல் (Confirmation) மற்றும் பொருத்தல் (Matching) ஆகியவற்றில் எது முந்தைய நிலை?</li>
+          <li>இரு நிறுவனங்களும் ஒரே வர்த்தகத்தை ISIN முரண்பாட்டுடன் பதிவு செய்கின்றன (ஒரு அமைப்பில் ஒரு பத்திரத்தின் அடையாளங்குறி மறுவழங்கப்பட்ட பிறகு பழைய ISIN சேமிக்கப்பட்டிருந்தது). இந்த வர்த்தகம் <code>MATCHED</code> நிலையை அடையுமா? ஏன், ஏன் இல்லை?</li>
+          <li>CAD 100,000,000 கிளியர் செய்யப்பட்ட IRS-இல், நோவேஷனுக்குப் பிறகு, இருக்கும் இரண்டு புதிய இருதரப்பு வர்த்தகங்களையும், Bank Of Toronto-இன் பார்வையில் ஒவ்வொன்றிலும் தரப்பினர் யார் என்பதையும் பெயரிடவும்.</li>
+          <li>பிரிவு 10-இல் உள்ள பாண்டு வர்த்தகத்தைப் போல ஒரு கிளியர் செய்யப்பட்ட வழித்தோன்றல் ஏன் ஒருபோதும் <code>SETTLED</code> நிலையை அடையாது — அதற்குப் பதிலாக அது எந்த நிலையை அடைகிறது, அதன் பிறகு என்ன தொடர்ந்து நடக்கிறது?</li>
+          <li>ஒரு சமன்படுத்தல் முரண்பாடு உள் புத்தகங்கள் கஸ்டோடியன் மற்றும் CDS-ஐ விட CAD 1,000,000 அதிகமாகக் காட்டுகிறது, அவை இரண்டும் ஒன்றுடன் ஒன்று ஒப்புக்கொள்கின்றன. இது கஸ்டோடியன் பிழையா, சந்தை-சார்ந்த நஷ்டமா, அல்லது வேறு ஏதாவதா — அது என்ன?</li>
+          <li>பிரிவு 09-இல் உள்ள Trade 2, திங்கள் 14:12:05 UTC-இல் செயல்படுத்தப்பட்டு, செவ்வாய் 08:15:00 UTC-இல் அறிக்கையிடப்பட்டது. இது T+1 காலக்கெடுவிற்குள் இருந்ததா? எந்த UTC காலமுத்திரை அதை காலக்கெடுவை தவறவிட்டதாக ஆக்கியிருக்கும்?</li>
+          <li>பிரிவு 13-இல் உள்ள விளக்கமான CSDR-பாணி அபராதத்தின் கீழ், CAD 10,000,000 ஃபேஸ் மதிப்பில், reference price 99.20 மற்றும் rate 0.10bps/நாள் என்ற நிலையில், Bank Of Toronto-இன் பாண்டு வர்த்தகம் 2 நாட்களுக்குப் பதிலாக 1 வணிக நாள் தாமதமாக செட்டில் ஆகிறது. அந்த 1 நாளுக்கான பண அபராதம் என்ன?</li>
+          <li>ஒரு சாதாரண (முரண்பாடு-இல்லாத) இருதரப்பு பாண்டு வர்த்தகத்திற்கு, இந்த ஐந்து status-களை சரியான காலவரிசையில் வைக்கவும்: <code>SETTLED</code>, <code>NEW</code>, <code>RECONCILED</code>, <code>MATCHED</code>, <code>AFFIRMED</code>.</li>
+        </ol>
+        <p class="quiz-cta">தயாராகும்போது பதிலளிக்கவும் — பிறகு நாம் <b><a href="./module-04-equity.html">தொகுதி 4</a>: நிலையான வருமானம் / பாண்டுகள்</b>-க்குச் செல்வோம்.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">சுய-பரிசோதனை · தீர்வுகள்</p>
+      <h2>மறுநினைவு வினாடி வினா — பதில்கள் &amp; விளக்கங்கள்</h2>
+      <p class="lede">தொடர்வதற்கு முன் உங்கள் பதில்களை இவற்றுடன் ஒப்பிடுக.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Maple Leaf Pension Fund-க்குச் சாதகமாக, CAD 100 ஃபேஸ் மதிப்பிற்கு 0.05 (5 அடிப்படை புள்ளிகள்) அளவிற்கு</h5>
+        <p>ஃபண்டின் லிமிட் "98.60 அல்லது சிறப்பாக" (அதாவது 98.60 அல்லது குறைவாக, ஏனெனில் இது ஒரு வாங்குபவர் — வாங்குபவருக்குக் குறைந்த விலை சிறப்பானது). Bank Of Toronto 98.55-இல் செயல்படுத்தியது, இது லிமிட்டை விட 0.05 குறைவு — ஃபண்ட் அதன் மோசமான-ஏற்றுக்கொள்ளக்கூடிய விலையை விடக் குறைவாகச் செலுத்தியது, அதாவது வாங்குபவருக்கு ஒரு சிறந்த விளைவு.</p>
+
+        <h5>Q2 — Trade ID, Execution Time, Price, மற்றும் Status (NEW ஆக)</h5>
+        <p>ஆர்டர் நேரத்தில் (09:02:00), வெறும் நோக்கம் மட்டுமே இருந்தது — "98.60 அல்லது சிறப்பாக CAD 50,000,000 வாங்கவும்" — உறுதிசெய்யப்பட்ட தரப்பினர் இல்லை, ஒப்புக்கொள்ளப்பட்ட விலை இல்லை, நிச்சயமாக Trade ID கூட இல்லை, ஏனெனில் ஒரு உண்மையான செயல்படுத்தல் நிகழ்ந்து Trade Capture இயங்கியப் பிறகே (பிரிவு 03) ஒரு Trade ID ஒதுக்கப்படுகிறது.</p>
+
+        <h5>Q3 — பெரும்பாலும் தரப்பினர் இன்னும் மறுஆய்வு செய்யவில்லை/பதிலளிக்கவில்லை என்பதைக் குறிக்கிறது — உறுதிப்படுத்தல் (Confirmation) தான் முந்தைய நிலை</h5>
+        <p>பிரிவு 01-இல் உள்ள வரிசையைப் பாருங்கள்: உறுதிப்படுத்தல் → பொருத்தல், ஏற்புறுதி என்பது உறுதிப்படுத்தல் பரிமாற்றத்தின் (பிரிவு 04) ஒரு பகுதியாக, வர்த்தகம் தானியங்கு பொருத்தல் படிக்குச் (பிரிவு 05) சமர்ப்பிக்கப்படுவதற்கு முன்பே நடக்கிறது. CONFIRMED மற்றும் AFFIRMED-க்கு இடையே ஆறு மணி நேர இடைவெளி என்றால், தரப்பினர் இன்னும் முறையாக ஒப்புக்கொள்ளவில்லை என்று பொருள் — தானியங்கு புலம்-புலமான ஒப்பீடு (பொருத்தல்) இயங்கக்கூடிய கட்டத்தை கூட அது இன்னும் அடையவில்லை.</p>
+
+        <h5>Q4 — இல்லை, அது பொருந்தாமல், உடையும் (BROKEN)</h5>
+        <p>பொருத்தல் (பிரிவு 05) என்பது ஒரு துல்லியமான புலம்-புலமான ஒப்பீடு. ஒரு ISIN முரண்பாடு — மற்ற எல்லாப் புலங்களும் (அளவு, விலை, செட்டில்மென்ட் தேதி) ஒரே மாதிரியாக இருந்தாலும் — பிரிவு 05-இல் விலையுடன் காட்டப்பட்ட "உடைந்த பொருத்தம்" உதாரணத்தின் அதே வகையான ஒரு-புலம் முரண்பாடு தான். ஒரு தரப்பினர் பழைய/மறுவழங்கப்பட்ட அடையாளங்குறியைப் பயன்படுத்துகிறார் என்று யாராவது கண்டறிந்து அதைத் திருத்தும் வரை, இந்த வர்த்தகம் <code>BROKEN</code> நிலையில் வைக்கப்படும்.</p>
+
+        <h5>Q5 — IRS #1: Bank Of Toronto vs CCP. IRS #2 என்பது CCP vs Goldman Sachs (BOT-க்கு நேரடி வெளிப்பாடு இல்லை)</h5>
+        <p>Bank Of Toronto-இன் பார்வையில் குறிப்பாகப் பார்த்தால், நோவேஷனுக்குப் பிறகு அதன் ஒரே எஞ்சிய தரப்பினர் CCP தான் — இந்த வர்த்தகத்தில் மூல Goldman Sachs உறவு முழுவதுமாக மாற்றியமைக்கப்படுகிறது (பிரிவு 06). Bank Of Toronto IRS #2-இல் ஒரு தரப்பினராக இல்லை; அந்த வர்த்தகம் முழுக்க CCP-க்கும் Goldman Sachs-க்கும் இடையேயே உள்ளது.</p>
+
+        <h5>Q6 — SETTLED அல்ல, CLEARED-ஐ அடைகிறது — அதைத் தொடர்ந்து தொடர்ச்சியான தினசரி VM மற்றும் அவ்வப்போதைய நிகர பணப்புழக்கங்கள் நடக்கும்</h5>
+        <p>ஒரு பாண்டைப் போலல்லாமல், T+2-இல் ஒரே ஒரு DvP நிகழ்வு வர்த்தகத்தை முழுமையாக நிறைவேற்றும் (பிரிவு 07), ஒரு கிளியர் செய்யப்பட்ட ஸ்வாப்பில் வழங்க வேண்டிய நோஷனல் எதுவும் இல்லை (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §8) — ஒரே "செட்டில்மென்ட்" நிகழ்வு எனக் கருதக்கூடிய எதுவும் இல்லை. அதற்குப் பதிலாக, பிரிவு 11 வர்த்தகம் CCP-உடன் ஒரு தொடர் உறவுக்குள் நகர்வதைக் காட்டுகிறது: அடுத்த நாள் மார்ஜின் கோரிக்கைகள், பின்னர் முழு 5-ஆண்டு காலத்திற்கும் தொடர்ச்சியான பணப்புழக்க அட்டவணை.</p>
+
+        <h5>Q7 — பெரும்பாலும் முற்றிலும் வேறு ஏதோ ஒன்று — ஒரு உள் செயலாக்க/செய்திப் பரிமாற்றப் பிழை</h5>
+        <p>இது பிரிவு 08-இன் செய்முறை உதாரணத்தை நேரடியாக பிரதிபலிக்கிறது: கஸ்டோடியனும் CSD-யும் (இரு சுயாதீன, வெளிப்புற ஆதாரங்கள்) ஒன்றுடன் ஒன்று ஒப்புக்கொண்டு, உள் புத்தகங்களுடன் மட்டும் முரண்படும்போது, மிகவும் சாத்தியமான விளக்கம் நிறுவனத்தின் சொந்த உள் நிலை-கண்காணிப்பு அமைப்பு ஒரு மேல்நிலை நிகழ்வை (எ.கா., ஒரு தவறவிட்ட செட்டில்மென்ட் உறுதிப்படுத்தல் செய்தி) செயலாக்கத் தவறியது என்பதே — பணம் உண்மையில் காணாமல் போகவில்லை, கஸ்டோடியனின் சொந்தப் பதிவுகளும் தவறு இல்லை.</p>
+
+        <h5>Q8 — ஆம், T+1 காலக்கெடுவிற்குள்</h5>
+        <p>திங்கள் 14:12:05 UTC-இல் செயல்படுத்தப்பட்டது என்றால், T+1 காலக்கெடு <i>அடுத்த</i> வணிக நாளின் இறுதி வரை நீடிக்கும் — செவ்வாய் 23:59:59 UTC (பிரிவு 09). செவ்வாய் 08:15:00 UTC-இல் நடந்த உண்மையான அறிக்கை, அந்தக் காலவரம்பை வசதியாகத் தாண்டியது. செவ்வாய் 18-Aug-2026, 23:59:59 UTC அல்லது அதற்கு முந்தைய எந்த UTC காலமுத்திரையும் காலக்கெடுவை பூர்த்தி செய்திருக்கும்; புதன் 19-Aug-2026, 00:00:00 UTC-க்குப் பிறகு எதுவும் காலக்கெடுவைத் தவறவிட்டதாகக் கருதப்படும்.</p>
+
+        <h5>Q9 — CAD 99.20</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">கணிதம் · ஒரு நாள் தாமதம்</span><span class="t-id">CAD 10,000,000 ஃபேஸ்</span></div>
+          <pre>Market Value = 10,000,000 x 99.20 / 100 = CAD 9,920,000
+Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day
+1 day late    = CAD 99.20 x 1 = CAD 99.20</pre>
+        </div>
+        <p>ஒரு வர்த்தகம் எத்தனை நாட்கள் தாமதமாக இருக்கிறது என்பதைப் பொறுத்து தினசரி அபராத விகிதமே மாறாது — தாமதமான நாட்களுக்கு ஏற்ப <i>மொத்தம்</i> மட்டுமே அளவிடப்படுகிறது. ஒரு நாள் தாமதம் என்பது சரியாக ஒரு நாளின் அபராதம், CAD 99.20 — பிரிவு 13-இல் இரண்டு நாட்கள் தாமதத்திற்குக் காட்டப்பட்ட CAD 198.40 மொத்தத்தின் சரியாகப் பாதி.</p>
+
+        <h5>Q10 — NEW → AFFIRMED → MATCHED → SETTLED → RECONCILED</h5>
+        <div class="takeaway">இது பிரிவு 01-இன் நிலை வரிசையை நேரடியாகப் பின்பற்றுகிறது: Trade Capture <code>NEW</code>-ஐ அமைக்கிறது (Sec 03); தரப்பினர் ஒப்புக்கொண்டவுடன் உறுதிப்படுத்தல் <code>AFFIRMED</code>-ஐ உருவாக்குகிறது (Sec 04); பிறகு பொருத்தல் இருதரப்பினரின் சுயாதீனமாகப் பதிவு செய்யப்பட்ட பதிவுகளும் ஒப்புக்கொள்கின்றன என்பதை உறுதிசெய்கிறது, <code>MATCHED</code> (Sec 05); செட்டில்மென்ட் அதை T+2-இல் <code>SETTLED</code>-க்கு நகர்த்துகிறது (Sec 07); இறுதியாக நாள் இறுதி சரிபார்ப்பு அதை <code>RECONCILED</code>-இல் (Sec 08) நிலைநிறுத்துகிறது — இது பிரிவு 10-இன் தொடக்கம்-முதல்-முடிவு காலவரிசையில் நடந்த அதே வரிசைதான்.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தொகுதி 3 / 14 &middot; <a href="./index.html" style="color:var(--ink-faint);">&larr; அட்டவணைக்குத் திரும்பு</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

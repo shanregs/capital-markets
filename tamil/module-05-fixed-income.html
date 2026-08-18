@@ -1,0 +1,932 @@
+<!doctype html>
+<title>தொகுதி 5 — நிலையான வருமானம் (Fixed Income)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans Tamil", "Nirmala UI", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: "Noto Sans Tamil", "Nirmala UI", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="./index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; அட்டவணைக்குத் திரும்பு</a>
+    <div class="masthead-top">
+      <div class="eyebrow">மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தொகுதி 5 / 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">கணினி</button>
+        <button type="button" data-mode="light" aria-pressed="false">வெளிர்</button>
+        <button type="button" data-mode="dark" aria-pressed="false">இருள்</button>
+      </div>
+    </div>
+    <h1>நிலையான வருமானம் (Fixed Income)</h1>
+    <p class="dek">அரசு, கார்ப்பரேட், நகராட்சி மற்றும் பிற கடன் கருவிகள் — கோட்பாடு, தயாரிப்புகள், பத்திரம் vs ஒப்பந்தம், நிஜ-உலக வர்த்தகங்கள், வாழ்க்கைச் சுழற்சி, அடையாளங்காட்டிகள், பரிவர்த்தனையகம்/OTC அமைப்பு, மற்றும் ஒழுங்குமுறை — ஆகிய அதே எட்டு-பகுதி முறைமையின் மூலம் விளக்கப்படுகிறது.</p>
+    <div class="audience-note">நிதி/மூலதனச் சந்தைகளுக்குப் புதியவரான <b>ஒரு மென்பொருள் கட்டமைப்பாளருக்காக</b> (Java பின்னணி) எழுதப்பட்டது. இந்தத் தொகுதி முழுவதும் பயன்படுத்தப்படும் உதாரண வங்கி: <span class="bank-tag">Bank Of Toronto</span> (கற்பனை, விளக்கத்திற்காக மட்டும்).</div>
+    <div class="roadmap-note"><b>சொத்து வகை பாதைவரைபடம் 2 / 6</b> — பங்கு (Equity) → நிலையான வருமானம் (Fixed Income) → அந்நிய செலாவணி (FX) → பண்டங்கள் (Commodities) → வட்டி விகிதங்கள் (Rates) → கடன் (Credit), ஒவ்வொன்றாக.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">இந்தப் பக்கத்தில்</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>நிலையான வருமானம் என்றால் என்ன?</a></li>
+      <li><a href="#products"><span class="toc-num">02</span>தயாரிப்புகள் என்ன?</a></li>
+      <li><a href="#security-vs-contract"><span class="toc-num">03</span>பத்திரம் vs ஒப்பந்தம்</a></li>
+      <li><a href="#trade-examples"><span class="toc-num">04</span>நிஜ-உலக வர்த்தக உதாரணங்கள்</a></li>
+      <li><a href="#lifecycle"><span class="toc-num">05</span>வர்த்தக வாழ்க்கைச் சுழற்சி</a></li>
+      <li><a href="#identifiers"><span class="toc-num">06</span>அடையாளங்காட்டிகள்</a></li>
+      <li><a href="#structure"><span class="toc-num">07</span>பரிவர்த்தனையகம் vs OTC vs இருதரப்பு vs க்ளியர் செய்யப்பட்டது</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>ஒழுங்குமுறைப் பார்வை</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>மறுநினைவு வினாடி வினா</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>வினாடி வினா பதில்கள்</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · ஒரு கடன், உரிமையாளர் கோரிக்கை அல்ல</p>
+      <h2>நிலையான வருமானம் என்றால் என்ன? — கோட்பாடு &amp; சொற்களஞ்சியம்</h2>
+      <p class="lede">ஒரு Fixed Income கருவி, அடிப்படையில், <b>ஒரு கடன்</b>. வாங்குபவர் இஷ்யூவருக்குப் பணத்தை கடனாகக் கொடுக்கிறார்; இஷ்யூவர் காலமுறை வட்டியை (coupon) செலுத்தவும், ஒரு நிலையான எதிர்கால தேதியில் (Maturity) அசலைத் (Face Value) திரும்பச் செலுத்தவும் உறுதியளிக்கிறார். இது <a href="./module-04-equity.html">தொகுதி 4</a>-இன் Equity-இன் நேர்மாறு படம்: ஒரு பத்திரம் (bond) ஒரு <b>கடன்தார உரிமைகோரல்</b>, உரிமையாளர் கோரிக்கை அல்ல.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>சொல்</th><th>பொருள்</th></tr></thead>
+        <tbody>
+          <tr><td>Face Value</td><td>maturity-இல் திரும்பச் செலுத்தப்படும் அசல் தொகை; coupon கணக்கிடப்படும் அடிப்படையும் இதுவே</td></tr>
+          <tr><td>Coupon</td><td>Face Value-இன் % ஆக வெளிப்படுத்தப்படும் நிலையான காலமுறை வட்டிச் செலுத்துதல் (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §1)</td></tr>
+          <tr><td>Maturity</td><td>Face Value திரும்பச் செலுத்தப்படும் நிலையான தேதி — equity-க்கு இல்லாத வரையறுக்கும் அம்சம்</td></tr>
+          <tr><td>Price</td><td>Face Value-இன் 100-க்கு ஒரு அலகாகக் குறிப்பிடப்படுகிறது (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §1)</td></tr>
+          <tr><td>Yield</td><td>வெறும் coupon rate அல்ல, செலுத்திய விலையின் அடிப்படையில் வாங்குபவரின் உண்மையான வருமானம் (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §1)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>Coupon Rate vs. Yield பற்றி, ஒரு நான்கு-ஆண்டு உதாரணத்துடன், <a href="./module-01-fundamentals.html">தொகுதி 1</a> §1-இல் ஏற்கெனவே முழுமையாகக் கவரப்பட்டது — சுருக்கமாக: <b>Coupon Rate நிலையானது, பத்திரத்தில் அச்சிடப்பட்டுள்ளது; Yield பெறப்பட்டது, Price-உடன் மாறுகிறது.</b> இந்த வேறுபாடு இனிமேல் ஏற்கெனவே அறியப்பட்டதாகக் கருதப்படுகிறது.</p>
+
+      <h3>Clean Price vs Dirty Price vs Accrued Interest — புதிய பரப்பு</h3>
+      <p>பத்திர விலைகள் எப்போதும் <b>Clean Price</b>-ஆகவே <i>குறிப்பிடப்படுகின்றன</i> — வட்டி சேர்க்கப்படாமல். ஆனால் coupon தேதிகளுக்கு இடையில் செட்டில்மென்ட் செய்யும் ஒரு வாங்குபவர் விற்பவருக்கு <b>Accrued Interest</b>-ஐக் கடன்பட்டுள்ளார் — கடைசி coupon தேதி முதல் விற்பவர் "சம்பாதித்த" coupon. செட்டில்மென்ட்டில் உண்மையில் பரிமாறப்படும் பணம் <b>Dirty Price</b> ("Full Price"/"Invoice Price" என்றும் அழைக்கப்படும்) — Clean Price கூட்டல் Accrued Interest.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">கணிதம் · Clean vs Dirty Price</span><span class="t-id">Canada 5% Bond 2035</span></div>
+        <pre>Bond: Canada 5% Bond 2035, semi-annual coupon (2.50% per period)
+Face Value: CAD 10,000,000
+Quoted (Clean) Price: 98.50
+Settlement falls 60 days after the last coupon date, in a
+182-day coupon period
+
+Accrued Interest = Face Value x (Coupon/2) x (Days Since Last Coupon / Days in Period)
+                  = 10,000,000 x 2.50% x (60 / 182)
+                  = 250,000 x 0.32967
+                  = CAD 82,418  (rounded)
+
+Clean Price Value = 10,000,000 x 98.50 / 100 = CAD 9,850,000
+Dirty Price (actual cash paid) = 9,850,000 + 82,418 = CAD 9,932,418
+
+-&gt; The seller held the bond for 60 of the 182 days in this
+   coupon period, so 60/182 of the next coupon belongs to them,
+   even though the BUYER will be the one who actually receives
+   the full coupon payment on the next coupon date.</pre>
+      </div>
+
+      <div class="callout"><b>IT/அறிக்கையிடல் கோணம்:</b> பெரும்பாலான அமைப்புகள் ஒரு பத்திரத்தின் "Price" புலத்தை Clean Price-ஆகச் சேமிக்கின்றன — சந்தை மரபு, ஒரு price feed-இல் மாறுவது. ஆனால் உண்மையில் செட்டில் ஆகும் பணம் (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §07) எப்போதும் Dirty Price ஆகும். ஒரு செட்டில்மென்ட் தொகை Quantity × Clean Price / 100-உடன் பொருந்தவில்லை என்றால், அது ஒரு பிழை என்று கருதுவதற்கு முன், Accrued Interest சேர்க்கப்பட்டதா, வர்த்தகம் coupon தேதிகளுக்கு இடையில் விழுந்ததா எனச் சரிபார்க்கவும்.</div>
+
+      <h3>Duration — ஒரு-வரி முன்னோட்டம்</h3>
+      <p><b>Modified Duration</b> yield-இல் 1% மாற்றத்திற்கு ஒரு பத்திரத்தின் விலை எவ்வளவு நகரும் என்பதை தோராயமாகக் காட்டுகிறது. Duration 8 கொண்ட ஒரு பத்திரம், yields 1% உயர்ந்தால், அதன் விலை தோராயமாக 8% குறைவதைக் காணும். முழு கணிதமும் (DV01 உட்பட) <a href="./module-10-valuation.html">தொகுதி 10</a>-க்கு (Valuation) சொந்தமானது — இப்போதைக்கு: நீண்ட maturity மற்றும் குறைந்த coupon பொதுவாக அதிக duration என்று பொருள்படும், அதாவது வட்டி விகித நகர்வுகளுக்கு அதிக விலை உணர்திறன்.</p>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> Fixed Income சொற்களஞ்சியம் அனைத்தும் ஒரே இலக்கிற்குச் சேவை செய்கிறது — issuance-இல் நிலையானதை (Face Value, Coupon Rate, Maturity) சந்தை-இயக்கப்பட்டு தினமும் மாறுவதிலிருந்து (Price, Yield, Accrued Interest, அதனால் Dirty Price) பிரிப்பது. இந்தப் பிரிவைச் சரியாகப் புரிந்துகொள்வது, எந்த பத்திர-தொடர்பான அறிக்கையிடல் புலத்திற்கும் மிகவும் பயனுள்ள மனநிலை மாதிரி ஆகும்.</div>
+    </section>
+
+    <section class="mod" id="products">
+      <p class="sec-eyebrow"><span class="n">02</span> · யார் பணத்தை கடன் வாங்குகிறார்கள்</p>
+      <h2>தயாரிப்புகள் என்ன? — அரசு, கார்ப்பரேட், நகராட்சி &amp; பிற கடன்</h2>
+      <p class="lede">இந்தப் பட்டியலில் கீழே செல்லச் செல்ல, கருவியின் இடர் சுயவிவரம் இஷ்யூவர் யார் என்பதால் அதிகமதிகமாக நிர்ணயிக்கப்படுகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · Fixed Income Product Tree</span><span class="t-id">By issuer type</span></div>
+        <pre>FIXED INCOME
+│
+├── Government Bonds        (sovereign issuer, highest credit quality in its own currency)
+├── Corporate Bonds         (issued by companies, incl. banks like Bank Of Toronto)
+├── Municipal Bonds         (issued by cities/provinces/states/municipalities)
+└── Other Debt Instruments  (money market &amp; securitized: T-Bills, CP, CDs, MBS/ABS/CLO)</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>தயாரிப்பு</th><th>அது என்ன</th><th>உதாரணம்</th></tr></thead>
+        <tbody>
+          <tr><td><b>Government Bonds</b></td><td>ஒரு தேசிய அரசால் வழங்கப்படும் கடன்; பொதுவாக அதன் சொந்த நாணயத்தில் அளவுகோல் இடர்-இல்லா வீதம்</td><td>Canada 5% Bond 2035</td></tr>
+          <tr><td><b>Corporate Bonds</b></td><td>ஒரு நிறுவனத்தால் வழங்கப்படும் கடன்; அரசு கடனிடம் இல்லாத கடன் இடரைச் சுமக்கிறது</td><td>Bank Of Toronto 4.5% Bond 2030</td></tr>
+          <tr><td><b>Municipal Bonds</b></td><td>ஒரு நகரம், மாகாணம், அல்லது (அமெரிக்காவில்) ஒரு மாநில/உள்ளூர் அரசால் வழங்கப்படும் கடன், பெரும்பாலும் உள்கட்டமைப்பிற்காக</td><td>City of Toronto 3.75% Green Bond 2032</td></tr>
+          <tr><td><b>Other Debt Instruments</b></td><td>Money market (&lt;1 வருடம்) மற்றும் securitized கடன்</td><td>T-Bills, Commercial Paper, CDs, MBS/ABS/CLO</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>கவனிக்க வேண்டிய ஒரு அமெரிக்கா-குறிப்பிட்ட நுணுக்கம்: பல <b>US municipal bonds-இன் வட்டி US federal income tax-இலிருந்து விலக்கு பெற்றது</b> (மற்றும் பெரும்பாலும் இஷ்யூ செய்யும் மாநிலத்தின் குடிமகனுக்கு மாநில வரியிலிருந்தும்) — இது கனேடிய பரந்த சமானமற்ற ஒரு தனித்துவ அம்சம், மேலும் US munis இதே-தர கார்ப்பரேட் பத்திரங்களை விடக் குறைந்த yields-இல் வர்த்தகமாகும் ஒரு முக்கியக் காரணம்.</p>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு Government Bond-இன் முக்கிய மாறி வட்டி-விகித இடர் (<a href="./module-08-rates.html">தொகுதி 8</a>: Rates); ஒரு Corporate Bond அதே coupon/price/yield இயங்குமுறையின் மேல் கடன் இடரைச் (<a href="./module-09-credit.html">தொகுதி 9</a>: Credit) சேர்க்கிறது.</div>
+    </section>
+
+    <section class="mod" id="security-vs-contract">
+      <p class="sec-eyebrow"><span class="n">03</span> · பத்திரமே vs அதன் மீதான ஒரு நிதியளிப்பு ஒப்பந்தம்</p>
+      <h2>சரியாக என்ன வர்த்தகமாகிறது? — பத்திரம் vs ஒப்பந்தம்</h2>
+      <p class="lede">ஒரு பத்திரமே ஒரு <b>உண்மையான பத்திரம் (security)</b>. Fixed Income, Equity-க்கு இன்னும் சமமானதே இல்லாத ஒரு தயாரிப்பை அறிமுகப்படுத்துகிறது: <b>repo</b> — ஒரு பத்திரத்தின் மீது கட்டப்பட்ட ஒரு <b>ஒப்பந்தம் (contract)</b>, பத்திரம் அல்ல.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · Bond vs Repo</span><span class="t-id">Security vs Financing Contract</span></div>
+        <pre>Canada 5% Bond 2035 (SECURITY):
+  A real, transferable claim on the Government of Canada. It exists
+  independently of any one trade, the same way Coca-Cola stock does
+  (Module 4 §3).
+
+Repo — "Repurchase Agreement" (CONTRACT):
+  Bank Of Toronto lends EUR 50,000,000 cash overnight to Goldman
+  Sachs, who posts Germany 3% Bund 2033 as COLLATERAL and agrees
+  to repurchase it (i.e., return the cash + interest and get the
+  Bund back) the next business day.
+
+  Overnight interest = 50,000,000 x 3.15% x (1/365) = EUR 4,315
+  (this is the exact trade from systems-landscape §12's SFTR
+  worked example — a repo IS a Securities Financing Transaction)
+
+-&gt; The Bund itself doesn't change hands as a SALE — legal title
+   temporarily transfers as COLLATERAL, with a contractual promise
+   to reverse the transfer the next day. This is economically a
+   secured cash loan, not a purchase of the bond.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> இது <a href="./module-04-equity.html">தொகுதி 4</a> §03-இன் "பத்திரம் vs ஒப்பந்தம்" வேறுபாட்டின் Fixed Income பதிப்பு — ஆனால் ஒரு Equity Option ஒரு பங்கின் விலையைக் குறிக்கும் ஒரு derivative ஆக இருக்கும் இடத்தில், ஒரு Repo ஒரு பத்திரத்தை பிணையமாகப் பயன்படுத்தும் ஒரு நிதியளிப்பு ஒப்பந்தம். இது முற்றிலும் வேறுபட்ட ஒரு ஒப்பந்த வகை, அதனால்தான் இது EMIR-க்குப் பதிலாக SFTR-இன் கீழ் (பிரிவு 08) அறிக்கையிடப்படுகிறது.</div>
+      <div class="callout"><b>Schema note:</b> work data model வகைப்பாட்டில் Repo-க்கு <code>.avsc</code> schema எதுவும் இல்லை — இது ஒரு Bond அல்லது IRS போன்று ஒரு capital-markets "Trade" தயாரிப்பு அல்ல, இது ஒரு Securities Financing Transaction, இந்த வகைப்பாட்டின் நோக்கத்திற்கு வெளியே ஒரு முற்றிலும் தனி SFT data pipeline மூலம் மாதிரியாக்கப்பட்டு (மற்றும் SFTR-இன் படி அறிக்கையிடப்பட்டு) உள்ளது.</div>
+    </section>
+
+    <section class="mod" id="trade-examples">
+      <p class="sec-eyebrow"><span class="n">04</span> · வாங்குபவர் → விற்பவர் → வர்த்தகம்</p>
+      <h2>நிஜ-உலக வர்த்தக உதாரணங்கள்</h2>
+      <p class="lede">நான்கு வர்த்தகங்கள் — அரசு, கார்ப்பரேட், நகராட்சி, மற்றும் ஒரு money-market தள்ளுபடி கருவி.</p>
+
+      <h3>4a. Government Bond</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Government Bond · Canada 5% Bond 2035</span><span class="t-id">ISIN CA1358XXXXX</span></div>
+        <pre>Buyer:  Bank Of Toronto
+Seller: Goldman Sachs
+(the secondary-market trade first introduced in Module 1 §1)
+
+Trade: CAD 10,000,000 face value @ Price 98.50
+Clean Price Value = 10,000,000 x 98.50 / 100 = CAD 9,850,000
+(see Section 01 for the Dirty Price/Accrued Interest add-on)</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>BondTrade.avsc</code> — Trade மட்டும். <code>BondValuation.avsc</code> என்று எதுவும் இல்லை: clean/dirty price மற்றும் accrual கணிதம் (பிரிவு 01) ஒரு பகிரப்பட்ட bond-pricing மாதிரியால் கணக்கிடப்படுகிறது, ஒவ்வொரு வர்த்தகத்திற்கும் தனித்தனியாக encode செய்யப்படுவதில்லை.</div>
+
+      <h3>4b. Corporate Bond</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Corporate Bond · Bank Of Toronto 4.5% Bond 2030</span><span class="t-id">Premium trade</span></div>
+        <pre>Issuer: Bank Of Toronto
+Buyer:  Maple Leaf Pension Fund
+
+Trade: CAD 12,000,000 face value @ Price 101.75 (premium — market
+       rates have fallen below the 4.5% coupon since issuance,
+       Module 1 §1's price-vs-rates mechanic)
+Trade Value = 12,000,000 x 101.75 / 100 = CAD 12,210,000</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>BondTrade.avsc</code> — Government Bond-இன் அதே schema; வகைப்பாட்டின் ஒற்றை "Bond" node இஷ்யூவர் வகையை வேறுபடுத்துவதில்லை, குறிப்புத் தரவு (issuer LEI, credit rating) மட்டுமே வேறுபடுகிறது.</div>
+
+      <h3>4c. Municipal Bond</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Municipal Bond · City of Toronto Green Bond</span><span class="t-id">3.75% 2032</span></div>
+        <pre>Issuer: City of Toronto (proceeds earmarked for green
+        infrastructure — a "use of proceeds" bond)
+Buyer:  Maple Leaf Pension Fund
+Dealer: Bank Of Toronto
+
+Trade: CAD 15,000,000 face value @ Price 97.25
+Trade Value = 15,000,000 x 97.25 / 100 = CAD 14,587,500
+
+Note: unlike a US municipal bond, this Canadian municipal bond's
+interest is fully taxable to Maple Leaf Pension Fund — the
+broad tax-exemption feature (Section 02) is specifically a US
+municipal-bond feature, not a general "municipal bond" one.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>BondTrade.avsc</code> — மீண்டும் அதே schema; Dealer பங்கு (Bank Of Toronto) வர்த்தகத்தின் மீதான ஒரு தரப்பு குறிப்பாகப் பதிவுசெய்யப்படுகிறது, வேறு schema அல்ல.</div>
+
+      <h3>4d. Other Debt Instrument — Treasury Bill</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Treasury Bill · Government of Canada 90-Day</span><span class="t-id">Discount instrument</span></div>
+        <pre>Buyer: Bank Of Toronto (money-market desk)
+
+Face Value: CAD 20,000,000, Maturity: 90 days, NO coupon
+Purchase Price: 98.75 (per 100) -- bought at a DISCOUNT to par
+
+Purchase Cost = 20,000,000 x 98.75 / 100 = CAD 19,750,000
+Discount Earned = 20,000,000 - 19,750,000 = CAD 250,000
+                  (this IS the return -- there is no coupon)
+
+Discount Yield = (Discount / Purchase Cost) x (365 / Days to Maturity)
+               = (250,000 / 19,750,000) x (365 / 90)
+               = 1.2658% x 4.0556
+               = 5.13%
+
+-&gt; T-Bills return purely the gap between discounted purchase
+   price and full Face Value at maturity -- there's no coupon
+   to separate from yield the way Section 01 did for the 5% bond.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>BondTrade.avsc</code> — இன்னும் அதே schema; ஒரு zero-coupon discount கருவி அதே schema-இல் 0% Coupon Rate ஆகும், வகைப்பாட்டில் வேறு தயாரிப்பு வகை அல்ல.</div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> நான்கு உதாரணங்களும் <a href="./module-02-hierarchy.html">தொகுதி 2</a> §03-இலிருந்து அதே அடிப்படை புலங்களைப் (Face Value, Price, Trade Value) பகிர்கின்றன — மாறுவது இஷ்யூவர் யார், coupon ஏதேனும் உள்ளதா (T-Bill-க்கு இல்லை), மற்றும் வரி நடத்தை. "Fixed Income வர்த்தகம் எப்படி விலைநிர்ணயம் செய்யப்பட்டு மதிப்பீடு செய்யப்படுகிறது" என்பதன் இயங்குமுறை முழு சொத்து வகையிலும் நிலையானது; கடன் மற்றும் வரி சுயவிவரம் மட்டுமே மாறுகிறது.</div>
+    </section>
+
+    <section class="mod" id="lifecycle">
+      <p class="sec-eyebrow"><span class="n">05</span> · ஒன்பது நிலைகள், பத்திரங்களுக்குப் பயன்படுத்தப்படுகின்றன</p>
+      <h2>வர்த்தக வாழ்க்கைச் சுழற்சி — Fixed-Income-குறிப்பிட்ட நடைமுறை</h2>
+      <p class="lede">Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting, பிரிவு 04a-இன் Government Bond வர்த்தகத்திற்குப் பயன்படுத்தப்பட்டு, கனடாவில் நிறைவேற்றப்பட்டது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">முழு வாழ்க்கைச் சுழற்சி · Canada 5% Bond 2035</span><span class="t-id">BOT-FI-2026-013380</span></div>
+        <pre>10:15:00  ORDER — Bank Of Toronto's desk instructed to buy
+          CAD 10,000,000 face value, Canada 5% Bond 2035
+
+10:15:22  EXECUTION @ Price 98.50 (Clean) vs Goldman Sachs,
+          interbank market
+
+10:15:22  TRADE CAPTURE — Trade ID BOT-FI-2026-013380
+          Settlement falls 60 days after the last coupon date
+          (Section 01) -&gt; Accrued Interest = CAD 82,418
+
+10:30:00  CONFIRMATION/MATCHING -&gt; MATCHED
+          (no CCP for this bilateral OTC bond trade — Section 07)
+
+Settlement Date = T+2 (Government of Canada bonds — systems-
+          landscape §04's Canada table)
+          CDS/CDSX performs DvP:
+            Bond: CAD 10,000,000 face value moves from Goldman
+                  Sachs' to Bank Of Toronto's CDS account
+            Cash: DIRTY PRICE = CAD 9,932,418 moves the other way
+                  (Clean Price CAD 9,850,000 + Accrued Interest
+                  CAD 82,418 — Section 01)
+
+POSITION — Bank Of Toronto's Fixed Income book increases by
+          CAD 10,000,000 face value of this bond
+
+VALUATION / P&amp;L — marked daily to the current market Clean
+          Price, PLUS newly-accruing interest each day:
+            Settlement day:  Clean 98.50, Accrued 82,418
+            One week later:  Clean 98.65, Accrued 106,164
+              (7 more days of accrual: 250,000 x 67/182)
+            Price P&amp;L   = (98.65 - 98.50)/100 x 10,000,000 = +15,000
+            Accrual P&amp;L = 106,164 - 82,418               = +23,746
+          -&gt; both components are real and get reported SEPARATELY
+             in most Fixed Income P&amp;L systems (Module 10)
+
+REPORTING — trade reported to the relevant Trade Repository/
+          regulator by T+1 (Module 3 §09)</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> <a href="./module-04-equity.html">தொகுதி 4</a>-இன் Equity நடைமுறையிலிருந்து மிகப்பெரிய வாழ்க்கைச் சுழற்சி வேறுபாடு என்னவென்றால், Fixed Income-இன் Valuation/P&amp;L நிலை ஒவ்வொரு நாளும் <b>இரண்டு</b> கூறுகளாகப் பிரிகிறது — விலை நகர்வு மற்றும் வட்டி accrual — ஒரு equity நிலைக்கோ ஒன்று மட்டுமே உள்ளது (விலை நகர்வு; dividends அவ்வப்போது வருபவை, தொடர்ந்து accrue ஆகக்கூடியவை அல்ல). விலை நகர்வை மட்டும் காட்டும் ஒரு பத்திர P&amp;L அறிக்கை accrual பகுதியை மௌனமாக விட்டுவிடுகிறது.</div>
+    </section>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">06</span> · இங்கே டிக்கர்கள் இல்லை</p>
+      <h2>அடையாளங்காட்டிகள் — பத்திரங்களுக்குப் பயன்படுத்தப்படுகின்றன</h2>
+      <p class="lede">பத்திரங்கள் <a href="./module-02-hierarchy.html">தொகுதி 2</a> §02 மற்றும் <a href="./module-04-equity.html">தொகுதி 4</a> §06-இலிருந்து அதே அடையாளங்காட்டி தொகுப்பை மீண்டும் பயன்படுத்துகின்றன, ஒரு கட்டமைப்பு வேறுபாட்டுடன்: பத்திரங்களுக்கு அடிப்படையில் எப்போதும் ஒரு Ticker இருக்காது.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>அடையாளங்காட்டி</th><th>Government Bond</th><th>Corporate Bond</th><th>குறிப்புகள்</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN</td><td><code>CA1358XXXXX</code></td><td><code>CA0553XXXXX</code> (விளக்கத்திற்காக)</td><td>உலகளாவியது, முதன்மை bond அடையாளங்காட்டி</td></tr>
+          <tr><td>CUSIP</td><td><code>135087XX1</code> (விளக்கத்திற்காக)</td><td><code>055349XX1</code> (விளக்கத்திற்காக)</td><td>வட அமெரிக்கா மட்டும்</td></tr>
+          <tr><td>Ticker</td><td>— இல்லை —</td><td>— இல்லை —</td><td>பத்திரங்கள் exchange tickers-இன் கீழ் வர்த்தகமாவதில்லை (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §02)</td></tr>
+          <tr><td>LEI</td><td>Government of Canada-ஐ இஷ்யூவராக அடையாளப்படுத்துகிறது</td><td>Bank Of Toronto-ஐ இஷ்யூவராக அடையாளப்படுத்துகிறது</td><td>கருவி அல்ல, தரப்பினர் (<a href="./module-04-equity.html">தொகுதி 4</a> §06)</td></tr>
+          <tr><td>UPI</td><td>பொருந்தாது</td><td>பொருந்தாது</td><td>UPI OTC derivatives-க்கானது (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §12) — ஒரு bond future (<a href="./module-08-rates.html">தொகுதி 8</a>) பதிலாக ஒரு exchange contract code பெறுகிறது</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு அறிக்கையிடல் பதிவில் ISIN/CUSIP இருந்து Ticker இல்லாவிட்டால், <a href="./module-02-hierarchy.html">தொகுதி 2</a> §02 இதை ஏற்கெனவே ஒரு பத்திரத்தின் கிளாசிக் அடையாளமாகக் குறித்துவிட்டது. இந்தத் தொகுதி தலைகீழ்-திசை சரிபார்ப்பைச் சேர்க்கிறது: அதே பதிவில் UPI-யும் நிரப்பப்பட்டிருந்தால், ஏதோ தவறு உள்ளது — ஒரு கேஷ் பத்திரம் ஒருபோதும் ஒன்றைச் சுமக்கக் கூடாது.</div>
+    </section>
+
+    <section class="mod" id="structure">
+      <p class="sec-eyebrow"><span class="n">07</span> · Equity-இலிருந்து எதிர் இயல்புநிலை</p>
+      <h2>பரிவர்த்தனையகம் vs OTC vs இருதரப்பு vs மையமாகக் க்ளியர் செய்யப்பட்டது</h2>
+      <p class="lede"><a href="./module-04-equity.html">தொகுதி 4</a>-இன் Equity போலல்லாமல், அங்கு "exchange-traded" மற்றும் "centrally cleared" பெரும்பாலும் ஒன்றாகச் செல்கின்றன, cash Fixed Income வர்த்தகங்கள் மிகைப்படுத்தலாக OTC மற்றும் இருதரப்பு (bilateral) ஆகும். Repo ஒரு சுவாரசியமான விதிவிலக்கு.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>இருதரப்பு</th><th>மையமாகக் க்ளியர் செய்யப்பட்டது</th></tr></thead>
+        <tbody>
+          <tr><td><b>Exchange-Traded</b></td><td>n/a — பத்திரங்கள் அடிப்படையில் ஒரு exchange-இல் வர்த்தகமாவதே இல்லை</td><td>சில retail bond தளங்கள் உள்ளன, ஆனால் வர்த்தக அளவு மிகச் சிறியது</td></tr>
+          <tr><td><b>OTC</b></td><td>பெரும்பான்மையான Government, Corporate, மற்றும் Municipal bond வர்த்தகங்கள் — dealer-to-dealer அல்லது dealer-to-client, CCP இல்லை</td><td>Repo, அதிகரித்து வருகிறது: CDCC (கனடா, 2012 முதல்), FICC (US Treasury repo)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>தயாரிப்பு</th><th>Exchange அல்லது OTC?</th><th>இருதரப்பு அல்லது மையமாகக் க்ளியர் செய்யப்பட்டதா?</th></tr></thead>
+        <tbody>
+          <tr><td>Government Bond</td><td>OTC</td><td>இருதரப்பு (இயல்பு)</td></tr>
+          <tr><td>Corporate Bond</td><td>OTC</td><td>இருதரப்பு (இயல்பு)</td></tr>
+          <tr><td>Municipal Bond</td><td>OTC</td><td>இருதரப்பு (இயல்பு)</td></tr>
+          <tr><td>Repo</td><td>OTC</td><td><b>ஏதேனும் ஒன்று</b> — இயல்பாக இருதரப்பு, மிகப்பெரிய, மிகவும் தரப்படுத்தப்பட்ட செயல்பாட்டிற்கு அதிகரித்து CDCC/FICC மூலம் திசைதிருப்பப்படுகிறது</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> இது <a href="./module-04-equity.html">தொகுதி 4</a>-இன் Equity அட்டவணையிலிருந்து எதிர் இயல்புநிலை, அங்கு இருதரப்பு-மற்றும்-exchange-traded "நடைமுறையில் ஒருபோதும் இல்லை" ஆகவும், மையமாகக் க்ளியர் செய்யப்படுவது இயல்பாகவும் இருந்தது. Fixed Income-க்கு, இருதரப்பு OTC இயல்பு, மத்திய க்ளியரிங் (வளர்ந்துவரும்) விதிவிலக்கு — இதனால்தான் bond சந்தை ஒழுங்குமுறை (பிரிவு 08) ஒரு CCP-இன் சொந்த பதிவுகளை நம்புவதைவிட, transaction reporting (MiFIR) மீது இவ்வளவு அதிகமாகச் சாய்கிறது.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · Equity-இலும் இங்கே அதிக முக்கியத்துவம் வாய்ந்த இரண்டு அமைப்புகள்</p>
+      <h2>ஒழுங்குமுறைப் பார்வை — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <p class="lede"><a href="./module-04-equity.html">தொகுதி 4</a>-இல் தொடர்பற்றதாகக் குறிக்கப்பட்ட இரண்டு ஒழுங்குமுறையாளர்கள் இங்கே நேரடியாகப் பொருத்தமானவை என்று மாறுகின்றனர்.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>ஒழுங்குமுறை / அமைப்பு</th><th>Fixed Income-ஐ குறிப்பாக எப்படித் தொடுகிறது</th></tr></thead>
+        <tbody>
+          <tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Bond transaction reporting மற்றும் pre/post-trade வெளிப்படைத்தன்மை — equities-இலிருந்து வேறுபட்ட வரம்புகளுடன் (எ.கா. bonds எவ்வளவு குறைவான திரவத்தன்மையுடையவை என்பதைப் பிரதிபலிக்கும் "large-in-scale" விலக்குகள்)</td></tr>
+          <tr><td><b>EMIR</b></td><td>ஒரு cash bond வர்த்தகத்திற்குப் <b>பொருந்தாது</b>. ஒரு bond future/option-க்குப் (<a href="./module-08-rates.html">தொகுதி 8</a>: Rates) பொருந்தும் — <a href="./module-04-equity.html">தொகுதி 4</a> §08-இன் equity-derivatives carve-out-இன் Fixed Income சமமானது</td></tr>
+          <tr><td><b>SFTR</b></td><td><b>repo</b>-க்கு (பிரிவு 03) நேரடியாகப் பொருந்தும் — <a href="./systems-landscape.html">systems-landscape</a> §12 உதாரணத்தின் அடிப்படைக் கருவியான Germany 3% Bund 2033 உண்மையில் எங்கிருந்து வருகிறது என்பதை இந்தத் தொகுதிதான் காட்டுகிறது</td></tr>
+          <tr><td><b>FCA</b> (UK)</td><td>UK bond வர்த்தகத்திற்கான நடத்தை ஒழுங்குமுறையாளர், UK MiFIR bond transaction reporting-ஐ நிர்வகிக்கிறது</td></tr>
+          <tr><td><b>CIRO</b> (Canada)</td><td>கனேடிய bond dealer நடத்தையை மேற்பார்வையிடும் SRO</td></tr>
+          <tr><td><b>HKMA</b> (Hong Kong)</td><td>Equity-ஐ (<a href="./module-04-equity.html">தொகுதி 4</a> §08) விட உண்மையிலேயே இங்கே அதிக மையமானது: HKMA நேரடியாக <b>Exchange Fund Bills &amp; Notes</b>-ஐ இஷ்யூ செய்கிறது, ஹாங்காங்கின் ஒரு debt management office போலவே செயல்படுகிறது, அதன் மத்திய-வங்கிப் பங்குக்கு மேலதிகமாக</td></tr>
+          <tr><td><b>DTCC</b> (US)</td><td>அதன் துணை நிறுவனமான <b>FICC</b> குறிப்பாக US Treasuries மற்றும் Treasury repo-ஐ க்ளியர் செய்கிறது — <a href="./module-04-equity.html">தொகுதி 4</a>-க்குத் தேவைப்படாத Fixed Income-குறிப்பிட்ட பகுதி</td></tr>
+          <tr><td><b>DMO</b> (UK Debt Management Office)</td><td>இது அதன் தொகுதி: DMO auction மூலம் UK Gilts-ஐ இஷ்யூ செய்கிறது — Government of Canada பத்திரங்களை இஷ்யூ செய்யும் விதத்திற்கு (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §1) UK-இன் இணையானது, மற்றும் US Treasury Treasuries-ஐ இஷ்யூ செய்யும் விதத்திற்கும்</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> HKMA மற்றும் DMO இங்கே நேரடியாகப் பொருத்தமானவை என்று மாறுகின்றன — ஒழுங்குமுறைப் பார்வை உண்மையிலேயே உங்கள் முன்னால் உள்ள சொத்து வகையைச் சார்ந்தது என்பதற்கான ஒரு நினைவூட்டல், சரியாக எட்டு-பகுதி முறைமை நோக்கம் கொண்டுள்ளபடி: அதே சுருக்கச்சொல் ஒரு தொகுதியில் முக்கிய நடிகராகவும், மற்றொன்றில் அடிக்குறிப்பாகவும் இருக்கலாம்.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">குறிப்பு · முழு பட்டியல்</p>
+      <h2>பங்கேற்பாளர்கள் — முழு பட்டியல் குறிப்பு</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>பங்கேற்பாளர்</th><th>இந்தத் தொகுதியில் பங்கு</th></tr></thead>
+        <tbody>
+          <tr><td>Government of Canada</td><td>Canada 5% Bond 2035-இன் இஷ்யூவர்</td></tr>
+          <tr><td>Bank Of Toronto</td><td>Government bond-இன் வாங்குபவர்; அதன் சொந்த 4.5% Bond 2030-இன் இஷ்யூவர்; municipal bond வர்த்தகத்தில் dealer</td></tr>
+          <tr><td>Goldman Sachs</td><td>Government bond-இன் விற்பவர்; repo எதிர்தரப்பு (பணத்தை கடன் வாங்குபவர், Bund collateral-ஐப் பதிவிடுபவர்)</td></tr>
+          <tr><td>Maple Leaf Pension Fund</td><td>Corporate bond மற்றும் municipal bond-இன் வாங்குபவர்</td></tr>
+          <tr><td>City of Toronto</td><td>Green Bond 2032-இன் இஷ்யூவர்</td></tr>
+          <tr><td>CDS / CDSX</td><td>கனேடிய government bond வர்த்தகத்தை செட்டில் செய்யும் CSD (<a href="./systems-landscape.html">அமைப்புகள் நிலப்பரப்பு</a> §04)</td></tr>
+          <tr><td>CDCC / FICC</td><td>Repo-ஐ மையமாகக் க்ளியர் செய்யக்கூடிய CCPs (முறையே கனடா / அமெரிக்கா)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">சுய-பரிசோதனை</p>
+      <h2>மறுநினைவு வினாடி வினா — எண் பதிப்பு</h2>
+      <p class="lede"><a href="./module-06-fx.html">தொகுதி 6</a>-க்குச் செல்லும் முன் இவற்றை உண்மையான எண்களுடன் செய்யவும்.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>பிரிவு 05-இல் உள்ள Canada 5% Bond 2035 வர்த்தகத்தில், அதே 182-நாள் coupon காலகட்டத்தில் செட்டில்மென்ட் 120 நாட்களுக்குள் விழுந்திருந்தால், புதிய Accrued Interest மற்றும் Dirty Price என்ன ஆகும்?</li>
+          <li>பிரிவு 01-இன் உதாரணத்தைப் போலல்லாமல், பிரிவு 04d-இல் உள்ள T-Bill-க்கு ஏன் "coupon vs yield" வேறுபாடு எதுவும் இல்லை என விவரிக்கப்படுகிறது?</li>
+          <li>பிரிவு 03-இல் உள்ள repo-இல், Goldman Sachs German Bund-இன் வாங்குபவரா அல்லது விற்பவரா — பொருளாதார ரீதியாக உண்மையில் என்ன நடக்கிறது என்பதற்கு இரண்டு லேபிள்களுமே ஏன் உண்மையில் துல்லியமாக இல்லை?</li>
+          <li>பிரிவு 06-இன் அட்டவணையைப் பயன்படுத்தி, ஒரு பத்திரம்-போன்ற வர்த்தகப் பதிவில் UPI புலம் இருப்பது, அந்த வர்த்தகத்தைப் பற்றி எதைக் காட்டுகிறது?</li>
+          <li>பிரிவு 07 ஏன் repo-ஐ "Fixed Income இருதரப்பு OTC" என்பதற்கு விதிவிலக்காகக் குறிக்கிறது, அதை மையமாக க்ளியர் செய்யக்கூடிய இரண்டு பெயரிடப்பட்ட CCPs எவை?</li>
+          <li>ஒரு வர்த்தகப் பதிவு Fixed Income வர்த்தகம் போலத் தோன்றும் ஒன்றுக்கு EMIR அறிக்கையிடல் புலங்கள் நிரப்பப்பட்டிருப்பதைக் காட்டுகிறது. பிரிவு 08-இன் அடிப்படையில், இது கருவியைப் பற்றி என்ன சொல்கிறது, மிகவும் சாத்தியமான விளக்கம் என்ன?</li>
+          <li>இந்தத் தொகுதியில் HKMA-இன் பொருத்தத்தை <a href="./module-04-equity.html">தொகுதி 4</a>-இன் Equity தொகுதியுடன் ஒப்பிடுக — HKMA இங்கே குறிப்பிடத்தக்க எந்த Fixed-Income-தொடர்பான செயல்பாட்டைச் செய்கிறது?</li>
+        </ol>
+        <p class="quiz-cta">தயாராகும்போது பதிலளிக்கவும் — பிறகு செல்லவும்: <b><a href="./module-06-fx.html">தொகுதி 6</a>: அந்நிய செலாவணி (FX)</b>, சொத்து வகை பாதைவரைபடத்தில் அடுத்த நிறுத்தம்.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">சுய-பரிசோதனை · தீர்வுகள்</p>
+      <h2>மறுநினைவு வினாடி வினா — பதில்கள் &amp; விளக்கங்கள்</h2>
+      <p class="lede">தொடர்வதற்கு முன் உங்கள் பதில்களை இவற்றுடன் ஒப்பிடுக.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Accrued Interest = CAD 164,835; Dirty Price = CAD 10,014,835</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">கணிதம் · 120 Days Accrued</span><span class="t-id">Canada 5% Bond 2035</span></div>
+          <pre>Accrued Interest = 10,000,000 x 2.50% x (120 / 182) = 250,000 x 0.65934 = CAD 164,835
+Dirty Price = 9,850,000 (Clean) + 164,835 = CAD 10,014,835</pre>
+        </div>
+        <p>coupon காலகட்டத்தில் செட்டில்மென்ட் எவ்வளவு தாமதமாக விழுகிறதோ, அவ்வளவு அதிக accrued interest திரண்டிருக்கும் (days-since-last-coupon 182-ஐ நெருங்கும்போது முழு CAD 250,000 semi-annual coupon-ஐ நெருங்குகிறது) — இது பிரிவு 01 நிறுவிய linear accrual இயங்குமுறையே.</p>
+
+        <h5>Q2 — ஒரு T-Bill எந்த coupon-ஐயும் செலுத்தாது; அதன் முழு வருமானமும் தள்ளுபடி (discount) ஆகும்</h5>
+        <p>பிரிவு 01-இன் coupon-vs-yield வேறுபாடு இருப்பதற்குக் காரணம், ஒரு coupon bond-க்கு <i>இரண்டு</i> எண்கள் வேறுபடக்கூடியவை (ஒரு நிலையான coupon rate மற்றும் ஒரு விலை-சார்ந்த yield). ஒரு T-Bill-க்கு ஒரே ஒரு வருமான இயங்குமுறை மட்டுமே உள்ளது — தள்ளுபடி — எனவே "yield" மட்டுமே இருக்கும் எண்; அதை எதிர்த்து ஒப்பிடுவதற்கு எதுவும் இல்லை.</p>
+
+        <h5>Q3 — Goldman Sachs முழுமையாக ஒரு வாங்குபவரும் அல்ல, விற்பவரும் அல்ல — பொருளாதார ரீதியாக, அது Bund-ஐ collateral-ஆகப் பதிவிடும் ஒரு பணக் கடன் வாங்குபவர்</h5>
+        <p>பிரிவு 03 இதை நேரடியாகக் கூறுகிறது: Bund-இன் சட்டப்பூர்வ உரிமை தற்காலிகமாக மாறுகிறது, ஆனால் முழு பரிவர்த்தனையும் மாற்றத்தை மாற்றியமைக்கும் ஒரு ஒப்பந்தபூர்வ வாக்குறுதியுடன் ஒரு பாதுகாக்கப்பட்ட கடனாக அமைக்கப்பட்டுள்ளது — இதனால்தான் repo, MiFID transaction reporting பிடிக்கும் ஒரு நேரடி வாங்குதல்/விற்பனையை விட, ஒரு Securities <i>Financing</i> Transaction-ஆக (SFTR, பிரிவு 08) வகைப்படுத்தப்படுகிறது.</p>
+
+        <h5>Q4 — இது வர்த்தகம் உண்மையில் ஒரு bond derivative (<a href="./module-08-rates.html">தொகுதி 8</a>: Rates) என்பதைக் காட்டுகிறது, cash bond அல்ல — அல்லது இது ஒரு தரவு-தர பிழை</h5>
+        <p>பிரிவு 06-இன் முக்கிய கருத்து இதை நேரடியாகக் கூறுகிறது: UPI OTC derivatives-க்கானது; ஒரு cash bond ஒருபோதும் ஒன்றைச் சுமக்கக் கூடாது. ஒரு பத்திரம்-வடிவ பதிவில் இது நிரப்பப்பட்டிருப்பதைக் காண்பது, <a href="./module-02-hierarchy.html">தொகுதி 2</a> §02 பத்திரங்களில் Tickers-க்கு நிறுவிய அதே கண்டறியும் சமிக்ஞை, எதிர் திசையில் சரிபார்க்கப்படுகிறது.</p>
+
+        <h5>Q5 — CDCC (கனடா, 2012 முதல்) மற்றும் FICC (US Treasury repo)</h5>
+        <p>Repo விதிவிலக்காக இருப்பதற்குக் காரணம், நேரடி government/corporate/municipal bond வர்த்தகங்களைப் போலல்லாமல் (இருதரப்பு OTC-ஆகவே இருக்கும்), தரப்படுத்தப்பட்ட செயல்பாட்டிற்கு அது அதிகரித்து ஒரு CCP மூலம் திசைதிருப்பப்படுகிறது. பிரிவு 07-இன் அட்டவணை இரண்டையும் பெயரால் பட்டியலிடுகிறது, <a href="./systems-landscape.html">அமைப்புகள் நிலப்பரப்பு</a> §04 (CDCC) மற்றும் §05 (FICC)-உடன் நேரடியாக இணைக்கிறது.</p>
+
+        <h5>Q6 — இது கருவி உண்மையில் ஒரு எளிய cash bond அல்ல என்பதைக் காட்டுகிறது — இது ஒரு bond future அல்லது bond option (<a href="./module-08-rates.html">தொகுதி 8</a>: Rates)</h5>
+        <p>பிரிவு 08-இன் அட்டவணை EMIR ஒரு cash bond-க்குப் பொருந்தாது, ஒரு derivative-க்கு மட்டுமே என்று கூறுகிறது — EMIR புலங்கள் நிரப்பப்பட்டிருப்பதைக் காண்பது, இந்த "Fixed Income-போன்ற" வர்த்தகம் என்பது உண்மையில் மறைவேடமிட்ட ஒரு derivative என்பதற்கான வலிமையான சமிக்ஞை, மேலும் அது Rates சொத்து வகையில் சேர்க்கப்பட வேண்டும்.</p>
+
+        <h5>Q7 — HKMA நேரடியாக Exchange Fund Bills &amp; Notes-ஐ, ஹாங்காங்கின் சொந்த அரசு கடனை இஷ்யூ செய்கிறது</h5>
+        <div class="takeaway"><a href="./module-04-equity.html">தொகுதி 4</a>-இல் (Equity), HKMA செயலிலிருந்து ஒரு படி விலகியதாகக் குறிக்கப்பட்டது, equity நடத்தை ஒழுங்குமுறையின் உண்மையான வேலையை SFC செய்கிறது. இங்கே, HKMA ஹாங்காங் அரசு கடனுக்கு <i>நேரடியாக</i> இஷ்யூவர்-தரப்பு நடிகராக உள்ளது, UK Gilts-க்கு (பிரிவு 08) DMO வகிக்கும் அதே செயல்பாட்டுப் பங்கு — சொத்து வகையுடன் அதே ஒழுங்குமுறையாளரின் பொருத்தம் மாறுவதற்கான ஒரு உறுதியான உதாரணம்.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தொகுதி 5 / 14 &middot; <a href="./index.html" style="color:var(--ink-faint);">&larr; அட்டவணைக்குத் திரும்பு</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,907 @@
+<!doctype html>
+<title>தொகுதி 6 — அந்நிய செலாவணி (FX)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Sans Tamil", "Nirmala UI", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: "Noto Sans Tamil", "Nirmala UI", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="./index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; அட்டவணைக்குத் திரும்பு</a>
+    <div class="masthead-top">
+      <div class="eyebrow">மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தொகுதி 6 / 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">கணினி</button>
+        <button type="button" data-mode="light" aria-pressed="false">வெளிர்</button>
+        <button type="button" data-mode="dark" aria-pressed="false">இருள்</button>
+      </div>
+    </div>
+    <h1>அந்நிய செலாவணி (FX)</h1>
+    <p class="dek">Spot, Forward, Swap &amp; Options ஆகியவை அதே எட்டு-பகுதி முறைமையின் வழியாக விளக்கப்படுகின்றன — ஆனால் ஒரு திருப்பத்துடன்: FX-க்கு எந்த security-யும் இல்லை, முழுவதுமே contracts தான், மேலும் இது ஒரு CCP-க்குப் பதிலாக CLS-இன் Payment-versus-Payment வழியாக settle செய்யப்படுகிறது.</p>
+    <div class="audience-note">நிதி/மூலதனச் சந்தைகளுக்குப் புதியவரான <b>ஒரு மென்பொருள் கட்டமைப்பாளருக்காக (Java பின்னணி)</b> எழுதப்பட்டது. இந்தத் தொகுதி முழுவதும் பயன்படுத்தப்படும் உதாரண வங்கி: <span class="bank-tag">Bank Of Toronto</span> (கற்பனை, விளக்கத்திற்காக மட்டும்).</div>
+    <div class="roadmap-note"><b>சொத்து வகை பாதைவரைபடம் 3 / 6</b> — Equity → Fixed Income → FX → Commodities → Rates → Credit, ஒவ்வொன்றாக.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">இந்தப் பக்கத்தில்</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>FX என்றால் என்ன?</a></li>
+      <li><a href="#products"><span class="toc-num">02</span>தயாரிப்புகள் என்ன?</a></li>
+      <li><a href="#contracts"><span class="toc-num">03</span>Contracts, முழுவதுமே</a></li>
+      <li><a href="#trade-examples"><span class="toc-num">04</span>நிஜ-உலக வர்த்தக உதாரணங்கள்</a></li>
+      <li><a href="#lifecycle"><span class="toc-num">05</span>வர்த்தக வாழ்க்கைச் சுழற்சி &amp; CLS</a></li>
+      <li><a href="#identifiers"><span class="toc-num">06</span>அடையாளங்கள்</a></li>
+      <li><a href="#structure"><span class="toc-num">07</span>Exchange vs OTC vs Bilateral vs Cleared</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>ஒழுங்குமுறைப் பார்வை</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>மறுநினைவு வினாடி வினா</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>வினாடி வினா பதில்கள்</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · வழங்குநர் இல்லை, மேச்சுரிட்டி இல்லை, உரிமைக் கோரிக்கை இல்லை</p>
+      <h2>FX என்றால் என்ன? — கோட்பாடு &amp; சொற்கலை</h2>
+      <p class="lede">FX (Foreign Exchange) என்பது ஒரு நாணயத்தை மற்றொரு நாணயத்திற்கு ஒப்புக்கொள்ளப்பட்ட விகிதத்தில் மாற்றுவது ஆகும். இதில் வழங்குநர் (issuer) இல்லை, bond அர்த்தத்தில் மேச்சுரிட்டி இல்லை, உரிமைக் கோரிக்கை (ownership claim) இல்லை — வெறும் இரு counterparties, ஒரு நாணயம் மற்றொரு நாணயத்தின் குறிப்பிட்ட அளவிற்குச் சமம் என்று இப்போது அல்லது எதிர்கால தேதியில் ஒப்புக்கொள்வது மட்டுமே. தினசரி turnover அடிப்படையில் FX உலகின் மிகப்பெரிய நிதிச் சந்தையாகும், மேலும் Equity அல்லது Fixed Income போலல்லாமல், <b>ஒவ்வொரு FX தயாரிப்பும் அடிப்படையில் நாணயத்தை மாற்றுவதற்கான ஒரு contract தான்</b>.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>சொல்</th><th>பொருள்</th></tr></thead>
+        <tbody>
+          <tr><td>Currency Pair</td><td>ஒன்றுக்கொன்று எதிராக quote செய்யப்படும் இரு நாணயங்கள், எ.கா. USD/CAD — முதலாவது <i>base</i> நாணயம், இரண்டாவது <i>quote</i> நாணயம்</td></tr>
+          <tr><td>Exchange Rate</td><td>base நாணயத்தின் ஒரு யூனிட்டிற்கு quote நாணயத்தில் எவ்வளவு செலவாகும் என்பது — எ.கா. USD/CAD = 1.3500 என்றால் 1 USD-க்கு CAD 1.35 செலவாகும் என்று அர்த்தம்</td></tr>
+          <tr><td>Spot Rate</td><td>இன்றைய exchange rate, கிட்டத்தட்ட உடனடி settlement-க்கானது (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §6)</td></tr>
+          <tr><td>Forward Points</td><td>ஒரு forward rate-ஐப் பெற spot rate-உடன் சேர்க்கப்படும் (அல்லது கழிக்கப்படும்) சரிசெய்தல், இரு நாணயங்களுக்கிடையேயான வட்டி விகித வேறுபாட்டால் தீர்மானிக்கப்படுகிறது (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §10)</td></tr>
+          <tr><td>Notional</td><td>contract-ஆல் குறிப்பிடப்படும் நாணய அளவு — FX-இல், இது Spot/Forward-க்கு உண்மையிலேயே settle ஆகிறது (ஒரு IRS-இன் notional போலல்லாமல், <a href="./module-01-fundamentals.html">தொகுதி 1</a> §8)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> சொத்து வகை பாதைவரைபடத்தில் FX ஒரு அசாதாரணமான இடத்தில் அமைந்துள்ளது — Equity (ஒரு பங்கு) அல்லது Fixed Income (ஒரு bond) போன்ற எந்த "security"-யும் இதற்கு இல்லை. எளிமையான same-day வர்த்தகம் முதல் மிகவும் சிக்கலான option வரை, ஒவ்வொரு FX தயாரிப்பும் இரு தரப்பினருக்கு இடையேயான ஒரு ஒப்பந்த ஒப்பந்தமாகும். பிரிவு 03 இதை தெளிவாக்குகிறது.</div>
+    </section>
+
+    <section class="mod" id="products">
+      <p class="sec-eyebrow"><span class="n">02</span> · ஒரே பொறிமுறை, காலவரிசையில் வெவ்வேறு புள்ளிகள்</p>
+      <h2>தயாரிப்புகள் என்ன? — Spot, Forward, Swap &amp; Options</h2>
+      <p class="lede">நான்கு தயாரிப்புகளில் மூன்று உண்மையில் ஒரே அடிப்படைப் பொறிமுறை தான் — ஒப்புக்கொள்ளப்பட்ட விகிதத்தில் ஒப்புக்கொள்ளப்பட்ட தேதியில் நாணயத்தை மாற்றுவது — அந்த தேதி எப்போது என்பதிலும் எத்தனை மாற்றங்கள் நடக்கின்றன என்பதிலும் மட்டுமே வேறுபடுகின்றன.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · FX Product Tree</span><span class="t-id">By timing &amp; obligation</span></div>
+        <pre>FX
+│
+├── FX Spot       (near-immediate exchange, T+1/T+2 per currency pair)
+├── FX Forward     (exchange on a later agreed date, rate fixed today — Module 2 §10)
+├── FX Swap        (a spot leg + a forward leg, opposite directions)
+└── FX Options     (the RIGHT, not obligation, to exchange at a fixed rate)</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>தயாரிப்பு</th><th>அது என்ன</th></tr></thead>
+        <tbody>
+          <tr><td><b>FX Spot</b></td><td>கிட்டத்தட்ட உடனடியாக இரு நாணயங்களை மாற்றிக்கொள்வதற்கான ஒப்பந்தம் — பெரும்பாலான pairs-க்கு T+1, சிலவற்றுக்கு T+2 (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §6)</td></tr>
+          <tr><td><b>FX Forward</b></td><td>ஒரு குறிப்பிட்ட எதிர்கால தேதியில், இன்று நிர்ணயிக்கப்பட்ட விகிதத்தில், இரு நாணயங்களை மாற்றிக்கொள்வதற்கான ஒப்பந்தம் (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §10-இன் worked example)</td></tr>
+          <tr><td><b>FX Swap</b></td><td>எதிர் திசைகளில் இணைக்கப்பட்ட இரு பரிமாற்றங்கள் — ஒரு "near leg" (பொதுவாக spot) மற்றும் ஒரு "far leg" (ஒரு forward) — பொருளாதார ரீதியாக ஒரு குறுகிய-கால நாணய-குறிக்கப்பட்ட கடன், நீண்ட-கால வட்டி விகித தயாரிப்பு அல்ல</td></tr>
+          <tr><td><b>FX Option</b></td><td>expiry-க்கு முன் அல்லது அன்று ஒரு fixed strike rate-இல் நாணயத்தை மாற்றுவதற்கான உரிமையை, கடமையல்ல, வாங்குபவருக்கு அளிக்கும் ஒரு contract, ஒரு premium-க்காக</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>பெயரிடலில் ஒரு பொறி:</b> "FX Swap" என்பது <b>Cross-Currency Swap</b>-உடன் <b>ஒன்றல்ல</b> — இது ஆண்டுகளாக இரு நாணயங்களில் மாற்றப்படும் காலமுறை வட்டி செலுத்துதல்களைக் கொண்ட, நீண்ட-கால தயாரிப்பு, இது <a href="./module-01-fundamentals.html">தொகுதி 1</a> §8-இன் Interest Rate Swap போன்று அதிகமாக செயல்படுகிறது, மேலும் இது சரியாக <a href="./module-08-rates.html">தொகுதி 8</a>-க்கு (Rates) சொந்தமானது. ஓர் FX Swap குறுகிய-காலமானது (பொதுவாக overnight முதல் ஒரு வருடம் வரை) மற்றும் அதற்கு எந்த காலமுறை வட்டி செலுத்துதல்களும் இல்லை — வெறும் இரு principal பரிமாற்றங்கள் மட்டுமே.</div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> இந்த நான்கு தயாரிப்புகளில் மூன்று (Spot, Forward, Swap) உண்மையில் ஒரே அடிப்படைப் பொறிமுறை தான் — ஒப்புக்கொள்ளப்பட்ட விகிதத்தில் ஒப்புக்கொள்ளப்பட்ட தேதியில் நாணயத்தை மாற்றுவது — அந்த தேதி எப்போது என்பதிலும் எத்தனை மாற்றங்கள் நடக்கின்றன என்பதிலும் மட்டுமே வேறுபடுகின்றன. Option தான் விதிவிலக்கானது: ஒரு நிபந்தனைக்குட்பட்ட உரிமை, உறுதியான கடமை அல்ல, <a href="./module-04-equity.html">தொகுதி 4</a> §4d equity options-க்காக நிறுவிய அதே buyer/seller சமச்சீரின்மை.</div>
+    </section>
+
+    <section class="mod" id="contracts">
+      <p class="sec-eyebrow"><span class="n">03</span> · ஒப்பிட ஒரு security கூட இல்லை</p>
+      <h2>உண்மையில் என்ன வர்த்தகம் செய்யப்படுகிறது? — Contracts, முழுவதுமே</h2>
+      <p class="lede"><a href="./module-04-equity.html">தொகுதி 4</a>-இல் (Equity: security vs. contract) அல்லது <a href="./module-05-fixed-income.html">தொகுதி 5</a>-இல் (Fixed Income: security vs. financing contract) போலல்லாமல், FX-க்கு <b>ஒப்பிட ஒரு security கூட இல்லை</b>. பிரிவு 02-இல் உள்ள ஒவ்வொரு தயாரிப்பும் ஒரு contract தான் — Spot மற்றும் Forward காலவரிசையில் வெவ்வேறு புள்ளிகளில் உள்ள அதே பொறிமுறை தான், "ஒரு உண்மையான பொருள்" vs. "ஒரு உண்மையான பொருளின் derivative" அல்ல.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · FX Products, All Contracts</span><span class="t-id">No security equivalent</span></div>
+        <pre>FX Spot:     an agreement to exchange currencies almost immediately
+             (T+1/T+2, per currency pair) -- the shortest-dated
+             point on the timeline
+
+FX Forward:  an agreement to exchange currencies on a LATER agreed
+             date, at a rate fixed TODAY -- same mechanic as Spot,
+             just further out on the same timeline
+
+FX Swap:     TWO linked exchanges in opposite directions (near leg
+             + far leg) -- effectively a short-term FX-funding
+             transaction, not a new mechanic
+
+FX Option:   a RIGHT (not obligation) to exchange currencies at a
+             fixed rate, for a premium -- the one genuinely
+             different mechanic in the group
+
+-&gt; Unlike Equity (Module 4) or Fixed Income (Module 5), there is
+   no underlying "security" any of these four reference. FX is
+   contracts all the way down — even Spot is just the shortest-
+   dated point on the same continuum as Forward.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> இது FX-க்கான "settlement"-ஐ முழுவதுமாக மறு-வரையறுக்கிறது — <a href="./module-01-fundamentals.html">தொகுதி 1</a> §6 ஏற்கனவே FX Spot ஒரு security போல T+1/T+2 settle ஆவதைக் காட்டியது, ஆனால் அது ஒரு security ஆக இருந்ததே இல்லை. settlement-இல் (பிரிவு 05) உண்மையில் நடப்பது இரு நாணய கொடுப்பனவுகள் கைமாறுவது தான், ஒரு security ஒரு seller-இன் CSD கணக்கிலிருந்து ஒரு buyer-இன் கணக்குக்கு நகர்வதல்ல.</div>
+    </section>
+
+    <section class="mod" id="trade-examples">
+      <p class="sec-eyebrow"><span class="n">04</span> · Buyer → Seller → Trade</p>
+      <h2>நிஜ-உலக வர்த்தக உதாரணங்கள்</h2>
+      <p class="lede">நான்கு வர்த்தகங்கள் — Spot, Forward, Swap, மற்றும் ஒரு Option hedge — அனைத்தும் USD/CAD-இல்.</p>
+
+      <h3>4a. FX Spot</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">FX Spot · USD/CAD</span><span class="t-id">T+1 settlement</span></div>
+        <pre>Buyer:  Bank Of Toronto (buying USD)
+Seller: Goldman Sachs
+
+Trade: Bank Of Toronto buys USD 10,000,000 @ Spot Rate 1.3500
+Bank Of Toronto pays  = 10,000,000 x 1.3500 = CAD 13,500,000
+Bank Of Toronto receives = USD 10,000,000
+Settlement: T+1 (Module 1 §6 — USD/CAD is one of the pairs that
+            settles T+1 rather than the more common T+2)</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>FxTrade.avsc</code> / <code>FxValuation.avsc</code> — taxonomy-இன் ஒற்றை "FX" node Spot, Forward, மற்றும் Swap ஆகியவற்றை ஒரே சீராகக் கவர் செய்கிறது (பிரிவு 02); FX Option மற்றும் hybrid FX/IR Exotic மட்டுமே தங்களுக்கென தனித்தனி schemas பெறுகின்றன.</div>
+
+      <h3>4b. FX Forward</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">FX Forward · USD/CAD, 3-Month</span><span class="t-id">Reused from <a href="./module-02-hierarchy.html">தொகுதி 2</a> §10</span></div>
+        <pre>Today's Spot Rate (USD/CAD): 1.3500
+3-Month Forward Points:      +0.0045
+3-Month Forward Rate:        1.3545
+
+Bank Of Toronto agrees TODAY with Goldman Sachs:
+  In 3 months, pays CAD 13,545,000, receives USD 10,000,000
+  (10,000,000 x 1.3545 = 13,545,000)
+-&gt; No cash moves today. Only the RATE is locked in now.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>FxTrade.avsc</code> / <code>FxValuation.avsc</code> — Spot-இன் அதே schema; forward date மற்றும் forward points ஆகியவை அதே trade schema-இல் உள்ள fields தான், தனி தயாரிப்பு அல்ல.</div>
+
+      <h3>4c. FX Swap</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">FX Swap · Near Leg + Far Leg</span><span class="t-id">1-month funding</span></div>
+        <pre>NEAR LEG (today, effectively FX Spot):
+  Bank Of Toronto buys USD 10,000,000 @ Spot Rate 1.3500
+  Pays CAD 13,500,000 today, receives USD 10,000,000 today
+
+FAR LEG (in 1 month, a Forward in the opposite direction):
+  Bank Of Toronto sells USD 10,000,000 @ Forward Rate 1.3512
+  (1-month forward points +0.0012, reflecting the CAD/USD
+  interest rate differential over that month)
+  Receives CAD 13,512,000 in 1 month, pays back USD 10,000,000
+
+NET EFFECT:
+  Bank Of Toronto had the use of USD 10,000,000 for exactly one
+  month, and the two legs together cost:
+    13,512,000 - 13,500,000 = CAD 12,000
+  -&gt; this CAD 12,000 is effectively the FUNDING COST of borrowing
+     USD for a month via FX markets, priced entirely through the
+     forward points — no separate "interest payment" line item
+     the way a loan or a Cross-Currency Swap would have.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>FxTrade.avsc</code> / <code>FxValuation.avsc</code> — இன்னும் அதே schema, ஒரே trade record-இல் இரு இணைக்கப்பட்ட legs ஆக model செய்யப்படுகிறது. இதை <code>FxIRExoticTrade.avsc</code>-உடன் குழப்பிக்கொள்ள வேண்டாம் — அந்த schema மேலே flag செய்யப்பட்ட நீண்ட-கால Cross-Currency Swap-க்கானது, இது இரு நாணயங்களில் ஒரு IRS போல செயல்படுகிறது மற்றும் "FX/IR Exotic" node-க்கு சொந்தமானது, வெறும் "FX"-க்கு அல்ல.</div>
+
+      <h3>4d. FX Option</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">FX Option · USD Call / CAD Put</span><span class="t-id">Client hedge, Strike 1.3600</span></div>
+        <pre>Buyer: Bank Of Toronto's client (needs to buy USD in 3 months)
+Seller (writer): Bank Of Toronto
+
+Trade: USD Call / CAD Put, Notional USD 5,000,000
+       Strike 1.3600 CAD/USD, Expiry 3 months
+       Premium: 0.0180 CAD per USD notional
+Premium Paid = 5,000,000 x 0.0180 = CAD 90,000
+
+AT EXPIRY -- Scenario A: Spot moves to 1.3800 (USD stronger)
+  Option is in-the-money: exercising saves
+    (1.3800 - 1.3600) x 5,000,000 = CAD 100,000 vs. buying at spot
+  Net Benefit = 100,000 - 90,000 (premium) = CAD 10,000
+
+AT EXPIRY -- Scenario B: Spot moves to 1.3400 (USD weaker)
+  Option expires WORTHLESS — buying USD at spot (1.3400) is
+  cheaper than exercising at strike (1.3600)
+  Maximum Loss = the CAD 90,000 premium, exactly as Module 4 §4d
+  established for the AAPL call — never more than premium paid.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>FxOptionTrade.avsc</code> / <code>FxOptionValuation.avsc</code> — இந்த OTC, bilateral-ஆக பேச்சுவார்த்தை நடத்தப்பட்ட hedge (பிரிவு 07 FX Options பெரும்பாலும் bilateral என்பதை உறுதிப்படுத்துகிறது) தனக்கென ஒரு தனி schema பெறுகிறது, சாதாரண <code>FxTrade.avsc</code>-இலிருந்து வேறுபட்டது.</div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> FX Swap (4c) உண்மையில் ஒரு Spot (4a) மற்றும் ஒரு Forward (4b) சேர்ந்தது தான் என்பதை கவனியுங்கள் — பொறிமுறை ரீதியாக புதிதாக எதுவும் இல்லை, ஒரே தயாரிப்பின் இரு நிகழ்வுகள் ஒரே நேரத்தில் எதிர் திசைகளில் நிறைவேற்றப்படுவது மட்டுமே. Option (4d) தான் இந்த நான்கில் <a href="./module-04-equity.html">தொகுதி 4</a> ஏற்கனவே equity options-க்காக நிறுவிய சமச்சீரற்ற payoff-ஐ கொண்டது.</div>
+    </section>
+
+    <section class="mod" id="lifecycle">
+      <p class="sec-eyebrow"><span class="n">05</span> · CLS: DvP-க்கு FX-இன் பதில்</p>
+      <h2>வர்த்தக வாழ்க்கைச் சுழற்சி — FX-குறிப்பிட்ட வழிநடத்தல், மற்றும் CLS/PvP</h2>
+      <p class="lede">Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting, பிரிவு 04a-இன் FX Spot வர்த்தகத்திற்குப் பயன்படுத்தப்படுகிறது.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">முழு வாழ்க்கைச் சுழற்சி · USD/CAD Spot</span><span class="t-id">BOT-FX-2026-018802</span></div>
+        <pre>14:02:00  ORDER — Bank Of Toronto's treasury desk needs USD 10,000,000
+
+14:02:03  EXECUTION @ Spot Rate 1.3500 vs Goldman Sachs
+
+14:02:03  TRADE CAPTURE — Trade ID BOT-FX-2026-018802
+
+14:10:00  CONFIRMATION/MATCHING -&gt; MATCHED (bilateral, no CCP —
+          Section 07)
+
+Settlement Date = T+1
+          SETTLEMENT via CLS (Continuous Linked Settlement) —
+          see below
+
+POSITION — Bank Of Toronto's USD cash position increases by
+          USD 10,000,000; CAD cash position decreases by
+          CAD 13,500,000
+
+VALUATION / P&amp;L — the open FX position is marked to the current
+          spot rate daily until the underlying USD is used/sold:
+            Trade day:        USD 10,000,000 @ 1.3500 = CAD 13,500,000
+            One week later:   USD 10,000,000 @ 1.3550 = CAD 13,550,000
+            Unrealized P&amp;L = 13,550,000 - 13,500,000 = +CAD 50,000
+
+REPORTING — FX Spot is generally OUT OF SCOPE for derivative
+          transaction reporting (Section 08) — it isn't treated
+          as a derivative at all under EMIR/CFTC rules</pre>
+      </div>
+
+      <h3>CLS — DvP-க்கு FX-இன் பதில்</h3>
+      <p><a href="./module-01-fundamentals.html">தொகுதி 1</a> §7 DvP (Delivery versus Payment)-ஐ ஒரு security-இன் இரு settlement legs-ஐ ஒன்றாக இணைக்கும் பொறிமுறையாக நிறுவியது, இதனால் எந்தத் தரப்பினரும் ஒருபோதும் exposed ஆக விடப்படுவதில்லை. FX-க்கு delivery செய்ய ஒரு security இல்லை — அதற்குப் பதிலாக, <b>CLS (Continuous Linked Settlement)</b>, முக்கிய உலகளாவிய வங்கிகளால் (Bank Of Toronto மற்றும் Goldman Sachs உட்பட, விளக்கத்திற்காக) சொந்தமாக்கப்பட்டு பயன்படுத்தப்படுகிறது, FX-க்கான சமான செயலை செய்கிறது: <b>PvP (Payment versus Payment)</b>.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">வரைபடம் · PvP via CLS</span><span class="t-id">Why Herstatt risk doesn't happen</span></div>
+        <pre>WITHOUT PvP (the old failure mode, named after Bankhaus Herstatt's
+1974 collapse):
+  Bank Of Toronto pays CAD 13,500,000 in Toronto's business hours.
+  Goldman Sachs is due to pay USD 10,000,000 in New York hours,
+  LATER THE SAME DAY. If Goldman Sachs fails in between, Bank Of
+  Toronto has paid and received nothing back.
+
+WITH CLS (PvP):
+  Both legs are settled simultaneously across CLS's own books,
+  covering 18+ major currencies including USD and CAD. Either
+  BOTH payments complete, or NEITHER does — mirroring exactly what
+  DvP does for securities (Module 1 §7), just for two currency
+  payments instead of a security + cash.</pre>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> CLS ஒரு CCP அல்ல — இது NSCC அல்லது ஒரு swap CCP செய்வதைப் போல வர்த்தகங்களை novate செய்யவோ counterparty credit risk-ஐ ஏற்கவோ இல்லை (<a href="./module-03-trade-lifecycle.html">தொகுதி 3</a> §6). இது தூய settlement-risk தணிப்பு தான், securities-க்கு DvP தீர்க்கும் அதே பிரச்சினைக்கான FX-குறிப்பிட்ட பதில்.</div>
+    </section>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">06</span> · ISIN இல்லை, CUSIP இல்லை, Ticker இல்லை</p>
+      <h2>அடையாளங்கள் — Currency Pairs, UPI, UTI &amp; LEI</h2>
+      <p class="lede">தொகுதிகள் 4 மற்றும் 5 சார்ந்திருந்த அடையாளங்களை FX பெரும்பாலும் பயன்படுத்துவதில்லை — ஒரு currency pair வர்த்தகத்திற்கு ISIN, CUSIP, SEDOL, Ticker, அல்லது FIGI கிடையாது, ஏனெனில் (பிரிவு 03) அடையாளப்படுத்த ஒரு security இல்லை.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>அடையாளம்</th><th>FX-க்குப் பொருந்துமா?</th><th>உதாரணம்</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN / CUSIP / SEDOL / Ticker / FIGI</td><td><b>இல்லை</b> — இவை securities-ஐ அடையாளப்படுத்துகின்றன; FX-க்கு எதுவும் இல்லை</td><td>—</td></tr>
+          <tr><td>Currency Pair (ISO 4217 codes)</td><td>ஆம் — FX-க்கு "instrument" அடையாளத்திற்கு நெருக்கமான ஒரே விஷயம் இது தான்</td><td><code>USD/CAD</code></td></tr>
+          <tr><td><b>UPI</b></td><td>ஆம், OTC derivatives ஆக அறிக்கையிடப்படும் FX Forwards, Swaps, மற்றும் Options-க்கு (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §12)</td><td>"USD/CAD, Forward, Deliverable"-க்கு ஒரு UPI — பல Forward வர்த்தகங்களில் மீண்டும் பயன்படுத்தப்படுகிறது, <a href="./module-02-hierarchy.html">தொகுதி 2</a> §12-இன் IRS உதாரணத்தின் அதே தர்க்கம்</td></tr>
+          <tr><td><b>UTI</b></td><td>ஆம் — ஒவ்வொரு தனிப்பட்ட FX Forward/Swap/Option வர்த்தகமும் தனக்கென ஒன்றைப் பெறுகிறது</td><td><a href="./module-02-hierarchy.html">தொகுதி 2</a> §12 போன்றே, வர்த்தகத்திற்கு ஒரு புதிய UTI</td></tr>
+          <tr><td><b>LEI</b></td><td>ஆம் — Bank Of Toronto, Goldman Sachs, மற்றும் எந்த client-ஐயும் counterparties ஆக அடையாளப்படுத்துகிறது</td><td>Entity identifier, instrument அல்ல (<a href="./module-04-equity.html">தொகுதி 4</a> §6)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> ஒரு reporting record ஒரு currency pair-ஐக் காட்டி ஆனால் ISIN/CUSIP இல்லாமல் இருந்தால், அது FX-க்கு முற்றிலும் இயல்பானது தான் — ஒரு security identifier இல்லாமல் இருப்பது ஒரு data gap அல்ல, அது எந்த security-யும் இல்லாத ஒரு சொத்து வகைக்கான சரியான நிலை தான் (பிரிவு 03).</div>
+    </section>
+
+    <section class="mod" id="structure">
+      <p class="sec-eyebrow"><span class="n">07</span> · Equity-க்கும் Fixed Income-க்கும் இல்லாத ஒரு மூன்றாவது பொறிமுறை</p>
+      <h2>Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p class="lede">FX வர்த்தகங்களில் பெரும்பான்மையானவை — Spot, Forward, Swap, மற்றும் பெரும்பாலான Options — OTC மற்றும் bilateral ஆகும், CLS-இன் PvP பொறிமுறை வழியாக settle செய்யப்படுகின்றன, ஒரு CCP-க்கு novate செய்யப்படுவதில்லை. Forwards மற்றும் NDFs-இன் ஒரு சிறிய ஆனால் வளர்ந்துவரும் பங்கு centrally clear செய்யப்படுகிறது, மேலும் listed FX futures/options ஒரு தனி, சிறிய சந்தையாக exchange-இல் உள்ளன.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>தயாரிப்பு</th><th>Exchange அல்லது OTC?</th><th>Bilateral அல்லது Centrally Cleared?</th></tr></thead>
+        <tbody>
+          <tr><td>FX Spot</td><td>OTC</td><td>Bilateral (CLS-இன் PvP வழியாக settle செய்யப்படுகிறது, ஒரு CCP அல்ல — பிரிவு 05)</td></tr>
+          <tr><td>FX Forward</td><td>OTC</td><td>பெரும்பாலும் bilateral; வளர்ந்துவரும் ஒரு பங்கு LCH ForexClear அல்லது CME வழியாக clear செய்யப்படுகிறது (குறிப்பாக NDFs)</td></tr>
+          <tr><td>FX Swap</td><td>OTC</td><td>Bilateral (இயல்பானது)</td></tr>
+          <tr><td>FX Option</td><td>OTC</td><td>பெரும்பாலும் bilateral</td></tr>
+          <tr><td>FX Futures/Options (listed)</td><td><b>Exchange-traded</b> (எ.கா. CME)</td><td>Centrally cleared — OTC FX-இலிருந்து தனிப்பட்ட, சிறிய சந்தை, இந்த தொகுதியின் நான்கு முக்கிய தயாரிப்புகளில் இல்லை ஆனால் இருப்பதைத் தெரிந்துகொள்ள வேண்டியது</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> <a href="./module-04-equity.html">தொகுதி 4</a>-இன் Equity-ஐ விட (centrally cleared இயல்பாக) FX கட்டமைப்பு ரீதியாக <a href="./module-05-fixed-income.html">தொகுதி 5</a>-இன் Fixed Income-க்கு (bilateral OTC இயல்பாக) நெருக்கமானது — ஆனால் FX ஒரு மூன்றாவது பொறிமுறையான CLS-இன் PvP-ஐ சேர்க்கிறது, அது இந்த இரு சொத்து வகைகளிலும் இல்லாதது: ஒரு CCP-இன் counterparty-risk தணிப்பு இல்லாத settlement-risk தணிப்பு. Bilateral counterparty risk (<a href="./module-03-trade-lifecycle.html">தொகுதி 3</a> §6) மற்றும் settlement risk (இந்த தொகுதி) இரு வெவ்வேறு இடர்கள், மேலும் CLS இரண்டாவதை மட்டுமே தீர்க்கிறது.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · வெறும் ஒரு மேற்பார்வையாளர் அல்ல, ஒரு currency-peg பாதுகாவலர்</p>
+      <h2>ஒழுங்குமுறைப் பார்வை — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <p class="lede">Equity அல்லது Fixed Income-இல் இருந்ததை விட HKMA இங்கு உண்மையிலேயே வேறுபட்ட பங்கில் தோன்றுகிறது — மேலும் Spot/Forward எல்லை EMIR-இன் scope தொடங்கும் இடம் தான்.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>ஒழுங்குமுறை / அமைப்பு</th><th>இது FX-ஐ எவ்வாறு குறிப்பாகத் தொடுகிறது</th></tr></thead>
+        <tbody>
+          <tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>முதலீட்டு நோக்கங்களுக்காகப் பயன்படுத்தப்படும் FX Forwards, Swaps, மற்றும் Options-ஐ கவர் செய்கிறது; வணிக/கொடுப்பனவு நோக்கங்களுக்காக மட்டும் பயன்படுத்தப்படும் physically-settled FX Forwards பெரும்பாலும் MiFID-இன் scope-க்கு வெளியே உள்ளது — EU rulemaking-இல் உண்மையில் விவாதத்திற்குரிய ஒரு எல்லை</td></tr>
+          <tr><td><b>EMIR</b></td><td>OTC derivatives ஆக FX <b>Forwards, Swaps, மற்றும் Options</b>-க்குப் பொருந்துகிறது (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §07) — ஆனால் FX Spot-க்கு <b>இல்லை</b>. "Spot" மற்றும் "Forward" இடையேயான எல்லை ஒரு settlement-date threshold-ஆல் வரையறுக்கப்படுகிறது (அந்த currency pair-க்கான standard spot cycle-க்கு தோராயமாக, பெரும்பாலானவற்றுக்கு T+1/T+2, சில emerging-market pairs-க்கு நீளமானது) — அந்த window-க்குள் settle ஆகும் எதுவும் Spot மற்றும் scope-க்கு வெளியே; அதற்கு அப்பால் உள்ளது ஒரு Forward மற்றும் scope-க்குள்</td></tr>
+          <tr><td><b>SFTR</b></td><td>repo/securities-lending அர்த்தத்தில் "swap"-உடன் பெயர் ஒற்றுமை இருந்தாலும் (<a href="./module-05-fixed-income.html">தொகுதி 5</a> §08), FX Swaps-க்கு <b>பொருந்தாது</b> — SFTR குறிப்பாக securities/commodities financing-க்கானது, currency exchange-க்கு அல்ல. வெளிப்படையாக flag செய்யத்தக்க உண்மையிலேயே எளிதான ஒரு குழப்பம்</td></tr>
+          <tr><td><b>FCA</b> (UK)</td><td>FX-க்கு குறிப்பாக அதிக முக்கியத்துவம் — London உலகளாவிய FX வர்த்தக அளவின் தோராயமாக 40%+ ஐ கையாளுகிறது (BIS Triennial Survey), இது FCA-ஐ உலகளவிலேயே மிக முக்கியமான FX conduct regulators-இல் ஒன்றாக ஆக்குகிறது, ஒரு பிராந்திய அமைப்பு மட்டுமல்ல</td></tr>
+          <tr><td><b>CIRO</b> (Canada)</td><td>Bank of Canada-இன் பரந்த சந்தை-உள்கட்டமைப்பு மேற்பார்வையுடன், கனேடிய FX dealer நடத்தையை மேற்பார்வையிடும் SRO</td></tr>
+          <tr><td><b>HKMA</b> (Hong Kong)</td><td>இந்த roadmap முழுவதும் ஒரு மூன்றாவது தனித்துவமான பங்கு: FX-க்கு குறிப்பாக, Linked Exchange Rate System-இன் கீழ் <b>Hong Kong Dollar-இன் US Dollar-உடனான peg-ஐ</b> பாதுகாக்க HKMA நேரடியாக சந்தையில் தலையிடுகிறது — ஒரு மேற்பார்வை பங்கு மட்டுமல்ல, நேரடி சந்தை-பங்கேற்பாளர் பங்கு</td></tr>
+          <tr><td><b>DTCC</b></td><td>DTCC-இன் <b>GTR (Global Trade Repository)</b> மற்ற சொத்து வகைகளுடன் சேர்த்து FX derivative reports-ஐ (Forwards, Swaps, Options) ஏற்கிறது, CFTC அறிக்கையிடல் தேவைகளுக்கு feed செய்கிறது (<a href="./systems-landscape.html">அமைப்புகள் நிலப்பரப்பு</a> §05)</td></tr>
+          <tr><td><b>DMO</b> (UK Debt Management Office)</td><td>FX-தொடர்பானது அல்ல — Gilts வழங்குகிறது (<a href="./module-05-fixed-income.html">தொகுதி 5</a> §08), முழுமைக்காக மட்டும் இங்கே சேர்க்கப்பட்டுள்ளது</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>முக்கிய கருத்து.</b> இது வரை உள்ள மூன்று சொத்து-வகை தொகுதிகளிலும் HKMA இப்போது அர்த்தமுள்ள வகையில் வேறுபட்ட பங்கில் தோன்றியுள்ளது — Equity-இல் ஒரு securities conduct அடிக்குறிப்பு (<a href="./module-04-equity.html">தொகுதி 4</a>), Fixed Income-இல் ஒரு நேரடி bond வழங்குநர் (<a href="./module-05-fixed-income.html">தொகுதி 5</a>), மற்றும் இப்போது FX-இல் ஒரு currency peg-ஐ பாதுகாக்கும் நேரடி சந்தை பங்கேற்பாளர். ஒரே நிறுவனம், உங்கள் முன் இருக்கும் சொத்து வகையைப் பொறுத்து உண்மையில் மூன்று வெவ்வேறு பணிகள்.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">குறிப்பு · முழு பட்டியல்</p>
+      <h2>பங்கேற்பாளர்கள் — முழு பட்டியல் குறிப்பு</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>பங்கேற்பாளர்</th><th>இந்த தொகுதியில் பங்கு</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>USD spot மற்றும் forward-இன் buyer; தன் சொந்த FX Swap-இன் இரு legs-ம்; தன் client-க்கான option writer</td></tr>
+          <tr><td>Goldman Sachs</td><td>spot மற்றும் forward வர்த்தகங்களில் USD-இன் seller</td></tr>
+          <tr><td>Bank Of Toronto's client</td><td>USD Call option-இன் buyer, ஒரு எதிர்கால USD payable-ஐ hedge செய்கிறார்</td></tr>
+          <tr><td>CLS (Continuous Linked Settlement)</td><td>member வங்கிகளுக்கிடையே FX settlement (Herstatt) risk-ஐ நீக்கும் PvP settlement உள்கட்டமைப்பு</td></tr>
+          <tr><td>LCH ForexClear / CME</td><td>FX Forwards மற்றும் NDFs-இன் வளர்ந்துவரும் பங்கு centrally clear செய்யப்படும் venues/CCPs</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">சுய-பரிசோதனை</p>
+      <h2>மறுநினைவு வினாடி வினா — எண் பதிப்பு</h2>
+      <p class="lede"><a href="./module-07-commodities.html">தொகுதி 7</a>-க்குச் செல்லும் முன் இவற்றை உண்மையான எண்களுடன் செய்யவும்.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>பிரிவு 04c-இல் உள்ள FX Swap-இல், 1-month forward points +0.0012-க்குப் பதிலாக -0.0020 (அந்த மாதத்தில் CAD USD-ஐ விட வலுவடைந்தால்) ஆக இருந்திருந்தால், far-leg forward rate என்னவாக இருக்கும், மேலும் worked example-இல் உள்ள CAD 12,000-ஐ விட Bank Of Toronto-இன் funding cost அதிகமாகவா அல்லது குறைவாகவா இருக்கும்?</li>
+          <li>ஏன் FX Spot-க்கு "ஒரு bond அல்லது share-க்கு இருக்கும் அதே அடையாளம்" (பிரிவு 06) தேவையில்லை, மேலும் அது ஒரு data-quality இடைவெளியா அல்லது எதிர்பார்க்கப்படும் நடத்தையா?</li>
+          <li>ஒரு trade record ஒரு FX தயாரிப்பிற்கு UPI மற்றும் UTI-ஐக் காட்டுகிறது ஆனால் ISIN இல்லை. அந்த trade record உடைந்திருக்க அதிக வாய்ப்புள்ளதா, அல்லது சரியாக-நிரப்பப்பட்ட ஒரு FX Forward trade record இப்படித்தான் இருக்க வேண்டுமா?</li>
+          <li>ஒவ்வொரு வர்த்தகத்திலும் risk-ஐக் குறைப்பதாக இருந்தும், CLS "ஒரு CCP அல்ல" என்று பிரிவு 05-இல் ஏன் விவரிக்கப்படுகிறது என்பதை ஒரு வாக்கியத்தில் விளக்குங்கள்.</li>
+          <li>Bank Of Toronto-இன் client-இன் USD Call option (பிரிவு 04d) 1.3600-இல் strike செய்யப்பட்டு CAD 90,000 premium உடையது. expiry-இல் spot சரியாக 1.3600 (strike-இலிருந்து மாறாமல்) என்றால், net outcome என்ன, மேலும் இது Scenario A மற்றும் Scenario B இரண்டிலிருந்தும் ஏன் வேறுபடுகிறது?</li>
+          <li>பிரிவு 08-ஐப் பயன்படுத்தி, Bank Of Toronto மற்றும் Goldman Sachs இடையேயான ஒரு சாதாரண FX Spot வர்த்தகம் EMIR-இன் கீழ் அறிக்கையிடத்தக்கதா? பிரிவு 04b-இன் FX Forward பற்றி என்ன?</li>
+          <li>பிரிவு 08-இல் செய்யப்பட்ட அளவு புள்ளியை அடிப்படையாகக் கொண்டு, ஒரு regulator ஏன் FX-க்கு குறிப்பாக CIRO-இன் FX மேற்பார்வையை விட FCA-இன் மேற்பார்வையைப் பற்றி அதிகம் கவலைப்படலாம்?</li>
+        </ol>
+        <p class="quiz-cta">தயாராகும்போது பதிலளிக்கவும் — பிறகு செல்லவும்: <b><a href="./module-07-commodities.html">தொகுதி 7</a>: Commodities</b>, சொத்து வகை பாதைவரைபடத்தின் அடுத்த நிறுத்தம்.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">சுய-பரிசோதனை · தீர்வுகள்</p>
+      <h2>மறுநினைவு வினாடி வினா — பதில்கள் &amp; விளக்கங்கள்</h2>
+      <p class="lede">தொடர்வதற்கு முன் உங்கள் பதில்களை இவற்றுடன் ஒப்பிடுக.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Far-leg forward rate = 1.3480. Bank Of Toronto-இன் funding cost ஒரு செலவாக இல்லாமல் ஒரு GAIN ஆக மாறும்</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">கணிதம் · Far Leg, Negative Forward Points</span><span class="t-id">USD/CAD Swap</span></div>
+          <pre>Far leg: sell USD 10,000,000 @ 1.3480, receive CAD 13,480,000
+Net effect = 13,480,000 - 13,500,000 = -CAD 20,000</pre>
+        </div>
+        <p>Bank Of Toronto near leg-இல் செலுத்தியதை விட CAD 20,000 <i>குறைவாக</i> பெறும் — அதாவது funding cost ஒன்றைச் செலுத்துவதற்குப் பதிலாக, swap-ஐ வைத்திருப்பதன் மூலம் அது உண்மையில் CAD 20,000 லாபம் பெறுகிறது, ஏனெனில் negative forward points (CAD forward-இல் <i>மலிவாகுவது</i>, அல்லது சமமாக ஒரு swap point flip) அசல் +0.0012 உதாரணத்திற்கு எதிர் திசையில் செயல்படுகின்றன. CAD/USD rate வேறுபாட்டால் தீர்மானிக்கப்படும் forward points-இன் sign, வெளிநாட்டு நாணயத்தை கடன் வாங்குபவருக்கு FX Swap ஒரு net cost-ஆ அல்லது net benefit-ஆ என்பதை நேரடியாக தீர்மானிக்கிறது.</p>
+
+        <h5>Q2 — FX Spot-க்கு அத்தகைய அடையாளம் இல்லை, ஏனெனில் அடையாளப்படுத்த அதற்கு ஒரு security கூட இல்லை (பிரிவு 03) — இது எதிர்பார்க்கப்படும் நடத்தை, ஒரு இடைவெளி அல்ல</h5>
+        <p>பிரிவு 06-இன் முக்கிய கருத்து இதை வெளிப்படையாகக் கூறுகிறது: ISIN/CUSIP/Ticker குறிப்பாக securities-ஐ அடையாளப்படுத்த உள்ளன (<a href="./module-02-hierarchy.html">தொகுதி 2</a> §2, <a href="./module-04-equity.html">தொகுதி 4</a> §6, <a href="./module-05-fixed-income.html">தொகுதி 5</a> §6). Spot உட்பட FX தயாரிப்புகள் securities அல்ல — அவை நாணயத்தை மாற்றுவதற்கான contracts, எனவே ஒரு security identifier இல்லாதிருப்பது சரியாகவே இருக்கிறது, ஒரு காணாமல்போன field அல்ல.</p>
+
+        <h5>Q3 — சரியாக-நிரப்பப்பட்ட ஒரு FX Forward trade record இப்படித்தான் இருக்க வேண்டும்</h5>
+        <p>பிரிவு 06-இன் அட்டவணை இதை நேரடியாகக் கூறுகிறது: UPI மற்றும் UTI இரண்டும் FX Forwards, Swaps, மற்றும் Options-க்குப் பொருந்துகின்றன (OTC derivatives ஆக, <a href="./module-02-hierarchy.html">தொகுதி 2</a> §12), அதேசமயம் ISIN FX-க்கு ஒருபோதும் பொருந்தாது. UPI/UTI நிரப்பப்பட்டு ISIN காலியாக உள்ள ஒரு record FX-க்கான ஆரோக்கியமான pattern தான், ஒரு red flag அல்ல — இது <a href="./module-05-fixed-income.html">தொகுதி 5</a> §6-இன் <i>எதிர்</i> pattern (ஒரு bond record-இல் UPI நிரப்பப்பட்டிருப்பது சந்தேகத்திற்குரியது) பற்றிய எச்சரிக்கையுடன் மாறுபடுகிறது.</p>
+
+        <h5>Q4 — CLS settlement-timing risk-ஐ (PvP) மட்டுமே தீர்க்கிறது — அது ஒருபோதும் வர்த்தகத்தின் ஒரு தரப்பினராக ஆகாது, மேலும் ஒரு CCP-இன் novation செய்வதைப் போல counterparty credit risk-ஐ ஏற்காது</h5>
+        <p>பிரிவு 05-இன் முக்கிய கருத்து இதை துல்லியமாகக் கூறுகிறது: CLS DvP-இன் இயந்திர பாதுகாப்பை பிரதிபலிக்கிறது (<a href="./module-01-fundamentals.html">தொகுதி 1</a> §7) ஆனால் அங்கே நிற்கிறது — இது <a href="./module-03-trade-lifecycle.html">தொகுதி 3</a> §6-இல் விவரிக்கப்பட்ட CCP novation போன்ற ஒரு counterparty risk தணிப்பான் அல்ல, ஒரு settlement-risk தணிப்பான் மட்டுமே.</p>
+
+        <h5>Q5 — Option சரியாக at-the-money ஆக expire ஆகிறது — exercise செய்ய worthless, எனவே buyer முழு CAD 90,000 premium-ஐயும் இழக்கிறார், Scenario B-இன் அதே maximum-loss விளைவு</h5>
+        <p>spot = strike = 1.3600-இல், exercise செய்வதில் எந்த benefit-மும் இல்லை (option வழியாக 1.3600-இல் வாங்குவதும் spot சந்தையில் 1.3600-இல் வாங்குவதும் ஒன்றே), எனவே CAD 90,000 premium ஒரு தூய இழப்பு — spot 1.3400 வரை முழுவதுமாக விழவில்லை என்றாலும் சரியாக Scenario B-இன் விளைவு தான். இது ஒரு option-இன் payoff-க்கு strike-plus-premium-equivalent-இல் ஒரு கடினமான breakeven இருப்பதைக் காட்டுகிறது, Scenario B-இலிருந்து Scenario A வரை ஒரு மென்மையான scaling அல்ல.</p>
+
+        <h5>Q6 — இல்லை, FX Spot வர்த்தகம் EMIR-இன் கீழ் அறிக்கையிடத்தக்கது அல்ல. பிரிவு 04b-இன் FX Forward EMIR-இன் கீழ் அறிக்கையிடத்தக்கது</h5>
+        <p>பிரிவு 08-இன் அட்டவணை இதை நேரடியாகக் கூறுகிறது: EMIR FX Spot-ஐ வரையறையாலேயே தவிர்க்கிறது (இது FX நோக்கங்களுக்கு ஒரு "derivative"-ஐ வரையறுக்கும் settlement-date threshold-க்கு வெளியே உள்ளது) ஆனால் FX Forwards, Swaps, மற்றும் Options-ஐ வெளிப்படையாகக் கவர் செய்கிறது. 3 மாதங்களில் settle ஆகும் பிரிவு 04b Forward, EMIR-இன் scope-க்குள் நேரடியாக உள்ளது; T+1-இல் settle ஆகும் பிரிவு 04a Spot, இல்லை.</p>
+
+        <h5>Q7 — London (எனவே FCA-இன் அதிகார எல்லை) அனைத்து உலகளாவிய FX வர்த்தக அளவின் தோராயமாக 40%+ ஐ கையாளுகிறது, இந்த அளவு FCA மேற்பார்வையை முழு உலகளாவிய FX சந்தைக்கும் முக்கியமானதாக ஆக்குகிறது</h5>
+        <div class="takeaway">பிரிவு 08 இதை "outsized relevance" என்று வெளிப்படையாக flag செய்கிறது — இது domestic equity trading-க்கு CIRO அல்லது FCA தானே வகிக்கும் conduct-regulator பங்கை விட (<a href="./module-04-equity.html">தொகுதி 4</a> §8) உண்மையிலேயே வேறுபட்ட ஒரு வகை முக்கியத்துவம், அங்கு ஒவ்வொரு regulator-இன் முக்கியத்துவமும் அதன் சொந்த domestic சந்தை அளவிற்கு தோராயமாக விகிதாசாரமாக இருக்கும், அதேசமயம் CIRO-இன் remit குறிப்பாக கனேடிய dealer conduct-க்கு scoped செய்யப்பட்டுள்ளது.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>மூலதனச் சந்தைகள் — சுய-வேகக் கற்றல் பாதை · தொகுதி 6 / 14 &middot; <a href="./index.html" style="color:var(--ink-faint);">&larr; அட்டவணைக்குத் திரும்பு</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
