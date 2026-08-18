@@ -324,6 +324,61 @@ FIXED INCOME'S VERSION OF THE TWO-AXIS MODEL
 
 ---
 
+## 9. Canadian Systems Landscape — Fixed Income Front, Middle &amp; Back Office to Regulatory Reporting
+
+**Definition:** [systems-landscape](./systems-landscape.md) §2 already laid out the *generic* Front/Middle/Back Office architecture for Canada. This section specializes that architecture to **Fixed Income specifically** — naming the actual platforms a Canadian bond desk's trade touches on its way from execution to CIRO/Bank of Canada oversight, using Section 4a's Canada 5% Bond 2035 trade as the running example.
+
+> **Callout — illustrative, not prescriptive.** The platform names below (CanDeal, Bloomberg, Murex/Calypso/Summit) are representative of real Canadian fixed income market infrastructure, in the same spirit as [systems-landscape](./systems-landscape.md) §11's own vendor list — they are not a claim about which specific systems Bank Of Toronto itself runs internally. The institutional infrastructure (CDS/CDSX, CDCC, CIRO, Bank of Canada) is the part of this section that's factual, not illustrative.
+
+| Layer | System(s) | Role |
+|---|---|---|
+| **Front Office** | **CanDeal** (Canada's dealer-to-client electronic platform for government &amp; corporate bonds); Bloomberg ALLQ/BondTrader (illustrative); the **Bank of Canada's** own auction system for new-issue Government of Canada bonds | Price discovery and execution — where Bank Of Toronto's desk actually buys/sells the bond, or bids at a GoC auction as a primary dealer |
+| **Middle Office** | Bilateral/platform trade confirmation; valuation &amp; risk systems (Murex, Calypso, Summit — illustrative, the same vendor family [systems-landscape](./systems-landscape.md) §11 already names) | Confirms the trade matches both sides' understanding (Section 5's "CONFIRMATION/MATCHING" stage); computes Clean/Dirty Price and Accrued Interest (Section 1) for P&amp;L |
+| **Back Office** | **CDS Clearing and Depository Services Inc.**, operating **CDSX** — book-entry DvP settlement of the bond itself; **CDCC (Canadian Derivatives Clearing Corporation)**, which has, since 2012, separately cleared the **fixed income repo market** (Section 3's repo distinction — CDCC's repo-clearing role is already established in this module's Section 8 and in [systems-landscape](./systems-landscape.md) §12) | Settles cash bond trades T+2 via CDSX; clears standardized repo activity via CDCC where applicable |
+| **Regulator / Reporting** | **CIRO** (bond-dealer conduct, corporate-bond post-trade transparency); **Bank of Canada** (fiscal agent for GoC auctions; oversees CDSX and CDCC as designated systemically important FMIs); **CSA Multilateral Instrument 96-101** (OTC derivatives trade reporting only) | Conduct/market oversight, systemic-infrastructure oversight, and — where MI 96-101 actually applies — trade reporting to a CSA-recognized Trade Repository |
+
+```text
+CANADA 5% BOND 2035 — FRONT TO BACK, CANADIAN SYSTEMS VIEW
+========================================================================
+
+  FRONT OFFICE
+    Bank Of Toronto's desk executes CAD 10,000,000 face value
+    @ Clean Price 98.50 vs Goldman Sachs (Section 4a/5) --
+    interbank OTC, no exchange (Section 7) -- via a platform such
+    as CanDeal, or voice/chat confirmed into the same workflow
+         |
+         v
+  MIDDLE OFFICE
+    Trade confirmed/matched (Section 5's 10:30:00 step); Clean
+    Price 98.50 + Accrued Interest CAD 82,418 = Dirty Price
+    CAD 9,932,418 (Section 1) computed and checked
+         |
+         v
+  BACK OFFICE
+    CDS / CDSX -- book-entry DvP, T+2 (systems-landscape §04):
+      Bond leg: CAD 10,000,000 face value, Goldman Sachs -> Bank
+                Of Toronto's CDS account
+      Cash leg: CAD 9,932,418, Bank Of Toronto -> Goldman Sachs
+    (a REPO on this same bond, instead, would route through CDCC's
+    repo-clearing service rather than a plain CDSX DvP -- Section 3)
+         |
+         v
+  REGULATOR / OVERSIGHT
+    CIRO -- dealer-conduct oversight of both counterparties
+    Bank of Canada -- systemic oversight of CDSX itself as the
+      designated FMI actually performing the settlement above
+    CSA MI 96-101 -- NOT triggered by this trade; it is scoped to
+      OTC DERIVATIVES reporting, and a cash Government of Canada
+      bond purchase is neither OTC-derivative nor SFT (contrast
+      Section 3's repo, which — per systems-landscape §12 — still
+      has NO dedicated SFTR-equivalent reporting regime in Canada
+      as of 2026, unlike the EU/UK sftr-reporting module's regime)
+```
+
+**Takeaway:** notice how much of this trade's journey never touches a CCP or a Trade Repository at all — a cash Government of Canada bond purchase settles bilaterally through CDSX and is overseen by CIRO/Bank of Canada, but triggers neither CDCC clearing (that's repo-specific) nor CSA MI 96-101 reporting (that's OTC-derivative-specific). The same "which systems does this trade actually touch" question, asked of Section 3's repo instead, produces a genuinely different answer — CDCC in the back office, and still no Canadian SFT reporting regime at the regulatory layer, a gap [systems-landscape](./systems-landscape.md) §12 already flags.
+
+---
+
 ## Actors — Full Cast Reference
 
 | Actor | Role in this module |
@@ -335,6 +390,8 @@ FIXED INCOME'S VERSION OF THE TWO-AXIS MODEL
 | City of Toronto | Issuer of the Green Bond 2032 |
 | CDS / CDSX | CSD settling the Canadian government bond trade ([systems-landscape](./systems-landscape.md) §04) |
 | CDCC / FICC | CCPs that can centrally clear repo (Canada / US respectively) |
+| CIRO | SRO overseeing Canadian bond-dealer conduct and post-trade transparency (Section 8, Section 9) |
+| Bank of Canada | Fiscal agent for Government of Canada bond auctions; systemic overseer of CDSX and CDCC (Section 9) |
 
 ---
 
@@ -347,6 +404,7 @@ FIXED INCOME'S VERSION OF THE TWO-AXIS MODEL
 5. Why does Section 7 flag repo as the exception to "Fixed Income is bilateral OTC," and which two named CCPs can centrally clear it?
 6. A trade record shows EMIR reporting fields populated for what looks like a Fixed Income trade. Based on Section 8, what does that tell you about the instrument, and what's the most likely explanation?
 7. Contrast the HKMA's relevance in this module vs. [Module 4](./module-04-equity.md)'s Equity module — what specific Fixed-Income-related function does HKMA perform that made it worth calling out here?
+8. Using Section 9, does the Canada 5% Bond 2035 trade from Section 4a/5 ever touch CDCC or trigger CSA MI 96-101 reporting? Contrast your answer with what would happen if the SAME bond were instead used as collateral in a repo.
 
 Answer whenever ready — then move to **[Module 6](./module-06-fx.md): FX**, the next stop on the Asset Class Roadmap.
 
@@ -386,6 +444,10 @@ Section 8's table states EMIR does not apply to a cash bond, only to a derivativ
 **7. The HKMA directly issues Exchange Fund Bills &amp; Notes — Hong Kong's own government debt instruments — acting much like a debt management office for the territory, in addition to its usual central-bank role.**
 
 In [Module 4](./module-04-equity.md) (Equity), HKMA was flagged as a step removed from the action, with the SFC doing the real work of equity conduct regulation. Here, HKMA is *directly* the issuer-side actor for Hong Kong government debt, the same functional role the DMO plays for UK Gilts (Section 8) — a concrete illustration of Section 8's takeaway that the same regulator's relevance shifts with the asset class.
+
+**8. No to both — the Section 4a/5 trade is a plain cash Government of Canada bond purchase, so it settles via CDSX only, touching neither CDCC (repo-specific) nor CSA MI 96-101 (OTC-derivative-specific). If the SAME bond were instead posted as collateral in a repo, the back-office path changes to CDCC's repo-clearing service (where the repo is standardized enough to route there), but CSA MI 96-101 STILL wouldn't apply — Canada has no dedicated SFT reporting regime as of 2026, unlike the EU/UK's SFTR.**
+
+Section 9's worked diagram states this explicitly: the same underlying bond produces two different back-office paths (CDSX for an outright purchase, CDCC for repo) depending purely on which *contract type* it's wrapped in — Section 3's security-vs-contract distinction, now traced all the way through to which Canadian system actually touches the trade.
 
 ---
 

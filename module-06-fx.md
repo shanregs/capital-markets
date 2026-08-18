@@ -295,6 +295,56 @@ FX mostly doesn't use the identifiers Modules 4 and 5 relied on — there's no I
 
 ---
 
+## 9. Canadian Systems Landscape — FX Front, Middle &amp; Back Office to Regulatory Reporting
+
+**Definition:** [systems-landscape](./systems-landscape.md) §4 already named Canada's *generic* Front/Middle/Back Office architecture (Bloomberg AIM, CDSX, CDCC, Lynx). This section specializes that architecture to FX specifically — an asset class whose back office looks nothing like an equity or bond trade's, because there's no CSD leg at all (Section 3: FX has no security), only two currency payments settling via CLS's PvP mechanism (Section 5).
+
+> **Callout — illustrative, not prescriptive.** The system names below (EBS, Refinitiv, 360T, Murex, Calypso) are representative of the real venues and vendors Canadian bank FX desks connect to — not a claim about which specific systems Bank Of Toronto itself runs internally. Treat this section the same way [systems-landscape](./systems-landscape.md) treats its own vendor lists: the *category* of system at each stage is the durable fact; the specific product name is illustrative.
+
+| Layer | System(s) | Role |
+|---|---|---|
+| **Front Office** | **EBS**, **Refinitiv Matching/FXall**, **360T** — the major interbank/multi-dealer FX venues; plus Bank Of Toronto's own eFX pricing/aggregation platform for client flow | Price discovery and execution — where Section 4's Spot/Forward/Swap trades actually get dealt |
+| **Middle Office** | Trade capture and confirmation via SWIFT MT300-type confirmation messages; risk systems (Murex, Calypso FX module — illustrative) | Confirms both sides agree on rate/notional/value date; feeds daily FX position/P&amp;L (Section 5) |
+| **Back Office / Settlement** | **CLS (Continuous Linked Settlement)** for CLS-eligible pairs (CAD is CLS-eligible, Section 5); **Lynx** (Payments Canada's large-value payment system) carries the CAD leg into CLS; non-CLS-eligible trades fall back to correspondent banking / SWIFT payment messages instead | PvP settlement (Section 5) — or, for ineligible pairs, the pre-CLS correspondent-banking mechanism CLS was built to replace |
+| **Regulator / Trade Repository** | CSA **Multilateral Instrument 96-101** governs FX Forwards/Swaps/Options as OTC derivatives, reported to a CSA-designated Trade Repository (e.g. DTCC Data Repository (Canada) Ltd or ICE Trade Vault Canada — illustrative); **Bank of Canada** oversees CLS as a systemically important FMI; **CIRO** covers dealer conduct | FX Spot is **out of scope** of MI 96-101 derivative reporting, the same Spot/Forward boundary Section 8's EMIR row already draws |
+
+```text
+CANADA  —  FX FORWARD, FRONT OFFICE TO REGULATORY REPORTING
+========================================================================
+  (Section 4b's trade: Bank Of Toronto needs USD 10,000,000 in 3
+  months, forward rate 1.3545, vs. Goldman Sachs)
+
+  FRONT OFFICE
+    Bank Of Toronto's FX desk deals the Forward via Refinitiv
+    Matching/FXall (or a voice trade captured into the same system)
+    -> Trade ID BOT-FX-2026-018815
+
+  MIDDLE OFFICE
+    Trade booked into Murex/Calypso's FX module for risk;
+    confirmation exchanged with Goldman Sachs via a SWIFT MT300-type
+    message -> Status: MATCHED (Section 05's Confirmation stage)
+
+  BACK OFFICE / SETTLEMENT  (value date, 3 months out)
+    USD/CAD is CLS-eligible (Section 05) --
+      Bank Of Toronto's CAD 13,545,000 leg moves via LYNX into CLS
+      Goldman Sachs' USD 10,000,000 leg moves via its own correspondent
+      into CLS
+      CLS settles BOTH legs simultaneously (PvP) -- neither side is
+      exposed the way Herstatt risk describes (Section 05)
+
+  REGULATORY / TRADE REPOSITORY
+    This is an FX FORWARD, not Spot -&gt; in scope for CSA MI 96-101
+    -&gt; reported by T+1 to a CSA-designated Trade Repository (DTCC
+    Data Repository (Canada) Ltd / ICE Trade Vault Canada)
+    Bank of Canada: oversees CLS itself as a systemically important
+    FMI (not this individual trade)
+    CIRO: oversees Bank Of Toronto's dealer conduct on the trade
+```
+
+**Takeaway:** the FX back office is structurally the odd one out across this roadmap so far — Equity and Fixed Income both route through a CSD (CDSX) for the security leg; FX has no security leg at all, so CLS's PvP mechanism *is* the entire back office, with Lynx supplying only the domestic CAD payment rail underneath it. A reporting system built assuming "settlement = a CSD movement" (true for Modules 4–5) will have no CSD event to point to for FX at all — CLS's settlement confirmation is the only settlement record that exists.
+
+---
+
 ## Actors — Full Cast Reference
 
 | Actor | Role in this module |
@@ -304,6 +354,9 @@ FX mostly doesn't use the identifiers Modules 4 and 5 relied on — there's no I
 | Bank Of Toronto's client | Buyer of the USD Call option, hedging a future USD payable |
 | CLS (Continuous Linked Settlement) | PvP settlement infrastructure eliminating FX settlement (Herstatt) risk between member banks |
 | LCH ForexClear / CME | Venues/CCPs where a growing share of FX Forwards and NDFs centrally clear |
+| Bank of Canada | Oversees CLS as a systemically important FMI from a Canadian financial-stability perspective (Section 9) |
+| CIRO (Canada) | SRO overseeing Bank Of Toronto's FX dealer conduct (Section 9) |
+| CSA-designated Trade Repository (e.g. DTCC Data Repository (Canada) Ltd / ICE Trade Vault Canada) | Receives the FX Forward's MI 96-101 report (Section 9) |
 
 ---
 
@@ -316,6 +369,7 @@ FX mostly doesn't use the identifiers Modules 4 and 5 relied on — there's no I
 5. Bank Of Toronto's client's USD Call option (Section 4d) is struck at 1.3600 with a CAD 90,000 premium. If spot at expiry is exactly 1.3600 (unchanged from strike), what is the net outcome, and why does this differ from both Scenario A and Scenario B?
 6. Using Section 8, is a plain FX Spot trade between Bank Of Toronto and Goldman Sachs reportable under EMIR? What about the FX Forward from Section 4b?
 7. Why might a regulator care more about the FCA's oversight of FX specifically than it would about, say, CIRO's oversight of FX — based on the scale point made in Section 8?
+8. Using Section 9, the FX Forward from Section 4b settles via CLS while a Bank Of Toronto Canadian equity trade settles via CDSX ([systems-landscape](./systems-landscape.md) §4). Why can't a reporting system built around "settlement = a CSD book-entry movement" simply be reused unchanged for the FX Forward?
 
 Answer whenever ready — then move to **[Module 7](./module-07-commodities.md): Commodities**, the next stop on the Asset Class Roadmap.
 
@@ -355,6 +409,10 @@ Section 8's table states this directly: EMIR excludes FX Spot by definition (it'
 **7. Because London (and therefore the FCA's jurisdiction) handles roughly 40%+ of ALL global FX trading volume (BIS Triennial Survey) — a scale that makes FCA oversight consequential to the entire global FX market, not just to UK-domiciled activity, whereas CIRO's remit is scoped to Canadian dealer conduct specifically.**
 
 Section 8 flags this explicitly as "outsized relevance" — this is a genuinely different kind of importance than the conduct-regulator role CIRO or the FCA itself plays for, say, domestic equity trading ([Module 4](./module-04-equity.md) §8), where each regulator's importance is roughly proportional to its own domestic market size.
+
+**8. Because there is no CSD leg to reuse — FX has no security (Section 3), so there is no book-entry movement for a reporting system to point to at all; CLS's PvP confirmation is the entire settlement record, not a variant of a CDSX-style event.**
+
+Section 9's takeaway states this directly: Equity and Fixed Income both route through a CSD (CDSX) for the security leg, but FX's back office is structurally different — CLS's PvP mechanism *is* the whole back office, with Lynx only supplying the domestic CAD payment rail underneath it. A reporting system that assumes every settled trade has a corresponding CSD movement will have nothing to point to for an FX trade, and needs a genuinely separate settlement-event model for FX rather than a parameterized version of the equity/bond one.
 
 ---
 

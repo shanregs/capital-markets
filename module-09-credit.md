@@ -293,6 +293,58 @@ LEI'S TWO ROLES ON ONE CDS TRADE RECORD
 
 ---
 
+## 9. Canadian Systems Landscape — Credit Front, Middle &amp; Back Office to Regulatory Reporting
+
+**Definition:** [systems-landscape](./systems-landscape.md) §2 laid out the *generic* Front/Middle/Back Office architecture for Canada. This section specializes that architecture to Credit specifically — the actual systems a Canadian bank's CDS desk connects through, from the Section 4a trade capture of the Northstar Resources Inc. CDS all the way to Canadian regulatory reporting.
+
+> **Callout — illustrative, not a claim about any specific bank's stack.** The platform names below (MarkitWire/ICE Link, Calypso/Murex, ICE Clear Credit, DTCC's Trade Information Warehouse) are representative of the real market infrastructure Canadian dealers actually connect to for CDS — the same "illustrative vendor family" convention [systems-landscape](./systems-landscape.md) already uses for Murex/Summit. Treat them as the *category* of system a reporting pipeline needs to integrate with, not as an assertion about Bank Of Toronto's own internal build.
+
+| Layer | System(s) | Role |
+|---|---|---|
+| **Front Office** | MarkitWire / ICE Link, Bloomberg | Trade capture and execution workflow for the CDS itself; Bloomberg for pricing/quoting the market spread (Section 4a's 250bps) |
+| **Middle Office** | MarkitWire / ICE Link (again), Calypso / Murex | CDS is unusually compressed here: the SAME MarkitWire/ICE Link platform that captured the trade also handles confirmation/affirmation — a genuine contrast with [Module 8](./module-08-rates.md)'s IRS, where front-office execution and middle-office confirmation more commonly sit on separate platforms. Calypso/Murex handle ongoing valuation and risk (upfront/running-coupon calculations, Section 4a) |
+| **Back Office / Clearing** | ICE Clear Credit (if centrally cleared, Section 7) *or* bilateral settlement (if not) — DTCC's **Trade Information Warehouse (TIW)** either way | Section 7 already classified the bespoke Northstar Resources Inc. single-name CDS as staying **bilateral** — so ICE Clear Credit never enters this specific trade's path. Regardless of cleared/bilateral status, DTCC's TIW holds the official post-trade lifecycle record (running coupons, the Section 4b Credit Event, final settlement) for the large majority of CDS trades globally |
+| **Regulator / Trade Repository** | CSA **Multilateral Instrument 96-101**, reported to a CSA-designated Trade Repository (e.g. DTCC Data Repository (Canada) Ltd — illustrative, same naming pattern as the [SFTR](./sftr-reporting.md)/[DMO](./dmo-uk-reporting.md) modules' Canadian TR references); **CIRO** for dealer conduct; **Bank of Canada** for systemic oversight, given CDS's own role as a 2008 contagion channel (Section 1) |
+
+```text
+CANADA — CREDIT (CDS) SYSTEMS CHAIN, THE NORTHSTAR RESOURCES INC. TRADE
+========================================================================
+
+  FRONT OFFICE
+    Bloomberg (price discovery, 250bps market spread)
+    MarkitWire / ICE Link (trade capture -- Trade ID BOT-CDS-2026-041127)
+         |
+         v
+  MIDDLE OFFICE
+    MarkitWire / ICE Link (confirmation/affirmation -- MATCHED,
+      Section 05's 10:55:00 timestamp)
+    Calypso / Murex (upfront payment calc: USD 675,000; ongoing
+      running-coupon and MTM valuation)
+         |
+         v
+  BACK OFFICE
+    Section 07: bespoke single-name CDS -> stays BILATERAL,
+      no CCP novation (contrast: a CDX/iTraxx index trade would
+      route here to ICE Clear Credit instead)
+    DTCC Trade Information Warehouse (TIW) -- holds the lifecycle
+      record: running coupons, the Year-2 Credit Event, the
+      USD 6,500,000 cash settlement (Section 04b)
+         |
+         v
+  REGULATORY / TRADE REPOSITORY
+    CSA Multilateral Instrument 96-101 -- OTC derivatives trade
+      reporting obligation
+    -> reported to a CSA-designated Trade Repository (e.g. DTCC
+       Data Repository (Canada) Ltd)
+    CIRO -- Bank Of Toronto's dealer conduct as a CDS counterparty
+    Bank of Canada -- systemic oversight (Section 01's 2008
+      contagion history is exactly why this oversight exists)
+```
+
+**Takeaway:** the Northstar Resources Inc. trade's own Section 7 classification — bespoke, bilateral, not centrally cleared — directly determines which Back Office system actually touches it: DTCC's TIW records its lifecycle regardless, but ICE Clear Credit only enters the picture for the standardized CDS Index/liquid single-name slice of the market. A reporting pipeline that assumes every CDS routes through a CCP would misroute exactly the trade this module used as its worked example.
+
+---
+
 ## Actors — Full Cast Reference
 
 | Actor | Role in this module |
@@ -303,6 +355,9 @@ LEI'S TWO ROLES ON ONE CDS TRADE RECORD
 | ISDA Determinations Committee | Industry body ruling on whether a Credit Event occurred |
 | ICE Clear Credit / LCH CDSClear | CCPs performing central clearing for standardized CDS Indices and liquid single names |
 | CFTC / SEC | Split US regulators — swaps vs. security-based swaps |
+| DTCC Trade Information Warehouse (TIW) | Holds the official post-trade lifecycle record for the Northstar Resources Inc. CDS (Section 9) |
+| CIRO | SRO overseeing Bank Of Toronto's dealer conduct in the Canadian credit derivatives market (Section 9) |
+| Bank of Canada | Systemic oversight of CDS activity touching Canadian dealers (Section 9) |
 
 ---
 
@@ -315,6 +370,7 @@ LEI'S TWO ROLES ON ONE CDS TRADE RECORD
 5. Why is the ISDA Determinations Committee described in Section 8 as not fitting "the acronym + jurisdiction pattern" of every other row in that table?
 6. Contrast the US CFTC/SEC jurisdictional split for Credit (Section 8) with the single-regulator (CFTC-only) pattern [Module 8](./module-08-rates.md) §08 described for Rates — what specifically causes CDS to split where IRS doesn't?
 7. Why does Section 7 call the OTC-default-with-a-mandatorily-cleared-standardized-slice pattern "worth recognizing as a general truth" rather than a coincidence specific to Credit?
+8. Using Section 9, why does ICE Clear Credit never touch the Northstar Resources Inc. CDS from Section 4, even though it's listed as one of the Back Office systems in Section 9's table?
 
 Answer whenever ready — this closes the **Asset Class Roadmap**. Modules 10-14 (Valuation, Risk &amp; Exposure, Collateral &amp; Margin, Parties/LEIs, Regulatory Reporting) and [Module 15](./module-15-listed-derivatives.md) (Listed Derivatives) build on all six asset classes covered so far.
 
@@ -356,6 +412,10 @@ Section 8's table states this split directly, contrasting it with [Module 8](./m
 **7. Because the exact same shape — one standardized, liquid slice of an OTC asset class pulled into mandatory or growing central clearing, while a long tail of bespoke instruments remains bilateral — has now appeared independently in three different asset classes (Commodities' Futures, [Module 7](./module-07-commodities.md) §07; Rates' IRS, [Module 8](./module-08-rates.md) §07; Credit's CDS Indices and liquid names, this module's Section 07), each reached via a different specific mechanism (venue design, regulatory mandate, and a narrower regulatory mandate respectively).**
 
 Section 7's takeaway draws this conclusion explicitly: by the third independent occurrence of the same structural pattern across genuinely different products and different causal mechanisms, it stops looking like asset-class-specific detail and starts looking like a general truth about how OTC derivatives markets evolve toward partial standardization — worth carrying forward into [Module 12](./module-12-collateral-margin.md) (Collateral &amp; Margin) and [Module 14](./module-14-regulatory-reporting.md) (Regulatory Reporting), where the bilateral/cleared distinction resurfaces as a major driver of what collateral and reporting obligations apply.
+
+**8. Because Section 7 already classified the Northstar Resources Inc. CDS as a bespoke, illiquid single-name trade that stays BILATERAL — ICE Clear Credit's role in Section 9's table is scoped specifically to the standardized CDS Index / liquid single-name slice of the market, which this particular trade doesn't belong to.**
+
+Section 9's takeaway states this directly: the trade's own Section 7 classification determines which Back Office system actually touches it — DTCC's TIW records its lifecycle either way, but ICE Clear Credit only enters the picture for trades that are actually centrally cleared, which the Northstar Resources Inc. trade, by design, is not.
 
 ---
 

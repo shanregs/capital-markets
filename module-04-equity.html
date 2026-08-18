@@ -496,6 +496,7 @@
       <li><a href="#identifiers"><span class="toc-num">06</span>Identifiers</a></li>
       <li><a href="#structure"><span class="toc-num">07</span>Exchange vs OTC vs Bilateral vs Cleared</a></li>
       <li><a href="#regulatory"><span class="toc-num">08</span>Regulatory Perspective</a></li>
+      <li><a href="#canada-systems"><span class="toc-num">09</span>Canadian Systems Landscape</a></li>
       <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
       <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
     </ol>
@@ -835,6 +836,68 @@ On a single trade record for the Coca-Cola trade (Section 04):
       <div class="takeaway"><b>Takeaway.</b> Every regulation above attaches to a specific mechanic already covered in Sections 01–07 — MiFID to where/how the trade executed, EMIR to whether the derivative is OTC, SFTR to whether shares themselves (not just a derivative on them) were lent or used as collateral. None of these rules apply uniformly to "Equity" as a whole; each is scoped to a particular slice of what this module just walked through.</div>
     </section>
 
+    <section class="mod" id="canada-systems">
+      <p class="sec-eyebrow"><span class="n">09</span> · Front office to regulator, named systems</p>
+      <h2>Canadian Systems Landscape — Equity Front, Middle &amp; Back Office to Regulatory Reporting</h2>
+      <p class="lede"><a href="./systems-landscape.html">systems-landscape</a> §4 already named Canada's generic Front/Middle/Back Office architecture and its market infrastructure (CDS/CDSX, CDCC). This section specializes that generic picture to <b>Equity</b> specifically — the actual systems a Canadian equity order passes through, front office to settlement to oversight, end to end.</p>
+
+      <div class="callout"><b>Callout — illustrative vendor names.</b> OMS/EMS product names below (Bloomberg AIM, FlexTrade, Charles River IMS, Eze OMS) are representative of what a Canadian dealing desk typically runs — not a claim about Bank Of Toronto's actual internal system choices. The market infrastructure names (TSX, the ATSs, CDS/CDSX, CIRO, Lynx, Bank of Canada) are real, named Canadian institutions.</div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Layer</th><th>System(s)</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><b>Front Office</b></td><td>OMS/EMS (e.g. Bloomberg AIM, Charles River IMS, or Eze OMS — illustrative), FIX-connected smart order router</td><td>Captures the order, routes it to whichever Canadian venue offers the best price</td></tr>
+          <tr><td><b>Trading Venues</b></td><td><b>TSX</b> &amp; <b>TSX Venture Exchange</b> (TMX Group); Canadian <b>ATSs</b> — Nasdaq CXC/CX2, Cboe Canada (formerly NEO Exchange), Omega ATS</td><td>Multiple competing venues execute the trade — Canada's equity market is multi-venue, not single-exchange</td></tr>
+          <tr><td><b>Middle Office</b></td><td>Trade capture/confirmation; CIRO market-surveillance feed under <b>UMIR</b> (Universal Market Integrity Rules); Murex/Calypso for any equity-derivative overlay</td><td>Confirms the match, feeds Canada's consolidated tape, surfaces trading-conduct issues to CIRO</td></tr>
+          <tr><td><b>Back Office / CSD</b></td><td><b>CDS Clearing and Depository Services Inc.</b> (CDS, a TMX Group subsidiary) — <b>CDSX</b>, Continuous Net Settlement (CNS), DvP book-entry settlement</td><td>Nets and settles the trade, <b>T+1</b></td></tr>
+          <tr><td><b>Cash Leg</b></td><td><b>Lynx</b> (Payments Canada's large-value payment system, successor to the old LVTS)</td><td>Settles the CAD cash leg</td></tr>
+          <tr><td><b>Oversight</b></td><td><b>CIRO</b> (SRO — dealer conduct &amp; UMIR trade reporting/surveillance); <b>CSA</b> (national rule-setting, e.g. the OSC); <b>Bank of Canada</b> (oversees CDSX as a designated systemically important FMI)</td><td>A plain cash equity trade does <b>not</b> go to an OTC-derivatives-style Trade Repository the way an IRS or CDS does (<a href="./module-14-regulatory-reporting.html">Module 14</a> §1) — this is CIRO/UMIR surveillance plus CDSX settlement, not TR reporting</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · Canada — Equity Trade, Front Office to Regulator</span><span class="t-id">Bank Of Toronto · Loblaw (TSX: L)</span></div>
+        <pre>Maple Leaf Pension Fund instructs Bank Of Toronto:
+BUY 50,000 shares Loblaw Companies Ltd. (TSX: L)
+(the same trade worked through in systems-landscape §4, §9)
+
+FRONT OFFICE
+  Bloomberg AIM (OMS) captures the order
+    -&gt; FlexTrade (EMS) routes it via FIX 4.4
+    -&gt; smart order router selects the venue
+
+TRADING VENUE
+  Executed on TSX @ CAD 178.40
+  (could equally have routed to an ATS -- Nasdaq CXC/CX2,
+  Cboe Canada, Omega ATS -- Canada is multi-venue)
+  Trade Value = 50,000 x 178.40 = CAD 8,920,000
+
+MIDDLE OFFICE
+  Trade captured, Trade ID BOT-CA-2026-004471
+  Confirmed/matched via CDSX's matching module
+  Execution data feeds Canada's consolidated tape and
+  CIRO's UMIR-based market surveillance
+
+BACK OFFICE / CSD
+  CDS Clearing and Depository Services Inc. -- CDSX
+  Continuous Net Settlement (CNS) nets this trade against
+  Bank Of Toronto's other Loblaw activity that day
+  Settlement Date = T+1 = Tue 18-Aug-2026
+  DvP: shares move book-entry inside CDSX;
+  CAD cash leg settles via Lynx (Payments Canada)
+
+OVERSIGHT (NOT a Trade Repository report)
+  CIRO   -- dealer conduct &amp; UMIR trade reporting/surveillance
+  CSA / OSC -- national and provincial rule-setting
+  Bank of Canada -- oversees CDSX as a designated
+  systemically important Financial Market Infrastructure (FMI)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice the trade never touches an OTC-derivatives-style Trade Repository at any point — a plain cash equity trade's regulatory trail runs entirely through CIRO's UMIR surveillance and CDSX's settlement records, in contrast to <a href="./module-14-regulatory-reporting.html">Module 14</a> §1's IRS example, which additionally has to reach a Trade Repository under EMIR/Dodd-Frank. The system stack itself, not just the product definition, is part of what tells you which regulatory regime actually applies.</div>
+    </section>
+
     <section class="mod">
       <p class="sec-eyebrow">Reference · Full cast</p>
       <h2>Actors — Full Cast Reference</h2>
@@ -849,6 +912,9 @@ On a single trade record for the Coca-Cola trade (Section 04):
           <tr><td>CME Clearing</td><td>CCP for the E-mini S&amp;P 500 future</td></tr>
           <tr><td>OCC (Options Clearing Corporation)</td><td>CCP for the listed AAPL option</td></tr>
           <tr><td>NSCC / DTC</td><td>Clearing (netting) and settlement (DvP) for the US cash equity trade</td></tr>
+          <tr><td>CDS (CDSX)</td><td>Canada's central securities depository — clears/settles the Loblaw trade via CNS, T+1 (Section 09)</td></tr>
+          <tr><td>CIRO</td><td>Canadian SRO — UMIR-based market surveillance and dealer-conduct oversight of the Loblaw trade (Section 09)</td></tr>
+          <tr><td>Bank of Canada</td><td>Oversees CDSX as a designated systemically important Financial Market Infrastructure (Section 09)</td></tr>
         </tbody>
       </table>
       </div>
@@ -868,6 +934,7 @@ On a single trade record for the Coca-Cola trade (Section 04):
           <li>Using the Section 06 table, which identifier on the Coca-Cola trade record identifies Bank Of Toronto itself, and which three identify the instrument being traded?</li>
           <li>A Total Return Swap on Coca-Cola shares, negotiated bilaterally between two dealers, is later voluntarily submitted for central clearing. Does it change from "OTC" to "Exchange-Traded" as a result? Explain using Section 07's two-axis model.</li>
           <li>If Bank Of Toronto lends its Coca-Cola shares to another firm that wants to short-sell them, which regulation from Section 08 governs the reporting of that specific transaction — MiFID, EMIR, or SFTR — and why do the other two not apply to it?</li>
+          <li>Using Section 09, when Bank Of Toronto's Toronto desk buys 50,000 shares of Loblaw on the TSX, does that trade generate a report to an OTC-derivatives-style Trade Repository the way an interest rate swap would under EMIR? If not, what two Canadian mechanisms actually capture and oversee it instead?</li>
         </ol>
         <p class="quiz-cta">Answer whenever ready — then move to <b><a href="./module-05-fixed-income.html">Module 5</a>: Fixed Income</b>, the next stop on the Asset Class Roadmap.</p>
       </div>
@@ -903,6 +970,9 @@ On a single trade record for the Coca-Cola trade (Section 04):
 
         <h5>Q7 — SFTR governs it</h5>
         <div class="takeaway">Lending the actual shares (not a derivative referencing them) is a Securities Financing Transaction, exactly the product family SFTR exists for (<a href="./systems-landscape.html">systems-landscape</a> §12). MiFID doesn't apply because this isn't a MiFID-scope "executed transaction" on the shares — no sale/purchase happened. EMIR doesn't apply because a securities lending transaction is not an OTC <i>derivative</i> — there's no notional-referencing contract here, just the shares themselves changing hands temporarily. The key distinguishing test, consistent with <a href="./module-02-hierarchy.html">Module 2</a>'s asset-class hierarchy: is this a trade in the security itself, or a contract referencing the security? Securities lending is squarely the former, and specifically the financing sub-category SFTR was built for.</div>
+
+        <h5>Q8 — No, it does NOT go to a Trade Repository. CIRO's UMIR-based market surveillance and CDSX's settlement process (with Bank of Canada FMI oversight) capture and oversee it instead</h5>
+        <p>Section 09's table states this directly: TR reporting is an OTC-derivatives-specific mechanism (<a href="./module-02-hierarchy.html">Module 2</a> §07, <a href="./module-14-regulatory-reporting.html">Module 14</a> §1), not a cash-equity one. The Loblaw trade is instead captured by (1) CIRO's UMIR-based market surveillance, ingesting the execution data from TSX (or whichever venue it traded on) for conduct/surveillance purposes, and (2) CDSX's Continuous Net Settlement process at CDS, which nets and settles the trade DvP, T+1 — with the Bank of Canada providing systemic oversight of CDSX itself as a designated FMI.</p>
       </div>
     </section>
 

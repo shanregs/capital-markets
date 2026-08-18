@@ -233,6 +233,88 @@ Listed Derivatives is the first product family in this roadmap where the **UPI/U
 
 ---
 
+## 9. Canadian Systems Landscape — Front, Middle &amp; Back Office to Regulatory Reporting
+
+**Definition:** [systems-landscape](./systems-landscape.md) §2 already named the *generic* Front/Middle/Back Office architecture for Canada. This section specializes that architecture to Listed Derivatives specifically — and, because this module's own theme is that every underlying (Section 2) funnels through the same mechanic, Canada's listed-derivatives stack is unusually simple to draw: there is genuinely only **one** venue and **one** CCP for exchange-listed derivatives in Canada, unlike the several competing venues [systems-landscape](./systems-landscape.md) §2 lists for cash equities.
+
+| Layer | System(s) | Role |
+|---|---|---|
+| **Front Office** | Order/Execution Management (Bloomberg EMSX, FlexTrade, or a bank's own DMA gateway — illustrative, same vendor family [systems-landscape](./systems-landscape.md) §2 names) → **Montreal Exchange (MX)**, TMX Group's derivatives exchange, matched on its electronic trading engine, commonly referred to as **SOLA** | Order entry, execution, price discovery |
+| **Middle Office** | Give-up/allocation processing (routes an executing broker's trade to the correct clearing member); risk/valuation engines (Murex/Calypso — illustrative) | Confirms the trade, marks intraday risk, routes it to the right clearing member |
+| **Back Office / CCP** | **CDCC (Canadian Derivatives Clearing Corporation)**, also a TMX Group company | Novates every MX-listed trade the instant it executes (Section 1's Novation-at-Execution), collects Initial Margin, calculates daily Variation Margin (a SPAN-style methodology — illustrative) |
+| **Cash Settlement** | **LVTS (Large Value Transfer System)**, Canada's high-value payment rail ([systems-landscape](./systems-landscape.md) §8's cash-settlement-rail table — the Canadian counterpart to Fedwire/CHAPS) | Moves the actual variation-margin and settlement cash between Bank Of Toronto's settlement bank and CDCC |
+| **Regulatory / Oversight** | **CIRO** (dealer conduct, trade/market surveillance); the **CSA** (recognizes MX as an exchange, CDCC as a clearing agency); the **Bank of Canada** (oversees CDCC as a systemically important Financial Market Infrastructure, alongside CDS/CDSX — [systems-landscape](./systems-landscape.md) §10) | Conduct oversight and systemic-risk monitoring — **not** a Trade Repository submission (see takeaway) |
+
+```text
+CANADIAN LISTED DERIVATIVES — FRONT TO BACK, ONE TRADE
+========================================================================
+
+  FRONT OFFICE
+    Bank Of Toronto's derivatives desk enters the order via an
+    OMS/EMS (Bloomberg EMSX / FlexTrade / a bank DMA gateway --
+    illustrative) -&gt; routed to MONTREAL EXCHANGE (MX), matched on
+    its electronic trading engine, SOLA
+         |
+         v
+  MIDDLE OFFICE
+    Give-up/allocation processing routes the executed trade to the
+    correct clearing member; risk/valuation systems (Murex/Calypso
+    -- illustrative) mark the position and compute intraday risk
+         |
+         v
+  BACK OFFICE / CCP
+    CDCC (Canadian Derivatives Clearing Corporation) NOVATES the
+    trade the instant it executes (Section 1's Novation-at-
+    Execution) -- becomes buyer to the seller and seller to the
+    buyer, collects Initial Margin, and calculates daily Variation
+    Margin (a SPAN-style methodology -- illustrative)
+         |
+         v
+  CASH SETTLEMENT
+    Variation margin cash moves between Bank Of Toronto's
+    settlement bank and CDCC over LVTS, Canada's high-value
+    payment rail (systems-landscape §8 -- the Canadian counterpart
+    to Fedwire/CHAPS)
+         |
+         v
+  REGULATORY / OVERSIGHT -- NO TRADE REPOSITORY IN THIS PATH
+    CIRO oversees Bank Of Toronto's trading conduct on MX; the CSA
+    recognizes MX as an exchange and CDCC as a clearing agency; the
+    BANK OF CANADA oversees CDCC itself as a systemically important
+    Financial Market Infrastructure (FMI), given how much of
+    Canada's listed-derivatives risk concentrates through this one
+    CCP
+```
+
+**Worked walkthrough — Bank Of Toronto buys S&amp;P/TSX 60 Index Futures (SXF) on MX:**
+
+```text
+S&amp;P/TSX 60 INDEX FUTURE (SXF)  —  MONTREAL EXCHANGE
+========================================================================
+
+  Buyer: Bank Of Toronto     Multiplier: CAD 200 / index point
+  Trade: BUY 15 contracts @ 1,285.00 (index points)
+  Notional = 15 x 200 x 1,285.00 = CAD 3,855,000
+
+  Next business day, index rises to 1,291.50:
+    Variation Margin = (1,291.50 - 1,285.00) x 200 x 15
+                      = 6.50 x 200 x 15
+                      = CAD 19,500
+    -&gt; credited to Bank Of Toronto (long position, index rose --
+       the SAME mechanic as Module 4 §4c's E-mini S&amp;P 500 example,
+       just a different index, multiplier, and currency)
+
+  SYSTEM PATH: OMS/EMS -&gt; MX/SOLA (execution) -&gt; clearing-member
+  risk engine (middle office) -&gt; CDCC (novation, margin) -&gt; LVTS
+  (cash) -&gt; CIRO/CSA/Bank of Canada (oversight, no TR submission)
+```
+
+> **Callout — illustrative, not prescriptive.** System/vendor names above (Bloomberg EMSX, FlexTrade, Murex, Calypso) are representative of what Canadian bank derivatives desks commonly run, not a claim about Bank Of Toronto's actual internal technology stack — consistent with how [systems-landscape](./systems-landscape.md) §2 already hedges its own vendor list. MX, CDCC, CIRO, the CSA, the Bank of Canada, and LVTS, by contrast, are real, specific Canadian market infrastructure: there is only **one** CCP for MX-listed products, not a choice of vendors, unlike the front/middle-office layer above it.
+
+**Takeaway:** Section 8 already flagged that EMIR's mandatory-clearing machinery is "moot" for Listed Derivatives because central clearing was never optional here — this section shows the Canadian-specific consequence of that same fact: because every MX-listed trade is centrally cleared through CDCC from execution, there's no CSA Multilateral Instrument 96-101 Trade Repository submission the way an uncleared CAD IRS ([Module 8](./module-08-rates.md)) or a CDS ([Module 9](./module-09-credit.md)) would require. CIRO's own market/trade surveillance — not a Trade Repository — is the oversight layer that answers [Module 14](./module-14-regulatory-reporting.md) §1's "did this trade get seen by a regulator?" question for this corner of the Canadian market.
+
+---
+
 ## Actors — Full Cast Reference
 
 | Actor | Role in this module |
@@ -242,6 +324,8 @@ Listed Derivatives is the first product family in this roadmap where the **UPI/U
 | CME / CME Clearing | Exchange and CCP for the E-mini, WTI, and 10-Year T-Note futures |
 | OCC (Options Clearing Corporation) | CCP for US-listed equity options, including the AAPL call |
 | CFTC / SEC | Joint regulators of Security Futures Products (futures on single stocks/narrow indices) |
+| Montreal Exchange (MX) / CDCC | Canada's listed-derivatives exchange and its dedicated CCP — executes and clears the SXF trade (Section 9) |
+| CIRO / Bank of Canada | CIRO oversees Canadian dealer conduct on MX; the Bank of Canada oversees CDCC as a systemically important FMI (Section 9) |
 
 ---
 
@@ -254,6 +338,7 @@ Listed Derivatives is the first product family in this roadmap where the **UPI/U
 5. Why does Section 7 describe this module's Exchange-vs-OTC table as "collapsing to one cell," and how is that different from every other module's version of that same table?
 6. What specifically causes a Security Futures Product (Section 08) to fall under BOTH CFTC and SEC jurisdiction, and how does that reason differ from the reason [Module 9](./module-09-credit.md) §08 gave for Credit's CFTC/SEC split?
 7. Why does this module's masthead describe Listed Derivatives as sitting outside the six-asset-class roadmap rather than being folded into, say, [Module 4](./module-04-equity.md) (Equity) or [Module 7](./module-07-commodities.md) (Commodities)?
+8. Using Section 9, why does a CAD-denominated, CDCC-cleared SXF future NOT generate a CSA Multilateral Instrument 96-101 Trade Repository report, while an uncleared CAD IRS ([Module 8](./module-08-rates.md)) would? Which body still provides regulatory oversight of the SXF trade if not a Trade Repository?
 
 Answer whenever ready — this closes both the Asset Class Roadmap (Modules 4-9) and its cross-cutting companion. Modules 10-14 build on all of this: Valuation, Risk &amp; Exposure, Collateral &amp; Margin, Parties/LEIs, and Regulatory Reporting.
 
@@ -294,6 +379,10 @@ Section 8 flags this explicitly as "a second CFTC/SEC split... reached for a dif
 **7. Because Section 3's finding is that standardization/central clearing is a VENUE property, not an ASSET CLASS property — a Future or Listed Option can reference literally any of the six asset classes' underlyings (Section 2's five-example table), so folding it into just one asset class module (say, Equity) would misrepresent every Future/Listed Option built on a different underlying (a WTI future, a T-Note future) as if it somehow belonged to Equity instead.**
 
 The masthead's framing and Section 1-3's arguments both converge on this: the work data model taxonomy's own structure (Listed Derivatives as taxonomy node "7," separate from asset-class nodes "1" through "6") reflects a real organizing principle, not an arbitrary schema-design choice — this module exists specifically because the mechanic (Section 1, Section 3) is genuinely orthogonal to which asset class supplies the underlying.
+
+**8. Because the SXF future is centrally cleared through CDCC from the instant of execution (Section 1's Novation-at-Execution, restated for Canada in Section 9) — MI 96-101's Trade Repository obligation exists specifically to give regulators visibility into OTC derivative risk that would otherwise be invisible, and a CDCC-cleared listed future is never invisible in that sense: CDCC itself already holds the complete, centralized record of every position. An uncleared CAD IRS has no such centralized record, which is exactly the gap MI 96-101 exists to close. CIRO's own market/trade surveillance function provides the regulatory oversight for the SXF trade instead of a Trade Repository.**
+
+Section 9's takeaway states this directly, tying back to Section 8's observation that EMIR's mandatory-clearing machinery is "moot" here — the same logic applies to Canada's own OTC trade-reporting regime: it targets exactly the visibility gap that central clearing through a single national CCP (CDCC) already closes for every MX-listed product.
 
 ---
 

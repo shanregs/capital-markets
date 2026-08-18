@@ -314,6 +314,85 @@ Commodities split cleanly along the Section 3 physical/contract line: physical g
 
 ---
 
+## 9. Canadian Systems Landscape — Commodities Front, Middle &amp; Back Office to Regulatory Reporting
+
+**Definition:** [systems-landscape](./systems-landscape.md) §2 already laid out the *generic* Canadian Front/Middle/Back Office architecture. This section specializes that architecture to Commodities specifically — and Commodities turns out to be the one asset class in this roadmap where genuinely **Canadian-domiciled** market infrastructure (NGX, CDCC) plays a comparatively narrow role next to the **global benchmark venues** (CME, ICE) Section 4's own worked examples already lean on. Both paths are shown below.
+
+> **Callout — illustrative, not prescriptive.** The specific vendor/platform names below (Murex, Calypso, ICE eConfirm, etc.) are representative of real Canadian market infrastructure and commonly-used vendor categories — not a claim about which exact systems Bank Of Toronto (fictional) runs internally. Treat this section the same way [systems-landscape](./systems-landscape.md) treats its own platform lists: illustrative of the *category* of system, confirmed against a real firm's actual stack only if you're building against it.
+
+### 9a. Two genuinely different paths, depending on the venue
+
+| Layer | Path A — Domestic: NGX (Alberta energy) | Path B — Global benchmark: CME/ICE (Sections 4b–4c) |
+|---|---|---|
+| **Front Office** | NGX's own electronic trading platform (Calgary) — physical &amp; financial AECO natural gas, power, crude | CME Globex / ICE platform, accessed by Bank Of Toronto via a Futures Commission Merchant (FCM) relationship — not a Canadian venue at all |
+| **Middle Office** | Commodity risk/confirmation system (Murex/Calypso-class) booking the trade; ICE eConfirm-style electronic confirmation | Same risk/confirmation system class, booking a US-cleared position instead of a Canadian one |
+| **Back Office / Clearing** | **NGX Clearing** (part of ICE) clears the trade directly | **CME Clearing** (Section 5's worked example) or ICE Clear — neither is CDS nor CDCC |
+| **Regulator** | **Alberta Securities Commission (ASC)** — NGX's primary securities regulator, since NGX is Calgary-based (a genuine exception to the Ontario/CSA-centric pattern other modules lean on) | **CFTC** (Section 8) for the venue itself; **CIRO** for Bank Of Toronto's own dealer conduct as a Canadian participant |
+| **OTC reporting?** | Generally **no** — exchange-traded/cleared, same Future-vs-OTC boundary Section 6's takeaway already draws | **No**, for the same reason — Section 4b's WTI Future is exchange-cleared, not OTC |
+
+**Takeaway:** notice what does and doesn't touch Canadian infrastructure at all. CME/ICE-listed Futures (Section 4b) clear entirely within the US ecosystem regardless of which country the trading bank is headquartered in — Canadian involvement there is limited to CIRO's conduct oversight of Bank Of Toronto as a dealer, not to any Canadian settlement system. Only trades actually executed on a Canadian venue (NGX) touch genuinely Canadian back-office infrastructure (NGX Clearing) and a Canadian regulator (ASC) directly.
+
+### 9b. Worked example — NGX AECO natural gas swap, traced end to end
+
+```text
+NGX FINANCIAL SWAP — AECO 5A NATURAL GAS, DECEMBER 2026
+========================================================================
+
+  Bank Of Toronto's Calgary energy desk: pays FIXED, receives
+  FLOATING (NGX's AECO Daily Index) -- same fixed/floating
+  structure as Section 4c's Brent swap, just Canadian-domiciled
+
+  Fixed price: CAD 3.10/GJ    Volume: 10,000 GJ/day x 31 days
+  = 310,000 GJ notional for December
+
+  MONTH-END SETTLEMENT -- AECO index averages CAD 3.45/GJ
+    Floating leg owed to Bank Of Toronto = 310,000 x 3.45
+      = CAD 1,069,500
+    Fixed leg owed by Bank Of Toronto    = 310,000 x 3.10
+      = CAD 961,000
+    Net cash flow: Bank Of Toronto RECEIVES CAD 108,500
+
+  FRONT OFFICE   -> executed on NGX's own electronic platform
+  MIDDLE OFFICE  -> booked and risk-managed in Bank Of Toronto's
+                    commodity risk system; confirmed electronically
+  BACK OFFICE    -> cleared by NGX CLEARING (part of ICE) --
+                    financial leg only; no physical gas moves
+                    (Section 3's physical-vs-contract distinction,
+                    restated for a genuinely Canadian venue)
+  CASH SETTLEMENT-> CAD 108,500 moves via Lynx (Canada's large-value
+                    payment system, systems-landscape §2)
+  REGULATOR      -> Alberta Securities Commission (ASC), NOT the
+                    Ontario-centric CSA path other Canadian examples
+                    in this roadmap default to
+  OTC REPORTING  -> NOT required under CSA Multilateral Instrument
+                    96-101 -- this is exchange-cleared (NGX Clearing),
+                    the same Future/OTC boundary Section 6 already
+                    established, just for a Canadian exchange instead
+                    of CME/OCC
+```
+
+### 9c. Where MI 96-101 reporting DOES apply — the Brent swap, again
+
+Section 4c's Brent Crude Oil Swap with Shell Trading is bilateral OTC — the opposite case from 9b. If either counterparty has the requisite Canadian nexus, that swap (unlike the NGX example) **is** in scope for **CSA Multilateral Instrument 96-101** (Trade Repositories and Derivatives Data Reporting), Canada's OTC derivatives trade-reporting rule, and would be reported to a CSA-designated Trade Repository — commonly **DTCC Data Repository (Canada) Ltd** or **ICE Trade Vault Canada** (both illustrative of the category; confirm the live designated-TR list against CSA's own published rules before building against it).
+
+```text
+FRONT OFFICE   -> bilateral voice/electronic negotiation with
+                  Shell Trading, no exchange involved
+MIDDLE OFFICE  -> risk system booking; confirmation via an
+                  OTC-confirmation platform (ICE eConfirm-class)
+BACK OFFICE    -> NO CCP at all -- Section 7 already flagged most
+                  Commodity Swaps as bilateral, not centrally cleared
+REGULATOR/TR   -> CSA Multilateral Instrument 96-101 reporting to a
+                  CSA-designated Trade Repository (DTCC Data
+                  Repository (Canada) Ltd / ICE Trade Vault Canada,
+                  illustrative) -- squarely the OTC-reporting path
+                  Section 9a's NGX example explicitly does NOT take
+```
+
+**Takeaway:** the single fastest way to predict which Canadian systems a Commodity trade actually touches is Section 7's own Exchange-vs-OTC finding, applied one level deeper — an exchange-cleared trade (NGX or CME/ICE) never reaches a Canadian OTC Trade Repository at all, while a bilateral OTC trade (the Brent swap) never touches a clearing house, Canadian or otherwise, but does reach a Trade Repository under MI 96-101. Knowing the product type from Section 2 tells you which entire half of this section's systems chain a given trade will run through.
+
+---
+
 ## Actors — Full Cast Reference
 
 | Actor | Role in this module |
@@ -325,6 +404,9 @@ Commodities split cleanly along the Section 3 physical/contract line: physical g
 | Bank Of Toronto's client (airline) | Buyer of the WTI Call option, hedging jet fuel cost exposure via a crude oil proxy |
 | CFTC | Primary US regulator for commodity futures and swaps |
 | LME / ICE | Key commodity exchanges (metals and energy respectively) referenced throughout |
+| NGX (Natural Gas Exchange) | Calgary-based Canadian exchange for physical/financial natural gas and power; venue for Section 9b's AECO swap |
+| Alberta Securities Commission (ASC) | Primary securities regulator overseeing NGX (Section 9) |
+| CSA (Canadian Securities Administrators) | Sets Multilateral Instrument 96-101, the OTC derivatives trade-reporting rule applying to Section 9c's Brent swap |
 
 ---
 
@@ -337,6 +419,7 @@ Commodities split cleanly along the Section 3 physical/contract line: physical g
 5. On the Brent Crude Oil Swap in Section 4c, if the ICE Brent monthly average had instead settled at USD 76.50 (below the USD 78.00 fixed price), what would the Month 1 net cash flow be, and which party pays which?
 6. Why is the CFTC described in Section 08 as "the single most consequential regulator for this specific module" — what's the causal link back to Section 07's findings?
 7. Contrast why Commodity Futures clear "essentially instantaneously" (Section 05) with why FX trades ([Module 6](./module-06-fx.md) §05) mostly never clear via a CCP at all.
+8. Using Section 9, why does Bank Of Toronto's CME WTI Crude Oil Future (Section 4b) never touch CDS (CDSX) or CDCC at all, while its NGX AECO natural gas swap (Section 9b) does touch NGX Clearing — what's the general rule this illustrates about when a Canadian bank's commodity trade actually uses Canadian market infrastructure?
 
 Answer whenever ready — then move to **[Module 8](./module-08-rates.md): Rates**, the next stop on the Asset Class Roadmap.
 
@@ -386,6 +469,10 @@ Section 08's takeaway draws this connection explicitly: the CFTC's outsized rele
 **7. A Commodity Future clears instantaneously because it's exchange-traded from the moment of execution, with the exchange's own CCP standing behind every trade by design (Section 05) — an FX trade mostly never clears via a CCP because FX is overwhelmingly OTC and bilateral ([Module 6](./module-06-fx.md) §05, §07), settled instead via CLS's PvP mechanism, which mitigates settlement risk without ever novating the trade to a central counterparty.**
 
 This is the same structural split Section 07 draws out for Commodities itself (Futures vs. Physical/Swaps) applied across asset classes: whether a trade clears centrally and how fast depends entirely on whether the *product* is exchange-traded by design, not on some asset-class-wide rule — Commodities happens to have both patterns coexisting within a single asset class, where FX ([Module 6](./module-06-fx.md)) and Fixed Income ([Module 5](./module-05-fixed-income.md)) are almost entirely one pattern each.
+
+**8. CDS/CDCC are genuinely Canadian-domiciled infrastructure that only clear/settle products actually traded on Canadian venues — a CME-listed WTI future executes and clears entirely within the US CME/CME Clearing ecosystem regardless of which country the trading bank is headquartered in, so Bank Of Toronto's Canadian entity is just a remote participant via an FCM relationship, with Canadian involvement limited to CIRO's conduct oversight, not settlement infrastructure. The NGX swap, by contrast, trades AND clears on Canadian-domiciled infrastructure (NGX / NGX Clearing), so it's the genuinely "Canadian-system" path.**
+
+Section 9a's table states the general rule directly: Canadian market infrastructure only activates when the **venue itself** is Canadian, not merely because the trading bank happens to be Canadian — the nationality of the counterparty and the nationality of the clearing/settlement chain are two entirely independent facts about a trade.
 
 ---
 

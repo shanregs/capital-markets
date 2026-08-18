@@ -496,6 +496,7 @@
       <li><a href="#identifiers"><span class="toc-num">06</span>Identifiers</a></li>
       <li><a href="#structure"><span class="toc-num">07</span>Exchange vs OTC vs Bilateral vs Cleared</a></li>
       <li><a href="#regulatory"><span class="toc-num">08</span>Regulatory Perspective</a></li>
+      <li><a href="#canada-systems"><span class="toc-num">09</span>Canadian Systems Landscape</a></li>
       <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
       <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
     </ol>
@@ -834,6 +835,66 @@ REPORTING — reported to a Trade Repository (DTCC GTR / REGIS-TR)
       <div class="takeaway"><b>Takeaway.</b> EMIR's mandatory clearing obligation is this module's headline regulatory fact — it turns Section 07's "OTC but centrally cleared" pattern from a market convention (as with Commodity Swaps, <a href="./module-07-commodities.html">Module 7</a> §07) into a hard legal requirement for standardized IRS, explaining why an IRS trade record shows a CCP counterparty while a Swaption record on the same desk shows a bilateral one.</div>
     </section>
 
+    <section class="mod" id="canada-systems">
+      <p class="sec-eyebrow"><span class="n">09</span> · Front to back, system by system</p>
+      <h2>Canadian Systems Landscape — Rates Front, Middle &amp; Back Office to Regulatory Reporting</h2>
+      <p class="lede"><a href="./systems-landscape.html">systems-landscape</a> already lays out Canada's generic Front/Middle/Back Office architecture; this section specializes it to Rates — which real systems the 5Y CAD IRS from Section 4a actually flows through, end to end, in Canada.</p>
+
+      <div class="callout"><b>Callout — illustrative, not prescriptive.</b> The vendor/platform names below are representative of real Canadian and global market infrastructure a Rates desk connects to — they are not a claim about Bank Of Toronto's actual internal system choices. Confirm any specific vendor against your own firm's real technology stack.</div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Layer</th><th>System(s)</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><b>Front Office</b></td><td>Bloomberg; interdealer-broker screens (illustrative: ICAP, Tradition)</td><td>OTC execution of the CAD IRS, FRA, Cap/Floor, Swaption</td></tr>
+          <tr><td><b>Front Office (exchange-listed)</b></td><td><b>Montreal Exchange (MX)</b>'s trading engine, "SOLA"</td><td>Trades exchange-listed CAD rate derivatives — Government of Canada bond futures ("CGB") and CORRA-based short-term rate futures (successor to BAX, Section 1's CDOR-to-CORRA transition)</td></tr>
+          <tr><td><b>Middle Office</b></td><td>MarkitWire / ICE Link (illustrative)</td><td>OTC derivative trade confirmation/affirmation — matches both counterparties' economic terms (Section 5's Confirmation stage)</td></tr>
+          <tr><td><b>Middle Office</b></td><td>Calypso / Murex (illustrative)</td><td>Swap valuation, DV01/curve risk (<a href="./module-10-valuation.html">Module 10</a>)</td></tr>
+          <tr><td><b>Back Office / Clearing</b></td><td><b>LCH SwapClear</b> (London)</td><td>Mandatory central clearing for the standardized CAD IRS (Sections 7–8) — the dominant global CCP for centrally-cleared interest rate swaps across many currencies, CAD included</td></tr>
+          <tr><td><b>Back Office / Clearing</b></td><td><b>CDCC</b> (Canadian Derivatives Clearing Corporation)</td><td>Clears MX-listed CAD rate futures (CGB, CORRA futures) domestically — a genuinely different CCP from the one clearing the OTC IRS itself</td></tr>
+          <tr><td><b>Regulatory Reporting</b></td><td>CSA <b>Multilateral Instrument 96-101</b> → a CSA-designated Trade Repository (illustrative: DTCC Data Repository (Canada) Ltd, ICE Trade Vault Canada)</td><td>Canadian OTC interest rate derivative trade reporting, carrying the UPI/UTI from Section 6</td></tr>
+          <tr><td><b>Oversight</b></td><td><b>Bank of Canada</b></td><td>Administers/oversees CORRA (Section 1); oversees CDCC as a systemically important Financial Market Infrastructure</td></tr>
+          <tr><td><b>Oversight</b></td><td><b>CIRO</b></td><td>Dealer-conduct oversight of Bank Of Toronto's rates desk</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · 5Y CAD IRS, Front to Back</span><span class="t-id">Canada · Section 4a</span></div>
+        <pre>FRONT OFFICE
+  Bank Of Toronto's rates desk executes the 5Y CAD IRS against
+  Goldman Sachs -- Bloomberg / interdealer-broker screens for the
+  OTC-negotiated leg. (The IRS itself isn't MX-listed -- MX's SOLA
+  engine instead trades the EXCHANGE-TRADED cousins of this swap:
+  CGB Government of Canada bond futures and CORRA futures.)
+       |
+       v
+MIDDLE OFFICE
+  MarkitWire / ICE Link -- confirmation/affirmation, matching both
+  counterparties' economic terms (Section 5's Confirmation stage)
+  Calypso / Murex -- swap valuation, DV01/curve risk (Module 10)
+       |
+       v
+BACK OFFICE / CLEARING
+  LCH SwapClear (London) -- mandatory central clearing for this
+  standardized CAD IRS under EMIR/Dodd-Frank (Sections 7-8)
+  NOTE: the clearing leg for a CAD-denominated swap routes to a CCP
+  physically OUTSIDE Canada -- there is no domestic CAD IRS CCP the
+  way CDCC clears MX-listed CAD rate FUTURES domestically instead
+       |
+       v
+REGULATORY REPORTING
+  CSA Multilateral Instrument 96-101 -&gt; reported to a CSA-designated
+  Trade Repository (illustrative: DTCC Data Repository (Canada) Ltd
+  or ICE Trade Vault Canada), carrying the UPI/UTI from Section 6
+  Bank of Canada -- administers/oversees CORRA, oversees CDCC as a
+  systemically important Financial Market Infrastructure
+  CIRO -- dealer-conduct oversight of Bank Of Toronto's rates desk</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The CAD IRS's own clearing leg is this section's sharpest lesson — even though the swap is CAD-denominated, negotiated by a Canadian bank, and referencing a Bank-of-Canada-administered rate (CORRA), its clearing still routes to LCH SwapClear in London, not to any domestic Canadian CCP. Meanwhile the exchange-listed CAD rate futures MX lists DO clear domestically, at CDCC. A reporting system that assumes "CAD-denominated therefore Canadian CCP" would get this exactly backwards for the OTC product and exactly right for the listed one — the currency of the trade and the location of its clearing are independent facts.</div>
+    </section>
+
     <section class="mod">
       <p class="sec-eyebrow">Reference · Full cast</p>
       <h2>Actors — Full Cast Reference</h2>
@@ -846,6 +907,9 @@ REPORTING — reported to a Trade Repository (DTCC GTR / REGIS-TR)
           <tr><td>Goldman Sachs</td><td>Floating-rate payer on the IRS; FRA seller; Cap writer; Swaption writer; forward seller of the bond</td></tr>
           <tr><td>LCH SwapClear / CME</td><td>CCPs performing mandatory central clearing for standardized IRS</td></tr>
           <tr><td>DTCC GTR / REGIS-TR / UnaVista</td><td>Trade repositories receiving Rates OTC derivative reports</td></tr>
+          <tr><td>CDCC (Canadian Derivatives Clearing Corporation)</td><td>Clears MX-listed CAD rate futures (CGB, CORRA futures) domestically (Section 09)</td></tr>
+          <tr><td>Bank of Canada</td><td>Administers/oversees CORRA; oversees CDCC as a systemically important FMI (Section 09)</td></tr>
+          <tr><td>CIRO</td><td>SRO overseeing Canadian rates derivatives dealer conduct (Section 08, Section 09)</td></tr>
         </tbody>
       </table>
       </div>
@@ -865,6 +929,7 @@ REPORTING — reported to a Trade Repository (DTCC GTR / REGIS-TR)
           <li>A trade record shows both a UPI/UTI and an ISIN populated. Using Section 06, is this more likely an IR Forward Debt trade or a plain Interest Rate Swap trade — and why doesn't the presence of an ISIN alone answer that question for you (hint: revisit <a href="./module-05-fixed-income.html">Module 5</a> §6's warning)?</li>
           <li>Why does Section 07 describe the Rates asset class's IRS-clears-by-mandate pattern as mechanically different from, yet structurally identical to, <a href="./module-07-commodities.html">Module 7</a>'s Commodities Futures-clear-by-design pattern?</li>
           <li>Which single regulation is responsible for a standard CAD IRS ending up facing LCH SwapClear as its counterparty instead of Goldman Sachs directly, and what does that regulation NOT require for a Swaption on the same desk?</li>
+          <li>Using Section 09, why does a CAD-denominated IRS's clearing leg route to a CCP physically located outside Canada, while an MX-listed CAD rate future clears domestically — and which Canadian institution clears the latter?</li>
         </ol>
         <p class="quiz-cta">Answer whenever ready — then move to <b><a href="./module-09-credit.html">Module 9</a>: Credit</b>, the next stop on the Asset Class Roadmap.</p>
       </div>
@@ -902,6 +967,9 @@ Net: Goldman Sachs PAYS Bank Of Toronto = 1,085,000.00 - 997,260.27 = CAD 87,739
 
         <h5>Q7 — EMIR's mandatory central clearing obligation is responsible; EMIR does NOT require the same mandatory clearing for a Swaption on the same desk</h5>
         <p>Section 08's takeaway calls this out as the module's headline regulatory fact: EMIR's mandate is scoped to specific, standardized product types (vanilla IRS being the clearest example), not to "Rates derivatives" as a blanket category — Section 07's table shows Swaptions remain predominantly bilateral, since they're less standardized than a vanilla IRS and generally sit outside the specific product scope EMIR's clearing mandate targets.</p>
+
+        <h5>Q8 — LCH SwapClear is the dominant global CCP for centrally-cleared IRS across many currencies including CAD; CDCC clears MX-listed CAD rate futures domestically because those trade on a Canadian venue</h5>
+        <div class="takeaway">Section 09's takeaway states this directly: currency denomination and clearing location are independent facts — a CAD-denominated OTC swap's clearing follows the CCP the product family uses globally (LCH SwapClear), while an exchange-listed CAD future's clearing follows the CCP attached to its listing venue (CDCC, attached to MX). A system that assumes "CAD-denominated therefore Canadian CCP" gets the OTC case backwards.</div>
       </div>
     </section>
 
