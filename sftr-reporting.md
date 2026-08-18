@@ -125,11 +125,32 @@ BUY-SELL BACK — BANK OF TORONTO SELLS, MIZUHO BANK BUYS
 
 ### 2c. Worked example — Securities Lending / Borrowing (SLEB)
 
-**The key idea:** one party needs to *borrow* a specific security (commonly to cover a short sale or a settlement fail), the other *lends* it against collateral, for a fee — no cash changes hands as the "loan" itself, only as collateral.
+**The key idea:** one party needs to *borrow* a specific security (commonly to cover a short sale or a settlement fail), the other *lends* it against collateral, for a fee — no cash changes hands as the "loan" itself, only as collateral. Securities lending is also where an **agent lender** most commonly appears: the beneficial owner of the shares rarely negotiates and documents the loan directly.
+
+> **Who's actually the counterparty?** Maple Leaf Pension Fund owns the AAPL shares, but its custodian, **Custodian Trust Co.**, acts as its **agent lender** — Custodian Trust Co. is the entity that actually signs the securities lending agreement, faces Bank Of Toronto, and holds the collateral in its own name. Maple Leaf Pension Fund never appears on Bank Of Toronto's loan documentation at all; it only receives the lending-fee economics back from Custodian Trust Co., under a separate agency relationship that is itself not an SFT.
 
 ```text
-SECURITIES LENDING / BORROWING (SLEB) — MAPLE LEAF PENSION FUND LENDS,
-BANK OF TORONTO BORROWS (VIA AN AGENT LENDER)
+THREE NAMES, BUT BANK OF TORONTO'S ONLY CONTRACT IS WITH THE AGENT
+========================================================================
+
+  Maple Leaf Pension Fund  ----(appoints as agent lender)---->
+                                                    Custodian Trust Co.
+  (beneficial owner of the AAPL shares;             (agent lender -- acts
+   receives fee economics back, minus                in its OWN name)
+   a small agent fee retained by Custodian Trust Co.)
+
+  Custodian Trust Co.  &lt;====  SECURITIES LENDING AGREEMENT  ====&gt;  Bank Of Toronto
+  (agent lender, the actual legal counterparty)                     (borrower)
+
+  -> Bank Of Toronto's loan documentation, collateral receipt, and
+     SFTR report all name CUSTODIAN TRUST CO. as counterparty --
+     Maple Leaf Pension Fund is invisible to Bank Of Toronto's own
+     paperwork, even though it's the shares' real economic owner
+```
+
+```text
+SECURITIES LENDING / BORROWING (SLEB) — CUSTODIAN TRUST CO. LENDS
+(AS AGENT FOR MAPLE LEAF PENSION FUND), BANK OF TORONTO BORROWS
 ========================================================================
 
   Security on loan: 100,000 shares of Apple Inc (AAPL) @ USD 225.00
@@ -145,13 +166,17 @@ BANK OF TORONTO BORROWS (VIA AN AGENT LENDER)
   Fee = 22,500,000 x 0.30% x (30/360) = USD 5,625
 
   -> Bank Of Toronto BORROWS the shares (to cover a client short
-     sale) and POSTS USD 22,950,000 cash collateral; Maple Leaf
-     Pension Fund LENDS the shares and RECEIVES the collateral,
-     earning the USD 5,625 fee for the 30-day term
+     sale) and POSTS USD 22,950,000 cash collateral TO CUSTODIAN
+     TRUST CO.; Custodian Trust Co. LENDS the shares (as agent) and
+     RECEIVES the collateral, collecting the USD 5,625 fee and
+     passing the bulk of it back to Maple Leaf Pension Fund as
+     beneficial owner
   -> Reported by both sides, Type of SFT = SLEB
 ```
 
 **Why it gets reported:** securities lending is how short-selling and settlement-fail coverage actually get funded in practice — regulators need visibility into how much of the free float of a given security is out on loan (and against what collateral) to understand short-selling capacity and the knock-on liquidity risk if lenders recalled their shares en masse.
+
+**SFTR reporting angle — who actually reports?** Section 4's delegation table already flags that an "Agent lender... often reports on behalf of the underlying lending clients under a delegation arrangement." This trade is exactly that case: Custodian Trust Co., as the entity legally on the contract, is typically the one submitting the SFTR report — either its own report as counterparty, or a delegated report covering Maple Leaf Pension Fund's side too, depending on their specific agency agreement. Section 4's dual-sided obligation still applies, but WHICH legal entity's name appears on Maple Leaf Pension Fund's side of the report depends on that delegation, not simply on who owns the shares.
 
 ### 2d. Worked example — Margin lending
 
@@ -455,7 +480,8 @@ BANK OF TORONTO'S REPO WITH GOLDMAN SACHS — FULL SFTR REPORT TRAIL
 | Bank Of Toronto | Repo seller / cash borrower (Section 2a, 6a-c); margin lender to Northwind Capital (Section 2d, 6c); cash lender in the systems-landscape Bund repo (Section 8) |
 | Goldman Sachs | Reverse repo buyer / cash lender (Section 2a); receives and re-uses (rehypothecates) Gilt/Bund collateral (Section 6d, Section 8) |
 | Mizuho Bank | Counterparty on the JGB buy-sell back (Section 2b) |
-| Maple Leaf Pension Fund | Securities lender in the SLEB example, via an agent lender (Section 2c) |
+| Maple Leaf Pension Fund | Beneficial owner of the AAPL shares in the SLEB example — not itself a party to the loan contract (Section 2c) |
+| Custodian Trust Co. | Agent lender for Maple Leaf Pension Fund — the actual legal counterparty facing Bank Of Toronto on the SLEB trade (Section 2c) |
 | Northwind Capital | Hedge fund client borrowing on margin from Bank Of Toronto Prime Services (Section 2d, 6c) |
 | Deutsche Bank | Third-party counterparty receiving Goldman Sachs' re-pledged Gilt collateral (Section 6d) |
 | REGIS-TR | Trade Repository receiving both counterparties' reports, pairing on UTI |
@@ -514,9 +540,9 @@ Section 9's takeaway states this three-way split directly: the regulation is the
 
 Section 2a states this directly: the GBP 19,845,000 cash, GBP 20,250,000 collateral, and 5.10% rate are identical numbers on both sides — the label "repo" vs. "reverse repo" just describes which end of the same transaction a given counterparty sat on.
 
-**9. `SLEB` stands for Securities Lending and Borrowing (also colloquially "sec lending" or "stock loan"). Section 2c's Maple Leaf Pension Fund → Bank Of Toronto AAPL share loan (USD 22,500,000 market value, USD 22,950,000 collateral, USD 5,625 fee) is reported with `Type of SFT = SLEB`.**
+**9. `SLEB` stands for Securities Lending and Borrowing (also colloquially "sec lending" or "stock loan"). Section 2c's Custodian Trust Co. (as agent for Maple Leaf Pension Fund) → Bank Of Toronto AAPL share loan (USD 22,500,000 market value, USD 22,950,000 collateral, USD 5,625 fee) is reported with `Type of SFT = SLEB`.**
 
-The term-note table right after Section 2's main table lists `SLEB` as the literal SFTR "Type of SFT" enumeration value for this product family — the same code appears on both Bank Of Toronto's (borrower) and Maple Leaf Pension Fund's (lender) reports.
+The term-note table right after Section 2's main table lists `SLEB` as the literal SFTR "Type of SFT" enumeration value for this product family — the same code appears on both Bank Of Toronto's (borrower) and Custodian Trust Co.'s (agent lender's) reports, with Maple Leaf Pension Fund's economic interest passed through under the separate agency relationship Section 2c describes.
 
 **10. Yes — LTV = 5,000,000 / 8,500,000 = 58.8%, which is BELOW the 65% maintenance threshold, so NO margin call would trigger.**
 

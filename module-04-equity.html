@@ -613,6 +613,17 @@ Trade Value = 10,000 x 68.40 = USD 684,000</pre>
       </div>
       <div class="callout"><b>Schema:</b> <code>EquityTrade.avsc</code> — Trade only. There's no <code>EquityValuation.avsc</code> in the work data model taxonomy: cash equity is marked using a shared/generic security-pricing model (Section 05's daily mark-to-market just needs a market price, not product-specific valuation logic the way an option or swap needs).</div>
 
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · One "Trade," Two Legs</span><span class="t-id">What "Dealer" Actually Means Here</span></div>
+        <pre>Leg 1:  Goldman Sachs  ---- sells 10,000 KO @ 68.40 ----&gt;  Bank Of Toronto
+Leg 2:  Bank Of Toronto ---- sells 10,000 KO @ 68.40 ----&gt;  Maple Leaf Pension Fund
+
+Both legs settle at the SAME price -- Bank Of Toronto takes no
+spread and ends the day flat (bought 10,000, sold 10,000) -- but
+it is a REAL counterparty on each leg, not a pass-through broker.</pre>
+      </div>
+      <div class="callout">Bank Of Toronto is a genuine counterparty to <b>both</b> sides here — a principal, per <a href="./module-01-fundamentals.html">Module 1</a> §3's dealer/principal mechanics — which means the single "Trade:" line above is really <b>two separate settlement obligations</b>: Bank Of Toronto owes Goldman Sachs cash and owes Maple Leaf Pension Fund shares, and separately is owed shares from Goldman Sachs and cash from Maple Leaf Pension Fund. If Bank Of Toronto were instead acting as a riskless broker (never taking title), there would be only one obligation, directly between Goldman Sachs and Maple Leaf Pension Fund — that is NOT what's happening in this example.</div>
+
       <h3>4b. Preferred Stock</h3>
       <div class="ticket gold">
         <div class="ticket-head"><span class="t-label">Preferred Stock · Series A</span><span class="t-id">Bank Of Toronto issuance</span></div>
@@ -680,6 +691,7 @@ AT EXPIRY -- Scenario B: AAPL trades at USD 240
      ever — never more than the premium paid.</pre>
       </div>
       <div class="callout"><b>Schema:</b> <code>ListedOptionsTrade.avsc</code> / <code>ListedOptionValuation.avsc</code> — not <code>EquityOptionTrade.avsc</code>. This AAPL call is exchange-listed and clears via the OCC (Section 05), so in the taxonomy it belongs to the cross-cutting "7. Listed Derivatives" node (<a href="./module-15-listed-derivatives.html">Module 15</a>) alongside Futures, same as Section 04c. <code>EquityOptionTrade.avsc</code> / <code>EquityOptionValuation.avsc</code> is reserved for a bilateral OTC equity option — same economic product, different schema, and the deciding factor is Exchange vs. OTC (Section 07), not "is it an equity option."</div>
+      <div class="callout">Same clearing relationship as Section 04c's future: once this option clears via the OCC, Maple Leaf Pension Fund and Bank Of Toronto each actually face the <b>OCC</b>, not each other — the "Buyer"/"Seller (writer)" labels above describe the trade's original two-sided economics, not who ends up counterparty-exposed to whom after novation.</div>
 
       <div class="takeaway"><b>Takeaway.</b> Notice the buyer/seller relationship changes shape across these four examples — a bilateral dealer trade (4a), a primary issuance (4b), an exchange trade against a CCP (4c), and a bilateral option written by a dealer (4d). All four are still "Equity," but the actors and the settlement mechanics already look different before Section 05 even gets to lifecycle.</div>
     </section>

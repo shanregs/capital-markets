@@ -692,10 +692,11 @@ Time Value = Market Value - Intrinsic Value
 
       <h3>4c. Credit Default Swap — Spread-Driven Mark-to-Market</h3>
       <div class="ticket">
-        <div class="ticket-head"><span class="t-label">5Y CDS on Northstar Resources Inc.</span><span class="t-id">One year after inception</span></div>
+        <div class="ticket-head"><span class="t-label">5Y CDS on Northstar Resources Inc.</span><span class="t-id">Bank Of Toronto vs Goldman Sachs · One year after inception</span></div>
         <pre>At inception (Module 9 §4a): Notional USD 10,000,000, Running
 Coupon 100bps, market spread was 250bps, Bank Of Toronto (protection
-buyer) paid an upfront of approx. USD 675,000
+buyer) paid Goldman Sachs (protection seller) an upfront of approx.
+USD 675,000
   = (2.50% - 1.00%) x ~4.5 x 10,000,000
 
 ONE YEAR LATER: Northstar Resources Inc.'s credit has deteriorated
@@ -720,6 +721,8 @@ Unrealized Gain to Bank Of Toronto = 1,200,000 - 675,000 = USD 525,000
    concept flagged in Module 9's Q4 answer, from the opposite
    side of the trade.</pre>
       </div>
+
+      <div class="callout"><b>Callout — one snapshot among several.</b> This is a single illustrative valuation snapshot: Northstar Resources Inc.'s spread widening from 250bps to 400bps. <a href="./module-11-risk-exposure.html">Module 11</a> §3 revalues this exact same trade under a <i>different</i> illustrative scenario — a spread that has instead NARROWED, leaving Bank Of Toronto's locked-in protection worth less than current market pricing would provide, an unrealized loss rather than a gain. The two sections aren't describing the same moment in time; they're two independent "what if the spread moves this way" scenarios applied to the same trade, each self-consistent on its own terms.</div>
 
       <div class="takeaway"><b>Takeaway.</b> All three derivative valuations reduce to the same underlying idea — compare what was locked in at trade date against what the market offers today for the same remaining risk, then translate that gap into a dollar value using a sensitivity measure (Swap DV01, Option Greeks, CDS Spread DV01) that's structurally the same concept every time, just calibrated to a different underlying risk factor.</div>
     </section>

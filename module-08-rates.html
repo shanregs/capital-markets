@@ -744,7 +744,11 @@ CLEARING — for a standardized CAD IRS, novated to a CCP (LCH
           SwapClear — Section 07) shortly after execution, under
           the EMIR/Dodd-Frank mandatory clearing obligation
           (Section 08) — unlike Module 6's FX, which mostly never
-          clears via a CCP at all
+          clears via a CCP at all. Novation means Bank Of Toronto
+          and Goldman Sachs no longer face each other directly --
+          each instead faces LCH SwapClear separately, the same
+          "faces the CCP, not each other" pattern Module 4 §4c
+          established for equity futures
 
 DAILY     VARIATION MARGIN — LCH SwapClear marks the swap's value
           daily and moves margin, the same daily-cash-flow pattern
@@ -765,6 +769,8 @@ REPORTING — reported to a Trade Repository (DTCC GTR / REGIS-TR)
           by T+1, carrying a UPI (product template) and a fresh
           UTI (this specific trade) — Section 06</pre>
       </div>
+
+      <div class="callout"><b>Counterparty after clearing.</b> Once novated, Section 04a's CAD 186,986.30 net quarterly flow doesn't move directly between Bank Of Toronto and Goldman Sachs — it moves Bank Of Toronto ↔ LCH SwapClear and, on a separate leg, LCH SwapClear ↔ Goldman Sachs. Section 04a's diagram is still economically correct about the amount and direction; it's just describing the trade's original bilateral terms, before the CLEARING stage above redirects who that amount is actually owed to.</div>
 
       <div class="takeaway"><b>Takeaway.</b> A single trade generates 20 separate quarterly settlement events over its life, each needing its own net cash flow calculation off a then-current CORRA reset — nothing else in this roadmap has a lifecycle that repeats its own Settlement stage that many times from one Trade Capture event.</div>
     </section>

@@ -251,10 +251,14 @@ Collateral: CAD 1.8M
      specific negotiated number
 
 Custodian: XYZ
-  -&gt; Module 13 §2's Custodian role -- holds collateral/securities
-     on Bank Of Toronto's or Goldman Sachs' behalf, logically
-     distinct from the CCP (if this were centrally cleared) or the
-     CSD (Module 13 §2's full role table)
+  -&gt; Module 13 §2's Custodian role -- specifically Bank Of
+     Toronto's OWN custodian, holding Bank Of Toronto's side of
+     posted/received collateral (this record is Bank Of Toronto's
+     own trade capture, so every field on it is Bank Of Toronto's
+     view). Goldman Sachs would separately have its own custodian
+     on its own books, not shown here. Logically distinct from the
+     CCP (if this were centrally cleared) or the CSD (Module 13
+     §2's full role table)
 
 Settlement: ...
   -&gt; Module 1 §7's DvP mechanics for the quarterly net cash flows

@@ -211,12 +211,14 @@ AAPL 15-JAN-2027 250 CALL  —  Six Months Before Expiry
 ### 4c. Credit Default Swap — Spread-Driven Mark-to-Market
 
 ```text
-5Y CDS ON NORTHSTAR RESOURCES INC.  —  One Year After Inception
+5Y CDS ON NORTHSTAR RESOURCES INC.  —  Bank Of Toronto (protection
+buyer) vs Goldman Sachs (protection seller) — One Year After Inception
 ========================================================================
 
   At inception (Module 9 §4a): Notional USD 10,000,000, Running
   Coupon 100bps, market spread was 250bps, Bank Of Toronto (protection
-  buyer) paid an upfront of approx. USD 675,000
+  buyer) paid Goldman Sachs (protection seller) an upfront of approx.
+  USD 675,000
     = (2.50% - 1.00%) x ~4.5 x 10,000,000
 
   ONE YEAR LATER: Northstar Resources Inc.'s credit has deteriorated
@@ -241,6 +243,8 @@ AAPL 15-JAN-2027 250 CALL  —  Six Months Before Expiry
      concept flagged in Module 9's Q4 answer, from the opposite
      side of the trade.
 ```
+
+> **Callout — one snapshot among several.** This is a single illustrative valuation snapshot: Northstar Resources Inc.'s spread widening from 250bps to 400bps. [Module 11](./module-11-risk-exposure.md) §3 revalues this exact same trade under a *different* illustrative scenario — a spread that has instead NARROWED, leaving Bank Of Toronto's locked-in protection worth less than current market pricing would provide, an unrealized loss rather than a gain. The two sections aren't describing the same moment in time; they're two independent "what if the spread moves this way" scenarios applied to the same trade, each self-consistent on its own terms.
 
 **Takeaway:** all three derivative valuations reduce to the same underlying idea — compare what was locked in at trade date against what the market offers *today* for the same remaining risk, then translate that gap into a dollar value using a sensitivity measure (Swap DV01, Option Greeks, CDS Spread DV01) that's structurally the same concept every time, just calibrated to a different underlying risk factor.
 

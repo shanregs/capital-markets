@@ -175,6 +175,23 @@ MUNICIPAL BOND  —  City of Toronto 3.75% Green Bond 2032
   municipal-bond feature, not a general "municipal bond" one.
 ```
 
+> **This is a primary issuance, not a secondary-market trade.** City of Toronto's bond doesn't exist yet before this trade — Bank Of Toronto is **underwriting/placing a brand-new bond** ([Module 1](./module-01-fundamentals.md) §1's primary-market mechanics), not intermediating a security that's already outstanding between two other market participants the way a secondary-market dealer trade would. The CAD 14,587,500 flows in one direction, through Bank Of Toronto, from the end buyer back to the issuer:
+
+```text
+PRIMARY ISSUANCE CHAIN — WHO OWES WHAT TO WHOM
+========================================================================
+
+  Maple Leaf Pension Fund  ---- pays CAD 14,587,500 ---->  Bank Of Toronto
+  Bank Of Toronto          ---- pays (proceeds, less underwriting
+                                 fee/spread) --------------> City of Toronto
+
+  -&gt; Bank Of Toronto is the underwriter/placement agent standing
+     between a NEW issuer and the end buyer — a different role
+     than Section 4a's Government Bond trade, where Bank Of
+     Toronto is simply the BUYER of an already-existing security
+     with no issuer in the chain at all.
+```
+
 **Schema:** `BondTrade.avsc` — same schema again; the Dealer role (Bank Of Toronto) is captured as a party reference on the trade, not a different schema.
 
 ### 4d. Other Debt Instrument — Treasury Bill
