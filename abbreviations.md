@@ -60,7 +60,8 @@
 
 | Abbreviation | Full Form | Meaning |
 |---|---|---|
-| **CORRA** | Canadian Overnight Repo Rate Average | Canada's risk-free overnight benchmark rate — used as the floating leg on CAD swaps (see [Module 1](./module-01-fundamentals.md) §8 example). |
+| **CORRA** | Canadian Overnight Repo Rate Average | Canada's risk-free overnight benchmark rate, calculated daily by the **Bank of Canada** from actual overnight repo transactions collateralized by Government of Canada securities — not from bank estimates the way CDOR/LIBOR were. Used as the floating leg on CAD swaps (see [Module 1](./module-01-fundamentals.md) §8's Underlier explainer and worked example; full CDOR-to-CORRA transition story in [Module 8](./module-08-rates.md) §1). |
+| **CDOR** | Canadian Dollar Offered Rate | The legacy, survey-based CAD interbank benchmark CORRA replaced — banks self-reported what they believed they could borrow at, rather than CORRA's actual-transaction basis. **Discontinued after June 2024.** See [Module 8](./module-08-rates.md) §1. |
 | **SOFR** | Secured Overnight Financing Rate | The US's risk-free overnight benchmark rate, successor to USD LIBOR. |
 | **SONIA** | Sterling Overnight Index Average | The UK's risk-free overnight benchmark rate, successor to GBP LIBOR. |
 | **LIBOR** | London Interbank Offered Rate | The legacy interbank benchmark rate, phased out by 2023 in favor of SOFR/SONIA/CORRA-style "risk-free rates." Still seen in legacy trade data. |
