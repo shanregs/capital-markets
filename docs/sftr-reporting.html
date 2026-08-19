@@ -497,6 +497,8 @@
       <li><a href="#deadline"><span class="toc-num">07</span>Deadline, Phase-In &amp; Backloading</a></li>
       <li><a href="#worked-example"><span class="toc-num">08</span>Worked Example — Full Lifecycle</a></li>
       <li><a href="#links"><span class="toc-num">09</span>Official Sources &amp; Links</a></li>
+      <li><a href="#report-architecture"><span class="toc-num">10</span>Report Architecture — Tables &amp; Messages</a></li>
+      <li><a href="#haircut-deep-dive"><span class="toc-num">11</span>Haircut Deep-Dive</a></li>
       <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
       <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
     </ol>
@@ -824,7 +826,7 @@ Collateral value post-haircut:    20,250,000 x 0.98 = GBP 19,845,000
   sized so the discounted collateral value matches the cash loan</pre>
       </div>
 
-      <p><b>Why it gets reported:</b> the haircut is the market's own real-time read of how much price risk a lender is willing to absorb on a given collateral type — regulators tracking haircuts across the system can spot exactly the kind of system-wide haircut tightening ("collateral crunch") that turned an initial 2007 subprime shock into a broader funding freeze.</p>
+      <p><b>Why it gets reported:</b> the haircut is the market's own real-time read of how much price risk a lender is willing to absorb on a given collateral type — regulators tracking haircuts across the system can spot exactly the kind of system-wide haircut tightening ("collateral crunch") that turned an initial 2007 subprime shock into a broader funding freeze. See <a href="#haircut-deep-dive">Section 11</a> for the full haircut formula, its reverse calculation, and exactly how it differs from a margin call.</p>
 
       <h3>6b. Valuation data, worked — the daily mark-to-market</h3>
       <p>Same repo, now on Day 2 of its 7-day term: the Gilt's price falls 0.5% overnight.</p>
@@ -972,6 +974,312 @@ Report 4 — TERMINATION (Tue 18-Aug, by Wed 19-Aug T+1)
       <div class="takeaway"><b>Takeaway.</b> For a build task, treat EUR-Lex (or the FCA equivalent for UK SFTR) as the legal source of truth for scope and obligations, ESMA/FCA technical standards as the source of truth for exact field lists and validation rules, and the Trade Repository's own published schema/reporting manual as the source of truth for the literal message format your system needs to produce — three different documents answering three different "what exactly do I build" questions.</div>
     </section>
 
+    <section class="mod" id="report-architecture">
+      <p class="sec-eyebrow"><span class="n">10</span> · Correcting Section 6's simplified framing</p>
+      <h2>SFTR Report Architecture — The Four Tables, Three Messages &amp; Field Groups</h2>
+      <p class="lede">Section 6's "Loan data / Collateral data / Margin data / Reuse data" framing is the right mental model, but it slightly understates the actual wire structure. ESMA's technical standards organize the ~155 fields into exactly four numbered tables, riding on only three ISO 20022 XML messages — Tables 1 and 2 travel together in the same message.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Table</th><th>Name</th><th>Fields</th><th>Carried In Message</th><th>Message Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><b>Table 1</b></td><td>Counterparty Data</td><td class="mono">18</td><td class="mono"><b>auth.052</b></td><td>Securities Financing Transaction Report</td></tr>
+          <tr><td><b>Table 2</b></td><td>Loan &amp; Collateral Data</td><td class="mono">99</td><td class="mono"><b>auth.052</b> (same message as Table 1)</td><td>Securities Financing Transaction Report</td></tr>
+          <tr><td><b>Table 3</b></td><td>Margin Data</td><td class="mono">20</td><td class="mono"><b>auth.070</b></td><td>Margin Data Report — CCP-cleared SFTs only</td></tr>
+          <tr><td><b>Table 4</b></td><td>Reuse / Cash Reinvestment / Funding Sources</td><td class="mono">18</td><td class="mono"><b>auth.071</b></td><td>Reused Collateral Data Report</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>18 + 99 + 20 + 18 = 155 — Section 6's field count, now broken down by table. Verify the current numbers against ESMA's technical standards (Section 9) before hard-coding them, since — like Section 7's callout on phase-in dates — field counts are set by RTS/ITS that get periodically revised.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · The SFTR Message / Table Structure</span><span class="t-id">auth.052 · auth.070 · auth.071</span></div>
+        <pre>auth.052 -- Securities Financing Transaction Report
+   |
+   +-- Table 1: Counterparty Data (18 fields)
+   |     who is reporting, who's the other side, broker, CCP,
+   |     tri-party agent, agent lender...
+   |
+   +-- Table 2: Loan &amp; Collateral Data (99 fields)
+         the SFT itself -- UTI, dates, rates, principal, security,
+         AND its collateral -- all in one table
+
+auth.070 -- Margin Data Report
+   |
+   +-- Table 3: Margin Data (20 fields)
+         ONLY for CCP-cleared SFTs -- initial/variation margin
+         posted &amp; received, separate from Table 2's collateral
+
+auth.071 -- Reused Collateral Data Report
+   |
+   +-- Table 4: Reuse / Reinvestment / Funding (18 fields)
+         collateral reuse, cash reinvestment, funding sources --
+         reported at counterparty/currency level, not trade-by-trade
+         (Section 6d already showed why)</pre>
+      </div>
+
+      <h3>10a. Table 2's eight field groups</h3>
+      <p>Table 2 alone is 99 fields — the majority of the whole standard — so ESMA's own field numbering groups it into eight logical blocks:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Group</th><th>Field Range</th><th>Covers</th></tr></thead>
+        <tbody>
+          <tr><td>A. Transaction identity</td><td class="mono">2.1 – 2.3</td><td>UTI, report tracking number, event date</td></tr>
+          <tr><td>B. Transaction / clearing</td><td class="mono">2.4 – 2.12</td><td>Type of SFT, cleared?, CCP, trading venue, master agreement</td></tr>
+          <tr><td>C. Dates / lifecycle</td><td class="mono">2.13 – 2.22</td><td>Value date, maturity date, termination date, GC/DBV indicators</td></tr>
+          <tr><td>D. Rates</td><td class="mono">2.23 – 2.36</td><td>Fixed/floating repo rate, day count, spread, rate reset frequency</td></tr>
+          <tr><td>E. Principal / loan asset</td><td class="mono">2.37 – 2.57</td><td>Principal amount, ISIN, quantity, price, market value</td></tr>
+          <tr><td>F. Rebate / lending fee</td><td class="mono">2.58 – 2.71</td><td>Rebate rate, lending fee, outstanding margin loan</td></tr>
+          <tr><td>G. Collateral</td><td class="mono">2.72 – 2.96</td><td>Collateral ISIN, market value, haircut, reuse availability</td></tr>
+          <tr><td>H. Reporting mechanics</td><td class="mono">2.97 – 2.99</td><td>Portfolio code, Action Type, Level (trade vs. position)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p><b>Near leg / far leg, in field terms.</b> Continuing Section 2a's repo — a field pairing you'll hit constantly in requirements work:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Field Mapping · Near Leg / Far Leg</span><span class="t-id">Fields 2.13 / 2.14</span></div>
+        <pre>2.13 Value Date         -&gt;  NEAR LEG   (cash &lt;-&gt; Gilt exchanged today)
+2.14 Maturity Date       -&gt;  FAR LEG    (Gilt &lt;-&gt; cash+interest exchanged
+                                         at repurchase)</pre>
+      </div>
+
+      <h3>10b. Fields worth knowing by number</h3>
+      <p>Not all 155 fields carry equal weight for building intuition. These are the ones that show up in almost every worked example in this module:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field</th><th>#</th><th>Table</th><th>Business Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>UTI</td><td class="mono">2.1</td><td class="mono">2</td><td>Unique Transaction Identifier — the pairing key (Section 4)</td></tr>
+          <tr><td>Type of SFT</td><td class="mono">2.4</td><td class="mono">2</td><td><code>REPO</code> / <code>SBSC</code> / <code>SLEB</code> / <code>MGLD</code> (Section 2's term-note table)</td></tr>
+          <tr><td>Value date</td><td class="mono">2.13</td><td class="mono">2</td><td>Near-leg settlement date</td></tr>
+          <tr><td>Maturity date</td><td class="mono">2.14</td><td class="mono">2</td><td>Far-leg / contractual end date</td></tr>
+          <tr><td>Principal amount</td><td class="mono">2.37</td><td class="mono">2</td><td>Cash lent/borrowed at inception</td></tr>
+          <tr><td>Security identifier</td><td class="mono">2.41</td><td class="mono">2</td><td>ISIN of the loaned/borrowed security</td></tr>
+          <tr><td>Market value</td><td class="mono">2.57</td><td class="mono">2</td><td>Current value of the loaned asset (Section 6b's daily MTM)</td></tr>
+          <tr><td>Collateral market value</td><td class="mono">2.88</td><td class="mono">2</td><td>Current value of the collateral (Section 11's haircut base)</td></tr>
+          <tr><td>Haircut or margin</td><td class="mono">2.89</td><td class="mono">2</td><td>The percentage buffer itself (Section 11)</td></tr>
+          <tr><td>Action Type</td><td class="mono">2.99</td><td class="mono">2</td><td><code>NEWT</code>/<code>MODI</code>/<code>COLU</code>/... — Section 10c below</td></tr>
+          <tr><td>Portfolio code</td><td class="mono">3.7</td><td class="mono">3</td><td>CCP collateral portfolio identifier</td></tr>
+          <tr><td>Initial margin posted</td><td class="mono">3.8</td><td class="mono">3</td><td>IM posted for a CCP-cleared SFT</td></tr>
+          <tr><td>Variation margin posted</td><td class="mono">3.10</td><td class="mono">3</td><td>VM posted for a CCP-cleared SFT</td></tr>
+          <tr><td>Value of reused collateral</td><td class="mono">4.8</td><td class="mono">4</td><td>Actual (not estimated) reuse of received collateral</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>10c. Action Type — the full enumeration</h3>
+      <p>Section 5 already introduced action types conceptually; here's the literal enumerated code list, and which table each one applies to:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Code</th><th>Meaning</th><th>Applies To</th></tr></thead>
+        <tbody>
+          <tr><td class="mono"><b>NEWT</b></td><td>New transaction</td><td>Tables 2, 3, 4</td></tr>
+          <tr><td class="mono"><b>MODI</b></td><td>Modification</td><td>Table 2</td></tr>
+          <tr><td class="mono"><b>EROR</b></td><td>Cancel erroneous report</td><td>Tables 2, 3, 4</td></tr>
+          <tr><td class="mono"><b>CORR</b></td><td>Correct previously wrong data</td><td>Tables 2, 3, 4</td></tr>
+          <tr><td class="mono"><b>POSC</b></td><td>Position component</td><td>Table 2</td></tr>
+          <tr><td class="mono"><b>COLU</b></td><td>Collateral update</td><td>Table 2</td></tr>
+          <tr><td class="mono"><b>ETRM</b></td><td>Early termination</td><td>Table 2</td></tr>
+          <tr><td class="mono"><b>VALU</b></td><td>Valuation update</td><td>Table 2 (securities lending/borrowing)</td></tr>
+          <tr><td class="mono"><b>MARU</b></td><td>Margin update</td><td>Table 3 only</td></tr>
+          <tr><td class="mono"><b>REUU</b></td><td>Reuse update</td><td>Table 4 only</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Takeaway on Action Type.</b> <code>MARU</code> and <code>REUU</code> aren't just Table-2-style lifecycle events reused elsewhere — they're the dedicated action types for Tables 3 and 4 respectively, consistent with Tables 3/4 being reported as their own separate messages (<code>auth.070</code>/<code>auth.071</code>) rather than sub-events nested inside a Table 2 report.</div>
+
+      <h3>10d. Which table does this field belong to? — A decision framework</h3>
+      <p>When mapping a field from a source system into an SFTR report, ask these five questions in order:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Decision Framework · Field → Table</span><span class="t-id">Q1 – Q5</span></div>
+        <pre>Q1. Is it about the PARTIES?                     -&gt; TABLE 1
+    LEI, broker, CCP, agent lender, beneficiary
+
+Q2. Is it about the SFT itself?                  -&gt; TABLE 2
+    UTI, type of SFT, principal, rate, dates, security
+
+Q3. Is it about the COLLATERAL backing the SFT?  -&gt; TABLE 2 (Group G)
+    ISIN, quantity, price, market value, haircut, quality
+
+Q4. Is it CCP MARGIN?                            -&gt; TABLE 3
+    Initial margin, variation margin, excess collateral
+
+Q5. Is it REUSE / REINVESTMENT / FUNDING?        -&gt; TABLE 4
+    Reused collateral, reinvestment rate, funding sources</pre>
+      </div>
+
+      <p><b>Worked example — sort three fields from a real repo report.</b> Using Section 8's Bank Of Toronto / Goldman Sachs Bund repo:</p>
+      <ul>
+        <li>"Bank Of Toronto's LEI" → Q1 → <b>Table 1</b></li>
+        <li>"EUR 50,000,000 principal" → Q2 → <b>Table 2</b></li>
+        <li>"Bund market value, haircut buffer" → Q3 → <b>Table 2, Group G</b></li>
+      </ul>
+
+      <h3>10e. Reconciliation, worked — a rate mismatch break</h3>
+      <p>Section 4 already established that both counterparties submit independent reports carrying the same UTI, and <a href="./module-14-regulatory-reporting.html">Module 14</a> §3's pairing mechanism applies unchanged here — the Trade Repository compares each side's reconcilable fields and flags any that don't agree.</p>
+
+      <p>Reusing Section 2a's Gilt repo, suppose a data-entry error creeps into Goldman Sachs' rate field:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">TR Reconciliation · UTI GB-RP-20260817-001</span><span class="t-id">Bank Of Toronto vs. Goldman Sachs</span></div>
+        <pre>                          BANK OF TORONTO       GOLDMAN SACHS
+  UTI                     GB-RP-20260817-001    GB-RP-20260817-001   MATCH
+  Principal                GBP 19,845,000        GBP 19,845,000      MATCH
+  Maturity date             2026-08-24             2026-08-24        MATCH
+  Repo rate                    5.10%                 5.15%           BREAK
+
+  -&gt; The TR flags a RECONCILIATION BREAK on the rate field only --
+     everything else pairs cleanly. This points to a data
+     enrichment/mapping issue on ONE side (most likely a fat-finger
+     or stale-rate-feed problem on Goldman Sachs' source system),
+     NOT a dispute about the underlying trade itself, since the
+     other three reconcilable fields already agree.</pre>
+      </div>
+
+      <p><b>Why this distinction matters operationally:</b> a reconciliation break doesn't necessarily mean the trade is wrong — this is exactly the kind of issue a regulatory-reporting platform needs to triage automatically: is this a genuine economic dispute between the two desks, or a mapping bug between one side's trade capture system and its SFTR reporting engine? The TR's field-by-field comparison is what surfaces the question; resolving it is a downstream operations task.</p>
+
+      <h3>10f. Conceptual auth.052 XML — illustrating the field mapping, not a real schema</h3>
+      <div class="callout"><b>Important — educational only.</b> The XML below is a made-up illustration of which fields map to which report, not a schema-valid ESMA ISO 20022 message. Real element names, namespaces, and nesting must be taken from ESMA's published usage guidelines and XSDs (Section 9) — do not copy these tag names into a build.</div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Conceptual XML · auth.052 Shape</span><span class="t-id">Not Schema-Valid</span></div>
+        <pre>&lt;SecuritiesFinancingTransactionReport&gt;          &lt;!-- auth.052 --&gt;
+
+  &lt;CounterpartyData&gt;                             &lt;!-- Table 1 --&gt;
+    &lt;ReportingCounterparty&gt;BANKOFTORONTO_LEI&lt;/ReportingCounterparty&gt;
+    &lt;OtherCounterparty&gt;GOLDMANSACHS_LEI&lt;/OtherCounterparty&gt;
+    &lt;CounterpartySide&gt;BORROWER&lt;/CounterpartySide&gt;
+  &lt;/CounterpartyData&gt;
+
+  &lt;LoanAndCollateralData&gt;                        &lt;!-- Table 2 --&gt;
+    &lt;UTI&gt;GB-RP-20260817-001&lt;/UTI&gt;
+    &lt;TypeOfSFT&gt;REPO&lt;/TypeOfSFT&gt;
+    &lt;ValueDate&gt;2026-08-17&lt;/ValueDate&gt;
+    &lt;MaturityDate&gt;2026-08-24&lt;/MaturityDate&gt;
+    &lt;PrincipalAmount&gt;19845000&lt;/PrincipalAmount&gt;
+    &lt;PrincipalCurrency&gt;GBP&lt;/PrincipalCurrency&gt;
+    &lt;FixedRate&gt;5.10&lt;/FixedRate&gt;
+    &lt;SecurityIdentifier&gt;GB00XXXXXXX&lt;/SecurityIdentifier&gt;
+    &lt;CollateralMarketValue&gt;20250000&lt;/CollateralMarketValue&gt;
+    &lt;Haircut&gt;2.00&lt;/Haircut&gt;
+    &lt;ActionType&gt;NEWT&lt;/ActionType&gt;
+  &lt;/LoanAndCollateralData&gt;
+
+&lt;/SecuritiesFinancingTransactionReport&gt;</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The point of this section isn't the literal XML — it's that a source system's data model only needs to answer five questions per field (Section 10d) to route it correctly across four tables and three messages, and that the Trade Repository's reconciliation control (Section 10e) is what actually tests whether two counterparties' independent implementations of that same mapping logic agree.</div>
+    </section>
+
+    <section class="mod" id="haircut-deep-dive">
+      <p class="sec-eyebrow"><span class="n">11</span> · The formula behind Section 6a/6c</p>
+      <h2>Haircut Deep-Dive — Formula, Reverse Calculation &amp; Haircut vs. Margin Call</h2>
+      <p class="lede">The haircut is a percentage discount applied to collateral's market value, so the lender only recognizes a smaller "financeable" value than the collateral is actually worth. Section 6a already showed this mechanic inside a live Collateral Data report; this section derives the formula itself.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Formula · Haircut</span><span class="t-id">§11</span></div>
+        <pre>Haircut % = (Collateral Market Value - Cash Lent) / Collateral Market Value</pre>
+      </div>
+
+      <h3>11a. Worked example — deriving the haircut</h3>
+      <p>Bank Of Toronto needs cash and posts German Government Bund collateral to Deutsche Bank (already an actor in Section 6d):</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · Deriving the Haircut</span><span class="t-id">Bank Of Toronto → Deutsche Bank</span></div>
+        <pre>Collateral (German Government Bund), market value: EUR 105,000,000
+Cash Deutsche Bank is willing to lend:              EUR 100,000,000
+
+Haircut = (105,000,000 - 100,000,000) / 105,000,000
+        = 5,000,000 / 105,000,000
+        = 4.76%</pre>
+      </div>
+
+      <p>Think of it as a discount, not a fee:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Haircut as a Discount</span><span class="t-id">EUR 105m → EUR 100m</span></div>
+        <pre>Market value of Bund               EUR 105,000,000
+        |
+        v  apply 4.76% haircut
+        |
+Recognized collateral value        EUR 100,000,000
+        |
+        v
+Maximum cash Deutsche Bank lends   EUR 100,000,000</pre>
+      </div>
+
+      <p>The EUR 5,000,000 gap is a <b>collateralization buffer</b>, not profit for Deutsche Bank and not interest — Deutsche Bank still owes Bank Of Toronto the bond back at maturity in exchange for the cash plus repo interest, exactly as in Section 2a's repurchase mechanic.</p>
+
+      <h3>11b. Reverse calculation — sizing collateral for a target cash amount</h3>
+      <p>Flip the formula around: given a required haircut % and a target cash amount, how much collateral must be posted?</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Formula · Reverse Haircut</span><span class="t-id">§11b</span></div>
+        <pre>Required Collateral = Cash Amount / (1 - Haircut %)</pre>
+      </div>
+
+      <p>Suppose Deutsche Bank requires a 5% haircut and Bank Of Toronto wants EUR 100,000,000 cash:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · Reverse Haircut</span><span class="t-id">5% Haircut, EUR 100m Cash</span></div>
+        <pre>Required Collateral = 100,000,000 / (1 - 0.05)
+                     = 100,000,000 / 0.95
+                     ~ EUR 105,263,158</pre>
+      </div>
+
+      <div class="callout"><b>Watch the trap.</b> A 5% haircut does <b>not</b> mean "post 105% of the cash amount" (that would be EUR 105,000,000) — the haircut is defined against the collateral value, not the cash amount. The correct EUR 105,263,158 is slightly higher than the naive EUR 105,000,000 guess, a distinction that matters when validating collateral-sizing logic in a system.</div>
+
+      <h3>11c. Day-over-day stress — when the buffer actually gets tested</h3>
+      <p>Extending 11a's EUR 105m collateral / EUR 100m exposure: what happens to the buffer as the Bund's price moves?</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Scenario</th><th>Bund Price Move</th><th>Collateral Value</th><th>Exposure</th><th>Buffer / Shortfall</th></tr></thead>
+        <tbody>
+          <tr><td>Day 1 (unchanged)</td><td>—</td><td>EUR 105,000,000</td><td>EUR 100,000,000</td><td>+EUR 5,000,000 buffer</td></tr>
+          <tr><td>Falls 3%</td><td>-3%</td><td>105,000,000 × 0.97 = EUR 101,850,000</td><td>EUR 100,000,000</td><td>+EUR 1,850,000 buffer</td></tr>
+          <tr><td>Falls 5%</td><td>-5%</td><td>105,000,000 × 0.95 = EUR 99,750,000</td><td>EUR 100,000,000</td><td><b>-EUR 250,000 shortfall</b></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p><b>This is the moment a margin call fires</b> (Section 6c's mechanic, now with the exact price move that triggers it): once the Bund falls just over 4.76% — the haircut itself — the collateral value drops below the cash exposure, and Deutsche Bank needs to call Bank Of Toronto for more collateral to restore the buffer.</p>
+
+      <h3>11d. Haircut vs. margin call — the distinction that matters for SFTR</h3>
+      <p>These two concepts get conflated constantly, but they answer different questions at different points in time:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Haircut</th><th>Margin Call</th></tr></thead>
+        <tbody>
+          <tr><td><b>What it is</b></td><td>A protective valuation buffer, fixed at trade inception</td><td>A corrective action, triggered later</td></tr>
+          <tr><td><b>When it's set</b></td><td>Once, when the SFT is agreed (Section 10b field 2.89)</td><td>Whenever the buffer erodes past a threshold</td></tr>
+          <tr><td><b>What triggers it</b></td><td>Nothing — it's a term of the trade</td><td>Collateral value drifting relative to exposure (11c)</td></tr>
+          <tr><td><b>SFTR reporting</b></td><td>Reported as a static field in the New report (Table 2, Group G)</td><td>Reported as a Collateral update, Action Type <code>COLU</code> (Section 10c)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Distinction · Haircut vs. Margin Call</span><span class="t-id">§11d</span></div>
+        <pre>HAIRCUT = initial/protective valuation buffer.
+MARGIN CALL = the action taken when the collateral/exposure
+              relationship needs to be restored.</pre>
+      </div>
+
+      <p><b>Cross-reference:</b> this is the same haircut mechanic <a href="./module-12-collateral-margin.html">Module 12</a> §3 introduces from the collateral-management side; this section derives the formula the way an SFTR reporting engine actually needs to validate field 2.89 against fields 2.57/2.88.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A haircut is set once and doesn't move on its own — what moves is the collateral's market value around it, and it's that drift, not the haircut itself, that eventually triggers a margin call. Confusing "the haircut changed" with "the collateral value changed" is a common source of bad field-mapping logic in a build: field 2.89 (Haircut) is static per Section 10b, while fields 2.57 and 2.88 (Market value, Collateral market value) are the ones that move daily per Section 6b.</div>
+    </section>
+
     <section class="mod" id="quiz">
       <p class="sec-eyebrow">Self-check</p>
       <h2>Recap Quiz</h2>
@@ -990,6 +1298,10 @@ Report 4 — TERMINATION (Tue 18-Aug, by Wed 19-Aug T+1)
           <li>Using Section 2c, what does the SFTR code <code>SLEB</code> stand for, and what specific transaction from this module would be reported with that code?</li>
           <li>Using Section 6c's margin lending example, if Northwind Capital's portfolio instead fell to USD 8,500,000 (not 7,500,000), would a margin call trigger under the stated 65% maintenance LTV threshold? Show the LTV calculation.</li>
           <li>Using Section 6d, why is Goldman Sachs' reuse of Bank Of Toronto's Gilt collateral reported as an aggregate figure rather than being linked directly to Bank Of Toronto's original repo UTI?</li>
+          <li>Using Section 10, why do Tables 1 and 2 both travel in the <code>auth.052</code> message while Tables 3 and 4 each get their own separate message?</li>
+          <li>Using Section 10d's decision framework, which table does an "agent lender" field belong to, and why — tie your answer to Section 2c's Custodian Trust Co. example?</li>
+          <li>Using Section 10e's reconciliation example, is a rate-only break more likely to indicate a genuine trade dispute or a data-mapping problem? Why?</li>
+          <li>Using Section 11b's reverse formula, if Deutsche Bank requires an 8% haircut and Bank Of Toronto wants to borrow EUR 50,000,000 cash, how much collateral must Bank Of Toronto post?</li>
         </ol>
         <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../index.html">the module index</a>.</p>
       </div>
@@ -1033,6 +1345,18 @@ Report 4 — TERMINATION (Tue 18-Aug, by Wed 19-Aug T+1)
 
         <h5>Q11 — Because reuse is reported as an aggregate figure across Goldman Sachs' whole book for that collateral type/currency, not trade-by-trade</h5>
         <p>Section 6's report-table definition already states reuse data is "aggregated across a reporting counterparty's whole book (not trade-by-trade)," and Section 6d's takeaway explains why: the specific units of collateral being re-pledged aren't segregated by which original SFT they came from once they're back in Goldman Sachs' general collateral pool — the point is visibility into how much of a collateral type is circulating system-wide, not a precise link back to one origin trade's UTI.</p>
+
+        <h5>Q12 — Because Table 3 (CCP margin) only applies when the SFT is centrally cleared, and Table 4 (reuse/reinvestment/funding) is reported in aggregate across a counterparty's whole book rather than per-trade</h5>
+        <p>Section 10's table/message breakdown shows Tables 1 and 2 both describe the SFT and its parties, submitted together at every lifecycle stage — but Table 3 only exists for the subset of SFTs that are CCP-cleared, and Table 4 (per Section 6d's takeaway) isn't tied to a single UTI at all. ESMA splits them into their own messages (<code>auth.070</code>, <code>auth.071</code>) submitted only when relevant, rather than padding every <code>auth.052</code> report with fields that mostly don't apply.</p>
+
+        <h5>Q13 — Table 1: "agent lender" is a question about who is involved in the SFT, which Section 10d's Q1 routes straight to Table 1's Counterparty Data</h5>
+        <div class="takeaway">Section 2c's Custodian Trust Co. (agent lender for Maple Leaf Pension Fund) is the concrete example: it's Custodian Trust Co.'s LEI, not Maple Leaf Pension Fund's, that appears on Bank Of Toronto's Table 1 — exactly the "agent lender" field Section 10b lists among Table 1's 18 fields.</div>
+
+        <h5>Q14 — A data-mapping problem, not a genuine trade dispute</h5>
+        <p>Section 10e's example shows UTI, Principal, and Maturity all matching cleanly between both counterparties' reports, with only the rate field breaking. If the underlying trade itself were genuinely disputed, more fields would likely disagree, not just one. A single field breaking while everything else pairs is the classic signature of a source-system enrichment/mapping bug on one side — exactly the operational distinction Section 10e's takeaway draws between "trade problem" and "mapping problem."</p>
+
+        <h5>Q15 — EUR 54,347,826, using Section 11b's reverse formula: Required Collateral = 50,000,000 / (1 − 0.08) = 50,000,000 / 0.92 ≈ EUR 54,347,826</h5>
+        <div class="takeaway">Per Section 11b's "watch the trap" note, the naive guess of EUR 54,000,000 (108% of the cash amount) would under-collateralize the trade, since the haircut is defined against the collateral's value, not the cash amount — the same reverse-formula mechanic as Section 11b's own EUR 100,000,000 / 5% worked example, just with this question's own numbers.</div>
       </div>
     </section>
 
