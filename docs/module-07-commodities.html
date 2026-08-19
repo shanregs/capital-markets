@@ -1,0 +1,1031 @@
+<!doctype html>
+<title>Module 7 — Commodities</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 7 of 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Commodities</h1>
+    <p class="dek">Physical, Futures, Options &amp; Swaps worked through the same eight-part pattern — the first asset class in the roadmap where physical settlement is actively designed around, and where an exchange-traded product (Futures) is the dominant way exposure is actually taken.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Asset Class Roadmap 4 of 6</b> — Equity → Fixed Income → FX → Commodities → Rates → Credit, one at a time.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is Commodities?</a></li>
+      <li><a href="#products"><span class="toc-num">02</span>What Are The Products?</a></li>
+      <li><a href="#physical-vs-contract"><span class="toc-num">03</span>Physical vs Contract</a></li>
+      <li><a href="#trade-examples"><span class="toc-num">04</span>Real-World Trade Examples</a></li>
+      <li><a href="#lifecycle"><span class="toc-num">05</span>Trade Lifecycle</a></li>
+      <li><a href="#identifiers"><span class="toc-num">06</span>Identifiers</a></li>
+      <li><a href="#structure"><span class="toc-num">07</span>Exchange vs OTC vs Bilateral vs Cleared</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>Regulatory Perspective</a></li>
+      <li><a href="#canada-systems"><span class="toc-num">09</span>Canadian Systems Landscape</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · A physical good, not a financial claim</p>
+      <h2>What Is Commodities? — Theory &amp; Terminology</h2>
+      <p class="lede">A Commodity is a physical, fungible good — one barrel of WTI crude is interchangeable with any other barrel of the same grade, the same way one CAD is interchangeable with any other CAD (<a href="./module-06-fx.html">Module 6</a> §1), but unlike a share (<a href="./module-04-equity.html">Module 4</a> §1) where each certificate represents a specific claim on a specific company. Commodities span Energy, Metals, and Agriculture — and almost nobody in capital markets actually wants the physical good. They want the <b>price exposure</b>.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Spot Price</td><td>Today's price for near-immediate physical delivery — same concept as FX Spot (<a href="./module-06-fx.html">Module 6</a> §1), applied to a barrel of oil or an ounce of gold</td></tr>
+          <tr><td>Futures Curve</td><td>The set of futures prices across different delivery months for the same commodity — plotted, it shows the market's term structure</td></tr>
+          <tr><td>Contango</td><td>Futures curve slopes <i>upward</i> — later delivery months cost more than spot, typically because storage + financing costs exceed any convenience yield</td></tr>
+          <tr><td>Backwardation</td><td>Futures curve slopes <i>downward</i> — later delivery months cost less than spot, typically when the commodity is scarce right now and holders pay a premium for immediate supply</td></tr>
+          <tr><td>Convenience Yield</td><td>The non-monetary benefit of physically holding a commodity now — offsets storage cost in the contango/backwardation math</td></tr>
+          <tr><td>Roll</td><td>Closing a futures position nearing expiry and opening the same position in a later-dated contract, to avoid ever taking physical delivery</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Contango vs Backwardation</span><span class="t-id">Same model as FX forward points</span></div>
+        <pre>CONTANGO (upward-sloping curve):
+  Spot: USD 75.00/bbl   1M Future: USD 75.60   3M Future: USD 76.90
+  -&gt; storage + financing cost dominates; later delivery costs more
+
+BACKWARDATION (downward-sloping curve):
+  Spot: USD 75.00/bbl   1M Future: USD 74.30   3M Future: USD 72.80
+  -&gt; near-term scarcity dominates; later delivery costs less
+
+-&gt; Exactly the FX forward-points mechanic from Module 6 §1, just
+   driven by storage/convenience yield instead of an interest
+   rate differential between two currencies.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The single hardest habit to unlearn coming from Equity or Fixed Income is treating a commodity price like a stock price. A stock's forward price is almost entirely driven by the risk-free rate (<a href="./module-10-valuation.html">Module 10</a>: Valuation); a commodity's forward price is driven by storage cost, financing cost, and convenience yield — three factors a share or a bond simply doesn't have.</div>
+    </section>
+
+    <section class="mod" id="products">
+      <p class="sec-eyebrow"><span class="n">02</span> · One real thing, three contracts referencing its price</p>
+      <h2>What Are The Products? — Physical, Futures, Options &amp; Swaps</h2>
+      <p class="lede">What's new for Commodities is that the "real thing" itself is genuinely inconvenient to hold — which is exactly why Section 03 spends more time than any prior module explaining why almost everyone trades the contract, never the barrel.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Commodity Product Tree</span><span class="t-id">Physical vs derivative</span></div>
+        <pre>COMMODITIES
+│
+├── Physical Commodities   (the actual barrel, bar, or bushel — rare in a bank's own book)
+├── Commodity Futures      (exchange-traded, standardized, obligation to buy/sell at a future date)
+├── Commodity Options      (the RIGHT, not obligation, on a commodity future or physical price)
+└── Commodity Swaps        (periodic net cash flows referencing a commodity price index — Module 2 §7)</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Product</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><b>Physical Commodity</b></td><td>The actual tangible good — a 100oz Gold Bar, a barrel of crude, a tonne of wheat — bought and sold with physical delivery, storage, and title transfer</td></tr>
+          <tr><td><b>Commodity Future</b></td><td>A standardized, exchange-traded contract to buy/sell a set quantity of a commodity at a fixed price on a fixed future date — almost always closed out or rolled before delivery (Section 01)</td></tr>
+          <tr><td><b>Commodity Option</b></td><td>A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) a commodity future at a fixed strike, for a premium — same asymmetric payoff as <a href="./module-04-equity.html">Module 4</a> §4d and <a href="./module-06-fx.html">Module 6</a> §2</td></tr>
+          <tr><td><b>Commodity Swap</b></td><td>Two counterparties exchange cash flows over a period — one side pays a <b>fixed</b> price, the other pays a <b>floating</b> price referencing a published index (e.g. ICE Brent) — reusing <a href="./module-02-hierarchy.html">Module 2</a> §7's 1Y Brent Crude Oil Swap</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>A fifth product, briefly:</b> the work data model taxonomy also carries a <b>Commodity Warrant</b> node (<code>CommodityWarrantTrade.avsc</code>, Trade only — like <code>BondTrade.avsc</code>, no dedicated Valuation schema). A commodity warrant is an exchange-listed, long-dated call option issued <i>by a bank</i> (not written bilaterally the way Section 04d's option is) — economically closest to this section's Option, but issued and distributed more like a security. It's a niche product next to the other four and isn't covered with its own worked example here, but it's worth knowing the schema exists.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice the pattern already established across three asset classes now (<a href="./module-04-equity.html">Module 4</a> §2 Equity, <a href="./module-06-fx.html">Module 6</a> §2 FX): one "real thing" and a family of contracts referencing its price. What's new for Commodities is that the "real thing" itself is genuinely inconvenient to hold — exactly why Section 03 explains why almost everyone trades the contract, never the barrel.</div>
+    </section>
+
+    <section class="mod" id="physical-vs-contract">
+      <p class="sec-eyebrow"><span class="n">03</span> · A third pattern: tangible, but almost never touched</p>
+      <h2>What Exactly Is Being Traded? — Physical Good vs Price-Referencing Contract</h2>
+      <p class="lede">Unlike Equity (<a href="./module-04-equity.html">Module 4</a>: security vs. contract) or FX (<a href="./module-06-fx.html">Module 6</a>: contracts, no security at all), Commodities sit in a <b>third</b> pattern: the underlying is real and tangible, like a security — but it's a <i>good</i>, not a financial claim, and almost never actually changes hands in a bank's trading book.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · Physical vs Derivative</span><span class="t-id">Tangible good vs price-referencing contract</span></div>
+        <pre>Physical Gold (TANGIBLE GOOD):
+  A 100oz Gold Bar, LBMA "Good Delivery" standard, sitting in a
+  vault. It exists independently of any trade, like Coca-Cola
+  stock (Module 4 §3) -- but unlike a share, it has WEIGHT,
+  PURITY, a physical LOCATION, and costs money just to store
+  and insure.
+
+Commodity Future / Swap (CONTRACT):
+  Bank Of Toronto enters a 1Y Brent Crude Oil Swap, notional
+  100,000 barrels (the exact trade from Module 2 §7) -- no oil
+  is bought, stored, or shipped. Only the DIFFERENCE between a
+  fixed price and the floating ICE Brent index settles in cash,
+  once a month, for the life of the swap.
+
+-&gt; Section 01's takeaway already flagged this: almost nobody in
+   capital markets wants the physical commodity. A bank's own
+   book is overwhelmingly Futures, Swaps, and Options; physical
+   trading is a specialist activity sitting apart from the rest
+   of the derivatives book.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is why <a href="./module-02-hierarchy.html">Module 2</a> §7's ISDA classification table flagged Commodity as the asset class where "physical settlement of the underlying is the rare exception, not the norm" — a stronger statement than <a href="./module-06-fx.html">Module 6</a> made about FX (where Spot does routinely settle physically) or <a href="./module-05-fixed-income.html">Module 5</a> made about bonds (which always settle physically, just via book-entry). Commodities is the asset class where physical settlement is actively designed around.</div>
+    </section>
+
+    <section class="mod" id="trade-examples">
+      <p class="sec-eyebrow"><span class="n">04</span> · Buyer → Seller → Trade</p>
+      <h2>Real-World Trade Examples</h2>
+      <p class="lede">Four trades — Physical Gold, a WTI Future roll, a Brent Swap, and an Option hedge.</p>
+
+      <h3>4a. Physical Commodity</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Physical Gold · 100oz Bar</span><span class="t-id">LBMA Good Delivery</span></div>
+        <pre>Buyer:  Bank Of Toronto (precious metals desk)
+Seller: A LBMA-accredited refiner
+
+Trade: 100 oz @ Spot Price USD 2,650.00/oz
+Trade Value = 100 x 2,650.00 = USD 265,000
+Settlement: physical delivery into an LBMA-approved vault +
+            cash payment, T+2 (standard for the London gold
+            market)
+
+-&gt; This IS one of the genuinely rare cases (Section 03) where a
+   bank actually takes physical delivery -- precious metals
+   desks are one of the few areas of a bank that routinely does.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>CommoditySpotForwardTrade.avsc</code> / <code>CommoditySpotForwardValuation.avsc</code> — a physical spot purchase and a physical forward share one node in the taxonomy (Section 02), the same way FX Spot and Forward share <code>FxTrade.avsc</code> (<a href="./module-06-fx.html">Module 6</a> §4).</div>
+
+      <h3>4b. Commodity Future</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">CME WTI Crude Oil Future (CL)</span><span class="t-id">1,000 bbl/contract</span></div>
+        <pre>Buyer:  Bank Of Toronto (proprietary energy desk)
+Seller: Counterparty on the CME order book (anonymous, novated
+        to the CCP at execution -- Section 07)
+
+Trade: BUY 50 contracts @ USD 75.50/bbl, front-month expiry
+Notional = 50 x 1,000 x 75.50 = USD 3,775,000
+
+ONE MONTH LATER, before expiry -- Bank Of Toronto ROLLS:
+  SELLS 50 front-month contracts @ USD 76.10/bbl
+    Realized P&amp;L = 50 x 1,000 x (76.10 - 75.50) = +USD 30,000
+  BUYS 50 next-month contracts @ USD 76.90/bbl (contango,
+    Section 01 -- next month costs more)
+
+-&gt; Bank Of Toronto never took delivery of a single barrel --
+   exactly the "roll" mechanic Section 01 defined, and the
+   reason futures desks watch the contango/backwardation shape
+   of the curve as closely as an FX desk watches forward points.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>FuturesTrade.avsc</code> / <code>FuturesValuation.avsc</code> — not a Commodity-specific schema. Exactly as <a href="./module-04-equity.html">Module 4</a> §4c flagged for the equity index future, every exchange-traded future (any underlying) sits under the cross-cutting "7. Listed Derivatives" node (<a href="./module-15-listed-derivatives.html">Module 15</a>), not under "5. Commodities." Notice the Commodities node in the taxonomy has no "Commodity Future" child at all — this is the concrete confirmation of that gap.</div>
+
+      <h3>4c. Commodity Swap</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">1Y Brent Crude Oil Swap</span><span class="t-id">Notional 100,000 bbl — reused from <a href="./module-02-hierarchy.html">Module 2</a> §7</span></div>
+        <pre>Bank Of Toronto:  pays FIXED, receives FLOATING (ICE Brent index)
+Counterparty:      Shell Trading
+
+Fixed Price agreed today: USD 78.00/bbl
+Monthly notional: 100,000 barrels / 12 = 8,333 barrels per month
+
+MONTH 1 SETTLEMENT -- ICE Brent monthly average settles at USD 81.20/bbl
+  Floating leg owed to Bank Of Toronto = 8,333 x 81.20 = USD 676,640
+  Fixed leg owed by Bank Of Toronto    = 8,333 x 78.00 = USD 649,974
+  Net cash flow: Bank Of Toronto RECEIVES USD 26,666
+  (81.20 - 78.00) x 8,333 = USD 26,666 -- only the NET amount
+  moves, exactly the IRS netting mechanic from Module 1 §8
+
+-&gt; No oil changes hands at any point across the full 12 months --
+   this is Module 2 §7's "Commodity / Energy / Oil / Swap" entry
+   made concrete with real monthly cash flows.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>CommoditySwapTrade.avsc</code> / <code>CommoditySwapValuation.avsc</code> — its own dedicated node in the taxonomy, distinct from Spot/Forward and from the Option below.</div>
+
+      <h3>4d. Commodity Option</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Call on CME WTI Crude Oil Future</span><span class="t-id">Strike USD 80.00/bbl</span></div>
+        <pre>Buyer:  Bank Of Toronto's client (an airline hedging jet fuel cost,
+        using WTI as a proxy hedge)
+Seller (writer): Bank Of Toronto
+
+Trade: WTI Call, Strike USD 80.00/bbl, Notional 100,000 bbl
+       (100 contracts x 1,000 bbl), Expiry 6 months
+       Premium: USD 3.20/bbl
+Premium Paid = 100,000 x 3.20 = USD 320,000
+
+AT EXPIRY -- Scenario A: WTI Future settles at USD 88.00/bbl
+  Option is in-the-money: exercising saves
+    (88.00 - 80.00) x 100,000 = USD 800,000 vs. buying at market
+  Net Benefit = 800,000 - 320,000 (premium) = USD 480,000
+
+AT EXPIRY -- Scenario B: WTI Future settles at USD 74.00/bbl
+  Option expires WORTHLESS -- buying at market (74.00) is
+  cheaper than exercising at strike (80.00)
+  Maximum Loss = the USD 320,000 premium, exactly as Module 4
+  §4d and Module 6 §4d established -- never more than premium paid.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>CommodityOptionTrade.avsc</code> / <code>CommodityOptionValuation.avsc</code> — this bespoke, OTC client hedge (custom strike/notional, Section 07) gets the dedicated Commodity Option schema. A listed option on the WTI future itself (standardized strikes, exchange-cleared) would instead map to <code>ListedOptionsTrade.avsc</code> / <code>ListedOptionValuation.avsc</code> under <a href="./module-15-listed-derivatives.html">Module 15</a> — the same OTC-vs-listed schema fork <a href="./module-04-equity.html">Module 4</a> §4d flagged for equity options.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Four trades, four very different settlement realities — 4a is the rare case that actually moves a physical good; 4b, 4c, and 4d never do. This is the single most important operational fact a reporting system needs to encode correctly for Commodities: the product type alone determines whether "settlement" means a vault delivery or a cash netting.</div>
+    </section>
+
+    <section class="mod" id="lifecycle">
+      <p class="sec-eyebrow"><span class="n">05</span> · Clearing happens at execution, not after</p>
+      <h2>Trade Lifecycle — Commodity-Specific Walkthrough</h2>
+      <p class="lede">Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting, applied to the Commodity Future trade from Section 04b.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Full Lifecycle · CME WTI Crude Future</span><span class="t-id">BOT-CMD-2026-027715</span></div>
+        <pre>09:31:00  ORDER — Bank Of Toronto's energy desk instructed to buy
+          50 front-month WTI contracts
+
+09:31:04  EXECUTION @ USD 75.50/bbl on CME's order book
+
+09:31:04  TRADE CAPTURE — Trade ID BOT-CMD-2026-027715
+
+09:31:05  CLEARING — trade NOVATED to CME Clearing (the CCP)
+          immediately at execution -- unlike Module 6's bilateral
+          FX or Module 5's bilateral bonds, an exchange-traded
+          future is centrally cleared from the moment it trades
+          (Section 07)
+
+DAILY     VARIATION MARGIN — CME Clearing marks the position to
+          the daily settlement price and moves cash EVERY DAY,
+          not just at expiry:
+            Day 1 settle USD 76.00: Bank Of Toronto receives
+              50 x 1,000 x (76.00 - 75.50) = USD 25,000
+            Day 2 settle USD 75.20: Bank Of Toronto pays
+              50 x 1,000 x (76.00 - 75.20) = USD 40,000
+          -&gt; this daily cash movement (Module 11: Risk &amp; Exposure)
+             is a structural feature of exchange-traded futures
+             that OTC swaps (Section 04c) don't have unless a CSA
+             requires daily variation margin too (Module 12)
+
+POSITION — Bank Of Toronto's Commodity book shows 50 WTI
+          contracts, front-month, until rolled or closed
+
+VALUATION / P&amp;L — mark-to-market daily against the CME
+          settlement price; because variation margin already
+          moved the cash, P&amp;L and cash flow are the SAME number
+          every day for an exchange-traded future -- a genuine
+          simplification versus Fixed Income's split between
+          price P&amp;L and accrual (Module 5 §5)
+
+REPORTING — exchange-traded futures are reported to the CFTC
+          (Section 08) via the exchange/clearing house itself,
+          not via a bilateral UTI/UPI the way an OTC Commodity
+          Swap (Section 04c) would be</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The biggest lifecycle difference from every prior module is when clearing happens. Equity (<a href="./module-04-equity.html">Module 4</a>) and Fixed Income (<a href="./module-05-fixed-income.html">Module 5</a>) clear via a CCP but usually a step after execution; FX (<a href="./module-06-fx.html">Module 6</a>) mostly never clears via a CCP at all. An exchange-traded Commodity Future is novated to the CCP essentially instantaneously, and that CCP relationship is what drives daily variation margin.</div>
+    </section>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">06</span> · Commodity codes, contract codes, UPI &amp; UTI</p>
+      <h2>Identifiers — Commodity Codes, Exchange Contracts, UPI &amp; UTI</h2>
+      <p class="lede">Commodities split cleanly along the Section 03 physical/contract line: physical goods get commodity codes, not securities identifiers; exchange-traded futures get exchange contract codes; OTC swaps and options get UPI/UTI exactly like <a href="./module-06-fx.html">Module 6</a>'s FX derivatives.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Identifier</th><th>Applies to Commodities?</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>ISIN / CUSIP / SEDOL / Ticker / FIGI</td><td><b>No</b> for Physical or OTC Swaps — these identify securities, and neither is one (Section 03)</td><td>—</td></tr>
+          <tr><td>Commodity Code</td><td>Yes, for physical trades — an internal/industry classification, not a security identifier</td><td><code>XAU</code> (gold, ISO 4217-style commodity code)</td></tr>
+          <tr><td>Exchange Contract Code</td><td>Yes, for exchange-traded Futures/Options — identifies the specific contract and delivery month</td><td><code>CLZ26</code> (CME WTI Crude, December 2026 expiry)</td></tr>
+          <tr><td><b>UPI</b></td><td>Yes, for OTC Commodity Swaps and Options reported as OTC derivatives (<a href="./module-02-hierarchy.html">Module 2</a> §12)</td><td>One UPI for "Brent Crude, Swap, Cash-Settled" — reused across many swap trades, same logic as <a href="./module-06-fx.html">Module 6</a> §6's FX Forward UPI</td></tr>
+          <tr><td><b>UTI</b></td><td>Yes — every individual OTC Commodity Swap/Option trade gets its own</td><td>A fresh UTI per trade, same as <a href="./module-06-fx.html">Module 6</a> §6</td></tr>
+          <tr><td><b>LEI</b></td><td>Yes — identifies Bank Of Toronto, Shell Trading, and any client as counterparties</td><td>Entity, not instrument (<a href="./module-04-equity.html">Module 4</a> §6)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A Commodity trade record with an exchange contract code (like <code>CLZ26</code>) but no UPI/UTI is a Future — centrally cleared, exchange-identified, no bilateral reporting IDs needed. A record with a UPI/UTI but no exchange contract code is an OTC Swap or Option. Seeing both populated on the same trade, or neither populated at all, is the Commodities-specific version of the diagnostic checks <a href="./module-05-fixed-income.html">Module 5</a> §6 and <a href="./module-06-fx.html">Module 6</a> §6 already established.</div>
+    </section>
+
+    <section class="mod" id="structure">
+      <p class="sec-eyebrow"><span class="n">07</span> · The first asset class that genuinely splits down the middle</p>
+      <h2>Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p class="lede">Commodities is the first asset class in this roadmap where the exchange-traded, centrally-cleared product (Futures) is genuinely the dominant, most liquid way most participants get commodity exposure — closer to <a href="./module-04-equity.html">Module 4</a>'s Equity default than to <a href="./module-05-fixed-income.html">Module 5</a>'s Fixed Income or <a href="./module-06-fx.html">Module 6</a>'s FX defaults. Physical trades and OTC Swaps/Options remain bilateral.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
+        <tbody>
+          <tr><td>Physical Commodity</td><td>OTC (dealer-to-dealer, or dealer-to-refiner/producer)</td><td>Bilateral (the norm — Section 04a)</td></tr>
+          <tr><td>Commodity Future</td><td><b>Exchange-traded</b> (CME, ICE, LME)</td><td>Centrally cleared from execution (Section 05)</td></tr>
+          <tr><td>Commodity Option</td><td>Mostly exchange-traded (options ON futures); some bespoke OTC</td><td>Centrally cleared if exchange-listed; bilateral if OTC (Section 04d's airline hedge is OTC-style, bespoke strike/expiry)</td></tr>
+          <tr><td>Commodity Swap</td><td>OTC</td><td>Mostly bilateral; a growing share clears via ICE Clear or LCH for standardized benchmarks (e.g. Brent, WTI)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Unlike every other module's single dominant default, Commodities genuinely splits down the middle by product — Futures behave like <a href="./module-04-equity.html">Module 4</a>'s Equity (exchange, centrally cleared, novated instantly), while Physical and most Swaps behave like <a href="./module-05-fixed-income.html">Module 5</a>'s Fixed Income or <a href="./module-06-fx.html">Module 6</a>'s FX (OTC, bilateral). Knowing which Commodity product a trade record represents is the single fastest way to predict its whole downstream lifecycle.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · The first module where the CFTC leads</p>
+      <h2>Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <p class="lede">The CFTC is literally named for this asset class — a direct consequence of Section 07's finding that exchange-traded Futures are the dominant product.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regulation / Body</th><th>How it touches Commodities specifically</th></tr></thead>
+        <tbody>
+          <tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Covers commodity derivatives directly, with <b>position limits</b> on certain commodity derivative contracts — a control mechanism Equity, Fixed Income, and FX don't have an equivalent of in this roadmap so far</td></tr>
+          <tr><td><b>EMIR</b></td><td>Applies to OTC Commodity Swaps and Options as derivatives (<a href="./module-02-hierarchy.html">Module 2</a> §07) — but generally <b>not</b> to a physical forward used for genuine commercial delivery purposes (an "ancillary activity" carve-out similar in spirit to <a href="./module-06-fx.html">Module 6</a> §08's FX Spot/Forward boundary, though defined differently)</td></tr>
+          <tr><td><b>SFTR</b></td><td>Not applicable to Commodities the way it is to repo (<a href="./module-05-fixed-income.html">Module 5</a> §08) — commodities lending exists but is a narrow, specialist niche, not a Commodities-module-defining product</td></tr>
+          <tr><td><b>FCA</b> (UK)</td><td>Conduct regulator for UK commodity derivatives trading; London is also home to the <b>LME (London Metal Exchange)</b>, making the FCA's oversight of metals trading specifically significant, similar in spirit to <a href="./module-06-fx.html">Module 6</a> §08's FX-volume point</td></tr>
+          <tr><td><b>CIRO</b> (Canada)</td><td>SRO overseeing Canadian commodity derivatives dealer conduct</td></tr>
+          <tr><td><b>HKMA</b> (Hong Kong)</td><td>Genuinely more of a footnote here than in FX (<a href="./module-06-fx.html">Module 6</a> §08) or Fixed Income (<a href="./module-05-fixed-income.html">Module 5</a> §08) — the <b>SFC</b> and <b>HKEX</b> (which absorbed the LME in 2012) are the more relevant Hong Kong-linked bodies for this asset class</td></tr>
+          <tr><td><b>CFTC</b> (US)</td><td>The single most consequential regulator for this specific module — the <b>Commodity Futures Trading Commission</b> is literally named for this asset class, sets swap data reporting, clearing, and SEF trading rules under Dodd-Frank, and enforces the position limits MiFID also uses in the EU</td></tr>
+          <tr><td><b>DTCC</b></td><td>Its <b>ICE Trade Vault</b> (an SDR) accepts commodity derivative reports alongside interest rate and credit products, feeding CFTC reporting requirements</td></tr>
+          <tr><td><b>DMO</b> (UK Debt Management Office)</td><td>Not Commodities-relevant — issues Gilts (<a href="./module-05-fixed-income.html">Module 5</a> §08), included here for completeness only</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Commodities is the first module where the CFTC, not a European or UK body, is clearly the headline regulator — a direct consequence of Section 07's finding that Futures are the dominant product, and the largest commodity futures exchanges (CME, ICE) sit under CFTC jurisdiction. This mirrors exactly how <a href="./module-06-fx.html">Module 6</a> §08 flagged the FCA as outsized for FX because of London's FX volume — same pattern, different regulator, different asset class.</div>
+    </section>
+
+    <section class="mod" id="canada-systems">
+      <p class="sec-eyebrow"><span class="n">09</span> · Domestic venue vs global benchmark</p>
+      <h2>Canadian Systems Landscape — Commodities Front, Middle &amp; Back Office to Regulatory Reporting</h2>
+      <p class="lede"><a href="./systems-landscape.html">systems-landscape</a> §2 already laid out the generic Canadian Front/Middle/Back Office architecture. This section specializes it to Commodities — the one asset class in this roadmap where genuinely Canadian-domiciled infrastructure (NGX, CDCC) plays a comparatively narrow role next to the global benchmark venues (CME, ICE) Section 4's own worked examples already lean on.</p>
+
+      <div class="callout"><b>Callout — illustrative, not prescriptive.</b> The specific vendor/platform names below (Murex, Calypso, ICE eConfirm, etc.) are representative of real Canadian market infrastructure and commonly-used vendor categories — not a claim about which exact systems Bank Of Toronto (fictional) runs internally. Treat this section the same way <a href="./systems-landscape.html">systems-landscape</a> treats its own platform lists: illustrative of the category of system.</div>
+
+      <h3>9a. Two genuinely different paths, depending on the venue</h3>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Layer</th><th>Path A — Domestic: NGX (Alberta energy)</th><th>Path B — Global benchmark: CME/ICE (Sections 4b–4c)</th></tr></thead>
+        <tbody>
+          <tr><td><b>Front Office</b></td><td>NGX's own electronic trading platform (Calgary) — physical &amp; financial AECO natural gas, power, crude</td><td>CME Globex / ICE platform, accessed via a Futures Commission Merchant (FCM) — not a Canadian venue at all</td></tr>
+          <tr><td><b>Middle Office</b></td><td>Commodity risk/confirmation system (Murex/Calypso-class); ICE eConfirm-style electronic confirmation</td><td>Same risk/confirmation system class, booking a US-cleared position instead of a Canadian one</td></tr>
+          <tr><td><b>Back Office / Clearing</b></td><td><b>NGX Clearing</b> (part of ICE) clears the trade directly</td><td><b>CME Clearing</b> (Section 05) or ICE Clear — neither is CDS nor CDCC</td></tr>
+          <tr><td><b>Regulator</b></td><td><b>Alberta Securities Commission (ASC)</b> — a genuine exception to the Ontario/CSA-centric pattern other modules lean on</td><td><b>CFTC</b> (Section 08) for the venue; <b>CIRO</b> for Bank Of Toronto's own dealer conduct</td></tr>
+          <tr><td><b>OTC reporting?</b></td><td>Generally <b>no</b> — exchange-traded/cleared, same Future-vs-OTC boundary Section 06 already draws</td><td><b>No</b>, for the same reason — Section 4b's WTI Future is exchange-cleared, not OTC</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> CME/ICE-listed Futures (Section 4b) clear entirely within the US ecosystem regardless of which country the trading bank is headquartered in — Canadian involvement there is limited to CIRO's conduct oversight of Bank Of Toronto as a dealer, not to any Canadian settlement system. Only trades actually executed on a Canadian venue (NGX) touch genuinely Canadian back-office infrastructure and a Canadian regulator directly.</div>
+
+      <h3>9b. Worked example — NGX AECO natural gas swap, traced end to end</h3>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">NGX Financial Swap · AECO 5A Natural Gas</span><span class="t-id">Bank Of Toronto · December 2026</span></div>
+        <pre>Bank Of Toronto's Calgary energy desk: pays FIXED, receives
+FLOATING (NGX's AECO Daily Index) -- same fixed/floating
+structure as Section 4c's Brent swap, just Canadian-domiciled
+
+Fixed price: CAD 3.10/GJ    Volume: 10,000 GJ/day x 31 days
+= 310,000 GJ notional for December
+
+MONTH-END SETTLEMENT -- AECO index averages CAD 3.45/GJ
+  Floating leg owed to Bank Of Toronto = 310,000 x 3.45
+    = CAD 1,069,500
+  Fixed leg owed by Bank Of Toronto    = 310,000 x 3.10
+    = CAD 961,000
+  Net cash flow: Bank Of Toronto RECEIVES CAD 108,500
+
+FRONT OFFICE   -&gt; executed on NGX's own electronic platform
+MIDDLE OFFICE  -&gt; booked and risk-managed in Bank Of Toronto's
+                  commodity risk system; confirmed electronically
+BACK OFFICE    -&gt; cleared by NGX CLEARING (part of ICE) --
+                  financial leg only; no physical gas moves
+                  (Section 03's physical-vs-contract distinction,
+                  restated for a genuinely Canadian venue)
+CASH SETTLEMENT-&gt; CAD 108,500 moves via Lynx (Canada's large-value
+                  payment system, systems-landscape §2)
+REGULATOR      -&gt; Alberta Securities Commission (ASC), NOT the
+                  Ontario-centric CSA path other Canadian examples
+                  in this roadmap default to
+OTC REPORTING  -&gt; NOT required under CSA Multilateral Instrument
+                  96-101 -- this is exchange-cleared (NGX Clearing),
+                  the same Future/OTC boundary Section 06 already
+                  established, just for a Canadian exchange instead
+                  of CME/OCC</pre>
+      </div>
+
+      <h3>9c. Where MI 96-101 reporting DOES apply — the Brent swap, again</h3>
+
+      <p>Section 4c's Brent Crude Oil Swap with Shell Trading is bilateral OTC — the opposite case from 9b. If either counterparty has the requisite Canadian nexus, that swap (unlike the NGX example) <b>is</b> in scope for <b>CSA Multilateral Instrument 96-101</b> (Trade Repositories and Derivatives Data Reporting), Canada's OTC derivatives trade-reporting rule, and would be reported to a CSA-designated Trade Repository — commonly <b>DTCC Data Repository (Canada) Ltd</b> or <b>ICE Trade Vault Canada</b> (both illustrative of the category; confirm the live designated-TR list against CSA's own published rules before building against it).</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Contrast · OTC Path</span><span class="t-id">Brent Crude Oil Swap (Section 4c)</span></div>
+        <pre>FRONT OFFICE   -&gt; bilateral voice/electronic negotiation with
+                  Shell Trading, no exchange involved
+MIDDLE OFFICE  -&gt; risk system booking; confirmation via an
+                  OTC-confirmation platform (ICE eConfirm-class)
+BACK OFFICE    -&gt; NO CCP at all -- Section 07 already flagged most
+                  Commodity Swaps as bilateral, not centrally cleared
+REGULATOR/TR   -&gt; CSA Multilateral Instrument 96-101 reporting to a
+                  CSA-designated Trade Repository (DTCC Data
+                  Repository (Canada) Ltd / ICE Trade Vault Canada,
+                  illustrative) -- squarely the OTC-reporting path
+                  Section 9a's NGX example explicitly does NOT take</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The single fastest way to predict which Canadian systems a Commodity trade actually touches is Section 07's own Exchange-vs-OTC finding, applied one level deeper — an exchange-cleared trade (NGX or CME/ICE) never reaches a Canadian OTC Trade Repository at all, while a bilateral OTC trade (the Brent swap) never touches a clearing house, Canadian or otherwise, but does reach a Trade Repository under MI 96-101. Knowing the product type from Section 02 tells you which entire half of this section's systems chain a given trade will run through.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">Reference · Full cast</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>Buyer of physical gold; buyer/roller of WTI futures; fixed-rate payer on the Brent swap; option writer for its client</td></tr>
+          <tr><td>An LBMA-accredited refiner</td><td>Seller of the physical gold bar</td></tr>
+          <tr><td>CME (Chicago Mercantile Exchange)</td><td>Exchange and CCP for the WTI Crude Oil future</td></tr>
+          <tr><td>Shell Trading</td><td>Floating-rate payer counterparty on the Brent Crude Oil Swap</td></tr>
+          <tr><td>Bank Of Toronto's client (airline)</td><td>Buyer of the WTI Call option, hedging jet fuel cost exposure via a crude oil proxy</td></tr>
+          <tr><td>CFTC</td><td>Primary US regulator for commodity futures and swaps</td></tr>
+          <tr><td>LME / ICE</td><td>Key commodity exchanges (metals and energy respectively) referenced throughout</td></tr>
+          <tr><td>NGX (Natural Gas Exchange)</td><td>Calgary-based Canadian exchange for physical/financial natural gas and power; venue for Section 9b's AECO swap</td></tr>
+          <tr><td>Alberta Securities Commission (ASC)</td><td>Primary securities regulator overseeing NGX (Section 09)</td></tr>
+          <tr><td>CSA (Canadian Securities Administrators)</td><td>Sets Multilateral Instrument 96-101, the OTC derivatives trade-reporting rule applying to Section 9c's Brent swap</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these with real figures before moving to <a href="./module-08-rates.html">Module 8</a>.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>On the WTI Future roll in Section 04b, if Bank Of Toronto had instead rolled when the curve was in backwardation (next-month cheaper than front-month, say USD 74.80 instead of USD 76.90), would the roll itself cost Bank Of Toronto more or less than in the contango example, all else equal?</li>
+          <li>Using Section 05's variation margin walkthrough, if Day 3's settlement price came in at USD 75.20 again (unchanged from Day 2), what cash flow would move, and why?</li>
+          <li>Why does Section 03 describe physical settlement in Commodities as "actively designed around," and how does that compare to what <a href="./module-05-fixed-income.html">Module 5</a> §3 said about Fixed Income settlement?</li>
+          <li>A trade record shows an exchange contract code (<code>CLZ26</code>-style) AND a UTI populated on the same trade. Based on Section 06, what does that combination most likely indicate?</li>
+          <li>On the Brent Crude Oil Swap in Section 04c, if the ICE Brent monthly average had instead settled at USD 76.50 (below the USD 78.00 fixed price), what would the Month 1 net cash flow be, and which party pays which?</li>
+          <li>Why is the CFTC described in Section 08 as "the single most consequential regulator for this specific module" — what's the causal link back to Section 07's findings?</li>
+          <li>Contrast why Commodity Futures clear "essentially instantaneously" (Section 05) with why FX trades (<a href="./module-06-fx.html">Module 6</a> §05) mostly never clear via a CCP at all.</li>
+          <li>Using Section 09, why does Bank Of Toronto's CME WTI Crude Oil Future (Section 4b) never touch CDS (CDSX) or CDCC at all, while its NGX AECO natural gas swap (Section 9b) does touch NGX Clearing — what's the general rule this illustrates about when a Canadian bank's commodity trade actually uses Canadian market infrastructure?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then move to <b><a href="./module-08-rates.html">Module 8</a>: Rates</b>, the next stop on the Asset Class Roadmap.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — The roll would cost LESS (or even generate a credit) in backwardation, versus a real cost in contango</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Roll Cost, Contango vs Backwardation</span><span class="t-id">WTI Future</span></div>
+          <pre>Contango roll (worked example): sell front-month at 76.10, buy
+next-month at 76.90 -&gt; pay an extra 0.80/bbl to roll forward
+
+Backwardation roll (this question): sell front-month at 76.10,
+buy next-month at 74.80 -&gt; RECEIVE an extra 1.30/bbl to roll forward</pre>
+        </div>
+        <p>In contango, rolling forward always means buying the more expensive later-dated contract — a recurring cost to staying long via futures. In backwardation, rolling forward means buying a cheaper later-dated contract — a recurring benefit. This is exactly why "roll yield" is a real, closely watched P&amp;L driver for anyone holding futures long-term rather than taking delivery, tying directly back to Section 01's contango/backwardation definitions.</p>
+
+        <h5>Q2 — No cash flow would move at all — variation margin only moves when the settlement price CHANGES from the prior day's settlement price</h5>
+        <p>Section 05's mechanic is a day-over-day comparison: Day 2 already marked the position to USD 75.20 and settled that difference in cash. If Day 3 settles at the same USD 75.20, there is zero incremental mark-to-market movement, so zero variation margin changes hands that day — the position's cumulative value hasn't moved, even though a full trading day has passed.</p>
+
+        <h5>Q3 — Almost every Commodity product is structurally built so physical delivery never has to happen; Fixed Income settlement, by contrast, is always physical, just dematerialized into book-entry form</h5>
+        <p>Section 03 states this directly: physical settlement is "the rare exception, not the norm" for Commodities, while <a href="./module-05-fixed-income.html">Module 5</a> §3 never suggested a bond trade could avoid moving the actual (book-entry) security — a bond trade's DvP settlement (<a href="./module-01-fundamentals.html">Module 1</a> §7) always transfers the real security, it's just no longer a paper certificate.</p>
+
+        <h5>Q4 — That combination is a red flag, not a healthy pattern — it most likely indicates a data-quality error</h5>
+        <p>Section 06 establishes that exchange contract codes identify centrally-cleared Futures (which don't need bilateral UTI/UPI reporting) while UPI/UTI identify OTC derivatives reported bilaterally. A record should have either an exchange contract code (Future) or a UPI/UTI (OTC Swap/Option), not both — the Commodities-specific version of the same diagnostic pattern <a href="./module-05-fixed-income.html">Module 5</a> §6 flagged for bonds carrying a UPI, and <a href="./module-06-fx.html">Module 6</a> §6 flagged for the reverse.</p>
+
+        <h5>Q5 — Bank Of Toronto would PAY the net amount, not receive it — a reversal from the worked example</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Month 1, Floating Below Fixed</span><span class="t-id">Brent Crude Oil Swap</span></div>
+          <pre>Floating leg owed to Bank Of Toronto = 8,333 x 76.50 = USD 637,575
+Fixed leg owed by Bank Of Toronto    = 8,333 x 78.00 = USD 649,974
+Net cash flow: Bank Of Toronto PAYS USD 12,399
+(78.00 - 76.50) x 8,333 = USD 12,399</pre>
+        </div>
+        <p>Because Bank Of Toronto pays fixed and receives floating (Section 04c), whenever the floating index settles below the fixed price, Bank Of Toronto is the net payer — the mirror image of the worked example, where a higher floating settlement made Bank Of Toronto the net receiver. This is the same fixed-vs-floating netting logic <a href="./module-01-fundamentals.html">Module 1</a> §8 established for interest rate swaps.</p>
+
+        <h5>Q6 — Because exchange-traded Futures, which sit under CFTC jurisdiction, are the dominant, most liquid Commodity product</h5>
+        <p>Section 08's takeaway draws this connection explicitly: the CFTC's outsized relevance is a direct consequence of Commodities being the first asset class where the centrally-cleared, exchange-traded product is the default rather than the exception — and the largest commodity futures exchanges (CME, ICE) are US-regulated, unlike Fixed Income or FX where the dominant product was OTC and bilateral.</p>
+
+        <h5>Q7 — A Future clears instantaneously because it's exchange-traded by design, with the exchange's own CCP standing behind every trade; FX mostly never clears via a CCP because it's overwhelmingly OTC and bilateral, settled instead via CLS's PvP</h5>
+        <div class="takeaway">This is the same structural split Section 07 draws out for Commodities itself (Futures vs. Physical/Swaps) applied across asset classes: whether a trade clears centrally and how fast depends entirely on whether the product is exchange-traded by design, not on some asset-class-wide rule — Commodities happens to have both patterns coexisting within a single asset class, where FX (<a href="./module-06-fx.html">Module 6</a>) and Fixed Income (<a href="./module-05-fixed-income.html">Module 5</a>) are almost entirely one pattern each.</div>
+
+        <h5>Q8 — CDS/CDCC only clear/settle products actually traded on Canadian venues; a CME future clears entirely within the US ecosystem regardless of the trading bank's home country</h5>
+        <p>Bank Of Toronto's Canadian entity is just a remote participant in CME/CME Clearing via an FCM relationship, with Canadian involvement limited to CIRO's conduct oversight, not settlement infrastructure. The NGX swap, by contrast, trades AND clears on Canadian-domiciled infrastructure (NGX / NGX Clearing). Section 9a's table states the general rule directly: Canadian market infrastructure only activates when the <b>venue itself</b> is Canadian, not merely because the trading bank happens to be Canadian — the nationality of the counterparty and the nationality of the clearing/settlement chain are two entirely independent facts about a trade.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 7 of 14 &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

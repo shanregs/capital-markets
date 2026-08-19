@@ -1,0 +1,870 @@
+<!doctype html>
+<title>Module 13 — Parties, LEIs &amp; Market Infrastructure</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 13 of 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Parties, LEIs &amp; Market Infrastructure</h1>
+    <p class="dek">The "who's who" companion to every module so far — Buyer/Seller/Counterparty, CCP/Custodian/CSD/Tri-Party, Clearing Members, and the seven distinct roles a single LEI field can play on one trade record.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Cross-cutting module</b> — names and maps every actor role this roadmap has already been using. Not organized around the eight-part asset-class pattern.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#roles"><span class="toc-num">01</span>Buyer, Seller, Counterparty</a></li>
+      <li><a href="#infra"><span class="toc-num">02</span>Market Infrastructure Roles</a></li>
+      <li><a href="#clearing-member"><span class="toc-num">03</span>Clearing Member</a></li>
+      <li><a href="#lei"><span class="toc-num">04</span>LEI Deep Dive</a></li>
+      <li><a href="#worked"><span class="toc-num">05</span>Full Party Map</a></li>
+      <li><a href="#reporting-entity"><span class="toc-num">06</span>Reporting Entity vs Counterparty</a></li>
+      <li><a href="#itangle"><span class="toc-num">07</span>Golden Source &amp; LEI Lifecycle</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>Regulatory Perspective</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="roles">
+      <p class="sec-eyebrow"><span class="n">01</span> · The word that survives every product</p>
+      <h2>Buyer, Seller, Counterparty, Broker, Dealer — the Roles, Precisely</h2>
+      <p class="lede"><a href="./module-01-fundamentals.html">Module 1</a> §3 already established Dealer (Principal) vs Broker (Agent). This section restates the full role set in one place.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Role</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Buyer</td><td>Whichever party is acquiring the instrument/exposure on a specific trade — direction-specific</td></tr>
+          <tr><td>Seller</td><td>The party disposing of the instrument/exposure — the mirror of Buyer</td></tr>
+          <tr><td>Counterparty</td><td>The generic term for "the other side of the trade," regardless of direction</td></tr>
+          <tr><td>Broker (Agent)</td><td>Executes on behalf of a client without taking the position onto its own book — <a href="./module-01-fundamentals.html">Module 1</a> §3b</td></tr>
+          <tr><td>Dealer (Principal)</td><td>Takes the position onto its own book, becoming the client's actual Counterparty — <a href="./module-01-fundamentals.html">Module 1</a> §3a</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Why "Counterparty" Survives Every Context</span><span class="t-id">Buyer/Seller breaks down for swaps</span></div>
+        <pre>Coca-Cola trade (Module 4 §4a):
+  Maple Leaf Pension Fund is the BUYER.
+  Goldman Sachs is the SELLER.
+  -&gt; From Maple Leaf Pension Fund's perspective, Goldman Sachs
+     is simply "the Counterparty" -- the label that doesn't
+     depend on which direction the trade ran.
+
+5Y CAD IRS (Module 8 §4a):
+  Bank Of Toronto pays fixed, Goldman Sachs pays floating --
+  there's no "buyer" or "seller" of a swap in the equity sense
+  at all, yet BOTH parties are unambiguously each other's
+  COUNTERPARTY. This is exactly why Module 11's entire risk
+  framework (Current Exposure, Net Exposure, CVA) is built
+  around "Counterparty," never "Buyer" or "Seller" -- those
+  labels don't even apply to every product in this roadmap.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Buyer/Seller is a Cash-instrument-shaped pair of labels that breaks down for products like swaps that have no natural buy/sell direction; Counterparty is the one term general enough to describe every relationship in every module of this roadmap, which is exactly why <a href="./module-11-risk-exposure.html">Module 11</a>'s risk vocabulary standardized on it.</div>
+    </section>
+
+    <section class="mod" id="infra">
+      <p class="sec-eyebrow"><span class="n">02</span> · One ledger, several service layers</p>
+      <h2>Market Infrastructure Roles — CCP, Custodian, CSD &amp; Settlement Agent</h2>
+      <p class="lede">Four roles this roadmap has used constantly, often without pausing to distinguish them precisely. They frequently sit at the same institution in practice, but are logically distinct functions.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Role</th><th>What it actually does</th><th>Already seen in</th></tr></thead>
+        <tbody>
+          <tr><td><b>CCP</b></td><td>Becomes buyer to every seller and seller to every buyer post-trade, absorbing counterparty risk</td><td>NSCC, LCH SwapClear, ICE Clear Credit, CME Clearing, OCC</td></tr>
+          <tr><td><b>CSD</b></td><td>The single central ledger recording legal ownership of a security — DvP happens here</td><td>DTC, CDS/CDSX (<a href="./module-01-fundamentals.html">Module 1</a> §7)</td></tr>
+          <tr><td><b>Custodian</b></td><td>Holds securities and cash on behalf of an institutional owner, and may hold posted collateral</td><td>Modules 4-12</td></tr>
+          <tr><td><b>Settlement Agent</b></td><td>Executes the actual DvP instruction — moving securities and cash on settlement date</td><td><a href="./module-01-fundamentals.html">Module 1</a> §7's Fedwire example</td></tr>
+          <tr><td><b>Tri-Party Agent</b></td><td>Specialized custodian-like role for automated collateral selection, valuation, substitution</td><td>Euroclear, Clearstream (<a href="./module-12-collateral-margin.html">Module 12</a> §4)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · Why These Roles Blur, But Aren't the Same</span><span class="t-id">One institution, several relationships</span></div>
+        <pre>A single large custodian bank might simultaneously:
+  - hold Maple Leaf Pension Fund's Coca-Cola shares as CUSTODIAN
+  - act as SETTLEMENT AGENT, instructing DTC (the CSD) to move
+    those shares on T+1
+  - separately act as TRI-PARTY AGENT for a totally different
+    client's derivatives collateral
+
+-&gt; One institution, three DIFFERENT ROLES on three different
+   relationships. A reporting system that has a single
+   "Custodian" field covering all three blurs together data that
+   actually serves three separate operational purposes.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The CSD is the one true central ledger in this list — everything else is a service layer sitting on top of, or feeding instructions into, that single ledger. This is why a real operational trade record still needs separate Custodian and Settlement Agent fields to reflect who's actually doing the work.</div>
+    </section>
+
+    <section class="mod" id="clearing-member">
+      <p class="sec-eyebrow"><span class="n">03</span> · Not everyone can access a CCP directly</p>
+      <h2>Clearing Member — Direct Access vs Client Clearing</h2>
+      <p class="lede">A Clearing Member is a firm that IS a direct member of a CCP; everyone else accesses clearing indirectly, through a Clearing Member, in a relationship called client clearing.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Direct vs Client Clearing</span><span class="t-id">Bank Of Toronto as Maple Leaf's Clearing Member</span></div>
+        <pre>Goldman Sachs: large enough to be a DIRECT Clearing Member of
+  LCH SwapClear -- posts its own Initial Margin (Module 12 §2)
+  directly to the CCP, faces the CCP's default waterfall
+  directly (Module 11 §5)
+
+Maple Leaf Pension Fund: NOT a direct Clearing Member -- too
+  small, doesn't meet LCH SwapClear's membership/capital
+  requirements. To get a centrally-cleared IRS anyway, it uses
+  Bank Of Toronto as its CLEARING MEMBER (a "client clearing"
+  relationship):
+
+  Maple Leaf Pension Fund  --trades with-->  Bank Of Toronto
+                                                   |
+                                      (submits trade to CCP,
+                                       GUARANTEES performance)
+                                                   v
+                                          LCH SwapClear (CCP)
+
+-&gt; Bank Of Toronto stands between Maple Leaf Pension Fund and
+   the CCP -- if Maple Leaf Pension Fund fails, Bank Of Toronto
+   (the Clearing Member) is on the hook to the CCP, not the
+   other way around. This is a DIFFERENT counterparty risk
+   relationship than the bilateral CVA math of Module 11 §4.</pre>
+      </div>
+
+      <div class="callout"><b>IT/reporting angle:</b> a client-cleared trade record needs a field distinguishing "Clearing Member" from "Counterparty" — Bank Of Toronto is Maple Leaf Pension Fund's Clearing Member, but economically Maple Leaf Pension Fund's real counterparty risk, post-novation, runs to the CCP, with Bank Of Toronto as an intermediary guarantor, not the ultimate risk-bearer the way <a href="./module-11-risk-exposure.html">Module 11</a>'s bilateral CVA framework assumed.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Client clearing is the reason a firm can access all of <a href="./module-11-risk-exposure.html">Module 11</a> §5's CCP risk-mutualization benefits without itself being large enough to be a direct member — but it introduces a new, genuinely separate counterparty relationship sitting alongside the CCP relationship, not replacing it.</div>
+    </section>
+
+    <section class="mod" id="lei">
+      <p class="sec-eyebrow"><span class="n">04</span> · "Who" turns out to have seven sub-questions</p>
+      <h2>LEI Deep Dive — One Trade, Many Roles</h2>
+      <p class="lede"><a href="./module-04-equity.html">Module 4</a> §6 first introduced LEI as identifying "who," not "what." This roadmap has since shown LEI playing genuinely different roles across different modules.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>LEI Role</th><th>What It Identifies</th><th>First Seen</th></tr></thead>
+        <tbody>
+          <tr><td>Buyer / Seller LEI</td><td>The two economic counterparties to the trade</td><td><a href="./module-04-equity.html">Module 4</a> §6</td></tr>
+          <tr><td>Counterparty LEI</td><td>Generic label for either side, used when Buyer/Seller doesn't apply</td><td><a href="./module-09-credit.html">Module 9</a> §6</td></tr>
+          <tr><td><b>Reference Entity LEI</b></td><td>The company whose default risk a CDS references — NOT a trading party</td><td><a href="./module-09-credit.html">Module 9</a> §6</td></tr>
+          <tr><td><b>Clearing Member LEI</b></td><td>The firm submitting a client's trade to a CCP (Section 03)</td><td>New to this module</td></tr>
+          <tr><td><b>CCP LEI</b></td><td>The CCP itself — CCPs have their own LEIs, since they're legal entities too</td><td>New to this module</td></tr>
+          <tr><td><b>Reporting Entity LEI</b></td><td>Whichever party is legally responsible for submitting the report (Section 06)</td><td>New to this module</td></tr>
+          <tr><td>Custodian LEI</td><td>The institution holding securities/collateral on a party's behalf</td><td><a href="./module-12-collateral-margin.html">Module 12</a> §4</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> LEI answering "who" turns out to have at least seven distinct sub-questions once every role this roadmap has introduced is laid out side by side — "who's trading," "who's the subject," "who's clearing," "who's reporting," and "who's custodying" are five genuinely different questions that all happen to be answered with the same 20-character identifier format.</div>
+    </section>
+
+    <section class="mod" id="worked">
+      <p class="sec-eyebrow"><span class="n">05</span> · Seven entities, seven roles, one trade</p>
+      <h2>Worked Example — Full Party Map on One Trade</h2>
+      <p class="lede">The concrete payoff of every "who" question this roadmap has asked since <a href="./module-04-equity.html">Module 4</a> §6.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">5Y CAD IRS · Client-Cleared</span><span class="t-id">Full party map</span></div>
+        <pre>Maple Leaf Pension Fund wants a 5Y CAD IRS, pays fixed 4.00%,
+Notional CAD 50,000,000 -- economically identical structure to
+Module 8 §4a's swap, different notional and buyer
+
+EXECUTION: Maple Leaf Pension Fund trades bilaterally against
+  Goldman Sachs (dealer, Module 1 §3a)
+
+CLEARING: submitted to LCH SwapClear for novation (Module 3 §6)
+  - Goldman Sachs: DIRECT Clearing Member, submits its own side
+  - Maple Leaf Pension Fund: uses Bank Of Toronto as its
+    CLEARING MEMBER (Section 03), which submits Maple Leaf's
+    side and guarantees its performance to the CCP
+
+COLLATERAL: Maple Leaf Pension Fund's Initial Margin (Module 12
+  §2) is held via a TRI-PARTY AGENT (Euroclear, Module 12 §4)
+
+ONE TRADE RECORD, SEVEN LEI FIELDS:
+  Buyer LEI              : Maple Leaf Pension Fund
+  Seller LEI              : Goldman Sachs
+  Clearing Member LEI     : Bank Of Toronto (for Maple Leaf's side)
+  CCP LEI                 : LCH SwapClear
+  Reporting Entity LEI    : Bank Of Toronto (delegated reporting
+                             on Maple Leaf's behalf -- Section 06)
+  Custodian/Tri-Party LEI : Euroclear
+  (Counterparty LEI field would duplicate Buyer/Seller here,
+   since this product DOES have a clear buy/sell direction on
+   the fixed-vs-floating economics -- Section 01's nuance)
+
+-&gt; Seven distinct legal entities, seven distinct LEI roles, ONE
+   trade. None of these seven entities appears twice in the
+   same role, and none of these roles is optional to model
+   correctly if this trade needs to be reconstructed later from
+   its LEI fields alone.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This single worked example is the concrete payoff of every "who" question this roadmap has asked since <a href="./module-04-equity.html">Module 4</a> §6 — a production trade record genuinely needs this many distinct party-role fields, and collapsing any two of them into one generic "Counterparty" field loses real, legally-meaningful information about who actually did what.</div>
+    </section>
+
+    <section class="mod" id="reporting-entity">
+      <p class="sec-eyebrow"><span class="n">06</span> · Not a fixed role — assigned per regime</p>
+      <h2>Reporting Entity vs Counterparty — Who Actually Files the Report</h2>
+      <p class="lede"><a href="./module-02-hierarchy.html">Module 2</a> §7's OTC derivative reporting obligation doesn't automatically mean both trading parties independently submit identical reports.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Dual-Sided vs Single-Sided Reporting</span><span class="t-id">EMIR vs Dodd-Frank</span></div>
+        <pre>EMIR (EU/UK) — DUAL-SIDED: BOTH counterparties must report their
+  side of the trade to a Trade Repository, though a smaller
+  counterparty can DELEGATE its reporting obligation to the
+  larger one (exactly Section 05's Bank Of Toronto reporting on
+  Maple Leaf Pension Fund's behalf)
+
+Dodd-Frank (US) — SINGLE-SIDED: only ONE party (determined by a
+  defined hierarchy -- generally the more "regulated" or
+  "swap dealer" party) reports the trade; the other party has no
+  independent reporting obligation for that same trade at all
+
+-&gt; The SAME bilateral trade between a US dealer and an EU buy-
+   side client can be REPORTED ONCE under Dodd-Frank's rules but
+   TWICE (or once, if delegated) under EMIR's rules for the
+   EU-domiciled leg -- "Reporting Entity" isn't a fixed role,
+   it's assigned differently by every regulatory regime a trade
+   happens to touch.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A reporting field showing "Reporting Entity: Bank Of Toronto" on a trade where Maple Leaf Pension Fund is the actual Buyer isn't an error — it's Section 05's delegated-reporting arrangement working exactly as EMIR permits, and <a href="./module-14-regulatory-reporting.html">Module 14</a> picks this distinction up directly when it covers what regulators actually receive.</div>
+    </section>
+
+    <section class="mod" id="itangle">
+      <p class="sec-eyebrow"><span class="n">07</span> · A stale copy is a genuine risk</p>
+      <h2>IT/Reporting Angle — Reference Data, Golden Source &amp; LEI Lifecycle</h2>
+      <p class="lede">Every party/LEI field discussed so far is reference data, not trade data — it describes an entity that exists independently of any one trade.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Reference Data vs Trade Data</span><span class="t-id">Golden Source</span></div>
+        <pre>TRADE DATA (specific to THIS trade, changes every time):
+  Notional, Price, Trade Date, Maturity Date
+
+REFERENCE DATA (describes an ENTITY, reused across every trade
+that entity is party to):
+  Maple Leaf Pension Fund's LEI, registered address, credit
+  rating -- the SAME values whether this is trade #1 or #10,000
+  Bank Of Toronto references this year
+
+-&gt; A "Golden Source" is the single authoritative system a firm
+   designates to own each reference data entity -- every other
+   system (trade capture, risk, collateral, reporting) is
+   supposed to LOOK UP that entity's LEI from the Golden Source,
+   never store its own independently-typed copy that can drift
+   out of sync.</pre>
+      </div>
+
+      <div class="callout"><b>LEI Lifecycle — a genuinely operational reality:</b> an LEI must be renewed annually with the issuing Local Operating Unit (LOU), and a lapsed (unrenewed) LEI is flagged "LAPSED" in the GLEIF global database rather than being invalid outright. A counterparty with a lapsed LEI can still legally exist and even still trade in some jurisdictions, but MiFID II's "No LEI, No Trade" principle (Section 08) means an EU-regulated firm generally cannot execute a NEW reportable trade against a counterparty whose LEI has lapsed until it's renewed — making LEI lifecycle monitoring a genuine, ongoing operational control, not a one-time onboarding checkbox.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every party role this module has named — Buyer, Clearing Member, Custodian, Reference Entity — ultimately resolves to a Golden-Source-managed LEI record whose own lifecycle (issued, renewed, lapsed) can independently affect whether a NEW trade against that entity is even legally executable, entirely separate from anything about the trade's own economics.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · A data-quality concept that's also a legal pre-condition</p>
+      <h2>Regulatory Perspective — GLEIF/LOUs, "No LEI, No Trade" &amp; CPMI-IOSCO</h2>
+      <p class="lede">The one area in this roadmap where identifier hygiene is also a hard legal pre-condition for trading at all.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regulation / Body</th><th>How it touches Parties, LEIs &amp; Market Infrastructure specifically</th></tr></thead>
+        <tbody>
+          <tr><td><b>GLEIF</b></td><td>Oversees the global LEI system, accrediting the Local Operating Units (LOUs) — the entities that issue LEIs to firms in each country, and maintain the LAPSED/ACTIVE status Section 07 describes</td></tr>
+          <tr><td><b>MiFID II "No LEI, No Trade"</b></td><td>The EU rule that an investment firm generally cannot execute a reportable trade for/against a counterparty lacking a valid, active LEI — turning LEI from a reporting nicety into a genuine trading pre-condition</td></tr>
+          <tr><td><b>CPMI-IOSCO</b></td><td>The joint global standard-setter for CCP and CSD risk-management standards (the "Principles for Financial Market Infrastructures") — sets the baseline every CCP in Section 02's table is expected to meet, regardless of which national regulator directly supervises it</td></tr>
+          <tr><td><b>EMIR / Dodd-Frank</b> (Reporting Entity rules)</td><td>Each regime independently defines its own Reporting Entity hierarchy — this is where the "dual-sided vs single-sided" distinction in Section 06 is actually codified into law, not just market convention</td></tr>
+          <tr><td><b>National CCP/CSD Regulators</b></td><td>Each jurisdiction's markets regulator (FCA for LCH, the Bank of Canada/CIRO for CDCC, the Fed/CFTC/SEC jointly for US CCPs) directly licenses and supervises its own domestic CCPs/CSDs under the CPMI-IOSCO baseline</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> LEI regulation is the one area in this entire roadmap where a data-quality concept is ALSO a hard legal pre-condition for trading at all — "No LEI, No Trade" means Section 07's Golden Source and lifecycle-monitoring concerns aren't just good reference-data hygiene, they're the difference between a trade being executable and not.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">Reference · Full cast</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Maple Leaf Pension Fund</td><td>Buyer on the client-cleared IRS (Section 05); not a direct Clearing Member, relies on Bank Of Toronto</td></tr>
+          <tr><td>Goldman Sachs</td><td>Seller/dealer counterparty; a DIRECT Clearing Member of LCH SwapClear</td></tr>
+          <tr><td>Bank Of Toronto</td><td>Maple Leaf Pension Fund's Clearing Member (Section 03); Reporting Entity under delegated EMIR reporting (Section 06)</td></tr>
+          <tr><td>LCH SwapClear</td><td>CCP performing novation; itself carries an LEI (Section 04)</td></tr>
+          <tr><td>Euroclear</td><td>Tri-party agent holding Maple Leaf Pension Fund's Initial Margin (<a href="./module-12-collateral-margin.html">Module 12</a> §4)</td></tr>
+          <tr><td>GLEIF / LOUs</td><td>Global body and national issuers overseeing LEI issuance and lifecycle (Section 07-08)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these before moving to <a href="./module-14-regulatory-reporting.html">Module 14</a>.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>On the 5Y CAD IRS in Section 05, if Maple Leaf Pension Fund later became large enough to become a DIRECT Clearing Member of LCH SwapClear itself, which LEI field would disappear from the trade record entirely, and which relationship would it replace?</li>
+          <li>Using Section 01, does the term "Buyer" meaningfully apply to either party on a plain interest rate swap? Why does <a href="./module-11-risk-exposure.html">Module 11</a>'s risk framework use "Counterparty" instead?</li>
+          <li>A firm's LEI shows status "LAPSED" in the GLEIF database. Using Section 07-08, can this firm still legally execute a NEW reportable trade with an EU-regulated counterparty under MiFID II?</li>
+          <li>Using Section 06, could the exact same bilateral trade between a US dealer and an EU buy-side client be reported under Dodd-Frank AND EMIR at the same time? Are these the same report?</li>
+          <li>Using Section 02, name one institution role in this roadmap that could plausibly sit at the SAME company as another role, and explain why that doesn't make the two roles the same function.</li>
+          <li>Why does Section 03 say Bank Of Toronto's client-clearing relationship with Maple Leaf Pension Fund is "a different counterparty risk relationship than the bilateral CVA math of <a href="./module-11-risk-exposure.html">Module 11</a> §4" — what specifically changed?</li>
+          <li>Using Section 07, why is a trade capture system that stores its own independently-typed copy of a counterparty's LEI a genuine data-quality risk, even if that copy was correct on the day it was entered?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then move to <b><a href="./module-14-regulatory-reporting.html">Module 14</a>: Regulatory Reporting + IT View</b>, the roadmap's final module, which picks up Section 06's Reporting Entity distinction directly.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — The "Clearing Member LEI" field would disappear, replaced by Maple Leaf Pension Fund submitting directly to LCH SwapClear</h5>
+        <p>Section 03's diagram shows exactly this alternative: Goldman Sachs, being large enough, skips the intermediary entirely and faces the CCP directly — becoming a direct Clearing Member is precisely the structural change that would eliminate the need for Bank Of Toronto's guarantor role in Section 05's party map.</p>
+
+        <h5>Q2 — No, "Buyer" doesn't meaningfully apply to a plain IRS; <a href="./module-11-risk-exposure.html">Module 11</a> uses "Counterparty" because it's general enough for relationships with no buy/sell asymmetry</h5>
+        <p>Section 01's takeaway states this directly: Buyer/Seller is Cash-instrument-shaped and breaks down for swaps; Counterparty is the one term general enough to describe every relationship in every module of this roadmap.</p>
+
+        <h5>Q3 — Generally NO — MiFID II's "No LEI, No Trade" principle blocks new reportable trading activity against a lapsed LEI</h5>
+        <div class="takeaway">Section 07-08 together establish this: a lapsed LEI doesn't invalidate the entity itself, but it does block new MiFID II-reportable trading activity specifically — existing positions aren't unwound, but new trade execution is where the rule bites.</div>
+
+        <h5>Q4 — Yes, both regimes can independently require a report for the same trade, and they are NOT automatically the same report</h5>
+        <p>Section 06's takeaway states this precisely: "Reporting Entity" isn't a fixed role, it's assigned differently by every regulatory regime a trade happens to touch — a cross-border trade doesn't get ONE report, it potentially gets as many reports as there are regimes with jurisdiction over either party.</p>
+
+        <h5>Q5 — A large custodian bank can simultaneously be Custodian, Settlement Agent, AND Tri-Party Agent for different relationships</h5>
+        <p>Section 02's diagram states this directly: "One institution, three DIFFERENT ROLES on three different relationships" — this doesn't make the roles the same function because each serves a logically distinct purpose, regardless of whether they happen to share a company name.</p>
+
+        <h5>Q6 — Client clearing introduces a guarantor relationship (Bank Of Toronto to the CCP) rather than a pure bilateral CVA relationship</h5>
+        <p>Section 03 states this explicitly: client clearing "introduces a new, genuinely separate counterparty relationship... sitting alongside the CCP relationship, not replacing it" — if Maple Leaf Pension Fund defaults, Bank Of Toronto is on the hook to the CCP for Maple Leaf's obligations, a fundamentally different risk than <a href="./module-11-risk-exposure.html">Module 11</a> §4's bilateral-uncleared-trade CVA scenario.</p>
+
+        <h5>Q7 — Reference data can change independently of any trade, and a stale local copy has no mechanism to learn about that change</h5>
+        <p>Section 07's takeaway makes this the central argument for Golden Source architecture: correctness on entry day doesn't guarantee correctness later, and LEI lifecycle events (renewal, lapse) are exactly the kind of change a stale, locally-copied reference data field will silently miss.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 13 of 14 &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

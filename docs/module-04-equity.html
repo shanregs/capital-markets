@@ -1,0 +1,1028 @@
+<!doctype html>
+<title>Module 4 — Equity</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 4 of 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Equity</h1>
+    <p class="dek">Cash Equity and Equity Derivatives worked end to end through the eight-part pattern: theory, products, security vs. contract, real trades, lifecycle, identifiers, exchange/OTC structure, and regulation.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Asset Class Roadmap 1 of 6</b> — Equity → Fixed Income → FX → Commodities → Rates → Credit, one at a time.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is Equity?</a></li>
+      <li><a href="#products"><span class="toc-num">02</span>What Are The Products?</a></li>
+      <li><a href="#security-vs-contract"><span class="toc-num">03</span>Security vs Contract</a></li>
+      <li><a href="#trade-examples"><span class="toc-num">04</span>Real-World Trade Examples</a></li>
+      <li><a href="#lifecycle"><span class="toc-num">05</span>Trade Lifecycle</a></li>
+      <li><a href="#identifiers"><span class="toc-num">06</span>Identifiers</a></li>
+      <li><a href="#structure"><span class="toc-num">07</span>Exchange vs OTC vs Bilateral vs Cleared</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>Regulatory Perspective</a></li>
+      <li><a href="#canada-systems"><span class="toc-num">09</span>Canadian Systems Landscape</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · Fractional ownership, not a loan</p>
+      <h2>What Is Equity? — Theory &amp; Terminology</h2>
+      <p class="lede">Equity represents <b>fractional ownership</b> in a company. A shareholder owns a proportional claim on the company's assets and future earnings, evidenced by shares. Unlike the Fixed Income instruments in <a href="./module-05-fixed-income.html">Module 5</a>, equity has <b>no maturity date, no fixed coupon, and no promise to return principal</b> — the return comes entirely from price appreciation and dividends, both variable and, for dividends, discretionary.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Share</td><td>One unit of ownership in a company</td></tr>
+          <tr><td>Outstanding Shares</td><td>Total number of shares currently held by all shareholders</td></tr>
+          <tr><td>Market Capitalization</td><td>Share Price × Outstanding Shares — the market's valuation of the whole company</td></tr>
+          <tr><td>Dividend</td><td>A discretionary cash (or stock) payment to shareholders, declared by the board — never guaranteed</td></tr>
+          <tr><td>Voting Rights</td><td>Common shareholders typically get one vote per share on corporate matters</td></tr>
+          <tr><td>Corporate Action</td><td>An issuer-initiated event that changes the share (stock split, buyback, spin-off, rights issue)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Equity vs Fixed Income — the contrast that matters most</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Equity</th><th>Fixed Income (<a href="./module-05-fixed-income.html">Module 5</a>)</th></tr></thead>
+        <tbody>
+          <tr><td>Ownership claim</td><td>Yes — a residual claim on the company</td><td>No — a creditor claim (a loan to the issuer)</td></tr>
+          <tr><td>Maturity</td><td>None — held indefinitely</td><td>Fixed — bond matures on a set date</td></tr>
+          <tr><td>Return</td><td>Price appreciation + dividends (variable)</td><td>Coupon (fixed, contractual) + principal at maturity</td></tr>
+          <tr><td>Priority in bankruptcy</td><td><b>Last</b> — paid only after all creditors</td><td>Ahead of equity — bondholders are creditors</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every other section in this module — products, trade lifecycle, identifiers, regulation — traces back to this one fact: a share is a piece of the company itself, not a promise from it. That's the opposite of a bond, and it's why equity valuation (<a href="./module-10-valuation.html">Module 10</a>) looks completely different from bond valuation.</div>
+    </section>
+
+    <section class="mod" id="products">
+      <p class="sec-eyebrow"><span class="n">02</span> · The security vs. contracts on the security</p>
+      <h2>What Are The Products? — Cash Equity vs Equity Derivatives</h2>
+      <p class="lede">Two buckets: the real security, and contracts whose value derives from it.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Equity Product Tree</span><span class="t-id">Cash vs Derivatives</span></div>
+        <pre>EQUITY
+│
+├── Cash Equity              (the actual security)
+│   ├── Common Stock
+│   └── Preferred Stock
+│
+└── Equity Derivatives       (contracts whose value derives from the security)
+    ├── Equity Futures
+    └── Equity Options</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Product</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><b>Common Stock</b></td><td>Ordinary shares — one vote per share (typically), dividends at the board's full discretion, last claim on assets if the company is wound up</td></tr>
+          <tr><td><b>Preferred Stock</b></td><td>A hybrid instrument — carries a fixed dividend rate like a bond coupon, but the dividend is still only paid if declared; ranks ahead of common stock but behind all debt in bankruptcy; usually no voting rights</td></tr>
+          <tr><td><b>Equity Future</b></td><td>An exchange-traded contract to buy/sell a stock or index at a future date at an agreed price; index futures are typically cash-settled</td></tr>
+          <tr><td><b>Equity Option</b></td><td>A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) shares at a fixed strike, by/at expiry, for an upfront premium</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Common and Preferred Stock sit in the same "Cash Equity" bucket because both are real, deliverable securities — the difference is entirely in the economics of the claim. Futures and Options sit in a different bucket entirely, because neither one <i>is</i> the stock — Section 03 makes this distinction concrete.</div>
+    </section>
+
+    <section class="mod" id="security-vs-contract">
+      <p class="sec-eyebrow"><span class="n">03</span> · The core distinction</p>
+      <h2>What Exactly Is Being Traded? — Security vs Contract</h2>
+      <p class="lede">For Common or Preferred Stock, you're trading an <b>actual security</b> — a real, transferable ownership claim recorded in book-entry form at a CSD (<a href="./module-01-fundamentals.html">Module 1</a> §07). For Equity Futures or Options, you're trading a <b>contract</b> whose value derives from that security's price — created at execution, typically extinguished at expiry or exercise.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · Security vs Contract</span><span class="t-id">Coca-Cola stock vs AAPL option</span></div>
+        <pre>Common Stock (SECURITY):
+  Coca-Cola Company issued a fixed number of shares, years ago.
+  Every trade just transfers ownership of EXISTING shares between
+  two parties -- nothing new is created or destroyed by trading it.
+
+Equity Option (CONTRACT):
+  "AAPL 15-Jan-2027 250 Call" doesn't exist until two parties agree
+  to create it (the same principle as Module 1 §8's notional, applied
+  to options) -- and it disappears entirely at expiry/exercise.
+  Trading it doesn't move any Apple shares; it creates or transfers
+  a CLAIM on Apple shares.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is the "Quantity vs Notional" distinction from <a href="./module-02-hierarchy.html">Module 2</a> §03, restated for equity specifically. A cash equity trade's Quantity (shares) is a real, deliverable amount. An equity derivative's underlying share count is closer to a reference amount used to size the contract's payoff — whether it ever results in real shares moving depends entirely on whether the contract is physically settled and actually exercised (Section 05).</div>
+    </section>
+
+    <section class="mod" id="trade-examples">
+      <p class="sec-eyebrow"><span class="n">04</span> · Buyer → Seller → Trade</p>
+      <h2>Real-World Trade Examples</h2>
+      <p class="lede">Four trades, four different actor relationships — a bilateral dealer trade, a primary issuance, an exchange trade against a CCP, and a bilateral option written by a dealer.</p>
+
+      <h3>4a. Common Stock</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Common Stock · Coca-Cola Company</span><span class="t-id">NYSE: KO</span></div>
+        <pre>Buyer:  Maple Leaf Pension Fund
+Seller: Goldman Sachs
+Dealer: Bank Of Toronto (takes the trade onto its own book briefly,
+        per Module 1 §3's dealer/principal mechanics)
+
+Trade: 10,000 shares @ USD 68.40
+Trade Value = 10,000 x 68.40 = USD 684,000</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>EquityTrade.avsc</code> — Trade only. There's no <code>EquityValuation.avsc</code> in the work data model taxonomy: cash equity is marked using a shared/generic security-pricing model (Section 05's daily mark-to-market just needs a market price, not product-specific valuation logic the way an option or swap needs).</div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · One "Trade," Two Legs</span><span class="t-id">What "Dealer" Actually Means Here</span></div>
+        <pre>Leg 1:  Goldman Sachs  ---- sells 10,000 KO @ 68.40 ----&gt;  Bank Of Toronto
+Leg 2:  Bank Of Toronto ---- sells 10,000 KO @ 68.40 ----&gt;  Maple Leaf Pension Fund
+
+Both legs settle at the SAME price -- Bank Of Toronto takes no
+spread and ends the day flat (bought 10,000, sold 10,000) -- but
+it is a REAL counterparty on each leg, not a pass-through broker.</pre>
+      </div>
+      <div class="callout">Bank Of Toronto is a genuine counterparty to <b>both</b> sides here — a principal, per <a href="./module-01-fundamentals.html">Module 1</a> §3's dealer/principal mechanics — which means the single "Trade:" line above is really <b>two separate settlement obligations</b>: Bank Of Toronto owes Goldman Sachs cash and owes Maple Leaf Pension Fund shares, and separately is owed shares from Goldman Sachs and cash from Maple Leaf Pension Fund. If Bank Of Toronto were instead acting as a riskless broker (never taking title), there would be only one obligation, directly between Goldman Sachs and Maple Leaf Pension Fund — that is NOT what's happening in this example.</div>
+
+      <h3>4b. Preferred Stock</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Preferred Stock · Series A</span><span class="t-id">Bank Of Toronto issuance</span></div>
+        <pre>Issuer: Bank Of Toronto (primary issuance, per Module 1 §1's
+        primary-market mechanics)
+Buyer:  Goldman Sachs
+
+Issue: 2,000,000 shares @ Par CAD 25.00, Dividend Rate 4.50%
+       Non-Cumulative
+Cash Raised = 2,000,000 x 25.00 = CAD 50,000,000
+
+Annual Dividend / share = 25.00 x 4.50% = CAD 1.125
+Total Annual Dividend    = 2,000,000 x 1.125 = CAD 2,250,000
+Paid Quarterly           = 2,250,000 / 4 = CAD 562,500 / quarter
+
+"Non-Cumulative" means: if Bank Of Toronto's board skips a
+quarter's dividend, Goldman Sachs does NOT get it later -- it is
+simply gone. Contrast a bond coupon (Module 1 §1), where missing
+a payment is a DEFAULT. A preferred dividend, even on a fixed-rate
+instrument, is never a legal obligation the way a bond coupon is.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>EquityTrade.avsc</code> — same schema as Common Stock. The taxonomy doesn't split Common vs. Preferred; both are "Cash Equity" and share one Trade schema (Section 02), with the fixed-vs-discretionary dividend distinction living in reference/economic-terms data, not a different schema.</div>
+
+      <h3>4c. Equity Future</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Equity Future · E-mini S&amp;P 500</span><span class="t-id">CME</span></div>
+        <pre>Buyer: Maple Leaf Pension Fund
+Seller/Counterparty: CME Clearing (the CCP — see Section 07; on an
+      exchange, buyer and seller are matched anonymously and each
+      ends up facing the CCP, not each other, from day one)
+
+Trade: BUY 20 contracts @ 5,920.00 (index points)
+       Multiplier: USD 50 per index point
+Notional = 20 x 50 x 5,920.00 = USD 5,920,000
+
+Initial Margin (illustrative, ~USD 12,000/contract):
+  20 x 12,000 = USD 240,000 posted to CME Clearing
+
+Next business day, index moves to 5,935.00:
+  Variation Margin = (5,935.00 - 5,920.00) x 50 x 20 = USD 15,000
+  -&gt; credited to Maple Leaf Pension Fund's margin account THAT DAY
+     (daily mark-to-market, not a wait until maturity like an OTC
+     swap's quarterly cash flow — Module 1 §8)</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>FuturesTrade.avsc</code> / <code>FuturesValuation.avsc</code> — not an equity-specific schema. In the work data model taxonomy, all exchange-traded futures (equity index, rate, commodity, FX — any underlying) sit under the cross-cutting "7. Listed Derivatives" node (<a href="./module-15-listed-derivatives.html">Module 15</a>), not under "4. Equity." This equity index future is taught here for the underlying concept, but its actual schema mapping lives in <a href="./module-15-listed-derivatives.html">Module 15</a>.</div>
+
+      <h3>4d. Equity Option</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Equity Option · AAPL Call</span><span class="t-id">15-Jan-2027 250 Call</span></div>
+        <pre>Buyer: Maple Leaf Pension Fund
+Seller (writer): Bank Of Toronto (dealer)
+
+Trade: BUY 100 contracts, Strike USD 250, Expiry 15-Jan-2027
+       Premium: USD 18.50 / share, 100 shares / contract
+Premium Paid = 100 x 100 x 18.50 = USD 185,000 (paid T+1)
+
+AT EXPIRY -- Scenario A: AAPL trades at USD 270
+  Intrinsic Value = (270 - 250) x 10,000 shares = USD 200,000
+  Option exercised; Net Profit = 200,000 - 185,000 = USD 15,000
+
+AT EXPIRY -- Scenario B: AAPL trades at USD 240
+  Option expires WORTHLESS (strike above market price)
+  Maple Leaf Pension Fund loses the full USD 185,000 premium
+  -&gt; this is the maximum possible loss for a long option buyer,
+     ever — never more than the premium paid.</pre>
+      </div>
+      <div class="callout"><b>Schema:</b> <code>ListedOptionsTrade.avsc</code> / <code>ListedOptionValuation.avsc</code> — not <code>EquityOptionTrade.avsc</code>. This AAPL call is exchange-listed and clears via the OCC (Section 05), so in the taxonomy it belongs to the cross-cutting "7. Listed Derivatives" node (<a href="./module-15-listed-derivatives.html">Module 15</a>) alongside Futures, same as Section 04c. <code>EquityOptionTrade.avsc</code> / <code>EquityOptionValuation.avsc</code> is reserved for a bilateral OTC equity option — same economic product, different schema, and the deciding factor is Exchange vs. OTC (Section 07), not "is it an equity option."</div>
+      <div class="callout">Same clearing relationship as Section 04c's future: once this option clears via the OCC, Maple Leaf Pension Fund and Bank Of Toronto each actually face the <b>OCC</b>, not each other — the "Buyer"/"Seller (writer)" labels above describe the trade's original two-sided economics, not who ends up counterparty-exposed to whom after novation.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice the buyer/seller relationship changes shape across these four examples — a bilateral dealer trade (4a), a primary issuance (4b), an exchange trade against a CCP (4c), and a bilateral option written by a dealer (4d). All four are still "Equity," but the actors and the settlement mechanics already look different before Section 05 even gets to lifecycle.</div>
+    </section>
+
+    <section class="mod" id="lifecycle">
+      <p class="sec-eyebrow"><span class="n">05</span> · Nine stages, applied to equity</p>
+      <h2>Trade Lifecycle — Equity-Specific Walkthrough</h2>
+      <p class="lede">Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting — the same backbone as <a href="./module-03-trade-lifecycle.html">Module 3</a>, with two stages (Position and Valuation/P&amp;L) made explicit.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Full Lifecycle · Coca-Cola Common Stock</span><span class="t-id">BOT-EQ-2026-011203</span></div>
+        <pre>09:31:00  ORDER — Maple Leaf Pension Fund instructs Bank Of Toronto:
+          "BUY 10,000 shares Coca-Cola Company (NYSE: KO)"
+
+09:31:04  EXECUTION @ USD 68.40 on NYSE
+
+09:31:04  TRADE CAPTURE — Trade ID BOT-EQ-2026-011203
+
+09:45:00  CONFIRMATION/MATCHING via DTCC CTM -&gt; MATCHED
+
+Trade submitted to NSCC for CLEARING (multilateral netting,
+per systems-landscape §05 — this trade may net against other
+KO trades Bank Of Toronto did that day)
+
+Settlement Date = T+1
+          DTC performs DvP: shares move in DTC's book-entry
+          system; cash settles via Fedwire.
+
+POSITION — Maple Leaf Pension Fund's holding of KO increases by
+          10,000 shares in the position-keeping system (this is
+          what Module 3 §08's reconciliation checks against the
+          custodian and CSD records)
+
+VALUATION / P&amp;L — each day after settlement, the position is
+          marked to the current market price:
+            Day of purchase:  10,000 x 68.40 = USD 684,000 (cost)
+            One week later:   10,000 x 71.10 = USD 711,000 (market value)
+            Unrealized P&amp;L =  711,000 - 684,000 = +USD 27,000
+
+REPORTING — trade reported to the relevant Trade Repository/
+          regulator by T+1 (Module 3 §09); the ongoing POSITION
+          is separately subject to periodic position reporting
+          requirements in some jurisdictions (Module 14)</pre>
+      </div>
+
+      <h3>How Clearing differs for the derivative products</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Product</th><th>CCP</th><th>What "Clearing" adds</th></tr></thead>
+        <tbody>
+          <tr><td>Common/Preferred Stock</td><td>NSCC (US example above) / CDCC / LCH / Eurex, per country</td><td>Multilateral netting before one T+1/T+2 DvP settlement</td></tr>
+          <tr><td>Equity Future</td><td>CME Clearing</td><td>Novation (<a href="./module-03-trade-lifecycle.html">Module 3</a> §06) plus <b>daily</b> Variation Margin for the life of the contract</td></tr>
+          <tr><td>Listed Equity Option</td><td><b>OCC</b> (Options Clearing Corporation)</td><td>Novation of the option; premium settles T+1; if exercised, a separate physical stock settlement follows T+1 after exercise</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>A naming collision worth flagging:</b> "OCC" means two completely different things in US capital markets. Here, in an equities/derivatives context, it's the <b>Options Clearing Corporation</b> — the CCP for all US-listed equity options. In a banking/prudential context (<a href="./systems-landscape.html">systems-landscape</a> §10), "OCC" instead means the <b>Office of the Comptroller of the Currency</b> — the regulator that charters and supervises national banks. Same acronym, same country, unrelated organizations — always check context.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> The "Position" and "Valuation/P&amp;L" stages aren't new concepts — they're <a href="./module-03-trade-lifecycle.html">Module 3</a> §08 (Reconciliation) and a preview of <a href="./module-10-valuation.html">Module 10</a> (Valuation), made explicit here because equity is where they're easiest to see: a stock position just sits there being marked to a public, constantly-moving market price, with no coupon or notional math to obscure it.</div>
+    </section>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">06</span> · What vs who</p>
+      <h2>Identifiers — ISIN, CUSIP, SEDOL, Ticker, LEI, UPI, FIGI</h2>
+      <p class="lede"><a href="./module-02-hierarchy.html">Module 2</a> §02 introduced ISIN, CUSIP, and Ticker. Equity is where the remaining four — SEDOL, LEI, UPI, FIGI — earn their place.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Identifier</th><th>Identifies</th><th>Scope</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>ISIN</b></td><td>The instrument</td><td>Global</td><td><code>US1912161007</code> (Coca-Cola)</td></tr>
+          <tr><td><b>CUSIP</b></td><td>The instrument</td><td>North America</td><td><code>191216100</code> (Coca-Cola)</td></tr>
+          <tr><td><b>Ticker</b></td><td>The instrument, on one venue</td><td>Exchange-specific</td><td><code>KO</code> (NYSE)</td></tr>
+          <tr><td><b>SEDOL</b></td><td>The instrument</td><td>Historically UK/Ireland-specific (7 chars); embedded inside most UK ISINs, the way CUSIP sits inside US/CA ISINs</td><td><code>0008373</code> (Tesco PLC, illustrative)</td></tr>
+          <tr><td><b>FIGI</b></td><td>The instrument — at multiple levels (share class, or a specific venue/exchange line)</td><td>Global, open-source (Bloomberg-originated, now an industry standard)</td><td><code>BBG000B9XRY4</code> (Apple, Composite Global FIGI)</td></tr>
+          <tr><td><b>LEI</b></td><td>The <b>legal entity</b> itself — not an instrument at all</td><td>Global</td><td><code>5493001KJTIIGC8Y1R12</code> (illustrative — Bank Of Toronto)</td></tr>
+          <tr><td><b>UPI</b></td><td>An OTC derivative product template (<a href="./module-02-hierarchy.html">Module 2</a> §12)</td><td>Global</td><td>Relevant only for OTC equity derivatives (e.g. a Total Return Swap on KO) — a listed Future/Option gets an exchange contract code instead</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Instrument IDs vs Entity ID</span><span class="t-id">One trade, four identifiers</span></div>
+        <pre>ISIN, CUSIP, Ticker, SEDOL, FIGI   -&gt;  answer "WHAT is being traded?"
+LEI                                 -&gt;  answers "WHO is trading it?"
+UPI                                 -&gt;  answers "WHAT PRODUCT TEMPLATE
+                                         does this OTC derivative
+                                         belong to?" (Module 2 §12)
+
+On a single trade record for the Coca-Cola trade (Section 04):
+  Instrument  : ISIN US1912161007 / CUSIP 191216100 / Ticker KO
+  Buyer LEI   : identifies Maple Leaf Pension Fund
+  Seller LEI  : identifies Goldman Sachs
+  Dealer LEI  : identifies Bank Of Toronto
+-&gt; four completely different identifiers on one trade record,
+   answering two completely different questions.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> FIGI's distinguishing feature versus ISIN is that it can identify a security at more than one level — a "Composite" FIGI for the security globally, and separate FIGIs per exchange listing (useful for a dual-listed stock, where ISIN alone doesn't tell you which venue's price/liquidity a given trade record refers to).</div>
+    </section>
+
+    <section class="mod" id="structure">
+      <p class="sec-eyebrow"><span class="n">07</span> · Two separate questions</p>
+      <h2>Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p class="lede">"Exchange vs OTC" asks <i>where the trade was negotiated</i> (<a href="./module-01-fundamentals.html">Module 1</a> §05). "Bilateral vs Centrally Cleared" asks <i>what the counterparty risk looks like after execution</i> (<a href="./module-03-trade-lifecycle.html">Module 3</a> §06) — even an OTC trade can end up centrally cleared if later novated to a CCP.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Bilateral</th><th>Centrally Cleared</th></tr></thead>
+        <tbody>
+          <tr><td><b>Exchange-Traded</b></td><td>Effectively never for equity — exchange rules typically require clearing</td><td>Common/Preferred Stock, Equity Futures (CME Clearing), Listed Options (OCC)</td></tr>
+          <tr><td><b>OTC</b></td><td>Uncleared equity swaps/options between two dealers, subject to bilateral collateral (Uncleared Margin Rules, <a href="./module-02-hierarchy.html">Module 2</a> §07)</td><td>A growing share of equity index swaps now clear via a CCP (LCH, Eurex) even though negotiated OTC</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Equity product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
+        <tbody>
+          <tr><td>Common/Preferred Stock</td><td>Exchange-traded</td><td>Centrally cleared (NSCC/CDCC/LCH/Eurex per country)</td></tr>
+          <tr><td>Equity Future</td><td>Exchange-traded</td><td>Centrally cleared (CME Clearing)</td></tr>
+          <tr><td>Listed Equity Option</td><td>Exchange-traded</td><td>Centrally cleared (OCC)</td></tr>
+          <tr><td>OTC Equity Option / TRS</td><td>OTC</td><td>Bilateral (typically) — or centrally cleared if mandated/elected</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> For cash equity and listed derivatives, "exchange-traded" and "centrally cleared" travel together so consistently that people often treat them as synonyms — but Section 08's regulatory reporting obligations (EMIR, SFTR) exist specifically because the bottom-right cell of the first table (bilateral OTC) is where a trade can otherwise go completely unseen by a regulator, exactly as <a href="./module-01-fundamentals.html">Module 1</a> §05 first established for OTC products generally.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · Acronyms attached to something real</p>
+      <h2>Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <p class="lede">Only now, with the products, trade mechanics, and identifiers already concrete, do the acronyms get attached to something real.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regulation / Body</th><th>How it touches Equity specifically</th></tr></thead>
+        <tbody>
+          <tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Pre/post-trade transparency for equity trading, best-execution obligations, the Systematic Internalizer regime, T+1 transaction reporting (<a href="./module-03-trade-lifecycle.html">Module 3</a> §09, <a href="./systems-landscape.html">systems-landscape</a> §07)</td></tr>
+          <tr><td><b>EMIR</b></td><td>Applies only if the equity derivative is OTC (e.g. a TRS on KO) — reported to a Trade Repository (<a href="./module-02-hierarchy.html">Module 2</a> §07). Does <b>not</b> apply to Common/Preferred Stock or listed Futures/Options</td></tr>
+          <tr><td><b>SFTR</b></td><td>Applies when equity shares are lent/borrowed, or used as repo collateral — e.g. Bank Of Toronto lending its KO position to a short-seller (<a href="./systems-landscape.html">systems-landscape</a> §12)</td></tr>
+          <tr><td><b>FCA</b> (UK)</td><td>Conduct regulator for UK equity trading — administers UK MiFIR equity transaction reporting (<a href="./systems-landscape.html">systems-landscape</a> §10)</td></tr>
+          <tr><td><b>CIRO</b> (Canada)</td><td>SRO overseeing Canadian equity dealer conduct and trading activity (<a href="./systems-landscape.html">systems-landscape</a> §10)</td></tr>
+          <tr><td><b>HKMA / SFC</b> (Hong Kong)</td><td>Worth a careful distinction: <b>HKMA</b> is Hong Kong's central-bank-equivalent (banking supervision, monetary policy) — analogous to the Bank of England. The <b>SFC (Securities and Futures Commission)</b> is Hong Kong's actual securities/equities conduct regulator — the closer analog to the FCA or SEC</td></tr>
+          <tr><td><b>DTCC</b> (US)</td><td>Its subsidiaries NSCC and DTC clear and settle US cash equities (Section 05; <a href="./systems-landscape.html">systems-landscape</a> §05)</td></tr>
+          <tr><td><b>DMO</b> (UK Debt Management Office)</td><td>Issues UK Gilts — <b>not</b> an equity-relevant body; full treatment belongs in <a href="./module-05-fixed-income.html">Module 5</a> (Fixed Income)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every regulation above attaches to a specific mechanic already covered in Sections 01–07 — MiFID to where/how the trade executed, EMIR to whether the derivative is OTC, SFTR to whether shares themselves (not just a derivative on them) were lent or used as collateral. None of these rules apply uniformly to "Equity" as a whole; each is scoped to a particular slice of what this module just walked through.</div>
+    </section>
+
+    <section class="mod" id="canada-systems">
+      <p class="sec-eyebrow"><span class="n">09</span> · Front office to regulator, named systems</p>
+      <h2>Canadian Systems Landscape — Equity Front, Middle &amp; Back Office to Regulatory Reporting</h2>
+      <p class="lede"><a href="./systems-landscape.html">systems-landscape</a> §4 already named Canada's generic Front/Middle/Back Office architecture and its market infrastructure (CDS/CDSX, CDCC). This section specializes that generic picture to <b>Equity</b> specifically — the actual systems a Canadian equity order passes through, front office to settlement to oversight, end to end.</p>
+
+      <div class="callout"><b>Callout — illustrative vendor names.</b> OMS/EMS product names below (Bloomberg AIM, FlexTrade, Charles River IMS, Eze OMS) are representative of what a Canadian dealing desk typically runs — not a claim about Bank Of Toronto's actual internal system choices. The market infrastructure names (TSX, the ATSs, CDS/CDSX, CIRO, Lynx, Bank of Canada) are real, named Canadian institutions.</div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Layer</th><th>System(s)</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><b>Front Office</b></td><td>OMS/EMS (e.g. Bloomberg AIM, Charles River IMS, or Eze OMS — illustrative), FIX-connected smart order router</td><td>Captures the order, routes it to whichever Canadian venue offers the best price</td></tr>
+          <tr><td><b>Trading Venues</b></td><td><b>TSX</b> &amp; <b>TSX Venture Exchange</b> (TMX Group); Canadian <b>ATSs</b> — Nasdaq CXC/CX2, Cboe Canada (formerly NEO Exchange), Omega ATS</td><td>Multiple competing venues execute the trade — Canada's equity market is multi-venue, not single-exchange</td></tr>
+          <tr><td><b>Middle Office</b></td><td>Trade capture/confirmation; CIRO market-surveillance feed under <b>UMIR</b> (Universal Market Integrity Rules); Murex/Calypso for any equity-derivative overlay</td><td>Confirms the match, feeds Canada's consolidated tape, surfaces trading-conduct issues to CIRO</td></tr>
+          <tr><td><b>Back Office / CSD</b></td><td><b>CDS Clearing and Depository Services Inc.</b> (CDS, a TMX Group subsidiary) — <b>CDSX</b>, Continuous Net Settlement (CNS), DvP book-entry settlement</td><td>Nets and settles the trade, <b>T+1</b></td></tr>
+          <tr><td><b>Cash Leg</b></td><td><b>Lynx</b> (Payments Canada's large-value payment system, successor to the old LVTS)</td><td>Settles the CAD cash leg</td></tr>
+          <tr><td><b>Oversight</b></td><td><b>CIRO</b> (SRO — dealer conduct &amp; UMIR trade reporting/surveillance); <b>CSA</b> (national rule-setting, e.g. the OSC); <b>Bank of Canada</b> (oversees CDSX as a designated systemically important FMI)</td><td>A plain cash equity trade does <b>not</b> go to an OTC-derivatives-style Trade Repository the way an IRS or CDS does (<a href="./module-14-regulatory-reporting.html">Module 14</a> §1) — this is CIRO/UMIR surveillance plus CDSX settlement, not TR reporting</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · Canada — Equity Trade, Front Office to Regulator</span><span class="t-id">Bank Of Toronto · Loblaw (TSX: L)</span></div>
+        <pre>Maple Leaf Pension Fund instructs Bank Of Toronto:
+BUY 50,000 shares Loblaw Companies Ltd. (TSX: L)
+(the same trade worked through in systems-landscape §4, §9)
+
+FRONT OFFICE
+  Bloomberg AIM (OMS) captures the order
+    -&gt; FlexTrade (EMS) routes it via FIX 4.4
+    -&gt; smart order router selects the venue
+
+TRADING VENUE
+  Executed on TSX @ CAD 178.40
+  (could equally have routed to an ATS -- Nasdaq CXC/CX2,
+  Cboe Canada, Omega ATS -- Canada is multi-venue)
+  Trade Value = 50,000 x 178.40 = CAD 8,920,000
+
+MIDDLE OFFICE
+  Trade captured, Trade ID BOT-CA-2026-004471
+  Confirmed/matched via CDSX's matching module
+  Execution data feeds Canada's consolidated tape and
+  CIRO's UMIR-based market surveillance
+
+BACK OFFICE / CSD
+  CDS Clearing and Depository Services Inc. -- CDSX
+  Continuous Net Settlement (CNS) nets this trade against
+  Bank Of Toronto's other Loblaw activity that day
+  Settlement Date = T+1 = Tue 18-Aug-2026
+  DvP: shares move book-entry inside CDSX;
+  CAD cash leg settles via Lynx (Payments Canada)
+
+OVERSIGHT (NOT a Trade Repository report)
+  CIRO   -- dealer conduct &amp; UMIR trade reporting/surveillance
+  CSA / OSC -- national and provincial rule-setting
+  Bank of Canada -- oversees CDSX as a designated
+  systemically important Financial Market Infrastructure (FMI)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice the trade never touches an OTC-derivatives-style Trade Repository at any point — a plain cash equity trade's regulatory trail runs entirely through CIRO's UMIR surveillance and CDSX's settlement records, in contrast to <a href="./module-14-regulatory-reporting.html">Module 14</a> §1's IRS example, which additionally has to reach a Trade Repository under EMIR/Dodd-Frank. The system stack itself, not just the product definition, is part of what tells you which regulatory regime actually applies.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">Reference · Full cast</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Maple Leaf Pension Fund</td><td>Buy-side client — buyer of Coca-Cola stock, the E-mini future, and the AAPL call option</td></tr>
+          <tr><td>Goldman Sachs</td><td>Seller of the Coca-Cola stock; buyer of Bank Of Toronto's preferred share issuance</td></tr>
+          <tr><td>Bank Of Toronto</td><td>Dealer on the Coca-Cola trade; issuer of its own Preferred Shares; option writer on the AAPL call</td></tr>
+          <tr><td>CME Clearing</td><td>CCP for the E-mini S&amp;P 500 future</td></tr>
+          <tr><td>OCC (Options Clearing Corporation)</td><td>CCP for the listed AAPL option</td></tr>
+          <tr><td>NSCC / DTC</td><td>Clearing (netting) and settlement (DvP) for the US cash equity trade</td></tr>
+          <tr><td>CDS (CDSX)</td><td>Canada's central securities depository — clears/settles the Loblaw trade via CNS, T+1 (Section 09)</td></tr>
+          <tr><td>CIRO</td><td>Canadian SRO — UMIR-based market surveillance and dealer-conduct oversight of the Loblaw trade (Section 09)</td></tr>
+          <tr><td>Bank of Canada</td><td>Oversees CDSX as a designated systemically important Financial Market Infrastructure (Section 09)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these with real figures before moving to <a href="./module-05-fixed-income.html">Module 5</a>.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>Bank Of Toronto's Preferred Shares Series A pay a 4.50% non-cumulative dividend on CAD 25.00 par. If the board skips two consecutive quarters and then resumes in the third, how much of the skipped dividends does Goldman Sachs eventually receive — and how would the answer differ if these were <i>cumulative</i> preferred shares instead?</li>
+          <li>On the E-mini S&amp;P 500 future (Section 04c), if the index instead fell to 5,900.00 the next business day, what is the Variation Margin amount and which account does it move from/to?</li>
+          <li>On the AAPL 15-Jan-2027 250 Call (Section 04d), what is Maple Leaf Pension Fund's maximum possible loss, regardless of where AAPL's price ends up — and why is that figure fixed at trade date, unlike the maximum possible <i>gain</i>?</li>
+          <li>Why does a listed equity option's Clearing stage route to the OCC while a US cash equity trade's Clearing stage routes to the NSCC — are these the same organization wearing two hats, or two entirely separate CCPs?</li>
+          <li>Using the Section 06 table, which identifier on the Coca-Cola trade record identifies Bank Of Toronto itself, and which three identify the instrument being traded?</li>
+          <li>A Total Return Swap on Coca-Cola shares, negotiated bilaterally between two dealers, is later voluntarily submitted for central clearing. Does it change from "OTC" to "Exchange-Traded" as a result? Explain using Section 07's two-axis model.</li>
+          <li>If Bank Of Toronto lends its Coca-Cola shares to another firm that wants to short-sell them, which regulation from Section 08 governs the reporting of that specific transaction — MiFID, EMIR, or SFTR — and why do the other two not apply to it?</li>
+          <li>Using Section 09, when Bank Of Toronto's Toronto desk buys 50,000 shares of Loblaw on the TSX, does that trade generate a report to an OTC-derivatives-style Trade Repository the way an interest rate swap would under EMIR? If not, what two Canadian mechanisms actually capture and oversee it instead?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then move to <b><a href="./module-05-fixed-income.html">Module 5</a>: Fixed Income</b>, the next stop on the Asset Class Roadmap.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Goldman Sachs receives CAD 0 for the two skipped quarters; if cumulative, CAD 1,687,500 total</h5>
+        <p>Section 04b defines this directly: "non-cumulative" means a skipped dividend is simply gone, unlike a cumulative preferred share (or a bond coupon, which would constitute default if missed) where unpaid amounts accrue and must eventually be paid before any dividend can resume to common shareholders. If cumulative: 2 x CAD 562,500 = CAD 1,125,000 in skipped amounts, plus the regular CAD 562,500 for the third quarter = CAD 1,687,500 total catch-up.</p>
+
+        <h5>Q2 — Variation Margin = -USD 20,000, moving FROM Maple Leaf Pension Fund's margin account</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Variation Margin, Down Move</span><span class="t-id">5,920.00 → 5,900.00</span></div>
+          <pre>Variation Margin = (5,900.00 - 5,920.00) x 50 x 20 = -USD 20,000</pre>
+        </div>
+        <p>Since Maple Leaf Pension Fund is long (bought) the future and the index fell, the position lost value — the daily mark-to-market mechanic from Section 04c runs the same way regardless of direction, it just moves money the other way when price moves against the position holder.</p>
+
+        <h5>Q3 — Maximum possible loss = USD 185,000, the full premium paid</h5>
+        <p>Fixed at trade date because it's simply the price paid upfront; the maximum possible <i>gain</i> is theoretically unlimited (or very large) because it depends on how high AAPL's price can rise before expiry, which isn't knowable at trade date. Section 04d's Scenario B shows this exact outcome — the option expiring worthless caps the loss at premium paid, no matter how far below the strike AAPL falls. This asymmetry (fixed, known maximum loss vs. open-ended potential gain) is the defining economic feature of being long an option, contrasted with Section 04c's future, where both gains and losses are theoretically unbounded in either direction.</p>
+
+        <h5>Q4 — Two entirely separate CCPs, not the same organization</h5>
+        <p>Section 05's table and the disambiguation callout make this explicit: NSCC (a DTCC subsidiary) clears cash equity trades; OCC (Options Clearing Corporation) is a completely different, independent CCP dedicated specifically to US-listed options. They happen to both ultimately settle the underlying shares through DTC when an option is exercised, but the clearing function itself sits in two different organizations.</p>
+
+        <h5>Q5 — Bank Of Toronto is identified by its LEI; the instrument by ISIN, CUSIP, and Ticker</h5>
+        <p>Section 06's diagram states this directly — LEI answers "who," while ISIN/CUSIP/Ticker (and, where relevant, SEDOL/FIGI) all answer "what." Maple Leaf Pension Fund and Goldman Sachs would each carry their own separate LEIs as buyer/seller on the same trade record.</p>
+
+        <h5>Q6 — No, it stays OTC. Central clearing only changes the Bilateral-vs-Centrally-Cleared axis</h5>
+        <p>Section 07's two-axis model draws this distinction precisely: "where the trade was negotiated" (OTC, since it was a bilateral dealer negotiation) is permanently fixed by how the trade originated, regardless of what happens to it afterward. Submitting it for clearing only moves it from the "OTC + Bilateral" cell to the "OTC + Centrally Cleared" cell — it never becomes "Exchange-Traded," because it was never executed on an exchange.</p>
+
+        <h5>Q7 — SFTR governs it</h5>
+        <div class="takeaway">Lending the actual shares (not a derivative referencing them) is a Securities Financing Transaction, exactly the product family SFTR exists for (<a href="./systems-landscape.html">systems-landscape</a> §12). MiFID doesn't apply because this isn't a MiFID-scope "executed transaction" on the shares — no sale/purchase happened. EMIR doesn't apply because a securities lending transaction is not an OTC <i>derivative</i> — there's no notional-referencing contract here, just the shares themselves changing hands temporarily. The key distinguishing test, consistent with <a href="./module-02-hierarchy.html">Module 2</a>'s asset-class hierarchy: is this a trade in the security itself, or a contract referencing the security? Securities lending is squarely the former, and specifically the financing sub-category SFTR was built for.</div>
+
+        <h5>Q8 — No, it does NOT go to a Trade Repository. CIRO's UMIR-based market surveillance and CDSX's settlement process (with Bank of Canada FMI oversight) capture and oversee it instead</h5>
+        <p>Section 09's table states this directly: TR reporting is an OTC-derivatives-specific mechanism (<a href="./module-02-hierarchy.html">Module 2</a> §07, <a href="./module-14-regulatory-reporting.html">Module 14</a> §1), not a cash-equity one. The Loblaw trade is instead captured by (1) CIRO's UMIR-based market surveillance, ingesting the execution data from TSX (or whichever venue it traded on) for conduct/surveillance purposes, and (2) CDSX's Continuous Net Settlement process at CDS, which nets and settles the trade DvP, T+1 — with the Bank of Canada providing systemic oversight of CDSX itself as a designated FMI.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 4 of 14 &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

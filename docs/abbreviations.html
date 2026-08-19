@@ -1,0 +1,598 @@
+<!doctype html>
+<title>Capital Markets — Abbreviations Glossary</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); }
+
+  .masthead h1 { font-size: 2.2rem; line-height: 1.15; margin: 0 0 12px; }
+  .masthead .dek { color: var(--ink-soft); font-size: 1.02rem; max-width: 58ch; margin: 0 0 18px; }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag { color: var(--accent-2); font-family: "Cascadia Code", "SF Mono", Consolas, monospace; }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
+  .toc li { margin: 0; }
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  main { min-width: 0; }
+
+  section.mod { padding: 40px 0; border-bottom: 1px solid var(--line); }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 { font-size: 1.5rem; margin: 0 0 6px; }
+  h3 { font-size: 1.05rem; margin: 26px 0 10px; color: var(--accent-2); }
+  h3:first-of-type { margin-top: 18px; }
+  .lede { color: var(--ink-soft); margin: 0 0 20px; max-width: 62ch; }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 4px 0 6px; }
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-soft); }
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+  .abbr-tag {
+    display: inline-block;
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .full-form { color: var(--ink); font-style: italic; }
+
+  .callout {
+    margin: 24px 0 4px;
+    padding: 16px 18px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Abbreviations Glossary</h1>
+    <p class="dek">The most commonly used acronyms across identifiers, market structure, products, rates, valuation, settlement, risk, and regulation — a lookup companion to every module, not a module itself.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Cross-references point back to the module section where each concept is taught with worked numbers.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#identifiers"><span class="toc-num">01</span>Identifiers</a></li>
+      <li><a href="#market-structure"><span class="toc-num">02</span>Market Structure</a></li>
+      <li><a href="#products"><span class="toc-num">03</span>Products &amp; Derivatives</a></li>
+      <li><a href="#rates"><span class="toc-num">04</span>Rates &amp; Benchmarks</a></li>
+      <li><a href="#valuation"><span class="toc-num">05</span>Pricing &amp; Valuation</a></li>
+      <li><a href="#settlement"><span class="toc-num">06</span>Settlement &amp; Clearing</a></li>
+      <li><a href="#risk"><span class="toc-num">07</span>Risk &amp; Margin</a></li>
+      <li><a href="#regulatory"><span class="toc-num">08</span>Global Regulatory Bodies</a></li>
+      <li><a href="#regional"><span class="toc-num">09</span>Regional Regimes — US/UK/EU/CA/HK</a></li>
+      <li><a href="#org"><span class="toc-num">10</span>Organizational</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">01</span> · Which exact thing is this?</p>
+      <h2>Instrument &amp; Trade Identifiers</h2>
+      <p class="lede">The codes that answer "which exact instrument, trade, or entity is this record about."</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">ISIN</span></td><td class="full-form">International Securities Identification Number</td><td>Global, 12-character identifier for a security (2-letter country code + 9-char body + check digit). See <a href="./module-02-hierarchy.html">Module 2</a> §2.</td></tr>
+          <tr><td><span class="abbr-tag">CUSIP</span></td><td class="full-form">Committee on Uniform Securities Identification Procedures</td><td>9-character identifier for US/Canada securities; embedded inside the ISIN for North American securities.</td></tr>
+          <tr><td><span class="abbr-tag">SEDOL</span></td><td class="full-form">Stock Exchange Daily Official List</td><td>7-character UK-originated identifier, still used for some London-listed securities.</td></tr>
+          <tr><td><span class="abbr-tag">UPI</span></td><td class="full-form">Unique Product Identifier</td><td>Global identifier for OTC derivative <i>products</i> (not individual trades) — increasingly replaces ad-hoc internal codes in regulatory reporting. See <a href="./module-02-hierarchy.html">Module 2</a> §11.</td></tr>
+          <tr><td><span class="abbr-tag">UTI</span></td><td class="full-form">Unique Trade Identifier</td><td>Globally unique identifier for one specific derivative transaction, generated at execution — the derivatives world's answer to a "Trade ID."</td></tr>
+          <tr><td><span class="abbr-tag">CFI</span></td><td class="full-form">Classification of Financial Instruments (ISO 10962)</td><td>6-character code on a security master describing instrument type. The cash-instrument counterpart to ISDA taxonomy for derivatives. See <a href="./module-02-hierarchy.html">Module 2</a> §6.</td></tr>
+          <tr><td><span class="abbr-tag">LEI</span></td><td class="full-form">Legal Entity Identifier</td><td>20-character global identifier for a <i>legal entity</i> (a bank, fund, corporate) — not an instrument. Mandatory on most regulatory trade reports. Covered in <a href="./module-13-parties-leis.html">Module 13</a>. On a Credit Default Swap specifically, LEI also identifies the <i>Reference Entity</i> — a second, distinct role beyond identifying counterparties (<a href="./module-09-credit.html">Module 9</a> §6).</td></tr>
+          <tr><td><span class="abbr-tag">MIC</span></td><td class="full-form">Market Identifier Code (ISO 10383)</td><td>4-character code identifying a specific exchange or trading venue (e.g. <code>XNYS</code> for NYSE).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="market-structure">
+      <p class="sec-eyebrow"><span class="n">02</span> · Where the trade happens</p>
+      <h2>Market Structure &amp; Venues</h2>
+      <p class="lede">Who or what sits between two counterparties, and where trading actually takes place.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">OTC</span></td><td class="full-form">Over-the-Counter</td><td>A trade negotiated bilaterally between two parties, with no central exchange. See <a href="./module-01-fundamentals.html">Module 1</a> §5.</td></tr>
+          <tr><td><span class="abbr-tag">CCP</span></td><td class="full-form">Central Counterparty</td><td>A clearing house that steps in between two counterparties post-trade, becoming buyer to every seller and seller to every buyer. Novation mechanics covered in <a href="./module-03-trade-lifecycle.html">Module 3</a> §6; risk-reduction effect covered in <a href="./module-11-risk-exposure.html">Module 11</a>. For a Listed Derivative, novation happens instantaneously at execution rather than as a later step (<a href="./module-07-commodities.html">Module 7</a> §5, <a href="./module-15-listed-derivatives.html">Module 15</a> §1).</td></tr>
+          <tr><td><span class="abbr-tag">CSD</span></td><td class="full-form">Central Securities Depository</td><td>The single central ledger for a market recording ultimate legal ownership of securities (e.g. CDS in Canada, DTC in the US). See <a href="./module-01-fundamentals.html">Module 1</a> §7.</td></tr>
+          <tr><td><span class="abbr-tag">ICSD</span></td><td class="full-form">International Central Securities Depository</td><td>A CSD that settles cross-border/international securities (Euroclear, Clearstream).</td></tr>
+          <tr><td><span class="abbr-tag">MTF</span></td><td class="full-form">Multilateral Trading Facility</td><td>A EU-regulated trading venue that isn't a formal "exchange" but still matches multiple buyers/sellers under common rules.</td></tr>
+          <tr><td><span class="abbr-tag">SEF</span></td><td class="full-form">Swap Execution Facility</td><td>A US-regulated electronic venue for trading certain standardized OTC swaps, mandated post-2008 crisis.</td></tr>
+          <tr><td><span class="abbr-tag">SI</span></td><td class="full-form">Systematic Internalizer</td><td>A firm dealing on its own account when executing client orders outside a regulated exchange/MTF, above certain volume thresholds (a MiFID II concept).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="products">
+      <p class="sec-eyebrow"><span class="n">03</span> · What kind of thing is being traded</p>
+      <h2>Products &amp; Derivatives</h2>
+      <p class="lede">The instrument families that recur across <a href="./module-02-hierarchy.html">Module 2</a>'s asset-class tables.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">IRS</span></td><td class="full-form">Interest Rate Swap</td><td>Two parties exchange fixed vs floating interest cash flows on a notional. See <a href="./module-01-fundamentals.html">Module 1</a> §8, <a href="./module-02-hierarchy.html">Module 2</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">FRA</span></td><td class="full-form">Forward Rate Agreement</td><td>A contract locking in an interest rate for a single future period — essentially a one-period IRS.</td></tr>
+          <tr><td><span class="abbr-tag">CDS</span></td><td class="full-form">Credit Default Swap</td><td>Protection against a reference entity's default; buyer pays premium, seller pays out on a credit event. See <a href="./module-02-hierarchy.html">Module 2</a> §9.</td></tr>
+          <tr><td><span class="abbr-tag">TRS</span></td><td class="full-form">Total Return Swap</td><td>One party pays the total return (price change + income) of an asset in exchange for a funding-rate payment.</td></tr>
+          <tr><td><span class="abbr-tag">NDF</span></td><td class="full-form">Non-Deliverable Forward</td><td>An FX Forward where only the net cash difference settles, used when a currency isn't freely convertible. See <a href="./module-02-hierarchy.html">Module 2</a> §10.</td></tr>
+          <tr><td><span class="abbr-tag">ETD</span></td><td class="full-form">Exchange-Traded Derivative</td><td>A derivative (future, listed option) traded on a regulated exchange, contrasted with OTC.</td></tr>
+          <tr><td><span class="abbr-tag">ETF</span></td><td class="full-form">Exchange-Traded Fund</td><td>A fund whose units trade on an exchange like a share, typically tracking an index.</td></tr>
+          <tr><td><span class="abbr-tag">MBS</span></td><td class="full-form">Mortgage-Backed Security</td><td>A security backed by a pool of mortgage loans; principal amortizes over time. See <a href="./module-02-hierarchy.html">Module 2</a> §6.</td></tr>
+          <tr><td><span class="abbr-tag">ABS</span></td><td class="full-form">Asset-Backed Security</td><td>A security backed by a pool of non-mortgage assets (auto loans, credit card receivables, etc.).</td></tr>
+          <tr><td><span class="abbr-tag">CLO</span></td><td class="full-form">Collateralized Loan Obligation</td><td>A securitization backed by a pool of leveraged corporate loans.</td></tr>
+          <tr><td><span class="abbr-tag">CDO</span></td><td class="full-form">Collateralized Debt Obligation</td><td>A broader securitization structure backed by a pool of debt instruments, tranched by risk/seniority.</td></tr>
+          <tr><td><span class="abbr-tag">ADR / GDR</span></td><td class="full-form">American / Global Depositary Receipt</td><td>A certificate representing shares of a foreign company, traded on a domestic exchange.</td></tr>
+          <tr><td><span class="abbr-tag">CTD</span></td><td class="full-form">Cheapest to Deliver</td><td>On a physically-settled bond future, the specific eligible bond (from a defined delivery basket) that's most economical for the short to source and deliver, chosen using a published conversion factor. See <a href="./module-15-listed-derivatives.html">Module 15</a> §5.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="rates">
+      <p class="sec-eyebrow"><span class="n">04</span> · What the floating leg references</p>
+      <h2>Rates &amp; Benchmarks</h2>
+      <p class="lede">The reference rates that drive floating legs, discounting, and spread quoting.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">CORRA</span></td><td class="full-form">Canadian Overnight Repo Rate Average</td><td>Canada's risk-free overnight benchmark rate, calculated daily by the <b>Bank of Canada</b> from actual overnight repo transactions collateralized by Government of Canada securities — not from bank estimates the way CDOR/LIBOR were. Used as the floating leg on CAD swaps (<a href="./module-01-fundamentals.html">Module 1</a> §8's Underlier explainer and worked example; full CDOR-to-CORRA transition story in <a href="./module-08-rates.html">Module 8</a> §1).</td></tr>
+          <tr><td><span class="abbr-tag">CDOR</span></td><td class="full-form">Canadian Dollar Offered Rate</td><td>The legacy, survey-based CAD interbank benchmark CORRA replaced — banks self-reported what they believed they could borrow at, rather than CORRA's actual-transaction basis. <b>Discontinued after June 2024.</b> See <a href="./module-08-rates.html">Module 8</a> §1.</td></tr>
+          <tr><td><span class="abbr-tag">SOFR</span></td><td class="full-form">Secured Overnight Financing Rate</td><td>The US's risk-free overnight benchmark rate, successor to USD LIBOR.</td></tr>
+          <tr><td><span class="abbr-tag">SONIA</span></td><td class="full-form">Sterling Overnight Index Average</td><td>The UK's risk-free overnight benchmark rate, successor to GBP LIBOR.</td></tr>
+          <tr><td><span class="abbr-tag">LIBOR</span></td><td class="full-form">London Interbank Offered Rate</td><td>The legacy interbank benchmark rate, phased out by 2023 in favor of SOFR/SONIA/CORRA-style rates. Still seen in legacy trade data.</td></tr>
+          <tr><td><span class="abbr-tag">OIS</span></td><td class="full-form">Overnight Index Swap</td><td>A swap referencing a compounded overnight rate (like CORRA/SOFR) as its floating leg — now the standard IRS structure.</td></tr>
+          <tr><td><span class="abbr-tag">bps</span></td><td class="full-form">Basis Points</td><td>1 bps = 0.01%. Used to quote spreads, rates, and small price moves precisely (e.g. CDS spread "120 bps" in <a href="./module-02-hierarchy.html">Module 2</a> §9).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="valuation">
+      <p class="sec-eyebrow"><span class="n">05</span> · What a position is worth</p>
+      <h2>Pricing &amp; Valuation</h2>
+      <p class="lede">The measures that turn a trade record into a dollar value on a report.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">YTM</span></td><td class="full-form">Yield to Maturity</td><td>The total annualized return on a bond if held to maturity, factoring in price paid, coupons, and the pull-to-par gain/loss. See <a href="./module-01-fundamentals.html">Module 1</a> §1.</td></tr>
+          <tr><td><span class="abbr-tag">MTM</span></td><td class="full-form">Mark-to-Market</td><td>Revaluing a position at current market prices/rates rather than its original trade price — what Middle Office computes daily. See <a href="./module-01-fundamentals.html">Module 1</a> §4.</td></tr>
+          <tr><td><span class="abbr-tag">NPV</span></td><td class="full-form">Net Present Value</td><td>The value today of a stream of future cash flows, discounted back at an appropriate rate. Full treatment in <a href="./module-10-valuation.html">Module 10</a> (Valuation); <a href="./module-08-rates.html">Module 8</a> (Rates) already uses NPV-style discounting for the FRA worked example's upfront settlement (<a href="./module-08-rates.html">Module 8</a> §4b).</td></tr>
+          <tr><td><span class="abbr-tag">PV01 / DV01</span></td><td class="full-form">Price/Dollar Value of 1 Basis Point</td><td>How much a position's value changes for a 1 bps move in interest rates — a core interest rate risk sensitivity measure, first previewed in <a href="./module-05-fixed-income.html">Module 5</a> §1 (bond Duration) and <a href="./module-08-rates.html">Module 8</a> §1 (Rates), fully covered in <a href="./module-10-valuation.html">Module 10</a>.</td></tr>
+          <tr><td><span class="abbr-tag">P&amp;L</span></td><td class="full-form">Profit and Loss</td><td>The gain or loss on a position or trade over a period.</td></tr>
+          <tr><td><span class="abbr-tag">NAV</span></td><td class="full-form">Net Asset Value</td><td>The per-unit value of a fund's holdings (assets minus liabilities), used to price fund units/ETF shares.</td></tr>
+          <tr><td><span class="abbr-tag">IPV</span></td><td class="full-form">Independent Price Verification</td><td>The control process (typically Product Control, inside Middle Office) that independently re-derives a position's valuation to check it against the Front Office's own mark — scrutiny intensity scales with Fair Value Level (<a href="./module-10-valuation.html">Module 10</a> §6-7).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="settlement">
+      <p class="sec-eyebrow"><span class="n">06</span> · When and how cash/securities actually move</p>
+      <h2>Settlement &amp; Clearing</h2>
+      <p class="lede">The mechanics that turn an agreed trade into securities and cash actually changing hands.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">T, T+1, T+2</span></td><td class="full-form">Trade Date, Trade Date + n business days</td><td>Standard settlement-timing shorthand. See <a href="./module-01-fundamentals.html">Module 1</a> §6 for full worked examples with real dates.</td></tr>
+          <tr><td><span class="abbr-tag">DvP</span></td><td class="full-form">Delivery versus Payment</td><td>A settlement mechanism ensuring securities and cash move simultaneously, so neither party is left exposed. See <a href="./module-01-fundamentals.html">Module 1</a> §7.</td></tr>
+          <tr><td><span class="abbr-tag">SSI</span></td><td class="full-form">Standard Settlement Instructions</td><td>Pre-agreed, static instructions (custodian, account number, etc.) for where to deliver securities/cash — reference data, not per-trade data.</td></tr>
+          <tr><td><span class="abbr-tag">FOP</span></td><td class="full-form">Free of Payment</td><td>A securities transfer with no corresponding cash payment (the opposite of DvP) — e.g. moving collateral.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="risk">
+      <p class="sec-eyebrow"><span class="n">07</span> · How exposure is measured and covered</p>
+      <h2>Risk, Collateral &amp; Margin</h2>
+      <p class="lede">The measures and mechanisms protecting each side of a trade against the other's default.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">IM</span></td><td class="full-form">Initial Margin</td><td>Collateral posted upfront to cover potential future losses on a derivative position before it's even marked-to-market. Covered in <a href="./module-12-collateral-margin.html">Module 12</a>.</td></tr>
+          <tr><td><span class="abbr-tag">VM</span></td><td class="full-form">Variation Margin</td><td>Collateral exchanged periodically (daily, for exchange-traded and many centrally-cleared products) to cover the <i>current</i> mark-to-market gain/loss on a position. Covered in <a href="./module-12-collateral-margin.html">Module 12</a>; concrete daily examples already worked in <a href="./module-04-equity.html">Module 4</a> §4c, <a href="./module-07-commodities.html">Module 7</a> §5, <a href="./module-08-rates.html">Module 8</a> §5, and <a href="./module-15-listed-derivatives.html">Module 15</a> §4c.</td></tr>
+          <tr><td><span class="abbr-tag">CSA</span></td><td class="full-form">Credit Support Annex</td><td>The legal document (an annex to the ISDA Master Agreement) that sets out collateral terms between two OTC derivative counterparties. See <a href="./module-02-hierarchy.html">Module 2</a> §7, <a href="./module-12-collateral-margin.html">Module 12</a>.</td></tr>
+          <tr><td><span class="abbr-tag">VaR</span></td><td class="full-form">Value at Risk</td><td>A statistical estimate of the maximum expected loss on a portfolio over a given time horizon at a given confidence level. Covered in <a href="./module-11-risk-exposure.html">Module 11</a>.</td></tr>
+          <tr><td><span class="abbr-tag">PFE</span></td><td class="full-form">Potential Future Exposure</td><td>An estimate of how large counterparty credit exposure on a derivative could grow over its remaining life. Covered in <a href="./module-11-risk-exposure.html">Module 11</a>.</td></tr>
+          <tr><td><span class="abbr-tag">CVA</span></td><td class="full-form">Credit Valuation Adjustment</td><td>An adjustment to a derivative's value reflecting the risk that the counterparty might default before the contract matures — a direct application of Credit's default-risk mechanics (<a href="./module-09-credit.html">Module 9</a>) to Risk &amp; Exposure (<a href="./module-11-risk-exposure.html">Module 11</a>).</td></tr>
+          <tr><td><span class="abbr-tag">CE</span></td><td class="full-form">Current Exposure</td><td>The loss a firm would suffer TODAY if its counterparty defaulted right now — equal to MAX(MTM, 0), never negative. See <a href="./module-11-risk-exposure.html">Module 11</a> §1.</td></tr>
+          <tr><td><span class="abbr-tag">SA-CCR</span></td><td class="full-form">Standardized Approach for Counterparty Credit Risk</td><td>The current Basel methodology banks use to calculate regulatory capital against counterparty credit risk on derivatives, formalizing Current Exposure/PFE/netting into a regulator-mandated formula. See <a href="./module-11-risk-exposure.html">Module 11</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">SIMM</span></td><td class="full-form">ISDA Standard Initial Margin Model</td><td>ISDA's standardized model calculating Initial Margin for non-centrally-cleared derivatives directly from a position's risk sensitivities. See <a href="./module-11-risk-exposure.html">Module 11</a> §7, <a href="./module-12-collateral-margin.html">Module 12</a>.</td></tr>
+          <tr><td><span class="abbr-tag">UMR</span></td><td class="full-form">Uncleared Margin Rules</td><td>The joint IOSCO/BCBS framework requiring Initial and Variation Margin on non-centrally-cleared derivatives above certain thresholds. See <a href="./module-11-risk-exposure.html">Module 11</a> §8, <a href="./module-12-collateral-margin.html">Module 12</a>.</td></tr>
+          <tr><td><span class="abbr-tag">CCAR</span></td><td class="full-form">Comprehensive Capital Analysis and Review</td><td>The US Federal Reserve's annual stress-testing regime for large banks, extending VaR-style portfolio risk logic to extreme hypothetical macroeconomic scenarios. See <a href="./module-11-risk-exposure.html">Module 11</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">Haircut</span></td><td class="full-form">— (not an acronym, but standard shorthand)</td><td>A percentage reduction applied to a security's Market Value when used as collateral, converting it into Collateral Value. See <a href="./module-12-collateral-margin.html">Module 12</a> §3.</td></tr>
+          <tr><td><span class="abbr-tag">MTA</span></td><td class="full-form">Minimum Transfer Amount</td><td>The smallest collateral movement a CSA allows, alongside Threshold, to prevent constant tiny transfers as MTM wobbles day to day. See <a href="./module-12-collateral-margin.html">Module 12</a> §5.</td></tr>
+          <tr><td><span class="abbr-tag">AANA</span></td><td class="full-form">Average Aggregate Notional Amount</td><td>The metric that determines which phase of UMR's six-wave rollout a firm falls into. See <a href="./module-12-collateral-margin.html">Module 12</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">HQLA</span></td><td class="full-form">High-Quality Liquid Assets</td><td>The pool of assets a bank must hold enough of, under Basel's LCR, to survive a 30-day stress scenario — posting collateral ties up a bank's own HQLA. See <a href="./module-12-collateral-margin.html">Module 12</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">LCR</span></td><td class="full-form">Liquidity Coverage Ratio</td><td>The Basel III/IV ratio requiring a bank to hold enough HQLA to survive a 30-day liquidity stress scenario — directly connected to collateral management. See <a href="./module-12-collateral-margin.html">Module 12</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">CSDR</span></td><td class="full-form">Central Securities Depositories Regulation</td><td>The EU regime setting settlement-discipline rules (mandatory buy-ins, cash penalties for fails) applying to securities-collateral movements settling through EU CSDs. See <a href="./module-12-collateral-margin.html">Module 12</a> §8.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">08</span> · Who sets and enforces the rules, globally</p>
+      <h2>Global Regulatory &amp; Industry Bodies</h2>
+      <p class="lede">Bodies and standards that operate above/across individual jurisdictions — every regional regime in Section 09 ultimately traces back to one of these.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">ISDA</span></td><td class="full-form">International Swaps and Derivatives Association</td><td>The trade body standardizing OTC derivative documentation (Master Agreement) and product classification (ISDA Taxonomy). See <a href="./module-02-hierarchy.html">Module 2</a> §7. Its <b>Determinations Committees</b> — industry panels, not a government regulator — rule on whether a CDS Credit Event has occurred, the single most consequential decision in a CDS's lifecycle (<a href="./module-09-credit.html">Module 9</a> §5, §8).</td></tr>
+          <tr><td><span class="abbr-tag">BCBS</span></td><td class="full-form">Basel Committee on Banking Supervision</td><td>The global standard-setter for bank capital/liquidity rules (the "Basel" accords) — drives IM/VM and capital requirements.</td></tr>
+          <tr><td><span class="abbr-tag">IOSCO</span></td><td class="full-form">International Organization of Securities Commissions</td><td>The global standard-setter coordinating securities regulators across jurisdictions — its principles underpin most national trade-reporting regimes.</td></tr>
+          <tr><td><span class="abbr-tag">FSB</span></td><td class="full-form">Financial Stability Board</td><td>The G20-mandated body monitoring global financial system risk; it mandated OTC derivative reforms (clearing, reporting, margining) globally post-2008, which each region then implemented locally.</td></tr>
+          <tr><td><span class="abbr-tag">CPMI</span></td><td class="full-form">Committee on Payments and Market Infrastructures</td><td>The global standard-setter for payment, clearing, and settlement systems (works jointly with IOSCO on CCP/CSD standards).</td></tr>
+          <tr><td><span class="abbr-tag">GLEIF</span></td><td class="full-form">Global Legal Entity Identifier Foundation</td><td>The body overseeing the global LEI system — accredits the Local Operating Units (LOUs) that issue LEIs to firms in each country.</td></tr>
+          <tr><td><span class="abbr-tag">LOU</span></td><td class="full-form">Local Operating Unit</td><td>The national entity actually accredited by GLEIF to issue and renew LEIs — an LEI's ACTIVE/LAPSED status (<a href="./module-13-parties-leis.html">Module 13</a> §7) is maintained at the LOU level.</td></tr>
+          <tr><td><span class="abbr-tag">IASB</span></td><td class="full-form">International Accounting Standards Board</td><td>The global accounting standard-setter — issues <b>IFRS 13</b>, the standard defining Fair Value and its Level 1/2/3 hierarchy (<a href="./module-10-valuation.html">Module 10</a> §6). The first standard-setter in this glossary that isn't a markets/derivatives regulator at all, but an accounting one.</td></tr>
+          <tr><td><span class="abbr-tag">FASB</span></td><td class="full-form">Financial Accounting Standards Board</td><td>The US accounting standard-setter — issues <b>ASC 820</b>, the US GAAP equivalent of IFRS 13, with the same Level 1/2/3 Fair Value concept. See <a href="./module-10-valuation.html">Module 10</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">FRTB</span></td><td class="full-form">Fundamental Review of the Trading Book</td><td>The BCBS's post-2008 overhaul of how banks calculate regulatory capital against trading-book market risk — directly penalizes banks for holding positions with less-observable, harder-to-verify (Level 2/3) valuations. See <a href="./module-10-valuation.html">Module 10</a> §8.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="regional">
+      <p class="sec-eyebrow"><span class="n">09</span> · Who sets and enforces the rules, by jurisdiction</p>
+      <h2>Regional Reporting Regimes &amp; Regulators</h2>
+      <p class="lede">Every OTC derivative trade Bank Of Toronto books has to be reported <i>somewhere</i> under local law — but "somewhere" means a different regulator, a different rulebook, and often a different Trade Repository depending on which jurisdiction the trade (or the counterparty) touches.</p>
+
+      <h3>United States</h3>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">CFTC</span></td><td class="full-form">Commodity Futures Trading Commission</td><td>The primary US regulator for OTC derivatives (swaps) — sets swap data reporting, clearing, and SEF trading rules under Dodd-Frank.</td></tr>
+          <tr><td><span class="abbr-tag">SEC</span></td><td class="full-form">Securities and Exchange Commission</td><td>The US regulator for securities markets (equities, bonds, exchanges) and for <i>security-based</i> swaps (e.g. single-name equity/credit swaps) under Reg SBSR.</td></tr>
+          <tr><td><span class="abbr-tag">Dodd-Frank</span></td><td class="full-form">Dodd-Frank Wall Street Reform and Consumer Protection Act</td><td>The 2010 US law mandating OTC derivative clearing, reporting, and SEF trading — the US's version of what EMIR does in the EU.</td></tr>
+          <tr><td><span class="abbr-tag">Reg SBSR</span></td><td class="full-form">Regulation Security-Based Swap Reporting</td><td>The SEC's reporting rulebook for security-based swaps, as distinct from the CFTC's rules for other swaps — a US-specific split not seen in most other jurisdictions.</td></tr>
+          <tr><td><span class="abbr-tag">SDR</span></td><td class="full-form">Swap Data Repository</td><td>The US term for a Trade Repository — where CFTC-regulated swap data must be reported.</td></tr>
+          <tr><td><span class="abbr-tag">FINRA</span></td><td class="full-form">Financial Industry Regulatory Authority</td><td>The US self-regulatory body overseeing broker-dealers.</td></tr>
+          <tr><td><span class="abbr-tag">TRACE</span></td><td class="full-form">Trade Reporting and Compliance Engine</td><td>FINRA's post-trade price transparency system for corporate/agency bonds — a cash-bond reporting regime, separate from derivatives reporting.</td></tr>
+          <tr><td><span class="abbr-tag">CAT</span></td><td class="full-form">Consolidated Audit Trail</td><td>The SEC-mandated system capturing order and trade lifecycle data across all US equity and options markets, for market surveillance.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>United Kingdom</h3>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">FCA</span></td><td class="full-form">Financial Conduct Authority</td><td>The UK's primary markets/conduct regulator — supervises trade reporting, market conduct, and most firms' day-to-day compliance.</td></tr>
+          <tr><td><span class="abbr-tag">PRA</span></td><td class="full-form">Prudential Regulation Authority</td><td>The Bank of England unit responsible for the prudential (capital/solvency) supervision of banks and large investment firms — the UK's Basel-implementer.</td></tr>
+          <tr><td><span class="abbr-tag">BoE</span></td><td class="full-form">Bank of England</td><td>The UK's central bank; oversees CCPs and systemic financial infrastructure alongside the PRA.</td></tr>
+          <tr><td><span class="abbr-tag">UK EMIR</span></td><td class="full-form">UK European Market Infrastructure Regulation</td><td>EU EMIR as "onshored" into UK law after Brexit (1 Jan 2021) — same core reporting/clearing obligations, now supervised by the FCA/BoE instead of ESMA.</td></tr>
+          <tr><td><span class="abbr-tag">UK MiFIR</span></td><td class="full-form">UK Markets in Financial Instruments Regulation</td><td>The onshored UK version of EU MiFIR, governing UK transaction reporting and market transparency post-Brexit.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>European Union</h3>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">EMIR</span></td><td class="full-form">European Market Infrastructure Regulation</td><td>The EU regulation requiring OTC derivative trades to be reported to Trade Repositories and, for standardized products, centrally cleared.</td></tr>
+          <tr><td><span class="abbr-tag">EMIR REFIT</span></td><td class="full-form">EMIR Regulatory Fitness and Performance Programme</td><td>The 2024 overhaul standardizing EMIR's reporting fields onto the ISO 20022 XML message format — a major IT migration event for derivatives reporting pipelines. See <a href="./module-14-regulatory-reporting.html">Module 14</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">ISO 20022</span></td><td class="full-form">(ISO messaging standard, not an initialism)</td><td>The structured XML financial-messaging standard EMIR REFIT (and increasingly other regimes) reports are formatted in, replacing older, less structured formats. See <a href="./module-14-regulatory-reporting.html">Module 14</a> §8.</td></tr>
+          <tr><td><span class="abbr-tag">MiFID II / MiFIR</span></td><td class="full-form">Markets in Financial Instruments Directive / Regulation</td><td>The EU's core rulebook for market structure, transparency, and transaction reporting across most financial instruments.</td></tr>
+          <tr><td><span class="abbr-tag">RTS 22</span></td><td class="full-form">Regulatory Technical Standard 22</td><td>The specific MiFIR technical standard governing Transaction Reporting field content (~65 fields) — distinct from, and narrower in destination than, EMIR's own field set. See <a href="./module-14-regulatory-reporting.html">Module 14</a> §4.</td></tr>
+          <tr><td><span class="abbr-tag">ESMA</span></td><td class="full-form">European Securities and Markets Authority</td><td>The EU-level body that writes the technical standards under EMIR/MiFIR and coordinates the national regulators (NCAs) below.</td></tr>
+          <tr><td><span class="abbr-tag">NCA</span></td><td class="full-form">National Competent Authority</td><td>The generic term for each EU member state's own regulator (e.g. Germany's BaFin, France's AMF) — day-to-day supervision happens at NCA level, with ESMA setting the common rulebook.</td></tr>
+          <tr><td><span class="abbr-tag">SFTR</span></td><td class="full-form">Securities Financing Transactions Regulation</td><td>The EU regime requiring reporting of repo, securities lending, and other securities financing transactions — a sibling regime to EMIR, covering a different product set.</td></tr>
+          <tr><td><span class="abbr-tag">TR</span></td><td class="full-form">Trade Repository</td><td>The generic EU/global term for the central registry OTC derivative trades must be reported to (<a href="./module-01-fundamentals.html">Module 1</a> §5) — the EU equivalent of a US "SDR."</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Canada</h3>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">CSA</span> <i style="color: var(--ink-faint); font-weight: 400;">(regulatory)</i></td><td class="full-form">Canadian Securities Administrators</td><td>The umbrella council of Canada's provincial/territorial securities regulators (OSC, AMF, BCSC, etc.) that jointly writes harmonized rules, including OTC derivatives trade-reporting rules. <b>Not</b> the same CSA as Credit Support Annex (Section 07) — the abbreviation collides, so always read it from context.</td></tr>
+          <tr><td><span class="abbr-tag">OSC</span></td><td class="full-form">Ontario Securities Commission</td><td>Canada's largest provincial securities regulator (Canada has no single national SEC-equivalent — regulation is provincial, coordinated via the CSA above).</td></tr>
+          <tr><td><span class="abbr-tag">CIRO</span></td><td class="full-form">Canadian Investment Regulatory Organization</td><td>Canada's self-regulatory body for investment dealers and trading activity, formed in 2023 from the merger of IIROC and the MFDA.</td></tr>
+          <tr><td><span class="abbr-tag">TR Rules</span></td><td class="full-form">Trade Reporting Rules (e.g. Multilateral Instrument 96-101)</td><td>The CSA's harmonized OTC derivatives trade-reporting rules, requiring reporting to a designated Trade Repository — Canada's equivalent of EMIR/Dodd-Frank reporting.</td></tr>
+          <tr><td><span class="abbr-tag">OSFI</span></td><td class="full-form">Office of the Superintendent of Financial Institutions</td><td>Canada's federal prudential regulator for banks and insurers — the Basel-implementer for Canadian banks like Bank Of Toronto.</td></tr>
+          <tr><td><span class="abbr-tag">BoC</span></td><td class="full-form">Bank of Canada</td><td>Canada's central bank; publishes CORRA (Section 04) and oversees systemically important clearing/settlement systems.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Hong Kong</h3>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">SFC</span></td><td class="full-form">Securities and Futures Commission</td><td>Hong Kong's primary securities and derivatives markets regulator.</td></tr>
+          <tr><td><span class="abbr-tag">HKMA</span></td><td class="full-form">Hong Kong Monetary Authority</td><td>Hong Kong's central banking institution — jointly administers the OTC derivatives reporting regime with the SFC (for banks and licensed corporations respectively) and oversees systemic infrastructure.</td></tr>
+          <tr><td><span class="abbr-tag">SFO</span></td><td class="full-form">Securities and Futures Ordinance</td><td>The primary Hong Kong statute under which the OTC derivatives reporting, clearing, and licensing regime is established.</td></tr>
+          <tr><td><span class="abbr-tag">HKTR</span></td><td class="full-form">Hong Kong Trade Repository</td><td>The trade repository operated by the HKMA where OTC derivative transactions booked in/through Hong Kong must be reported.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout"><b>Takeaway.</b> The pattern repeats everywhere even though the acronyms don't — every region has (1) a markets/conduct regulator, (2) a prudential/central-bank-linked supervisor, (3) a specific law or rulebook mandating OTC derivative reporting, and (4) a Trade Repository the data actually lands in. Once you can name those four things for one jurisdiction, spotting the equivalent in another is mostly a vocabulary exercise — the underlying reporting obligation (<a href="./module-14-regulatory-reporting.html">Module 14</a>) is structurally the same everywhere.</div>
+    </section>
+
+    <section class="mod" id="org" style="border-bottom: none;">
+      <p class="sec-eyebrow"><span class="n">10</span> · Internal shorthand</p>
+      <h2>Organizational Shorthand</h2>
+      <p class="lede">Common shorthand for internal functions referenced across every module.</p>
+      <table>
+        <thead><tr><th>Abbr.</th><th>Full Form</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><span class="abbr-tag">FO / MO / BO</span></td><td class="full-form">Front Office / Middle Office / Back Office</td><td>The three-stage internal pipeline a trade passes through — execution, risk/valuation/confirmation, then settlement/reporting. See <a href="./module-01-fundamentals.html">Module 1</a> §4.</td></tr>
+          <tr><td><span class="abbr-tag">KYC</span></td><td class="full-form">Know Your Customer</td><td>The due-diligence process for verifying a counterparty's identity before trading with them — feeds into LEI/reference-data setup.</td></tr>
+          <tr><td><span class="abbr-tag">AML</span></td><td class="full-form">Anti-Money Laundering</td><td>Regulatory controls preventing the financial system from being used to launder illicit funds.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout"><b>How to use this glossary:</b> if a reporting field or conversation uses an acronym you don't recognize, check here first — most entries link back to the module section where the underlying concept is taught with worked numbers, not just defined.</div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Abbreviations Glossary &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

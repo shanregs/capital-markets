@@ -1,0 +1,885 @@
+<!doctype html>
+<title>UPI, UTI &amp; ANNA-DSB Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>UPI, UTI &amp; ANNA-DSB Deep Dive</h1>
+    <p class="dek">Derivative identifiers, explained end to end — UTI structure and generation waterfall, UPI reference-data templates across five asset classes, the organization (ANNA-DSB) that actually runs the system, and exactly which reporting regimes need which identifier.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./sftr-reporting.html">SFTR</a> and <a href="./dmo-uk-reporting.html">UK DMO Reporting</a> deep dives. <a href="./module-02-hierarchy.html">Module 2</a> §12 first introduced UPI and UTI; this module goes deep.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Are UPI and UTI?</a></li>
+      <li><a href="#uti-deep-dive"><span class="toc-num">02</span>UTI Deep Dive</a></li>
+      <li><a href="#upi-deep-dive"><span class="toc-num">03</span>UPI Deep Dive</a></li>
+      <li><a href="#anna-dsb"><span class="toc-num">04</span>ANNA-DSB — Who Runs This</a></li>
+      <li><a href="#upi-vs-isin"><span class="toc-num">05</span>UPI vs. ISINs for MiFIR</a></li>
+      <li><a href="#where-used"><span class="toc-num">06</span>Where UPI/UTI Are Used</a></li>
+      <li><a href="#worked-example"><span class="toc-num">07</span>Full Identifier Stack</a></li>
+      <li><a href="#links"><span class="toc-num">08</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · Two identifiers, two layers</p>
+      <h2>What Are UPI and UTI? — Why Derivatives Needed New Identifiers</h2>
+      <p class="lede">Cash securities have had a single global identifier for decades — the ISIN. OTC derivatives never had an equivalent, because a derivative has no existence independent of the two parties' contract, so there's no natural "one instrument, many owners" object to attach a single code to.</p>
+
+      <p>The 2008 financial crisis made that gap a serious regulatory problem — the G20's post-crisis OTC derivatives reforms required trade reporting, but reports from different firms used different internal product codes, making it effectively impossible for a regulator to aggregate "how much risk exists in 5Y CAD interest rate swaps across the whole market." Two identifiers were built to close that gap, at two different layers:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Identifier</th><th>Layer</th><th>Answers</th></tr></thead>
+        <tbody>
+          <tr><td><b>UPI</b> (Unique Product Identifier)</td><td>Product</td><td>"What KIND of derivative is this?" — one code per product template, reused across thousands of unrelated trades</td></tr>
+          <tr><td><b>UTI</b> (Unique Transaction Identifier)</td><td>Trade</td><td>"WHICH specific transaction is this?" — one code per trade, generated fresh every time</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Where UPI and UTI Sit</span><span class="t-id">Restated from Module 2 §12</span></div>
+        <pre>ASSET CLASS -&gt; PRODUCT -&gt; [no instrument-level ID for OTC derivatives] -&gt; TRADE
+                    |                                                          |
+                    v                                                          v
+            UPI identifies                                        UTI identifies
+            the PRODUCT TEMPLATE                                  ONE TRANSACTION
+            (reused across trades)                                 (new every time)
+
+Both are GLOBAL standards -- not firm-specific, not jurisdiction-
+specific -- built specifically so a US regulator, an EU regulator,
+and a UK regulator looking at the SAME cross-border trade all see
+the SAME UPI and the SAME UTI on their respective reports.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> UPI and UTI aren't two flavors of the same idea — they solve two genuinely different aggregation problems. UPI lets a regulator ask "how much of THIS PRODUCT exists market-wide" without reading every firm's contract terms; UTI lets a regulator (or a Trade Repository) ask "did both counterparties report the SAME TRADE consistently" — exactly the pairing/reconciliation mechanism <a href="./module-14-regulatory-reporting.html">Module 14</a> §3 already introduced for EMIR.</div>
+    </section>
+
+    <section class="mod" id="uti-deep-dive">
+      <p class="sec-eyebrow"><span class="n">02</span> · Structure &amp; who generates it</p>
+      <h2>UTI Deep Dive — Structure, Generation Waterfall &amp; Worked Examples</h2>
+      <p class="lede">A UTI is a single alphanumeric code, up to 52 characters, structured as a 20-character LEI-based prefix (the generating entity) plus up to 32 additional characters the generator assigns as a unique suffix — from CPMI-IOSCO's 2017 Technical Guidance, the global standard every major jurisdiction converged on.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">UTI Anatomy · Worked Example</span><span class="t-id">Bank Of Toronto</span></div>
+        <pre>Bank Of Toronto's LEI (illustrative, Module 4 §6): 5493001KJTIIGC8Y1R12
+                                                     (exactly 20 characters)
+
+If Bank Of Toronto is the UTI-generating entity for a trade executed
+17-Aug-2026, it might assign the suffix "2026081700001" (its own
+internal sequencing scheme -- the generator has full discretion over
+the suffix's content, as long as it's unique):
+
+Full UTI:  5493001KJTIIGC8Y1R122026081700001
+           \__________20 chars_______/\____14 chars____/
+            Bank Of Toronto's LEI       Bank Of Toronto's own
+            (identifies WHO generated    unique suffix (identifies
+            this UTI)                    WHICH trade)
+
+-&gt; 34 characters total here, well under the 52-character maximum --
+   the suffix length is up to the generator, not fixed at 32.</pre>
+      </div>
+
+      <h3>Who generates the UTI — the waterfall</h3>
+      <p>Because a UTI must be identical on both counterparties' independently-submitted reports for a Trade Repository to pair them (<a href="./module-14-regulatory-reporting.html">Module 14</a> §3), regulators needed a rule for deciding WHICH party generates it and shares it with the other before either party's reporting deadline — the <b>UTI generation waterfall</b>.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Priority</th><th>Rule (illustrative, simplified)</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>If the trade is executed on a trading platform/venue that generates UTIs, the <b>venue</b> generates it</td><td>An exchange-like OTC platform assigns the UTI at execution</td></tr>
+          <tr><td>2</td><td>If the trade is (or becomes) centrally cleared, the <b>CCP</b> generates the UTI for the cleared leg(s)</td><td><a href="./module-08-rates.html">Module 8</a>'s 5Y CAD IRS, novated to LCH SwapClear — LCH SwapClear generates the UTI once cleared</td></tr>
+          <tr><td>3</td><td>Otherwise, a hierarchy among the counterparties applies (e.g. clearing member &gt; swap dealer/major participant &gt; financial counterparty &gt; non-financial counterparty)</td><td>Two dealers of the same seniority tier trading bilaterally</td></tr>
+          <tr><td>4</td><td>If still tied, a simple tie-break (e.g. alphabetical LEI) decides</td><td>See the worked example below</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Callout — this is a simplified illustration, not the literal current rule text.</b> The exact waterfall differs in small but legally material ways across EMIR, UK EMIR, Dodd-Frank/CFTC, and other regimes, and gets revised periodically. Confirm the current text against Section 8's official links before encoding it into a rules engine — the same hedge <a href="./sftr-reporting.html">SFTR</a> §7 and <a href="./dmo-uk-reporting.html">UK DMO</a> §2 already apply to their own regulatory specifics.</div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Worked Waterfall · Bilateral CDS</span><span class="t-id">Bank Of Toronto ↔ Goldman Sachs</span></div>
+        <pre>(Module 9 §4a's Northstar Resources Inc. trade -- bespoke, stays
+bilateral, Module 9 §7 already established it is NOT centrally cleared)
+
+Rule 1 (venue-generated)?    NO  -- bilaterally negotiated, no platform
+Rule 2 (CCP-generated)?      NO  -- confirmed bilateral, no CCP involved
+Rule 3 (seniority hierarchy)? TIE -- both are dealers of comparable
+                                     standing in this illustration
+Rule 4 (alphabetical LEI tie-break):
+  Bank Of Toronto's LEI:  5493001KJTIIGC8Y1R12
+  Goldman Sachs' LEI:     784F5XWPLTWKTBV3E584   (illustrative)
+
+  "5493..." sorts BEFORE "784F..." alphanumerically
+  -&gt; BANK OF TORONTO generates the UTI, and must share it with
+     Goldman Sachs before either party's own reporting deadline
+     (Module 14 §3's dual-sided pairing depends on this)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The waterfall exists to remove ambiguity, not preference — neither counterparty "wants" to generate the UTI, but exactly one of them MUST, deterministically, so the other can simply receive and reuse the same value. <a href="./module-14-regulatory-reporting.html">Module 14</a> §3's UTI-mismatch pairing-break scenario is precisely what happens when this hand-off fails.</div>
+    </section>
+
+    <section class="mod" id="upi-deep-dive">
+      <p class="sec-eyebrow"><span class="n">03</span> · One template per asset class</p>
+      <h2>UPI Deep Dive — Structure, Reference Data &amp; Worked Examples Across Asset Classes</h2>
+      <p class="lede">A UPI is a 12-character alphanumeric code (formatted similarly to an ISIN, including a check digit) under ISO 4914. Like an ISIN, the code is just a lookup key — the substance lives in the UPI Reference Data record behind it, maintained by the DSB (Section 4).</p>
+
+      <p><b>Critical rule, restated from <a href="./module-02-hierarchy.html">Module 2</a> §12:</b> two trades generate the SAME UPI if and only if every product-defining field matches. Trade-specific details — notional amount, price/rate, counterparty, trade date — are deliberately excluded from what defines a UPI.</p>
+
+      <div class="callout"><b>What's an "Underlier"?</b> Every worked example below has an <code>Underlier</code> field — <a href="./module-01-fundamentals.html">Module 1</a> §8 defines this general concept in full (it's the reference asset/rate/index/entity a derivative's cash flows are driven by, distinct from Notional, which is just the size), including what <b>CORRA</b> (the Interest Rate template's Underlier below) actually is and how it's calculated. <a href="./module-08-rates.html">Module 8</a> §1 has the full CDOR-to-CORRA transition story.</div>
+
+      <h3>One UPI reference-data template per asset class</h3>
+      <p>Different asset classes describe "the product" using different fields. Reusing trades already built elsewhere in this curriculum:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Five Asset Classes, Five UPI Reference-Data Shapes</span><span class="t-id">Illustrative UPIs</span></div>
+        <pre>INTEREST RATE  (Module 8's 5Y CAD IRS -- also Module 2 §12's example)
+  Asset Class: Interest Rate | Instrument Type: Swap, Fixed-Float
+  Underlier: CORRA | Notional Currency: CAD | Tenor: 5 Years
+  -&gt; UPI: QZ9F4K2XR7T1 (illustrative)
+
+CREDIT  (Module 9 §4a's Northstar Resources Inc. CDS)
+  Asset Class: Credit | Instrument Type: Single-Name CDS
+  Reference Entity: Northstar Resources Inc. | Seniority: Senior
+  Unsecured | Notional Currency: USD | Tenor: 5 Years
+  -&gt; UPI: RT4M8LN2WD93 (illustrative)
+
+FOREIGN EXCHANGE  (Module 6's 3M USD/CAD Forward)
+  Asset Class: Foreign Exchange | Instrument Type: Forward, Deliverable
+  Currency Pair: USD/CAD | Settlement Type: Physical
+  -&gt; UPI: FX7K1PXQ0H26 (illustrative)
+
+EQUITY  (Module 2 §11's Total Return Swap on Apple Inc. shares)
+  Asset Class: Equity | Instrument Type: Swap, Price Return
+  Underlier: Apple Inc. common stock | Return Type: Price + Dividend
+  -&gt; UPI: EQ3T9YBV5C48 (illustrative)
+
+COMMODITY  (Module 7's 1Y Brent Crude Oil Swap)
+  Asset Class: Commodity | Instrument Type: Swap
+  Underlier: ICE Brent | Sub-Asset: Energy, Oil | Notional Currency: USD
+  -&gt; UPI: CM6X2FGL8N71 (illustrative)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice the Credit template includes "Reference Entity" as a product-defining field — a CDS on Northstar Resources Inc. and an otherwise-identical CDS on a different company get DIFFERENT UPIs, even though both are "5Y Single-Name CDS." This is the opposite of the Interest Rate template, where the underlier is a shared rate benchmark (CORRA) — a reminder that "what counts as the same product" is asset-class-specific, defined field-by-field in each template the DSB maintains.</div>
+
+      <h3>Requesting a UPI</h3>
+      <p>A firm needing a UPI for a new product shape submits the reference-data fields to the DSB via its platform or API. The DSB checks whether an identical reference-data combination already has a UPI on file — if so, it returns the existing code (why thousands of unrelated trades correctly share one UPI, Section 1); if not, it issues a new one — the same lookup-or-create pattern an ISIN-issuing National Numbering Agency follows for a genuinely new security, just against a derivatives-specific schema.</p>
+    </section>
+
+    <section class="mod" id="anna-dsb">
+      <p class="sec-eyebrow"><span class="n">04</span> · Infrastructure, not a regulator</p>
+      <h2>ANNA-DSB — Who Runs This, Governance &amp; How It Actually Works</h2>
+      <p class="lede"><b>ANNA (the Association of National Numbering Agencies)</b> has coordinated ISIN issuance globally since the 1990s, working through each country's own National Numbering Agency. In 2017, ANNA established a dedicated subsidiary, the <b>DSB (Derivatives Service Bureau Limited)</b>, specifically because OTC derivatives' near-infinite combination of underliers and terms didn't fit the National-Numbering-Agency-per-country model that works for cash securities.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · One Organization, Two Identifier Outputs</span><span class="t-id">ANNA → DSB</span></div>
+        <pre>ANNA (Association of National Numbering Agencies)
+  -&gt; coordinates ISIN issuance globally, via national agencies,
+     for CASH securities (Module 2 §2)
+     |
+     v
+DSB (Derivatives Service Bureau Limited) -- ANNA's subsidiary,
+est. 2017, purpose-built for OTC DERIVATIVES:
+
+  OUTPUT 1 -- ISIN-for-derivatives (since 2017/2018)
+    Issued specifically for EU MiFID II/MiFIR pre- and post-trade
+    TRANSPARENCY requirements (Section 5) -- an OTC derivative
+    gets an ISIN-shaped code from the DSB, distinct from a cash
+    security's ISIN, but structurally an ISIN
+
+  OUTPUT 2 -- UPI (since 2022)
+    Issued for GLOBAL TRADE REPORTING under the FSB's 2020
+    mandate (implementing CPMI-IOSCO's Technical Guidance) --
+    EMIR, UK EMIR, Dodd-Frank/CFTC, and other G20 jurisdictions'
+    reporting regimes all consume this SAME UPI (Section 6)</pre>
+      </div>
+
+      <p><b>Governance:</b> the <b>Financial Stability Board (FSB)</b> designated the DSB as the sole global UPI Service Provider, following technical guidance jointly developed by <b>CPMI</b> (Committee on Payments and Market Infrastructures) and <b>IOSCO</b> — the same standard-setters <a href="./module-13-parties-leis.html">Module 13</a> §8 already introduced for their broader role overseeing global market-infrastructure standards. The DSB operates on a <b>not-for-profit, cost-recovery</b> basis: UPI <b>reference data lookups are free and publicly available</b> (a deliberate transparency design choice), while firms submitting NEW product definitions may be subject to a contributory fee structure funding the DSB's operations.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> The DSB isn't a regulator — it's market infrastructure, operating under a mandate from standard-setters (FSB/CPMI-IOSCO), the same way <a href="./module-01-fundamentals.html">Module 1</a> and <a href="./module-13-parties-leis.html">Module 13</a> §8 already distinguish infrastructure providers (CSDs, Trade Repositories) from the regulators that oversee them. Confusing "the DSB requires X" with "the FCA/CSA/SEC requires X" is a common category error.</div>
+    </section>
+
+    <section class="mod" id="upi-vs-isin">
+      <p class="sec-eyebrow"><span class="n">05</span> · The most confusing fact about the DSB</p>
+      <h2>UPI vs. the DSB's Other Output — ISINs for MiFIR</h2>
+      <p class="lede">The exact same underlying reference-data record can produce two different identifier outputs, for two different regimes, serving two different purposes — an ISIN-shaped code for EU MiFIR transparency, and a UPI for global trade reporting.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · One Product, Two Regulatory Outputs</span><span class="t-id">MiFIR × EMIR</span></div>
+        <pre>Bank Of Toronto's 5Y CAD IRS with Goldman Sachs (Module 8 §4a),
+if EITHER counterparty is EU/UK MiFID-scope:
+
+-&gt; MiFIR pre/post-trade TRANSPARENCY (Module 14 §4's purpose --
+   "did anyone behave abusively," restated for derivatives):
+   the DSB issues an OTC-DERIVATIVE ISIN for this product, used
+   on MiFIR transaction reports and public transparency data
+
+-&gt; EMIR TRADE REPORTING (Module 14 §3's purpose -- "how much
+   systemic derivatives risk exists"):
+   the SAME trade's product is ALSO assigned a UPI, used on the
+   EMIR report submitted to the Trade Repository
+
+-&gt; TWO DIFFERENT DSB-ISSUED CODES, on TWO DIFFERENT REPORTS, for
+   the IDENTICAL underlying product -- because MiFIR and EMIR are
+   genuinely separate regimes (Module 14 §1's "one trade, five
+   regimes" theme, restated at the identifier level)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A reporting engineer who assumes "the DSB gives one code per product" will build a system that silently drops one of two legitimately required identifiers — MiFIR-scope firms need BOTH the OTC-derivative ISIN and the UPI on the same underlying trade, from the same source organization, because <a href="./module-14-regulatory-reporting.html">Module 14</a> §1 already established that regulatory purposes don't collapse into one just because the source data does.</div>
+    </section>
+
+    <section class="mod" id="where-used">
+      <p class="sec-eyebrow"><span class="n">06</span> · Not every regime uses both</p>
+      <h2>Where UPI/UTI Are Actually Used — Regime-by-Regime Map</h2>
+      <p class="lede">Not every reporting regime this curriculum has covered uses UPI and UTI the same way — some use both, some use only UTI, and some use neither.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regime</th><th>Uses UTI?</th><th>Uses UPI?</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><b>EMIR / UK EMIR</b></td><td>Yes — pairing key</td><td>Yes — mandatory since EMIR REFIT/UPI phase-in</td><td>The regime this module's Section 2/3 examples are built around</td></tr>
+          <tr><td><b>Dodd-Frank / CFTC</b></td><td>Yes</td><td>Yes — replacing CFTC's older internal product taxonomy</td><td>US swap data reporting to an SDR</td></tr>
+          <tr><td><b>SFTR / UK SFTR</b></td><td><b>Yes</b> — same UTI concept, same pairing purpose</td><td><b>No</b> — SFTs use SFTR's own "Type of SFT" codes (<code>REPO</code>, <code>SBSC</code>, <code>SLEB</code>, <code>MGLD</code>) instead</td><td>The clean illustration that UTI and UPI are genuinely independent</td></tr>
+          <tr><td><b>MiFID II / MiFIR</b></td><td>Not the primary key — keys off transaction reference number + OTC-derivative ISIN</td><td>Uses the DSB's OTHER output — an OTC-derivative ISIN, not a UPI (Section 5)</td><td>The regime most likely to be confused with UPI usage</td></tr>
+          <tr><td><b>UK DMO reporting</b></td><td>No</td><td>No</td><td>Not an OTC derivative regime — gilts are cash securities (ISIN), DMO reporting is commercial/contractual</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "Does this trade need a UPI?" and "does this trade need a UTI?" are two separate yes/no questions, exactly like <a href="./module-14-regulatory-reporting.html">Module 14</a> §1's "is this trade reportable?" was five separate yes/no questions against five regimes — SFTR proves a regime can need dual-sided pairing (UTI) without needing product-template aggregation (UPI).</div>
+    </section>
+
+    <section class="mod" id="worked-example">
+      <p class="sec-eyebrow"><span class="n">07</span> · Every identifier, assembled</p>
+      <h2>Worked Example — One Trade's Full Identifier Stack, End to End</h2>
+      <p class="lede">Pulling every identifier this module and Module 2 §12 have covered onto one trade record.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Full Identifier Stack</span><span class="t-id">5Y CAD IRS · Bank Of Toronto ↔ Goldman Sachs</span></div>
+        <pre>(Module 8 §4a's trade, novated to LCH SwapClear per Module 8 §5)
+
+Trade ID         : BOT-2026-000514        (Bank Of Toronto's own
+                                            internal reference only)
+
+UTI              : generated by LCH SwapClear once cleared (Section 2's
+                   waterfall Rule 2 -- CCP-generated for cleared trades),
+                   e.g. 549300LCHXXXXXXXXX2026081700099 (illustrative)
+
+UPI              : QZ9F4K2XR7T1 (illustrative -- Section 3's Interest
+                   Rate template: 5Y CAD Fixed-Float Swap vs CORRA)
+
+Counterparty LEIs: Bank Of Toronto  5493001KJTIIGC8Y1R12
+                   Goldman Sachs    784F5XWPLTWKTBV3E584 (illustrative)
+
+OTC-derivative ISIN (Section 5, ONLY if MiFIR-scope):
+                   a separate DSB-issued ISIN-shaped code, distinct
+                   from the UPI, used solely on MiFIR reports
+
+-&gt; FIVE different identifiers on one trade, each answering a
+   different question: Trade ID (internal), UTI (which specific
+   transaction, for EMIR pairing), UPI (which product template,
+   for EMIR aggregation), LEIs (who is trading), OTC-derivative
+   ISIN (which product, for MiFIR transparency) -- restating
+   Module 4 §6's "four completely different identifiers, four
+   completely different questions" pattern, now with the
+   derivative-specific layer fully populated</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> No single identifier on this record is redundant with another, even though several superficially "identify the product" — UPI and the OTC-derivative ISIN both describe the SAME product shape but exist for two regimes that don't share infrastructure (Section 5), while UTI and Trade ID both identify the SAME single transaction but at two different scopes (global/regulatory vs. internal/firm-specific).</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">08</span> · Primary sources, not restatements</p>
+      <h2>Official Sources &amp; Links</h2>
+      <p class="lede">As with <a href="./sftr-reporting.html">SFTR</a> §9 and <a href="./dmo-uk-reporting.html">UK DMO Reporting</a> §11, this module points to primary sources rather than restating rules that get periodically revised.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>ANNA-DSB</b></td><td>UPI reference data lookup (free), OTC-derivative ISIN issuance, UTI-related guidance, technical onboarding</td><td><a href="https://www.anna-dsb.com" target="_blank" rel="noopener">www.anna-dsb.com</a></td></tr>
+          <tr><td><b>CPMI</b></td><td>Joint technical guidance (with IOSCO) on UTI and UPI harmonization</td><td><a href="https://www.bis.org/cpmi" target="_blank" rel="noopener">www.bis.org/cpmi</a></td></tr>
+          <tr><td><b>IOSCO</b></td><td>Co-author of the UTI/UPI technical guidance; global securities-regulator standard-setter</td><td><a href="https://www.iosco.org" target="_blank" rel="noopener">www.iosco.org</a></td></tr>
+          <tr><td><b>FSB</b></td><td>Designated the DSB as global UPI Service Provider; oversees the G20 data-harmonization workstream</td><td><a href="https://www.fsb.org" target="_blank" rel="noopener">www.fsb.org</a></td></tr>
+          <tr><td><b>ESMA</b></td><td>EU technical standards requiring UPI under EMIR REFIT, and the OTC-derivative ISIN under MiFIR</td><td><a href="https://www.esma.europa.eu" target="_blank" rel="noopener">www.esma.europa.eu</a></td></tr>
+          <tr><td><b>CFTC</b></td><td>US technical standards requiring UPI/UTI under Dodd-Frank swap data reporting</td><td><a href="https://www.cftc.gov" target="_blank" rel="noopener">www.cftc.gov</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Treat the DSB's own site as the source of truth for the literal current UPI reference-data schema and lookup tool; CPMI-IOSCO's published technical guidance as the source of truth for the UTI/UPI structural standards themselves; and each jurisdiction's own regulator as the source of truth for exactly when and how that standard becomes a mandatory field on a report in that jurisdiction — the same three-way split <a href="./sftr-reporting.html">SFTR</a> §9's takeaway already established.</div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+      <p class="lede">Work these before checking the answers below.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>Using Section 1, why can't a derivative simply reuse the ISIN system the way a bond or a share does?</li>
+          <li>Using Section 2, decompose the illustrative UTI <code>5493001KJTIIGC8Y1R122026081700001</code> into its two structural parts, and state what each part identifies.</li>
+          <li>Using Section 2's waterfall, why does Bank Of Toronto — not Goldman Sachs — generate the UTI in the bilateral Northstar Resources Inc. CDS example, and what would change if that same trade were instead centrally cleared?</li>
+          <li>Using Section 3, would a CDS on Northstar Resources Inc. and an otherwise-identical CDS on a completely different company ever share a UPI? Why or why not?</li>
+          <li>Using Section 4, is the DSB a regulator? If not, what is it, and who actually mandates that firms use its identifiers?</li>
+          <li>Using Section 5, for a MiFID-scope OTC interest rate swap, how many DSB-issued identifiers does the trade's product actually need, and what does each one get used for?</li>
+          <li>Using Section 6, does SFTR require a UPI on its reports? Does it require a UTI? Explain the difference.</li>
+          <li>Using Section 7, why isn't the OTC-derivative ISIN redundant with the UPI, even though both describe the same underlying product?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — A derivative has no existence independent of the two parties' contract, so there's no single persistent "instrument" object for an ISIN-style code to attach to</h5>
+        <p>Section 1 traces this back to the same structural point <a href="./module-02-hierarchy.html">Module 2</a> §12 made about why UPI has to sit at the product layer instead — one rung higher than where an ISIN sits for cash instruments.</p>
+
+        <h5>Q2 — <code>5493001KJTIIGC8Y1R12</code> (first 20 chars) is the generating entity's LEI (Bank Of Toronto); <code>2026081700001</code> is the generator's own unique suffix identifying this one trade</h5>
+        <p>Section 2's "UTI Anatomy" diagram states this exact split — the LEI-based prefix answers "who generated this UTI," the suffix answers "which trade."</p>
+
+        <h5>Q3 — The trade is bilateral, so the waterfall falls through to Rule 4's alphabetical LEI tie-break, and Bank Of Toronto's LEI (5493...) sorts before Goldman Sachs' (784F...). If centrally cleared, Rule 2 would apply and the CCP itself would generate the UTI</h5>
+        <div class="takeaway">Section 2's worked waterfall example walks through exactly this elimination, rule by rule, and notes the CCP-generation case already happens for the cleared IRS in Section 7.</div>
+
+        <h5>Q4 — No, they would NOT share a UPI — the Credit template includes "Reference Entity" as a product-defining field</h5>
+        <p>Section 3's takeaway states this explicitly: a CDS on a different company fails the "every product-defining field matches" test from the start, contrasted with the Interest Rate template where the underlier is a shared rate benchmark, not a specific company.</p>
+
+        <h5>Q5 — No, the DSB is market infrastructure, not a regulator — the FSB designated it under CPMI-IOSCO guidance; individual jurisdictions' regulators (ESMA, CFTC, FCA) mandate its use</h5>
+        <p>Section 4's takeaway draws the same infrastructure-vs-regulator distinction <a href="./module-01-fundamentals.html">Module 1</a> and <a href="./module-13-parties-leis.html">Module 13</a> §8 already established for CSDs and Trade Repositories.</p>
+
+        <h5>Q6 — Two: a UPI (for EMIR trade reporting) and a separate OTC-derivative ISIN (for MiFIR transparency reporting), both from the same reference-data record</h5>
+        <div class="takeaway">Section 5's diagram states this precisely — a reporting engineer who assumes one DSB code per product will silently under-report one of the two legitimately required identifiers.</div>
+
+        <h5>Q7 — SFTR requires a UTI but NOT a UPI — SFTs use SFTR's own "Type of SFT" codes instead</h5>
+        <p>Section 6's table flags SFTR as "the clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other," cross-referencing <a href="./sftr-reporting.html">SFTR</a> §2's own SFT-type-code table.</p>
+
+        <h5>Q8 — Because they exist for two structurally separate regimes (EMIR wants a UPI, MiFIR wants an OTC-derivative ISIN) that don't share reporting infrastructure</h5>
+        <p>Section 7's takeaway restates Section 5's point in context: no identifier on the worked trade record is truly redundant, even the two that superficially describe "the same product," because each answers to a different regime's own reporting pipeline.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

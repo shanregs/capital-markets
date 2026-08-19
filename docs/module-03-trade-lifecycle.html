@@ -1,0 +1,1132 @@
+<!doctype html>
+<title>Module 3 — Trade Lifecycle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  .id-tag {
+    display: inline-block;
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .id-tag.gold { color: var(--accent-2); background: var(--accent-2-soft); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 3 of 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Trade Lifecycle</h1>
+    <p class="dek">The nine-stage journey every trade takes from Order to Regulatory Reporting — with real timestamps, margin numbers, settlement fails, and the full status state machine behind every reporting record.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#nine-stages"><span class="toc-num">01</span>Nine Stages, One Picture</a></li>
+      <li><a href="#order-execution"><span class="toc-num">02</span>Order vs Execution</a></li>
+      <li><a href="#trade-capture"><span class="toc-num">03</span>Trade Capture</a></li>
+      <li><a href="#confirmation"><span class="toc-num">04</span>Confirmation &amp; Affirmation</a></li>
+      <li><a href="#matching"><span class="toc-num">05</span>Matching &amp; Trade Breaks</a></li>
+      <li><a href="#clearing"><span class="toc-num">06</span>Clearing — Novation</a></li>
+      <li><a href="#settlement"><span class="toc-num">07</span>Settlement — DvP</a></li>
+      <li><a href="#reconciliation"><span class="toc-num">08</span>Reconciliation</a></li>
+      <li><a href="#reg-reporting"><span class="toc-num">09</span>Regulatory Reporting</a></li>
+      <li><a href="#e2e-bond"><span class="toc-num">10</span>End-to-End — Bond Trade</a></li>
+      <li><a href="#e2e-swap"><span class="toc-num">11</span>End-to-End — Cleared Swap</a></li>
+      <li><a href="#state-machine"><span class="toc-num">12</span>Status State Machine</a></li>
+      <li><a href="#fail-example"><span class="toc-num">13</span>Settlement Fail, With Numbers</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="nine-stages">
+      <p class="sec-eyebrow"><span class="n">01</span> · The whole journey, top to bottom</p>
+      <h2>The Trade Lifecycle — Nine Stages, One Picture</h2>
+      <p class="lede">Every trade you'll ever see in a reporting system passes through the same nine stages, in the same order, regardless of asset class. What differs per asset class is <b>how</b> each stage is implemented — the sequence itself never changes.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · The Nine-Stage Lifecycle</span><span class="t-id">Every trade, every asset class</span></div>
+        <pre>  1. ORDER            "I want to buy/sell X" — intent, not yet a trade
+        |
+  2. EXECUTION         Order meets a counterparty at an agreed price -&gt; a TRADE now exists
+        |
+  3. TRADE CAPTURE      The trade is recorded as data (Trade ID assigned)
+        |
+  4. CONFIRMATION       Both sides formally state what they believe was agreed
+        |
+  5. MATCHING           Automated comparison: do both sides' records agree exactly?
+        |
+  6. CLEARING           (derivatives/some cash products) CCP steps in as buyer-to-
+        |                every-seller and seller-to-every-buyer; margin is posted
+        |
+  7. SETTLEMENT         Securities and cash actually change hands (DvP)
+        |
+  8. RECONCILIATION     Internal books vs custodian/CCP records are tied out
+        |
+  9. REGULATORY         Trade details submitted to a Trade Repository / regulator
+     REPORTING</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Stage</th><th>Which office owns it</th><th>Produces</th></tr></thead>
+        <tbody>
+          <tr><td>Order</td><td>Front Office</td><td>An instruction, not yet a trade</td></tr>
+          <tr><td>Execution</td><td>Front Office</td><td>A legally agreed trade (price, quantity, counterparty, time)</td></tr>
+          <tr><td>Trade Capture</td><td>Front Office / Middle Office</td><td>The first electronic Trade record, with a Trade ID</td></tr>
+          <tr><td>Confirmation</td><td>Middle Office</td><td>A formal statement of trade economics sent to the counterparty</td></tr>
+          <tr><td>Matching</td><td>Middle Office</td><td>A MATCHED or BROKEN status</td></tr>
+          <tr><td>Clearing</td><td>Middle Office / CCP</td><td>Two novated trades (vs CCP) + margin requirement, where applicable</td></tr>
+          <tr><td>Settlement</td><td>Back Office</td><td>Securities delivered, cash paid, ledger entries booked</td></tr>
+          <tr><td>Reconciliation</td><td>Back Office</td><td>A tied-out position, or a flagged break</td></tr>
+          <tr><td>Regulatory Reporting</td><td>Back Office / Compliance</td><td>A submitted report to a Trade Repository / regulator</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If you're ever handed an unfamiliar field in a trade record and asked "where does this come from?", the fastest diagnostic is to place it on this nine-stage timeline — the stage tells you which office produced it and which upstream system owns the source of truth.</div>
+    </section>
+
+    <section class="mod" id="order-execution">
+      <p class="sec-eyebrow"><span class="n">02</span> · Where "the trade" actually begins</p>
+      <h2>Order vs Execution</h2>
+      <p class="lede">An <b>Order</b> is an instruction to buy or sell — no counterparty commitment, can be amended or cancelled freely. An <b>Execution</b> is the moment an order meets a matching counterparty at an agreed price — from that instant, a legally binding trade exists, even before any system has recorded it.</p>
+
+      <h3>Worked example — Maple Leaf Pension Fund routes an order through Bank Of Toronto</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Timeline · Order to Execution</span><span class="t-id">09:02 – 09:03 UTC</span></div>
+        <pre>09:02:00  ORDER placed
+  Maple Leaf Pension Fund instructs Bank Of Toronto:
+    "BUY CAD 50,000,000 face value, Canada 5% Bond 2035,
+     LIMIT price 98.60 or better"
+  -&gt; No trade exists yet. This is pure intent.
+
+09:03:12  EXECUTION
+  Bank Of Toronto's trading desk finds a seller in the interbank
+  market willing to sell at 98.55 (better than the fund's 98.60 limit)
+  -&gt; A TRADE now exists, legally, at 09:03:12 — before any
+     system has captured it as a data record.
+
+  Trade economics agreed at execution:
+    Instrument : Canada 5% Bond 2035 (ISIN CA1358XXXXX)
+    Quantity   : CAD 50,000,000 face value
+    Price      : 98.55
+    Counterparty: Maple Leaf Pension Fund
+    Side       : Bank Of Toronto sells / Maple Leaf Pension Fund buys</pre>
+      </div>
+
+      <p>An order can also be <b>partially filled</b> — e.g. the desk might only find CAD 30,000,000 face value available at or better than 98.60 in the first pass, execute that slice immediately, and leave the remaining CAD 20,000,000 as a <b>working order</b> until more supply appears. Each fill that occurs is its own Execution and, downstream, its own Trade record — one Order can produce many Trades.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> "Order" and "Trade" are not the same object, and a reporting system that conflates them will show phantom trades for cancelled/unfilled orders, or miss that one order became three separate trade records. The Execution timestamp — not the Order timestamp, and not the Trade Capture timestamp — is the legally binding moment the deal was struck.</div>
+    </section>
+
+    <section class="mod" id="trade-capture">
+      <p class="sec-eyebrow"><span class="n">03</span> · The trade becomes data</p>
+      <h2>Trade Capture — Anatomy of a Trade Record</h2>
+      <p class="lede">The moment the Execution becomes an electronic record — a Trade ID is assigned, and every field needed downstream (settlement, valuation, regulatory reporting) is populated for the first time.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Trade Record · BOT-2026-000901</span><span class="t-id">Status: NEW</span></div>
+        <pre>Trade ID          : BOT-2026-000901
+Execution Time     : 2026-08-17 09:03:12.184 UTC
+Trade Date         : 2026-08-17  (Monday)
+Settlement Date     : 2026-08-19  (T+2 — see Module 1 §6)
+Instrument         : Canada 5% Bond 2035
+ISIN               : CA1358XXXXX
+Quantity            : CAD 50,000,000 face value
+Price              : 98.55
+Currency            : CAD
+Counterparty        : Maple Leaf Pension Fund
+Side (Bank Of Toronto): SELL
+Trader ID           : T-4471
+Desk/Book           : Government Bonds Flow Desk
+Gross Consideration : 50,000,000 x 98.55 / 100 = CAD 49,275,000
+Status              : NEW</pre>
+      </div>
+
+      <div class="explainer">
+        <h5>Trade Date vs Execution Time</h5>
+        <p style="margin-bottom: 8px;">Trade Date is a <i>calendar day</i>; Execution Time is a <i>precise timestamp</i>, needed for best-execution analysis and for regulatory reporting deadlines that are measured in minutes, not days (Section 09).</p>
+        <h5>Status = NEW</h5>
+        <p style="margin-bottom: 0;">Every trade record starts life with a status, and that status field is what the rest of this module (Sections 04–09) advances through. Section 12 lays out the full state machine.</p>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If a Trade record and its parent Order have different quantities, that is not automatically a bug — it may simply mean the order was partially filled across several separate Trade Capture events, each with its own Trade ID.</div>
+    </section>
+
+    <section class="mod" id="confirmation">
+      <p class="sec-eyebrow"><span class="n">04</span> · Putting it in writing</p>
+      <h2>Confirmation &amp; Affirmation</h2>
+      <p class="lede"><b>Confirmation</b> is the message one party sends stating what it believes was agreed. <b>Affirmation</b> is the counterparty's formal agreement that those terms match. Only after both steps complete is a trade considered legally settled-in-principle.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Confirmation &amp; Affirmation</span><span class="t-id">09:15 – 10:31 UTC</span></div>
+        <pre>Bank Of Toronto                                Maple Leaf Pension Fund
+     |                                                    |
+     | 09:15  Sends CONFIRMATION                            |
+     |   Trade ID BOT-2026-000901                            |
+     |   Canada 5% Bond 2035, CAD 50,000,000 @ 98.55         |
+     |   Settlement Date 19-Aug-2026                        |
+     |------------------------------------------------------&gt;|
+     |                                                    |
+     |                                    10:30  Reviews terms
+     |                                    against its own order
+     |                                    record -&gt; MATCHES
+     |                                                    |
+     |                              10:31  Sends AFFIRMATION|
+     |&lt;------------------------------------------------------|
+     |                                                    |
+Status: CONFIRMED -&gt; AFFIRMED</pre>
+      </div>
+
+      <p>For cash securities (bonds, equities), this typically happens through platforms such as <b>CTM</b> (Central Trade Manager, DTCC) or <b>Omgeo/Alert</b>. For OTC derivatives, the equivalent step usually runs through <b>MarkitWire</b> or direct <b>FpML</b> message exchange between the two counterparties' systems, feeding the ISDA Master Agreement's legal framework referenced in <a href="./module-02-hierarchy.html">Module 2</a>, Section 07.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A trade sitting in "CONFIRMED" but not yet "AFFIRMED" status for an unusually long time is a strong signal something's wrong — either the counterparty disagrees with a term (a break, Section 05) or an operational delay is quietly eating into the T+2 settlement runway.</div>
+    </section>
+
+    <section class="mod" id="matching">
+      <p class="sec-eyebrow"><span class="n">05</span> · Do both sides actually agree?</p>
+      <h2>Matching — Bilateral Matching and Trade Breaks</h2>
+      <p class="lede">The automated, field-by-field comparison of both counterparties' trade records. Every field lines up exactly -&gt; MATCHED. Even one field disagrees -&gt; a BREAK, held until a human resolves it.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Comparison · A Clean Match</span><span class="t-id">BOT-2026-000901</span></div>
+        <pre>FIELD                 BANK OF TORONTO SIDE       PENSION FUND SIDE
+-------------------------------------------------------------------
+Trade ID (internal)   BOT-2026-000901            MLPF-77213
+Instrument (ISIN)     CA1358XXXXX                CA1358XXXXX          OK
+Quantity               50,000,000                 50,000,000           OK
+Price                  98.55                       98.55                OK
+Settlement Date        2026-08-19                  2026-08-19           OK
+Currency               CAD                          CAD                  OK
+-------------------------------------------------------------------
+RESULT: MATCHED  -&gt;  proceeds straight to Settlement (Section 07)</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Comparison · A Broken Match</span><span class="t-id">15bp price mismatch</span></div>
+        <pre>FIELD                 BANK OF TORONTO SIDE       COUNTERPARTY SIDE
+-------------------------------------------------------------------
+Instrument (ISIN)     CA1358XXXXX                CA1358XXXXX          OK
+Quantity               10,000,000                  10,000,000          OK
+Price                  98.50                        98.65               MISMATCH (15bp)
+Settlement Date        2026-08-19                   2026-08-19          OK
+-------------------------------------------------------------------
+RESULT: BROKEN  -&gt;  held, routed to an Ops queue for investigation
+
+  Root cause found: the counterparty's trader fat-fingered 98.65
+  instead of 98.50 when keying the trade into their own system.
+  Corrected, re-submitted, re-matched -&gt; MATCHED at 98.50, one
+  business hour later than a clean trade would have taken.</pre>
+        <div class="result">A 15-basis-point price break on CAD 10,000,000 face value is a difference of <b>10,000,000 x 0.15 / 100 = CAD 15,000</b> in consideration — small enough to look trivial in isolation, but exactly the kind of discrepancy that, left unresolved, cascades into a failed settlement (Section 13) two days later.</div>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "Matched" and "Confirmed" are not synonyms — Confirmation is one party stating terms; Matching is the automated proof that <i>both</i> parties' independently-keyed records agree. A trade can be Confirmed and still fail to Match if the counterparty's own capture had an error.</div>
+    </section>
+
+    <section class="mod" id="clearing">
+      <p class="sec-eyebrow"><span class="n">06</span> · The CCP steps into the middle</p>
+      <h2>Clearing — Novation Through a CCP</h2>
+      <p class="lede">Clearing only applies to products routed through a <b>CCP (Central Counterparty)</b> — mandatory for most standardized OTC derivatives. The CCP performs <b>novation</b>: it becomes the legal buyer to the original seller and the legal seller to the original buyer.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Novation</span><span class="t-id">5Y CAD IRS, CAD 100,000,000</span></div>
+        <pre>BEFORE CLEARING  —  one bilateral trade
+========================================================================
+
+  Bank Of Toronto  &lt;====  5Y CAD IRS, Notional CAD 100,000,000  ====&gt;  Goldman Sachs
+       (pays fixed 4.00% / receives floating CORRA)
+
+AFTER NOVATION  —  the CCP steps in; TWO trades now exist
+========================================================================
+
+  Bank Of Toronto  &lt;====  IRS #1, CAD 100,000,000  ====&gt;   CCP (e.g. LCH)
+       (pays fixed 4.00% / receives floating)
+
+  CCP (e.g. LCH)   &lt;====  IRS #2, CAD 100,000,000  ====&gt;   Goldman Sachs
+       (pays fixed 4.00% / receives floating — mirror of IRS #1)
+
+  -&gt; Bank Of Toronto's counterparty risk is now the CCP, not Goldman
+     Sachs. If Goldman Sachs defaulted, the CCP absorbs the loss and
+     Bank Of Toronto's trade with the CCP is unaffected.</pre>
+      </div>
+
+      <p>Novation is not free — both sides must post <b>Initial Margin (IM)</b> to the CCP to cover potential future losses, plus daily <b>Variation Margin (VM)</b> as the trade's value moves. Full mechanics belong to <a href="./module-12-collateral-margin.html">Module 12</a> (Collateral &amp; Margin); here's the shape of the numbers just to make "clearing has a cost" concrete:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Math · Illustrative Margin</span><span class="t-id">CAD 100,000,000 notional</span></div>
+        <pre>Initial Margin (IM) — illustrative rate ~2% of notional for a 5Y IRS:
+  100,000,000 x 2.00% = CAD 2,000,000
+  Bank Of Toronto posts CAD 2,000,000 to the CCP at trade inception.
+  Goldman Sachs separately posts its own CAD 2,000,000 to the CCP.
+
+Variation Margin (VM) — next business day, market rates move,
+the swap's mark-to-market value shifts by CAD 180,000 in
+Bank Of Toronto's favor:
+  CCP collects CAD 180,000 from Goldman Sachs' VM account
+  CCP pays CAD 180,000 to Bank Of Toronto's VM account
+  (VM is exchanged DAILY for the life of the trade — Module 12)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The reason a cleared trade's record shows a <b>CCP as counterparty</b>, not the original bank, is novation — it's not a data error or a proxy field, it's what legally happened at the Clearing stage. Bilateral (uncleared) products, like the plain bond trade in Sections 02–05, simply skip this stage entirely.</div>
+    </section>
+
+    <section class="mod" id="settlement">
+      <p class="sec-eyebrow"><span class="n">07</span> · The promise becomes reality</p>
+      <h2>Settlement — DvP Mechanics, Revisited With Real Numbers</h2>
+      <p class="lede">Securities move from seller to buyer, cash moves from buyer to seller, simultaneously via <b>DvP (Delivery versus Payment)</b> so neither side is ever left holding one leg without the other.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Settlement · BOT-2026-000901</span><span class="t-id">T+2 · 19-Aug-2026</span></div>
+        <pre>Bank Of Toronto (Seller)                Maple Leaf Pension Fund (Buyer)
+Custodian: BNY Mellon                    Custodian: State Street
+     |                                                    |
+     | Instructs BNY Mellon to deliver                     |
+     | CAD 50,000,000 face value                          |
+     | Canada 5% Bond 2035 (ISIN CA1358XXXXX)               |
+     |                                                    |
+     |         Both custodians instruct the CSD (CDS)      |
+     |         to move bond + cash SIMULTANEOUSLY (DvP)    |
+     v                                                    v
+--------------------------------------------------------------------
+|                    CDS — Central Securities Depository            |
+|  09:00:14 (T+2)  Bond: CAD 50,000,000 face value moves from        |
+|                   Bank Of Toronto's account to Maple Leaf's        |
+|  09:00:14 (T+2)  Cash: CAD 49,275,000 moves from Maple Leaf's      |
+|                   cash account to Bank Of Toronto's cash account   |
+|                   (50,000,000 x 98.55 / 100)                       |
+--------------------------------------------------------------------
+
+RESULT: both legs move in the same instant. Neither party is ever
+exposed to "I delivered/paid and the other side didn't."
+Status: MATCHED -&gt; SETTLED</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> DvP is the whole reason "settlement risk" (Herstatt risk) is manageable for securities in modern markets — the two legs are mechanically tied together at the CSD so a partial failure simply cannot happen for products settling through this rail. Section 13 covers what happens when the <i>whole trade</i> fails to settle.</div>
+    </section>
+
+    <section class="mod" id="reconciliation">
+      <p class="sec-eyebrow"><span class="n">08</span> · Proving three sources agree</p>
+      <h2>Reconciliation — The Three-Way Tie-Out</h2>
+      <p class="lede">Comparing the same trade/position across the firm's own internal books, the custodian's statement, and (where relevant) the CCP's records — to prove they all agree.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Recon · A Clean Tie-Out</span><span class="t-id">EOD, 19-Aug-2026</span></div>
+        <pre>                    Internal Books      Custodian (BNY Mellon)   CDS Record
+Position in Canada
+5% Bond 2035 (CAD)  450,000,000         450,000,000               450,000,000
+
+RESULT: TIED OUT — all three sources agree. No action needed.</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Recon · A Break</span><span class="t-id">CAD 1,000,000 discrepancy</span></div>
+        <pre>                    Internal Books      Custodian (BNY Mellon)   CDS Record
+Position in Bank Of
+Toronto 4.5% Bond
+2030 (CAD)          120,000,000         119,000,000               119,000,000
+
+RESULT: BREAK — internal books show CAD 1,000,000 more than the
+custodian and CDS agree on.
+
+  Investigation finds: a CAD 1,000,000 face value SELL trade settled
+  correctly at the custodian two days ago, but the internal position-
+  keeping system never received the settlement confirmation message
+  that would have decremented the internal position.
+  -&gt; Internal books corrected to 119,000,000. Root cause: a dropped
+     message between the settlement system and the position-keeping
+     system — flagged for the platform team, not a real economic loss.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Reconciliation breaks are not automatically "the custodian is wrong" or "we made a trading mistake" — the most common root cause in practice is an internal system simply failing to process a downstream event. This is precisely the class of bug an IT/reporting engineer gets pulled into: the money is fine, the <i>data</i> disagrees.</div>
+    </section>
+
+    <section class="mod" id="reg-reporting">
+      <p class="sec-eyebrow"><span class="n">09</span> · The clock the regulator watches</p>
+      <h2>Regulatory Reporting — The T+1 Deadline</h2>
+      <p class="lede">Once a trade is executed, most jurisdictions require it to be reported to a regulator or Trade Repository within a strict deadline — commonly <b>T+1</b>, though some in-scope products/venues require same-day or near-real-time reporting.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Deadline Check · Two Trades</span><span class="t-id">T+1 = next business day EOD</span></div>
+        <pre>TRADE 1 — Bond, BOT-2026-000901
+  Executed          : Mon 17-Aug-2026, 09:03:12 UTC
+  Reporting Deadline : Tue 18-Aug-2026, 23:59:59 UTC   (T+1)
+  Reported            : Mon 17-Aug-2026, 18:40:00 UTC   -&gt; WELL WITHIN DEADLINE
+  Report includes     : Trade ID, ISIN, Quantity, Price, Counterparty LEI,
+                        Trade Date/Time, Venue (OTC)
+
+TRADE 2 — Cleared 5Y CAD IRS (Section 06)
+  Executed            : Mon 17-Aug-2026, 14:12:05 UTC
+  Reporting Deadline   : Tue 18-Aug-2026, 23:59:59 UTC   (T+1)
+  Reported              : Tue 18-Aug-2026, 08:15:00 UTC   -&gt; WITHIN DEADLINE
+  Report includes       : UTI (Section 12, Module 2), UPI (Module 2 §12),
+                          Notional, Fixed Rate, Counterparty LEI,
+                          CCP LEI (post-novation), ISDA Taxonomy fields
+
+MISSED DEADLINE EXAMPLE
+  If Trade 2 wasn't reported until Wed 19-Aug-2026, 09:00:00 UTC,
+  that's a LATE report — a regulatory breach in itself, independent
+  of whether the trade settled/cleared correctly.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Regulatory reporting deadlines are measured from <b>Execution Time</b> (Section 02), not Trade Capture time or Settlement Date — a trade that settles perfectly two days later can still represent a reporting breach if the report itself missed its T+1 window on day one.</div>
+    </section>
+
+    <section class="mod" id="e2e-bond">
+      <p class="sec-eyebrow"><span class="n">10</span> · Every stage, one trade</p>
+      <h2>End-to-End Timeline — One Bond Trade, Order to Report</h2>
+      <p class="lede">Pulling every stage above together for the single trade this module has followed throughout.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Full Lifecycle · BOT-2026-000901</span><span class="t-id">Happy path</span></div>
+        <pre>Mon 17-Aug-2026 (T)
+  09:02:00   ORDER placed by Maple Leaf Pension Fund               [Sec 02]
+  09:03:12   EXECUTION — trade agreed at 98.55                     [Sec 02]
+  09:03:12   TRADE CAPTURE — Trade ID BOT-2026-000901 assigned      [Sec 03]
+  09:15:00   CONFIRMATION sent to Maple Leaf Pension Fund           [Sec 04]
+  10:31:00   AFFIRMATION received                                  [Sec 04]
+  10:32:00   MATCHING — fields agree, status MATCHED                [Sec 05]
+             (no Clearing stage — plain bond trade, bilateral)      [Sec 06]
+  18:40:00   Reported to Trade Repository (well within T+1)        [Sec 09]
+
+Wed 19-Aug-2026 (T+2)
+  09:00:14   SETTLEMENT — DvP at the CDS, bond + cash both move      [Sec 07]
+  17:00:00   RECONCILIATION — internal books tie out to custodian    [Sec 08]
+             and CDS record. Status: SETTLED -&gt; RECONCILED.
+
+Total elapsed time, Order to fully reconciled: ~56 hours, spanning
+one weekday plus the standard T+2 settlement cycle. Every stage
+above ran cleanly — no breaks, no fails.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is the "happy path" every reporting system is designed around. Sections 05, 08, and 13 show what each stage's <i>unhappy path</i> looks like — worth re-reading this timeline after those sections to see exactly where a break or fail would have inserted extra days.</div>
+    </section>
+
+    <section class="mod" id="e2e-swap">
+      <p class="sec-eyebrow"><span class="n">11</span> · Clearing adds a whole extra stage</p>
+      <h2>End-to-End Timeline — One Cleared Interest Rate Swap</h2>
+      <p class="lede">Same exercise, for the Section 06 IRS — notice Clearing inserts real extra steps (and an ongoing relationship) that the plain bond trade above never needed.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Full Lifecycle · 5Y CAD IRS</span><span class="t-id">CAD 100,000,000 notional</span></div>
+        <pre>Mon 17-Aug-2026 (T)
+  14:10:00   EXECUTION — Bank Of Toronto &amp; Goldman Sachs agree      [Sec 02]
+             terms bilaterally (fixed 4.00% vs floating CORRA)
+  14:12:05   TRADE CAPTURE in both firms' systems                   [Sec 03]
+  14:20:00   CONFIRMATION exchanged via FpML/MarkitWire              [Sec 04]
+  14:45:00   AFFIRMATION received, MATCHED                          [Sec 05]
+  15:00:00   Submitted to CCP (e.g. LCH) for clearing                [Sec 06]
+  16:30:00   NOVATION completes — CCP is now legal counterparty
+             to both sides. Two new trades exist (IRS #1, IRS #2).
+  17:00:00   Initial Margin call: CAD 2,000,000 due from each side   [Sec 06]
+
+Tue 18-Aug-2026 (T+1)
+  09:00:00   Bank Of Toronto posts CAD 2,000,000 IM to the CCP
+  08:15:00   Reported to Trade Repository — UTI + UPI included       [Sec 09]
+             (within T+1 deadline)
+  17:00:00   First Variation Margin call: CAD 180,000 moves from
+             Goldman Sachs' account to Bank Of Toronto's account
+             via the CCP (Section 06)
+
+Every business day thereafter, for 5 years:
+  - Daily VM exchanged based on the swap's mark-to-market movement
+  - Quarterly net cash flow paid per Module 1 §8's mechanics
+    (~CAD 187,192 per quarter in that worked example)
+
+Total elapsed time, Execution to fully cleared + margined:
+~27 hours — one extra full stage (Clearing) versus the bond trade,
+plus an ongoing daily margin-exchange relationship that a plain
+bond trade never has.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "Settlement" for a cleared derivative doesn't mean one T+2 event like a bond — it means novation, an initial margin call, and then a recurring daily/quarterly cash-flow relationship with the CCP for the life of the trade. Any report showing a derivative trade as "settled" on a single date is almost certainly using the word loosely; the more accurate status is "cleared," with ongoing margin activity continuing underneath it.</div>
+    </section>
+
+    <section class="mod" id="state-machine">
+      <p class="sec-eyebrow"><span class="n">12</span> · What the status field actually tracks</p>
+      <h2>Trade Status State Machine — Reference Table</h2>
+      <p class="lede">Every stage in Sections 01–09 leaves behind a status value. This is the reference table to check whenever a trade record's <code>status</code> field doesn't make sense at first glance.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Status</th><th>Meaning</th><th>Set at which stage</th><th>Typical next status</th></tr></thead>
+        <tbody>
+          <tr><td><code>NEW</code></td><td>Trade captured, nothing verified yet</td><td>Trade Capture (Sec 03)</td><td><code>CONFIRMED</code></td></tr>
+          <tr><td><code>CONFIRMED</code></td><td>This firm's terms sent to counterparty</td><td>Confirmation (Sec 04)</td><td><code>AFFIRMED</code> or <code>DISPUTED</code></td></tr>
+          <tr><td><code>AFFIRMED</code></td><td>Counterparty agreed to the stated terms</td><td>Confirmation (Sec 04)</td><td><code>MATCHED</code></td></tr>
+          <tr><td><code>DISPUTED</code></td><td>Counterparty pushed back on a term</td><td>Confirmation (Sec 04)</td><td><code>CONFIRMED</code> (after correction)</td></tr>
+          <tr><td><code>MATCHED</code></td><td>Both sides' independent records agree exactly</td><td>Matching (Sec 05)</td><td><code>CLEARED</code> or <code>SETTLED</code></td></tr>
+          <tr><td><code>BROKEN</code></td><td>A field mismatch was found during matching</td><td>Matching (Sec 05)</td><td><code>MATCHED</code> (after correction)</td></tr>
+          <tr><td><code>PENDING CLEARING</code></td><td>Submitted to CCP, novation not yet complete</td><td>Clearing (Sec 06)</td><td><code>CLEARED</code></td></tr>
+          <tr><td><code>CLEARED</code></td><td>CCP has novated the trade; margin obligations active</td><td>Clearing (Sec 06)</td><td><code>SETTLED</code> (rare) or ongoing</td></tr>
+          <tr><td><code>SETTLED</code></td><td>Securities and cash have exchanged (DvP complete)</td><td>Settlement (Sec 07)</td><td><code>RECONCILED</code></td></tr>
+          <tr><td><code>FAILED</code></td><td>Settlement Date passed without completion</td><td>Settlement (Sec 07)</td><td><code>SETTLED</code> (once resolved) — Sec 13</td></tr>
+          <tr><td><code>RECONCILED</code></td><td>Internal books tie out to custodian/CCP records</td><td>Reconciliation (Sec 08)</td><td>terminal (happy path)</td></tr>
+          <tr><td><code>BREAK (RECON)</code></td><td>Internal books disagree with an external record</td><td>Reconciliation (Sec 08)</td><td><code>RECONCILED</code> (after investigation)</td></tr>
+          <tr><td><code>REPORTED</code></td><td>Submitted to the Trade Repository/regulator</td><td>Reg. Reporting (Sec 09)</td><td>terminal</td></tr>
+          <tr><td><code>CANCELLED</code></td><td>Trade voided before it reached settlement</td><td>Any stage before Settlement</td><td>terminal</td></tr>
+          <tr><td><code>AMENDED</code></td><td>A field was corrected after capture, generating an audit trail entry</td><td>Any stage</td><td>reverts to prior status</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A healthy trade visits roughly seven of these statuses in sequence with zero detours (Sections 10–11's timelines). Every other status in this table — <code>DISPUTED</code>, <code>BROKEN</code>, <code>FAILED</code>, <code>BREAK (RECON)</code> — exists specifically to hold a trade that needs a human to intervene before it can continue down the happy path.</div>
+    </section>
+
+    <section class="mod" id="fail-example">
+      <p class="sec-eyebrow"><span class="n">13</span> · The unhappy path, with real cost</p>
+      <h2>When Things Go Wrong — A Settlement Fail, With Numbers</h2>
+      <p class="lede">A <b>settlement fail</b> occurs when a trade's Settlement Date arrives and one leg cannot complete — most commonly because the seller doesn't actually hold enough of the security in custody. Because DvP mechanically prevents a <i>partial</i> failure, the whole settlement simply doesn't happen at all.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Settlement Fail · BOT-2026-000955</span><span class="t-id">CAD 1,000,000 short</span></div>
+        <pre>Instrument  : Bank Of Toronto 4.5% Bond 2030
+Quantity     : CAD 10,000,000 face value
+Price        : 99.20
+Counterparty : Goldman Sachs (buyer)
+Settlement Date (T+2): Wed 19-Aug-2026
+
+19-Aug-2026, 09:00: DvP instruction sent to the CDS.
+19-Aug-2026, 09:00: FAILS — Bank Of Toronto's custody account only
+                     holds CAD 9,000,000 face value of this bond,
+                     CAD 1,000,000 short (a separate internal
+                     position error, exactly the flavor of bug
+                     described in Section 08).
+
+Status: SETTLED -&gt; FAILED
+
+Trade re-attempted daily; actually settles 2 business days late,
+on Fri 21-Aug-2026.</pre>
+      </div>
+
+      <p>Under settlement-discipline regimes (e.g. <b>CSDR</b> in the EU), a late settlement generates a <b>daily cash penalty</b>, charged to the failing party, for every business day the fail persists:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Math · Illustrative Cash Penalty</span><span class="t-id">0.10 bps / day</span></div>
+        <pre>Daily Penalty = Reference Price x Quantity x (Penalty Rate / 10,000)
+
+Reference Price   = 99.20 (per 100 face value)
+Quantity           = CAD 10,000,000 face value
+Penalty Rate        = 0.10 bps = 0.0010%
+
+Market Value used for the calc = 10,000,000 x 99.20 / 100
+                                = CAD 9,920,000
+
+Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day late
+
+2 business days late (settled 21-Aug instead of 19-Aug):
+  Total penalty = 99.20 x 2 = CAD 198.40
+
+-&gt; Charged to Bank Of Toronto, the failing (delivering) party.</pre>
+      </div>
+
+      <p>The cash penalty here looks small, but the real cost of a fail is rarely the penalty itself — it's the <b>downstream risk</b>: if Goldman Sachs needed those bonds to deliver into a <i>different</i> trade of its own, Bank Of Toronto's fail can cascade into a second fail elsewhere in the market (a "fails chain"), and after a defined grace period, the buyer can exercise a <b>buy-in</b> — sourcing the securities elsewhere and charging the original seller any price difference plus costs.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A <code>FAILED</code> status in a settlement system is a direct, traceable consequence of a break upstream — very often the exact same category of internal position-keeping error described in Section 08's reconciliation break. Chasing "why did this trade fail?" usually leads straight back to "why did our books show more than we actually held?" — precisely why Reconciliation and Settlement are adjacent stages, not distant ones, in the lifecycle.</div>
+    </section>
+
+    <section class="mod">
+      <p class="sec-eyebrow">Reference · Full cast</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Maple Leaf Pension Fund</td><td>Buy-side client placing the order that becomes Trade BOT-2026-000901</td></tr>
+          <tr><td>Bank Of Toronto</td><td>Sell-side dealer executing, capturing, confirming, clearing, and settling trades</td></tr>
+          <tr><td>Goldman Sachs</td><td>Counterparty on the cleared IRS and on the failed bond trade example</td></tr>
+          <tr><td>BNY Mellon / State Street</td><td>Custodians instructing settlement on behalf of their respective clients</td></tr>
+          <tr><td>CDS (Canadian Depository for Securities)</td><td>CSD where the bond trade's DvP settlement actually occurs</td></tr>
+          <tr><td>CCP (e.g. LCH)</td><td>Central Counterparty that novates the cleared IRS and manages ongoing margin</td></tr>
+          <tr><td>Trade Repository</td><td>Destination for the T+1 regulatory reports in Section 09</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these with real figures before moving to <a href="./module-04-equity.html">Module 4</a>.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>Maple Leaf Pension Fund places a limit order to buy at 98.60 or better, and Bank Of Toronto executes at 98.55. Whose favor did the fill land in, and by how much per CAD 100 of face value?</li>
+          <li>On Trade BOT-2026-000901, name the four fields that were still null/unknown at the moment the Order was placed (09:02:00) but were fully populated one second later at Execution/Trade Capture (09:03:12).</li>
+          <li>A trade is <code>CONFIRMED</code> but not yet <code>AFFIRMED</code> for six hours, well past the firm's usual turnaround. What does that specifically tell you happened (or didn't happen) — and which is the earlier stage, Confirmation or Matching?</li>
+          <li>Two firms capture the same trade with an ISIN mismatch (one system stored a stale ISIN after a bond's identifier was reissued). Will this trade reach <code>MATCHED</code> status? Why or why not?</li>
+          <li>On the CAD 100,000,000 cleared IRS, after novation, name the two new bilateral trades that exist and who the counterparty is on each, from Bank Of Toronto's perspective.</li>
+          <li>Why does a cleared derivative never reach a <code>SETTLED</code> status the same way the bond trade in Section 10 does — what status does it reach instead, and what keeps happening after that?</li>
+          <li>A reconciliation break shows internal books CAD 1,000,000 higher than the custodian and CSD, which agree with each other. Is this most likely a custodian error, a market-side loss, or something else — and what?</li>
+          <li>Trade 2 in Section 09 was executed Monday 14:12:05 UTC and reported Tuesday 08:15:00 UTC. Was this within the T+1 deadline? What UTC timestamp would have made it a missed deadline?</li>
+          <li>Bank Of Toronto's bond trade fails to settle by 1 business day instead of 2, under the illustrative CSDR-style penalty in Section 13, on CAD 10,000,000 face value at reference price 99.20 and rate 0.10bps/day. What's the cash penalty for that 1 day?</li>
+          <li>Put these five statuses in the correct chronological order for a normal (no-break) bilateral bond trade: <code>SETTLED</code>, <code>NEW</code>, <code>RECONCILED</code>, <code>MATCHED</code>, <code>AFFIRMED</code>.</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then we move to <b><a href="./module-04-equity.html">Module 4</a>: Fixed Income / Bonds</b>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Landed in Maple Leaf Pension Fund's favor, by 0.05 (5 basis points) per CAD 100 face value</h5>
+        <p>The fund's limit was "98.60 or better" (i.e., 98.60 or lower, since it's a buyer — lower price is better for a buyer). Bank Of Toronto executed at 98.55, which is 0.05 below the limit — the fund paid less than its worst-acceptable price, i.e., a better outcome for the buyer.</p>
+
+        <h5>Q2 — Trade ID, Execution Time, Price, and Status (as NEW)</h5>
+        <p>At Order time (09:02:00), only intent existed — "buy CAD 50,000,000 at 98.60 or better" — with no confirmed counterparty, no agreed price, and certainly no Trade ID yet, since a Trade ID is only assigned once an actual Execution has occurred and Trade Capture runs (Section 03).</p>
+
+        <h5>Q3 — Most likely means the counterparty hasn't reviewed/responded yet — and Confirmation is the earlier stage</h5>
+        <p>Looking at the sequence in Section 01: Confirmation → Matching, with Affirmation happening as part of the Confirmation exchange (Section 04) before the trade can even be submitted for the automated Matching step (Section 05). A six-hour gap between Confirmed and Affirmed means the counterparty simply hasn't formally agreed yet — it hasn't even reached the point where an automated field-by-field comparison (Matching) could run.</p>
+
+        <h5>Q4 — No, it will break, not match</h5>
+        <p>Matching (Section 05) is an exact field-by-field comparison. An ISIN mismatch — even if every other field (quantity, price, settlement date) is identical — is exactly the kind of single-field disagreement the "broken match" example in Section 05 showed with price. The trade would be held in <code>BROKEN</code> status until someone identifies that one side is using a stale/reissued identifier and corrects it.</p>
+
+        <h5>Q5 — IRS #1: Bank Of Toronto vs the CCP. IRS #2 is CCP vs Goldman Sachs (no direct BOT exposure)</h5>
+        <p>From Bank Of Toronto's perspective specifically, its only remaining counterparty after novation is the CCP — the original Goldman Sachs relationship on this trade is fully replaced (Section 06). Bank Of Toronto is not a party to IRS #2 at all; that trade exists purely between the CCP and Goldman Sachs.</p>
+
+        <h5>Q6 — Reaches CLEARED, not SETTLED — followed by ongoing daily VM and periodic net cash flows</h5>
+        <p>Unlike a bond, where one DvP event on T+2 fully discharges the trade (Section 07), a cleared swap has no notional to deliver (<a href="./module-01-fundamentals.html">Module 1</a> §8) — there's nothing that constitutes a single "settlement" event. Instead, Section 11 shows the trade moving into an ongoing relationship with the CCP: margin calls the next day, and then a recurring cash-flow schedule for the full 5-year tenor.</p>
+
+        <h5>Q7 — Most likely something else entirely — an internal processing/messaging error</h5>
+        <p>This mirrors the Section 08 worked example exactly: when the custodian and the CSD (two independent, external sources) agree with each other but disagree with internal books, the far more likely explanation is that the firm's own internal position-keeping system failed to process a downstream event (e.g., a dropped settlement confirmation message) — not that money actually went missing, and not that the custodian's own records are wrong.</p>
+
+        <h5>Q8 — Yes, within the T+1 deadline</h5>
+        <p>Executed Monday 14:12:05 UTC means the T+1 deadline runs through the end of the <i>next</i> business day — Tuesday 23:59:59 UTC (Section 09). The actual report at Tuesday 08:15:00 UTC comfortably beat that cutoff. A UTC timestamp any time on or before Tuesday 18-Aug-2026, 23:59:59 UTC would still meet it; anything from Wednesday 19-Aug-2026, 00:00:00 UTC onward would be a missed deadline.</p>
+
+        <h5>Q9 — CAD 99.20</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · One Day Late</span><span class="t-id">CAD 10,000,000 face</span></div>
+          <pre>Market Value = 10,000,000 x 99.20 / 100 = CAD 9,920,000
+Daily Penalty = 9,920,000 x 0.0010 / 100 = CAD 99.20 per day
+1 day late    = CAD 99.20 x 1 = CAD 99.20</pre>
+        </div>
+        <p>The daily penalty rate itself doesn't change with how many days a trade is late — only the <i>total</i> scales with days late. One day late is exactly one day's penalty, CAD 99.20 — precisely half the CAD 198.40 total shown in Section 13 for two days late.</p>
+
+        <h5>Q10 — NEW → AFFIRMED → MATCHED → SETTLED → RECONCILED</h5>
+        <div class="takeaway">This follows the Section 01 stage order directly: Trade Capture sets <code>NEW</code> (Sec 03); Confirmation produces <code>AFFIRMED</code> once the counterparty agrees (Sec 04); Matching then confirms both independently-keyed records agree, <code>MATCHED</code> (Sec 05); Settlement moves it to <code>SETTLED</code> on T+2 (Sec 07); and the end-of-day tie-out finally lands it at <code>RECONCILED</code> (Sec 08) — exactly the sequence walked through in Section 10's end-to-end timeline.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 3 of 14 &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

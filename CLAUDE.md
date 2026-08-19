@@ -47,6 +47,7 @@ This taxonomy is the reason Module 8 (Rates) and Module 9 (Credit) exist and wha
 
 ## Working in this repo
 
-- When asked to expand, quiz, or add content, edit `capital_markets_self_paced_learning_path.md` directly and preserve its existing structure (module numbering, `###` subheadings of Learn/Example/Goal, fenced `text` diagrams for conceptual flows).
+- When asked to expand, quiz, or add content, edit `docs/capital_markets_self_paced_learning_path.md` directly and preserve its existing structure (module numbering, `###` subheadings of Learn/Example/Goal, fenced `text` diagrams for conceptual flows).
+- All module and reference documents (`.md`/`.html`) live under `docs/`. Only `index.md` and `index.html` stay in the repo root.
 - Keep explanations grounded in the IT/reporting angle the doc emphasizes (what a field means, not just its definition) rather than pure finance theory.
 - No commands to run, no dependencies to install.
