@@ -1,0 +1,1333 @@
+<!doctype html>
+<title>Systems Landscape — Front, Middle &amp; Back Office by Country</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- svg flow diagrams ---------- */
+
+  .diagram-body {
+    padding: 18px 20px;
+    overflow-x: auto;
+    background: var(--paper-raised);
+  }
+  svg.flow { display: block; }
+  .flow .box { fill: var(--paper-sunken); stroke: var(--line-strong); stroke-width: 1.4; }
+  .flow .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.4; }
+  .flow .box-gold { fill: var(--accent-2-soft); stroke: var(--accent-2); stroke-width: 1.4; }
+  .flow .title { fill: var(--ink); font-size: 12.5px; font-weight: 700; font-family: -apple-system, "Segoe UI", sans-serif; }
+  .flow .sub { fill: var(--ink-soft); font-size: 10.5px; font-family: -apple-system, "Segoe UI", sans-serif; }
+  .flow .row-label { fill: var(--accent-2); font-size: 10px; letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase; font-family: "Cascadia Code", monospace; }
+  .flow .arrow { stroke: var(--accent); stroke-width: 2; fill: none; }
+  .flow .arrow-dash { stroke: var(--line-strong); stroke-width: 1.6; fill: none; stroke-dasharray: 4 3; }
+  .flow .arrow-label { fill: var(--ink-faint); font-size: 9.5px; font-family: -apple-system, sans-serif; }
+  .flow .badge { fill: var(--accent-2-soft); stroke: var(--accent-2); stroke-width: 1.2; }
+  .flow .badge-text { fill: var(--accent-2); font-size: 12px; font-weight: 700; font-family: "Cascadia Code", monospace; }
+  .flow .axis { stroke: var(--line-strong); stroke-width: 1.4; }
+  .flow .tick { stroke: var(--line-strong); stroke-width: 1.4; }
+  .flow .tick-label { fill: var(--ink-faint); font-size: 10.5px; font-family: "Cascadia Code", monospace; }
+  .flow .bar-t1 { fill: var(--accent); opacity: 0.85; }
+  .flow .bar-t2 { fill: var(--accent-2); opacity: 0.85; }
+  .flow .desk-label { fill: var(--ink); font-size: 11.5px; font-weight: 600; font-family: -apple-system, sans-serif; }
+  .flow .dot { fill: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Systems Landscape — Front, Middle &amp; Back Office by Country</h1>
+    <p class="dek">The actual systems, message formats, and market infrastructure carrying out the trade lifecycle (<a href="./module-03-trade-lifecycle.html">Module 3</a>) in Canada, the US, the UK, and the EU — with data-flow diagrams and how each market's T/T+1/T+2 clock is enforced.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#why"><span class="toc-num">01</span>Why This Module Exists</a></li>
+      <li><a href="#generic-arch"><span class="toc-num">02</span>Generic F/M/B Architecture</a></li>
+      <li><a href="#clock"><span class="toc-num">03</span>T, T+1, T+2 — Who Owns the Clock</a></li>
+      <li><a href="#canada"><span class="toc-num">04</span>Canada</a></li>
+      <li><a href="#us"><span class="toc-num">05</span>United States</a></li>
+      <li><a href="#uk"><span class="toc-num">06</span>United Kingdom</a></li>
+      <li><a href="#eu"><span class="toc-num">07</span>European Union</a></li>
+      <li><a href="#comparison"><span class="toc-num">08</span>Side-by-Side Comparison</a></li>
+      <li><a href="#cross-border"><span class="toc-num">09</span>One Trade Date, Four Markets</a></li>
+      <li><a href="#regulators"><span class="toc-num">10</span>Regulatory Bodies</a></li>
+      <li><a href="#system-stacks"><span class="toc-num">11</span>OTC &amp; Cash Equities Systems</a></li>
+      <li><a href="#sftr"><span class="toc-num">12</span>SFTR &amp; Country Equivalents</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="why">
+      <p class="sec-eyebrow"><span class="n">01</span> · What this module adds to Modules 1–3</p>
+      <h2>Why This Module Exists — The Systems Behind Modules 1–3</h2>
+      <p class="lede"><a href="./module-01-fundamentals.html">Module 1</a> introduced Front/Middle/Back Office as <i>roles</i>. <a href="./module-03-trade-lifecycle.html">Module 3</a> walked through the nine-stage trade lifecycle as a <i>process</i>. Neither named the actual <b>systems</b> that implement that process, or explained that "T+2" is a per-market, per-asset-class convention, not a universal rule. This module names the systems, message formats, and settlement cycles for four jurisdictions: Canada, the US, the UK, and the EU.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Where This Module Sits</span><span class="t-id">Roles → Process → Systems</span></div>
+        <pre>Module 1  -&gt;  Front/Middle/Back Office as ROLES  (who does what)
+Module 3  -&gt;  The nine-stage trade lifecycle as a PROCESS (what happens, in order)
+THIS MODULE -&gt; The actual SYSTEMS + MARKET INFRASTRUCTURE that process runs on,
+               country by country, plus who regulates each one</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If <a href="./module-03-trade-lifecycle.html">Module 3</a> told you <i>what</i> happens at "Settlement," this module tells you <i>which system</i> actually does it in each market — CDSX in Canada, DTC in the US, CREST in the UK, and Euroclear/Clearstream over T2S in the EU are not interchangeable synonyms; they're different platforms with different rulebooks, different regulators, and different settlement cycles.</div>
+    </section>
+
+    <section class="mod" id="generic-arch">
+      <p class="sec-eyebrow"><span class="n">02</span> · Same shape, every country</p>
+      <h2>The Generic Front / Middle / Back Office Architecture</h2>
+      <p class="lede">Every dealing bank runs the same three-layer system architecture regardless of country. What changes per country (Sections 04–07) is which specific vendor/platform sits in each box, and which market infrastructure the Back Office layer plugs into.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Generic Systems Architecture</span><span class="t-id">5 layers</span></div>
+        <div class="diagram-body">
+          <svg class="flow" viewBox="0 0 820 560" width="820" height="560" role="img" aria-label="Generic front, middle, and back office systems architecture diagram">
+            <defs>
+              <marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/>
+              </marker>
+            </defs>
+
+            <text class="row-label" x="20" y="40">Front Office</text>
+            <rect class="box" x="20" y="50" width="180" height="70" rx="6"/>
+            <text class="title" x="110" y="82" text-anchor="middle">OMS</text>
+            <text class="sub" x="110" y="99" text-anchor="middle">captures the Order</text>
+            <rect class="box" x="290" y="50" width="180" height="70" rx="6"/>
+            <text class="title" x="380" y="82" text-anchor="middle">EMS</text>
+            <text class="sub" x="380" y="99" text-anchor="middle">routes the Execution</text>
+            <rect class="box" x="560" y="50" width="180" height="70" rx="6"/>
+            <text class="title" x="650" y="82" text-anchor="middle">Exchange / Venue</text>
+            <text class="sub" x="650" y="99" text-anchor="middle">or interbank market</text>
+
+            <line class="arrow" x1="200" y1="85" x2="288" y2="85" marker-end="url(#ah1)"/>
+            <line class="arrow" x1="470" y1="85" x2="558" y2="85" marker-end="url(#ah1)"/>
+
+            <line class="arrow" x1="380" y1="120" x2="380" y2="188" marker-end="url(#ah1)"/>
+            <text class="arrow-label" x="392" y="158">Trade Capture</text>
+
+            <text class="row-label" x="20" y="178">Middle Office</text>
+            <rect class="box-accent" x="140" y="188" width="220" height="70" rx="6"/>
+            <text class="title" x="250" y="220" text-anchor="middle">Confirmation / Matching</text>
+            <text class="sub" x="250" y="237" text-anchor="middle"><a href="./module-03-trade-lifecycle.html">Module 3</a> §04–05</text>
+            <rect class="box-accent" x="390" y="188" width="220" height="70" rx="6"/>
+            <text class="title" x="500" y="220" text-anchor="middle">Risk &amp; Valuation Engine</text>
+            <text class="sub" x="500" y="237" text-anchor="middle">Murex, Calypso, etc.</text>
+
+            <line class="arrow-dash" x1="360" y1="223" x2="388" y2="223"/>
+
+            <line class="arrow" x1="250" y1="258" x2="250" y2="328" marker-end="url(#ah1)"/>
+            <text class="arrow-label" x="262" y="298">Clearing instruction,</text>
+            <text class="arrow-label" x="262" y="311">if applicable</text>
+
+            <text class="row-label" x="20" y="318">Back Office</text>
+            <rect class="box-gold" x="170" y="328" width="160" height="70" rx="6"/>
+            <text class="title" x="250" y="360" text-anchor="middle">CCP</text>
+            <text class="sub" x="250" y="377" text-anchor="middle">clearing</text>
+            <rect class="box-gold" x="370" y="328" width="160" height="70" rx="6"/>
+            <text class="title" x="450" y="360" text-anchor="middle">CSD</text>
+            <text class="sub" x="450" y="377" text-anchor="middle">settlement (DvP)</text>
+            <rect class="box-gold" x="570" y="328" width="200" height="70" rx="6"/>
+            <text class="title" x="670" y="360" text-anchor="middle">Custodian /</text>
+            <text class="sub" x="670" y="377" text-anchor="middle">cash correspondent</text>
+
+            <line class="arrow" x1="330" y1="363" x2="368" y2="363" marker-end="url(#ah1)"/>
+            <line class="arrow" x1="530" y1="363" x2="568" y2="363" marker-end="url(#ah1)"/>
+
+            <line class="arrow" x1="450" y1="398" x2="330" y2="468" marker-end="url(#ah1)"/>
+
+            <text class="row-label" x="20" y="458">Regulatory Reporting</text>
+            <rect class="box" x="200" y="468" width="260" height="60" rx="6"/>
+            <text class="title" x="330" y="495" text-anchor="middle">Reporting Engine</text>
+            <text class="sub" x="330" y="512" text-anchor="middle"><a href="./module-03-trade-lifecycle.html">Module 3</a> §09</text>
+            <rect class="box" x="500" y="468" width="220" height="60" rx="6"/>
+            <text class="title" x="610" y="495" text-anchor="middle">Trade Repository</text>
+            <text class="sub" x="610" y="512" text-anchor="middle">/ Regulator</text>
+
+            <line class="arrow" x1="460" y1="498" x2="498" y2="498" marker-end="url(#ah1)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Layer</th><th>System category</th><th>Typical message formats</th><th>Produces</th></tr></thead>
+        <tbody>
+          <tr><td>Front Office</td><td>OMS, EMS</td><td>FIX (Financial Information eXchange)</td><td>Order, then Execution</td></tr>
+          <tr><td>Middle Office</td><td>Confirmation/Matching platform, Risk &amp; Valuation engine</td><td>FpML (derivatives), ISO 20022/proprietary (cash)</td><td>Confirmed, matched trade; MTM/risk figures</td></tr>
+          <tr><td>Back Office</td><td>CCP, CSD, Custodian systems, Regulatory reporting engine</td><td>SWIFT MT5xx / ISO 20022 MX, proprietary CSD protocols</td><td>Settled position, reconciled books, filed regulatory report</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every system named in Sections 04–07 below is just a country-specific implementation of one of these five boxes. If you already know <i>which box</i> a system occupies, you can predict roughly what it does before ever reading its documentation.</div>
+    </section>
+
+    <section class="mod" id="clock">
+      <p class="sec-eyebrow"><span class="n">03</span> · The clock is per-market, not universal</p>
+      <h2>T, T+1, T+2 — Where the Clock Lives Across These Systems</h2>
+      <p class="lede"><a href="./module-01-fundamentals.html">Module 1</a> §06 explained T+n counts business days from Trade Date to Settlement Date. What it didn't cover: which system actually <b>enforces</b> that clock, and that the number of days is a market/product convention — different countries, and different asset classes within the same country, run different cycles.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Who Owns the Clock, At Each Stage</span><span class="t-id">Front → Middle → Back</span></div>
+        <pre>Trade Date (T)                                    Settlement Date (T+n)
+     |                                                      |
+     v                                                      v
+FRONT OFFICE          MIDDLE OFFICE           BACK OFFICE (the CSD)
+records T at             confirms/matches         is the system that
+Execution Time            same day, T                ENFORCES T+n — it
+(Module 3 §02)              (Module 3 §04-05)             will not release
+                                                        securities/cash
+                                                        before T+n, and
+                                                        flags a FAIL
+                                                        (Module 3 §13)
+                                                        if T+n passes
+                                                        without completion</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Market</th><th>Product</th><th>Settlement cycle (as of 2026)</th></tr></thead>
+        <tbody>
+          <tr><td>Canada</td><td>Equities</td><td><b>T+1</b> (aligned with the US, since 27 May 2024)</td></tr>
+          <tr><td>Canada</td><td>Government / corporate bonds</td><td><b>T+1</b> or <b>T+2</b>, depending on the specific bond</td></tr>
+          <tr><td>United States</td><td>Equities</td><td><b>T+1</b> (since 28 May 2024)</td></tr>
+          <tr><td>United States</td><td>US Treasuries</td><td><b>T+1</b></td></tr>
+          <tr><td>United Kingdom</td><td>Gilts (government bonds)</td><td><b>T+1</b></td></tr>
+          <tr><td>United Kingdom</td><td>Equities</td><td><b>T+2</b> (T+1 targeted October 2027)</td></tr>
+          <tr><td>European Union</td><td>Equities &amp; bonds</td><td><b>T+2</b> (T+1 targeted October 2027, coordinated w/ UK &amp; Switzerland)</td></tr>
+          <tr><td>OTC derivatives (any market)</td><td>Interest Rate Swaps, CDS, etc.</td><td>No notional settlement — only margin/cash flows (<a href="./module-01-fundamentals.html">Module 1</a> §08, <a href="./module-03-trade-lifecycle.html">Module 3</a> §11)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "T+2" is not a global default with occasional exceptions — as of 2026 it's already the <i>minority</i> case for equities (Canada and the US both moved to T+1 in 2024), and the UK/EU are actively converging toward T+1 for 2027. A reporting system hard-coding "settlement = trade date + 2" will already be wrong for a large share of real trades.</div>
+    </section>
+
+    <section class="mod" id="canada">
+      <p class="sec-eyebrow"><span class="n">04</span> · Starting point — Bank Of Toronto's home market</p>
+      <h2>Canada — Systems &amp; Data Flow</h2>
+      <p class="lede">Front and middle office tooling is largely global (Bloomberg, Charles River, Murex, Calypso). The distinctive piece is the back office: a single national CSD, CDS, operating the CDSX platform.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Function</th><th>Typical systems</th></tr></thead>
+        <tbody>
+          <tr><td>Order Management (OMS)</td><td>Bloomberg AIM, Charles River IMS, Eze OMS</td></tr>
+          <tr><td>Execution Management (EMS)</td><td>FlexTrade, Bloomberg EMSX, Charles River</td></tr>
+          <tr><td>Middle Office risk/valuation</td><td>Murex, Calypso (Adenza), GMI (SS&amp;C)</td></tr>
+          <tr><td>Confirmation/matching (cash securities)</td><td>CDS's <b>CDSX</b> trade-matching module, DTCC's <b>CTM</b></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p><b>CDS (Canadian Depository for Securities)</b> operates <b>CDSX</b>, Canada's central securities depository and settlement system — the Canadian equivalent of the CSD role from <a href="./module-01-fundamentals.html">Module 1</a> §07. CDS is a subsidiary of <b>TMX Group</b>. <b>CDCC (Canadian Derivatives Clearing Corporation)</b>, also a TMX Group subsidiary, is the CCP for exchange-traded derivatives and, since 2012, for the fixed income repo market.</p>
+
+      <h3>Worked example — Bank Of Toronto buys Canadian equity, T+1</h3>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Canada Data Flow</span><span class="t-id">BOT-CA-2026-004471</span></div>
+        <div class="diagram-body">
+          <svg class="flow" viewBox="0 0 840 130" width="840" height="130" role="img" aria-label="Canada data flow: Bloomberg AIM to FlexTrade to TSX to trade capture to CDSX matching to CDSX settlement">
+            <defs>
+              <marker id="ah-ca" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/>
+              </marker>
+            </defs>
+            <rect class="box" x="10" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="85" y="58" text-anchor="middle">Bloomberg AIM</text>
+            <text class="sub" x="85" y="76" text-anchor="middle">(OMS)</text>
+
+            <rect class="box" x="176" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="251" y="52" text-anchor="middle">FlexTrade</text>
+            <text class="sub" x="251" y="70" text-anchor="middle">(EMS) →</text>
+            <text class="sub" x="251" y="86" text-anchor="middle">TSX</text>
+
+            <rect class="box-accent" x="342" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="417" y="58" text-anchor="middle">Trade Capture</text>
+            <text class="sub" x="417" y="76" text-anchor="middle">Trade ID assigned</text>
+
+            <rect class="box-accent" x="508" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="583" y="58" text-anchor="middle">CDSX Matching</text>
+            <text class="sub" x="583" y="76" text-anchor="middle">(Middle Office)</text>
+
+            <rect class="box-gold" x="674" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="749" y="52" text-anchor="middle">CDS — CDSX</text>
+            <text class="sub" x="749" y="70" text-anchor="middle">DvP settlement</text>
+            <text class="sub" x="749" y="86" text-anchor="middle">Settles T+1</text>
+
+            <line class="arrow" x1="160" y1="67" x2="174" y2="67" marker-end="url(#ah-ca)"/>
+            <line class="arrow" x1="326" y1="67" x2="340" y2="67" marker-end="url(#ah-ca)"/>
+            <line class="arrow" x1="492" y1="67" x2="506" y2="67" marker-end="url(#ah-ca)"/>
+            <line class="arrow" x1="658" y1="67" x2="672" y2="67" marker-end="url(#ah-ca)"/>
+          </svg>
+        </div>
+        <pre>09:31:05  ORDER captured in Bloomberg AIM (OMS)
+            Client: Maple Leaf Pension Fund
+            BUY 50,000 shares, Loblaw Companies Ltd. (TSX: L)
+
+09:31:07  Routed via FIX 4.4 to FlexTrade (EMS) -&gt; Toronto Stock Exchange
+
+09:31:09  EXECUTION on TSX @ CAD 178.40
+            Trade Value = 50,000 x 178.40 = CAD 8,920,000
+
+09:31:09  TRADE CAPTURE — Trade ID BOT-CA-2026-004471
+
+09:45:00  CONFIRMATION/MATCHING via CDSX matching module -&gt; MATCHED
+
+Settlement Date = T+1 = next business day
+            CDSX performs DvP: shares move from Bank Of Toronto's CDS
+            participant account to the client's custodian account;
+            cash (CAD 8,920,000) moves simultaneously.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Canada and the US run the same T+1 equity cycle and were coordinated to move together in May 2024 specifically <i>because</i> so much Canadian order flow and dual-listed stock trades interact with US markets — a T+1/T+2 mismatch between the two would have created settlement friction on every cross-border trade.</div>
+    </section>
+
+    <section class="mod" id="us">
+      <p class="sec-eyebrow"><span class="n">05</span> · The only market that nets before settling</p>
+      <h2>United States — Systems &amp; Data Flow</h2>
+      <p class="lede">Same global front/middle office vendor landscape. The back office is dominated by one umbrella organization, DTCC, whose subsidiaries perform netting, clearing, and settlement as separate, named steps.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Function</th><th>Typical systems</th></tr></thead>
+        <tbody>
+          <tr><td>Order Management (OMS)</td><td>Charles River IMS, Bloomberg AIM, Eze OMS</td></tr>
+          <tr><td>Execution Management (EMS)</td><td>Bloomberg EMSX, FlexTrade, Instinet</td></tr>
+          <tr><td>Middle Office risk/valuation</td><td>Murex, Calypso, Numerix (derivatives pricing)</td></tr>
+          <tr><td>Confirmation/matching</td><td>DTCC's <b>CTM</b>, <b>MarkitWire</b> (OTC derivatives)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p><b>DTCC (Depository Trust &amp; Clearing Corporation)</b> is the umbrella parent of US post-trade infrastructure: <b>NSCC</b> clears and nets equity/corporate bond trades; <b>FICC</b> is the CCP for Treasuries and repo. <b>DTC</b> is the CSD performing final DvP. <b>Fedwire</b> (Federal Reserve) is the real-time cash rail underneath it. US OTC derivatives report to Swap Data Repositories such as <b>DTCC GTR</b> and <b>ICE Trade Vault</b> under CFTC rules.</p>
+
+      <h3>Worked example — Bank Of Toronto's US desk buys Apple shares, T+1</h3>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · US Data Flow</span><span class="t-id">BOT-US-2026-009213</span></div>
+        <div class="diagram-body">
+          <svg class="flow" viewBox="0 0 1000 130" width="1000" height="130" role="img" aria-label="US data flow: Charles River IMS to Bloomberg EMSX to NASDAQ to trade capture to DTCC CTM matching to NSCC netting to DTC settlement and Fedwire cash">
+            <defs>
+              <marker id="ah-us" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/>
+              </marker>
+            </defs>
+            <rect class="box" x="10" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="85" y="52" text-anchor="middle">Charles River</text>
+            <text class="sub" x="85" y="70" text-anchor="middle">IMS</text>
+            <text class="sub" x="85" y="86" text-anchor="middle">(OMS)</text>
+
+            <rect class="box" x="176" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="251" y="52" text-anchor="middle">Bloomberg EMSX</text>
+            <text class="sub" x="251" y="70" text-anchor="middle">(EMS) →</text>
+            <text class="sub" x="251" y="86" text-anchor="middle">NASDAQ</text>
+
+            <rect class="box-accent" x="342" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="417" y="58" text-anchor="middle">Trade Capture</text>
+            <text class="sub" x="417" y="76" text-anchor="middle">Trade ID assigned</text>
+
+            <rect class="box-accent" x="508" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="583" y="58" text-anchor="middle">DTCC CTM</text>
+            <text class="sub" x="583" y="76" text-anchor="middle">Matching</text>
+
+            <rect class="box-gold" x="674" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="749" y="58" text-anchor="middle">NSCC</text>
+            <text class="sub" x="749" y="76" text-anchor="middle">Netting CCP</text>
+
+            <rect class="box-gold" x="840" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="915" y="52" text-anchor="middle">DTC DvP +</text>
+            <text class="sub" x="915" y="70" text-anchor="middle">Fedwire cash</text>
+            <text class="sub" x="915" y="86" text-anchor="middle">Settles T+1</text>
+
+            <line class="arrow" x1="160" y1="67" x2="174" y2="67" marker-end="url(#ah-us)"/>
+            <line class="arrow" x1="326" y1="67" x2="340" y2="67" marker-end="url(#ah-us)"/>
+            <line class="arrow" x1="492" y1="67" x2="506" y2="67" marker-end="url(#ah-us)"/>
+            <line class="arrow" x1="658" y1="67" x2="672" y2="67" marker-end="url(#ah-us)"/>
+            <line class="arrow" x1="824" y1="67" x2="838" y2="67" marker-end="url(#ah-us)"/>
+          </svg>
+        </div>
+        <pre>10:02:00  ORDER captured in Charles River IMS (OMS)
+            BUY 5,000 shares, Apple Inc. (NASDAQ: AAPL)
+
+10:02:03  Routed via FIX to Bloomberg EMSX (EMS) -&gt; NASDAQ
+
+10:02:05  EXECUTION @ USD 227.15
+            Trade Value = 5,000 x 227.15 = USD 1,135,750
+
+10:02:05  TRADE CAPTURE — Trade ID BOT-US-2026-009213
+
+10:15:00  CONFIRMATION/MATCHING via DTCC CTM -&gt; MATCHED
+
+Trade submitted to NSCC for CLEARING (novation + multilateral
+netting across all of Bank Of Toronto's trades that day — NSCC
+nets thousands of trades down to one net settlement obligation
+per security, per participant, per day)
+
+Settlement Date = T+1
+            DTC performs DvP: shares move in DTC's book-entry
+            system; cash leg settles via the DTCC/Fedwire cash
+            settlement process.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The US is the only one of these four markets where a single CCP (NSCC) <i>nets</i> a firm's trades in the same security across an entire day before anything settles — Bank Of Toronto's 5,000-share buy above might net against other Apple trades the desk did that day, so the actual DTC settlement instruction can be for a different, smaller quantity than any single execution. This is why a reporting system that expects "one trade = one settlement instruction" breaks in the US market specifically.</div>
+    </section>
+
+    <section class="mod" id="uk">
+      <p class="sec-eyebrow"><span class="n">06</span> · Still on T+2, for now</p>
+      <h2>United Kingdom — Systems &amp; Data Flow</h2>
+      <p class="lede">Largely the same front/middle office vendor landscape as Canada and the US — the front/middle office tooling market is genuinely global. What differs is the back office.</p>
+
+      <p><b>CREST</b>, operated by <b>Euroclear UK &amp; International</b> (which acquired the CREST business from the Bank of England in 2002), is the UK's CSD — settling UK equities, gilts, and money market instruments in book-entry form. <b>LCH (London Clearing House)</b>, part of the London Stock Exchange Group, is the dominant CCP for UK (and much broader) interest rate swap clearing — the same "LCH" named as the illustrative CCP in <a href="./module-03-trade-lifecycle.html">Module 3</a> §06 and §11. <b>CHAPS</b>, operated by the Bank of England, is the UK's real-time high-value cash payment system — the UK's equivalent of Fedwire. Since Brexit, the UK runs its own <b>UK EMIR</b> and <b>UK MiFIR</b> reporting regimes, distinct from the EU's versions (Section 07).</p>
+
+      <h3>Worked example — Bank Of Toronto's London desk sells UK equity, T+2</h3>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · UK Data Flow</span><span class="t-id">BOT-UK-2026-005580</span></div>
+        <div class="diagram-body">
+          <svg class="flow" viewBox="0 0 840 130" width="840" height="130" role="img" aria-label="UK data flow: Charles River IMS to London Stock Exchange to trade capture to confirmation matching to CREST settlement">
+            <defs>
+              <marker id="ah-uk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/>
+              </marker>
+            </defs>
+            <rect class="box" x="10" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="85" y="52" text-anchor="middle">Charles River</text>
+            <text class="sub" x="85" y="70" text-anchor="middle">IMS</text>
+            <text class="sub" x="85" y="86" text-anchor="middle">(OMS)</text>
+
+            <rect class="box" x="176" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="251" y="58" text-anchor="middle">EMS →</text>
+            <text class="sub" x="251" y="76" text-anchor="middle">London Stock Exch.</text>
+
+            <rect class="box-accent" x="342" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="417" y="58" text-anchor="middle">Trade Capture</text>
+            <text class="sub" x="417" y="76" text-anchor="middle">Trade ID assigned</text>
+
+            <rect class="box-accent" x="508" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="583" y="52" text-anchor="middle">Confirmation /</text>
+            <text class="sub" x="583" y="70" text-anchor="middle">Matching</text>
+            <text class="sub" x="583" y="86" text-anchor="middle">(Middle Office)</text>
+
+            <rect class="box-gold" x="674" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="749" y="52" text-anchor="middle">CREST DvP</text>
+            <text class="sub" x="749" y="70" text-anchor="middle">Euroclear UK&amp;I</text>
+            <text class="sub" x="749" y="86" text-anchor="middle">Settles T+2</text>
+
+            <line class="arrow" x1="160" y1="67" x2="174" y2="67" marker-end="url(#ah-uk)"/>
+            <line class="arrow" x1="326" y1="67" x2="340" y2="67" marker-end="url(#ah-uk)"/>
+            <line class="arrow" x1="492" y1="67" x2="506" y2="67" marker-end="url(#ah-uk)"/>
+            <line class="arrow" x1="658" y1="67" x2="672" y2="67" marker-end="url(#ah-uk)"/>
+          </svg>
+        </div>
+        <pre>11:00:00  ORDER captured in Charles River IMS (OMS)
+            SELL 200,000 shares, Tesco PLC (LSE: TSCO)
+
+11:00:04  Routed via FIX to the London Stock Exchange (EMS/venue)
+
+11:00:06  EXECUTION @ GBP 3.42
+            Trade Value = 200,000 x 3.42 = GBP 684,000
+
+11:00:06  TRADE CAPTURE — Trade ID BOT-UK-2026-005580
+
+11:20:00  CONFIRMATION/MATCHING -&gt; MATCHED
+
+Settlement Date = T+2  (UK equities have NOT yet moved to T+1 —
+            that move is targeted for October 2027)
+            CREST performs DvP: shares move in Euroclear UK &amp;
+            International's book-entry system; cash settles via
+            the linked banking payment rails.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Because the UK still runs T+2 for equities while Canada and the US run T+1, a single global desk at Bank Of Toronto genuinely has <i>two different settlement clocks</i> running side by side on the same day, depending purely on which market a given trade executed in — Section 09 makes this concrete with a same-day, four-market comparison.</div>
+    </section>
+
+    <section class="mod" id="eu">
+      <p class="sec-eyebrow"><span class="n">07</span> · One framework, many national CSDs</p>
+      <h2>European Union — Systems &amp; Data Flow</h2>
+      <p class="lede">Same global vendor landscape again — but the EU is a single regulatory framework spanning many national markets, which is exactly why its back-office infrastructure looks different: there is no single "EU CSD" the way Canada/US/UK each have one national CSD.</p>
+
+      <p>Most EU national CSDs (Germany's Clearstream, Belgium's Euroclear Bank, France's Euroclear France, etc.) settle through <b>T2S (TARGET2-Securities)</b>, the ECB-operated pan-European settlement platform that lets all participating CSDs settle securities transactions on one shared technical platform, in central bank money. <b>Euroclear</b> and <b>Clearstream</b> (Deutsche Börse Group) are the two big <b>ICSDs</b>, handling cross-border and Eurobond settlement. <b>Eurex Clearing</b> and <b>LCH SA</b> (the Paris-based, EU-regulated arm of LCH) are the two major EU CCPs. Trade repositories under <b>EMIR</b> include <b>REGIS-TR</b>, <b>DTCC Derivatives Repository</b>, and <b>UnaVista</b>.</p>
+
+      <h3>Worked example — Bank Of Toronto's Frankfurt desk buys a German Bund, T+2</h3>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · EU Data Flow</span><span class="t-id">BOT-EU-2026-007742</span></div>
+        <div class="diagram-body">
+          <svg class="flow" viewBox="0 0 840 130" width="840" height="130" role="img" aria-label="EU data flow: Bloomberg AIM to interbank market to trade capture to confirmation matching to Clearstream T2S settlement">
+            <defs>
+              <marker id="ah-eu" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/>
+              </marker>
+            </defs>
+            <rect class="box" x="10" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="85" y="58" text-anchor="middle">Bloomberg AIM</text>
+            <text class="sub" x="85" y="76" text-anchor="middle">(OMS)</text>
+
+            <rect class="box" x="176" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="251" y="58" text-anchor="middle">EMS →</text>
+            <text class="sub" x="251" y="76" text-anchor="middle">Interbank market</text>
+
+            <rect class="box-accent" x="342" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="417" y="58" text-anchor="middle">Trade Capture</text>
+            <text class="sub" x="417" y="76" text-anchor="middle">Trade ID assigned</text>
+
+            <rect class="box-accent" x="508" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="583" y="52" text-anchor="middle">Confirmation /</text>
+            <text class="sub" x="583" y="70" text-anchor="middle">Matching</text>
+            <text class="sub" x="583" y="86" text-anchor="middle">(Middle Office)</text>
+
+            <rect class="box-gold" x="674" y="25" width="150" height="85" rx="6"/>
+            <text class="title" x="749" y="52" text-anchor="middle">Clearstream</text>
+            <text class="sub" x="749" y="70" text-anchor="middle">via T2S (DvP)</text>
+            <text class="sub" x="749" y="86" text-anchor="middle">Settles T+2</text>
+
+            <line class="arrow" x1="160" y1="67" x2="174" y2="67" marker-end="url(#ah-eu)"/>
+            <line class="arrow" x1="326" y1="67" x2="340" y2="67" marker-end="url(#ah-eu)"/>
+            <line class="arrow" x1="492" y1="67" x2="506" y2="67" marker-end="url(#ah-eu)"/>
+            <line class="arrow" x1="658" y1="67" x2="672" y2="67" marker-end="url(#ah-eu)"/>
+          </svg>
+        </div>
+        <pre>13:00:00  ORDER captured in Bloomberg AIM (OMS)
+            BUY EUR 30,000,000 face value, Germany 3% Bund 2033
+
+13:00:05  EXECUTION @ Price 99.10 (interbank market)
+            Trade Value = 30,000,000 x 99.10 / 100 = EUR 29,730,000
+
+13:00:05  TRADE CAPTURE — Trade ID BOT-EU-2026-007742
+
+13:30:00  CONFIRMATION/MATCHING -&gt; MATCHED
+
+Settlement Date = T+2  (EU securities settlement is still T+2 as
+            of 2026; a coordinated move to T+1 alongside the UK is
+            targeted for October 2027)
+            Settlement instructed to Clearstream (as the German
+            CSD/ICSD), which settles on the shared T2S platform in
+            central bank money — the Bundesbank's books ultimately
+            reflect the cash leg.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> T2S doesn't replace the national CSDs — it's a shared settlement <i>engine</i> they all plug into, which is why a EUR bond trade still names "Clearstream" as its CSD even though the actual DvP mechanics run on the pan-European T2S platform underneath it. This is structurally different from Canada/US/UK, each of which has one single, national CSD.</div>
+    </section>
+
+    <section class="mod" id="comparison">
+      <p class="sec-eyebrow"><span class="n">08</span> · The lookup table</p>
+      <h2>Side-by-Side — Settlement Cycles, CSDs, CCPs &amp; Trade Repositories</h2>
+      <p class="lede">The fastest way to sanity-check any cross-border reporting field.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Canada</th><th>United States</th><th>United Kingdom</th><th>European Union</th></tr></thead>
+        <tbody>
+          <tr><td>Equity settlement cycle</td><td>T+1</td><td>T+1</td><td>T+2 (T+1 targeted Oct 2027)</td><td>T+2 (T+1 targeted Oct 2027)</td></tr>
+          <tr><td>Gov't bond settlement</td><td>T+1 or T+2</td><td>T+1</td><td>T+1 (gilts)</td><td>T+2</td></tr>
+          <tr><td>CSD</td><td>CDS (CDSX)</td><td>DTC</td><td>CREST (Euroclear UK &amp; Int'l)</td><td>National CSDs via T2S</td></tr>
+          <tr><td>Main CCP(s)</td><td>CDCC</td><td>NSCC (equities), FICC (Treasuries/repo)</td><td>LCH</td><td>Eurex Clearing, LCH SA</td></tr>
+          <tr><td>Cash settlement rail</td><td>LVTS</td><td>Fedwire</td><td>CHAPS</td><td>TARGET2 / T2S cash leg</td></tr>
+          <tr><td>Trade Repository</td><td>Canadian TRs (e.g. DTCC Data Repository (Canada))</td><td>DTCC GTR, ICE Trade Vault</td><td>DTCC Derivatives Repository Ltd, UnaVista (UK EMIR)</td><td>REGIS-TR, DTCC Derivatives Repository, UnaVista (EU EMIR)</td></tr>
+          <tr><td>Derivatives reporting rule</td><td>Provincial (CSA/OSC) OTC rules</td><td>CFTC (Dodd-Frank)</td><td>UK EMIR</td><td>EMIR</td></tr>
+          <tr><td>Securities financing reporting</td><td>No dedicated regime yet (§12)</td><td>SEC 10c-1a via FINRA SLATE (sec-lending only)</td><td>UK SFTR</td><td>SFTR</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If a Canadian equity trade record shows a T+2 settlement date, or a US trade shows "DTC" as CSD but "CDSX" as the settlement system, one of those fields is wrong — this table is what "correct" looks like per market as of 2026.</div>
+    </section>
+
+    <section class="mod" id="cross-border">
+      <p class="sec-eyebrow"><span class="n">09</span> · Same clock start, different clock length</p>
+      <h2>Cross-Border Worked Example — One Trade Date, Four Markets</h2>
+      <p class="lede">Bank Of Toronto is a global dealer with desks in all four jurisdictions. On the same calendar Trade Date, Monday 17-Aug-2026, four different desks each execute one trade.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Four Desks, One Trade Date</span><span class="t-id">Mon 17-Aug → Wed 19-Aug 2026</span></div>
+        <div class="diagram-body">
+          <svg class="flow" viewBox="0 0 680 230" width="680" height="230" role="img" aria-label="Timeline showing Toronto and New York settling T+1 on Tuesday, London and Frankfurt settling T+2 on Wednesday">
+            <line class="axis" x1="150" y1="200" x2="640" y2="200"/>
+            <line class="tick" x1="150" y1="195" x2="150" y2="205"/>
+            <line class="tick" x1="395" y1="195" x2="395" y2="205"/>
+            <line class="tick" x1="640" y1="195" x2="640" y2="205"/>
+            <text class="tick-label" x="150" y="218" text-anchor="middle">Mon (T)</text>
+            <text class="tick-label" x="395" y="218" text-anchor="middle">Tue (T+1)</text>
+            <text class="tick-label" x="640" y="218" text-anchor="middle">Wed (T+2)</text>
+
+            <text class="desk-label" x="10" y="34">Toronto</text>
+            <rect class="bar-t1" x="150" y="20" width="245" height="18" rx="3"/>
+            <circle class="dot" cx="150" cy="29" r="4"/>
+            <circle class="dot" cx="395" cy="29" r="4"/>
+
+            <text class="desk-label" x="10" y="74">New York</text>
+            <rect class="bar-t1" x="150" y="60" width="245" height="18" rx="3"/>
+            <circle class="dot" cx="150" cy="69" r="4"/>
+            <circle class="dot" cx="395" cy="69" r="4"/>
+
+            <text class="desk-label" x="10" y="114">London</text>
+            <rect class="bar-t2" x="150" y="100" width="490" height="18" rx="3"/>
+            <circle class="dot" cx="150" cy="109" r="4"/>
+            <circle class="dot" cx="640" cy="109" r="4"/>
+
+            <text class="desk-label" x="10" y="154">Frankfurt</text>
+            <rect class="bar-t2" x="150" y="140" width="490" height="18" rx="3"/>
+            <circle class="dot" cx="150" cy="149" r="4"/>
+            <circle class="dot" cx="640" cy="149" r="4"/>
+          </svg>
+        </div>
+        <pre>Desk        Trade                              T+n    Settlement Date
+--------------------------------------------------------------------
+Toronto     BUY 50,000 sh Loblaw (TSX: L)       T+1    Tue 18-Aug-2026
+            @ CAD 178.40  -- CDSX / CDS
+
+New York    BUY 5,000 sh Apple (NASDAQ: AAPL)   T+1    Tue 18-Aug-2026
+            @ USD 227.15  -- NSCC/DTC
+
+London      SELL 200,000 sh Tesco (LSE: TSCO)   T+2    Wed 19-Aug-2026
+            @ GBP 3.42    -- CREST
+
+Frankfurt   BUY EUR 30M Germany 3% Bund 2033    T+2    Wed 19-Aug-2026
+            @ Price 99.10 -- Clearstream / T2S
+--------------------------------------------------------------------
+
+Same Trade Date. Two different Settlement Dates, purely because of
+which market each trade executed in -- nothing about the trades
+themselves (all clean, all matched same-day) caused the difference.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A global reporting system that groups trades by Trade Date and expects them all to settle on the same calendar day will misclassify roughly half of Bank Of Toronto's book on any given day — settlement date has to be derived per-market (Section 03's table), never assumed as a fixed offset from trade date.</div>
+    </section>
+
+    <section class="mod" id="regulators">
+      <p class="sec-eyebrow"><span class="n">10</span> · Who watches each layer</p>
+      <h2>Regulatory Bodies — Country by Country</h2>
+      <p class="lede">The same three-way split repeats in every jurisdiction: one body for market conduct/reporting, one for prudential/bank safety, and one central bank overseeing the market infrastructure itself.</p>
+
+      <div class="explainer">
+        <h5>Canada</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td><b>CSA</b> (Canadian Securities Administrators)</td><td>Umbrella council of the 10 provincial/territorial securities regulators; Canada has no single federal securities regulator</td></tr>
+            <tr><td><b>OSC</b> (Ontario Securities Commission)</td><td>Largest individual provincial regulator, given Toronto's role as Canada's primary financial centre</td></tr>
+            <tr><td><b>CIRO</b> (Canadian Investment Regulatory Organization)</td><td>National SRO for investment dealers and trading activity, formed 2023 from IIROC + MFDA merger</td></tr>
+            <tr><td><b>Bank of Canada</b></td><td>Central bank; oversees systemically important FMIs, including CDS/CDSX and CDCC</td></tr>
+            <tr><td><b>OSFI</b></td><td>Prudential regulator of federally regulated banks and insurers, incl. capital adequacy</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h5>United States</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td><b>SEC</b></td><td>Primary regulator of securities markets, equities, corporate bonds, securities-based swaps</td></tr>
+            <tr><td><b>CFTC</b></td><td>Regulator of most OTC derivatives (IR swaps, CDS index, commodities) under Dodd-Frank</td></tr>
+            <tr><td><b>FINRA</b></td><td>SRO overseeing broker-dealer conduct and trade reporting</td></tr>
+            <tr><td><b>Federal Reserve</b></td><td>Central bank; supervises bank holding companies, operates Fedwire</td></tr>
+            <tr><td><b>OCC</b></td><td>Prudential regulator/charterer of national banks</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h5>United Kingdom</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td><b>FCA</b></td><td>Conduct regulator for markets, firms, consumer protection; administers UK MiFIR/UK EMIR reporting</td></tr>
+            <tr><td><b>PRA</b></td><td>Part of the Bank of England; prudential regulator of banks, insurers, major investment firms</td></tr>
+            <tr><td><b>Bank of England</b></td><td>Central bank; financial stability, oversight of systemically important FMIs (CREST, LCH)</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h5>European Union</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td><b>ESMA</b></td><td>EU-level coordinator of securities market regulation; sets technical standards for MiFID II/MiFIR, EMIR</td></tr>
+            <tr><td><b>EBA</b></td><td>EU-level banking regulator; sets prudential standards across member states</td></tr>
+            <tr><td><b>ECB</b></td><td>Monetary policy for the euro area; direct supervisor of "significant" banks via the SSM; operator of T2S</td></tr>
+            <tr><td><b>National Competent Authorities (NCAs)</b></td><td>Each member state implements EU rules locally — e.g. BaFin (Germany), AMF (France), CSSF (Luxembourg)</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Recognizing which of the three buckets a regulator belongs to — conduct/reporting, prudential/bank safety, or central bank/FMI oversight — tells you what kind of report or requirement it's likely to be asking for, in any of the four jurisdictions.</div>
+    </section>
+
+    <section class="mod" id="system-stacks">
+      <p class="sec-eyebrow"><span class="n">11</span> · Cutting across countries, by asset class</p>
+      <h2>OTC Derivatives &amp; Cash Equities — System Stacks</h2>
+      <p class="lede">Sections 04–07 named systems <i>per country</i>. This section instead cuts across countries by asset class — the vendor landscape for OTC derivatives, cash equities, and treasury/FX is genuinely global. These are the actual platforms behind names like "Imagine," "Calypso," or "WSS" on a trading floor.</p>
+
+      <div class="explainer">
+        <h5>OTC Derivatives Stack</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td>Front-to-back platform</td><td><b>Calypso</b> (now part of <b>Adenza</b>, owned by Nasdaq) — trade capture, valuation, collateral/margin (incl. Uncleared Margin Rules), and regulatory-reporting connectivity in one platform; <b>Murex</b>; <b>Summit</b> (Finastra)</td></tr>
+            <tr><td>Real-time risk &amp; margin engine</td><td><b>ION IMAGINE</b> — widely used by prime brokers, FCMs, and clearing firms for cross-margining OTC and listed derivatives in real time</td></tr>
+            <tr><td>Trade confirmation / eConfirmation</td><td><b>MarkitWire</b> (S&amp;P Global) — the platform <b>SwapsWire</b> became after Markit acquired it in 2007; the same system referenced in <a href="./module-03-trade-lifecycle.html">Module 3</a> §04</td></tr>
+            <tr><td>CCP clearing service (IRS)</td><td><b>SwapClear</b> — LCH's specific clearing service for interest rate swaps; the concrete, named service behind the generic "LCH" mentioned in <a href="./module-03-trade-lifecycle.html">Module 3</a> §06/§11</td></tr>
+            <tr><td>Portfolio compression &amp; reconciliation</td><td><b>triReduce</b> / <b>triResolve</b> (now part of <b>OSTTRA</b>, a CME Group / S&amp;P Global joint venture from MarkitServ, TriOptima, and Reset)</td></tr>
+            <tr><td>Collateral management &amp; margin messaging</td><td><b>AcadiaSoft</b> (industry-standard margin call messaging for Uncleared Margin Rules), plus collateral modules within Calypso/Adenza</td></tr>
+            <tr><td>Analytics / pricing libraries</td><td><b>Numerix</b>, <b>FINCAD</b></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h5>Cash Equities Stack</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td>OMS/EMS</td><td>Charles River IMS, Bloomberg AIM/EMSX, FlexTrade, Eze, and <b>Fidessa</b> (now part of ION) — still heavily used for sell-side equities trading in the UK and Europe</td></tr>
+            <tr><td>Post-trade equities processing</td><td><b>Broadridge</b> (BPS/Impact), <b>SS&amp;C</b> (GMI, Geneva), <b>Torstone Technology</b> (Inferno — multi-asset post-trade), <b>TCS BaNCS</b> (widely used by custodians)</td></tr>
+            <tr><td>Trade matching / affirmation</td><td>DTCC's <b>CTM</b>; DTCC's <b>ALERT</b> (standing settlement instruction repository, the former Omgeo Alert)</td></tr>
+            <tr><td>Settlement/custody record-keeping</td><td>Custodian core platforms (TCS BaNCS, Broadridge, etc.) plugging into CDSX / DTC / CREST / T2S per country (Sections 04–07)</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h5>Treasury / FX / Money Markets Stack</h5>
+        <div class="table-scroll">
+        <table>
+          <tbody>
+            <tr><td>Treasury, cash management &amp; FX processing</td><td><b>Wall Street Systems (WSS)</b> — now part of <b>ION Treasury</b> — widely deployed for FX, money markets, intraday liquidity, and cash management, alongside the derivatives platforms above</td></tr>
+            <tr><td>FX execution venues</td><td><b>FXall</b> (LSEG), <b>360T</b> (Deutsche Börse)</td></tr>
+            <tr><td>E-trading for fixed income</td><td><b>MarketAxess</b>, <b>Tradeweb</b></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="callout"><b>A quick note on "swapone":</b> not a standard product name, but almost certainly one of two real systems — <b>SwapClear</b> (LCH's IRS clearing service, above) or <b>SwapsWire</b> (the original OTC confirmation platform, now MarkitWire). Both are included above; worth confirming with whoever you heard the name from which one they meant.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> The OTC derivatives stack (Calypso/Murex + IMAGINE + MarkitWire + SwapClear + triReduce/AcadiaSoft) and the cash equities stack (OMS/EMS + Broadridge/TCS BaNCS + CTM/ALERT) are largely separate toolchains inside the same bank, even though both eventually feed the same generic five-layer architecture from Section 02 — a derivatives desk and an equities desk at Bank Of Toronto are very likely looking at completely different screens for the same Middle/Back Office functions.</div>
+    </section>
+
+    <section class="mod" id="sftr">
+      <p class="sec-eyebrow"><span class="n">12</span> · A third reporting regime, alongside EMIR and MiFIR</p>
+      <h2>Securities Financing Transaction Reporting — SFTR &amp; Country Equivalents</h2>
+      <p class="lede"><b>SFTR</b> — effective in the EU since 2020, extended to the UK post-Brexit as <b>UK SFTR</b> — is the reporting regime specifically for <b>SFTs (Securities Financing Transactions)</b>: repos, reverse repos, buy-sell backs, securities/commodities lending &amp; borrowing, and margin lending. It sits alongside EMIR (<a href="./module-02-hierarchy.html">Module 2</a> §07, <a href="./module-03-trade-lifecycle.html">Module 3</a> §09) and MiFIR (<a href="./module-03-trade-lifecycle.html">Module 3</a> §09), but for a product family neither of those covers.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Where SFTR Sits Among the Reporting Regimes</span><span class="t-id">MiFIR · EMIR · SFTR</span></div>
+        <pre>MiFIR   -&gt;  reports EXECUTED TRANSACTIONS (mainly cash securities,
+             some derivatives) — Module 3 §09
+
+EMIR    -&gt;  reports OTC DERIVATIVES specifically — Module 2 §07,
+             Module 3 §09
+
+SFTR    -&gt;  reports SECURITIES FINANCING TRANSACTIONS specifically —
+             repo, reverse repo, buy-sell back, securities lending/
+             borrowing, margin lending — THIS SECTION
+
+All three flow to a Trade Repository (Module 1 §05), often the SAME
+TR (REGIS-TR, DTCC Derivatives Repository, UnaVista all accept
+EMIR AND SFTR reports) — but each is a legally distinct reporting
+obligation, with its own schema and its own deadline.</pre>
+      </div>
+
+      <p>SFTR has one feature EMIR/MiFIR don't: <b>collateral reuse reporting</b>. If Goldman Sachs receives German Bunds as collateral in a repo and then re-uses (rehypothecates) those same Bunds in a <i>different</i> transaction, that reuse itself must be separately reported — a transparency requirement introduced because collateral rehypothecation chains were identified as a systemic risk amplifier in the 2008 crisis.</p>
+
+      <h3>Worked example — Bank Of Toronto's overnight repo, reported under SFTR</h3>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">SFTR Reporting · Overnight Repo</span><span class="t-id">Bank Of Toronto ↔ Goldman Sachs</span></div>
+        <pre>Trade: Bank Of Toronto lends EUR 50,000,000 cash overnight to
+       Goldman Sachs, collateralized by Germany 3% Bund 2033
+       (the same instrument from Section 07's worked example)
+Repo Rate: 3.15%
+Trade Date: Mon 17-Aug-2026    Maturity: Tue 18-Aug-2026 (overnight)
+
+Overnight interest = 50,000,000 x 3.15% x (1/365) = EUR 4,315
+
+SFTR Reporting Deadline: T+1 (by end of Tue 18-Aug-2026), same
+reporting-window discipline as EMIR/MiFIR (Module 3 §09) — reported
+to REGIS-TR by both counterparties (SFTR, like EMIR, is a dual-
+sided reporting obligation)
+
+SEPARATE REPORT — Collateral Reuse:
+If Goldman Sachs then re-uses the German Bunds it received as
+collateral in a different repo with a third counterparty before
+returning them to Bank Of Toronto, THAT reuse is its own SFTR
+report — distinct from the original repo trade report above.</pre>
+      </div>
+
+      <h3>Country equivalents</h3>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Jurisdiction</th><th>Regime</th><th>Scope</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>European Union</td><td><b>SFTR</b></td><td>Repo, reverse repo, buy-sell back, securities/commodities lending, margin lending</td><td>Reports to REGIS-TR/DTCC/UnaVista under ESMA technical standards</td></tr>
+          <tr><td>United Kingdom</td><td><b>UK SFTR</b></td><td>Same scope as EU SFTR</td><td>Onshored post-Brexit, administered by the FCA, reported to UK-authorized TRs</td></tr>
+          <tr><td>United States</td><td><b>SEC Rule 10c-1a</b>, via FINRA's <b>SLATE</b></td><td>Securities lending only — narrower than SFTR, does <b>not</b> cover repo, buy-sell back, or margin lending</td><td>Adopted 2023, phasing in through 2025–2026; the closest US analog, but narrower</td></tr>
+          <tr><td>Canada</td><td>No dedicated SFTR-equivalent as of 2026</td><td>—</td><td>Repo captured indirectly via CDCC's central clearing records; provincial OTC derivatives rules (e.g. CSA MI 96-101) don't extend to plain repo — a genuine gap</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> SFTR reporting happens at the same lifecycle stage as EMIR/MiFIR reporting (<a href="./module-03-trade-lifecycle.html">Module 3</a> §09) — still the "Regulatory Reporting" stage of the nine-stage lifecycle — just for a different product family, with its own T+1 deadline and an extra ongoing obligation (collateral reuse reporting) with no equivalent for a plain cash bond or a cleared swap. If you're asked to build reporting logic for repo/securities lending, do not simply extend an existing EMIR or MiFIR pipeline — the schema, the reuse-reporting requirement, and the regulator itself can all differ.</div>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these with real figures before returning to <a href="./module-04-equity.html">Module 4</a>.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>Bank Of Toronto's Toronto desk and its Frankfurt desk both execute a trade on the same Monday. Which one settles first, and why — walk through both settlement cycles from Section 03's table.</li>
+          <li>Name the CSD and the CCP for each of Canada, the US, the UK, and the EU (for the EU, name the settlement <i>platform</i> since there's no single CSD).</li>
+          <li>On the US Apple trade in Section 05, if Bank Of Toronto's desk had also sold 2,000 shares of Apple earlier that same day, what would NSCC do differently for the settlement instruction compared to a market with no central netting CCP?</li>
+          <li>Why does a EUR-denominated bond trade in Section 07 still name "Clearstream" as its CSD even though settlement mechanically happens on T2S?</li>
+          <li>Which two of the four jurisdictions in this module currently share the same equity settlement cycle, and which two are targeting a shared cycle change for October 2027?</li>
+          <li>A trade breaches its regulatory reporting deadline in the UK. Which regulator's rulebook was violated — UK EMIR/UK MiFIR under the FCA, or EU EMIR under ESMA — and why does the answer depend on where the trade was booked, not just who the counterparties are?</li>
+          <li>Match each of these systems to Front Office, Middle Office, or Back Office, per Section 02's architecture: Charles River IMS, Murex, DTC, CDSX matching module, Fedwire.</li>
+          <li>Bank Of Toronto's overnight repo with Goldman Sachs (Section 12) pays 3.15% on EUR 50,000,000 for one day, actual/365. What's the interest amount, and by when must both counterparties report the trade under SFTR?</li>
+          <li>Which jurisdiction's securities-financing reporting regime is narrower in product scope than the others — covering only securities lending and not repo, buy-sell back, or margin lending — and which system actually collects those reports?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then return to the main curriculum sequence at <b><a href="./module-04-equity.html">Module 4</a>: Fixed Income / Bonds</b>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — The Toronto desk's trade settles first, Tuesday 18-Aug-2026 (T+1); Frankfurt settles Wednesday 19-Aug-2026 (T+2)</h5>
+        <p>Per Section 03's table, Canadian equities run T+1 (aligned with the US since May 2024), while EU government bonds still run T+2 as of 2026. Both trades executed on the identical Monday Trade Date, but Canada's settlement infrastructure (CDSX) enforces a one-business-day-shorter cycle than the EU's T2S-based settlement — exactly the scenario worked through in Section 09.</p>
+
+        <h5>Q2 — Canada: CDS (CDSX) / CDCC. US: DTC / NSCC + FICC. UK: CREST / LCH. EU: T2S (platform; Clearstream, Euroclear France, etc. are the legal CSDs) / Eurex Clearing + LCH SA</h5>
+        <p>This is a direct read from Section 08's comparison table — the key nuance is that the EU doesn't have one "CSD" the way the other three markets do; T2S is the platform, and the actual legal CSD is whichever national one the security settles through.</p>
+
+        <h5>Q3 — NSCC would net the two trades before generating a settlement instruction</h5>
+        <p>Bank Of Toronto would only need to settle the net 3,000-share difference (5,000 bought minus 2,000 sold), not two separate gross instructions. Section 05 specifically calls out that NSCC performs multilateral netting across a firm's trades in the same security on the same day — a market without a central netting CCP would instead generate two separate gross settlement obligations that both individually complete DvP.</p>
+
+        <h5>Q4 — Because T2S is a shared settlement engine, not a CSD in its own legal/regulatory sense</h5>
+        <p>Clearstream remains the actual central securities depository (the entity holding the legal book-entry record and CSD license) for German securities; T2S is simply the common technical platform Clearstream's settlement instructions execute on, alongside every other participating national CSD. Section 07 draws this distinction explicitly — structurally different from Canada/US/UK, where the CSD is both the legal entity and the settlement engine in one.</p>
+
+        <h5>Q5 — Canada and the US currently share T+1; the UK and the EU are targeting a coordinated T+1 move for October 2027</h5>
+        <p>Section 03's table and Sections 06/07's takeaways both flag this pairing — it's not a coincidence that Canada/US moved together (given how much order flow crosses that border) and that the UK/EU are now planning their own coordinated move for the same reason.</p>
+
+        <h5>Q6 — UK EMIR/UK MiFIR under the FCA</h5>
+        <p>Post-Brexit, the UK operates its own separate reporting regime from the EU's EMIR/MiFIR, distinct even though the two rulebooks closely mirror each other. The governing regime depends on where the trade is booked/reported (which jurisdiction's rules the executing entity is subject to), not simply on which countries the two counterparties happen to be based in. Section 06 states this directly — a trade between a UK-booked entity and an EU-booked entity could in principle need reporting under both regimes, but a breach of the UK deadline specifically is a breach of the FCA's rulebook, not ESMA's.</p>
+
+        <h5>Q7 — Charles River IMS = Front Office. Murex = Middle Office. DTC = Back Office. CDSX matching module = Middle Office. Fedwire = Back Office</h5>
+        <p>This traces Section 02's generic architecture: Front Office produces the Order/Execution (Charles River); Middle Office confirms, matches, and prices risk (Murex, and the CDSX matching function specifically, distinct from CDSX's separate DvP settlement role); Back Office physically settles securities (DTC) and cash (Fedwire). The CDSX example is deliberately included to show one <i>organization</i> (CDS) can operate systems spanning more than one lifecycle stage — the matching module and the DvP settlement engine are different functions under the same corporate roof.</p>
+
+        <h5>Q8 — Interest = EUR 4,315. Both counterparties must report by end of Tuesday 18-Aug-2026 (T+1)</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Overnight Repo Interest</span><span class="t-id">EUR 50,000,000 @ 3.15%</span></div>
+          <pre>Overnight interest = 50,000,000 x 3.15% x (1/365) = EUR 4,315</pre>
+        </div>
+        <p>Section 12's worked example uses the same actual/365 day-count convention as <a href="./module-01-fundamentals.html">Module 1</a> §08's swap example. SFTR runs the same T+1 reporting-window discipline as EMIR/MiFIR (<a href="./module-03-trade-lifecycle.html">Module 3</a> §09), and like EMIR it's a dual-sided obligation — both Bank Of Toronto and Goldman Sachs independently report their side of the same repo.</p>
+
+        <h5>Q9 — The United States, via SEC Rule 10c-1a — reports are collected by FINRA's SLATE</h5>
+        <div class="takeaway">Section 12's country-equivalents table flags this explicitly: SFTR (EU) and UK SFTR both cover the full SFT product family — repo, reverse repo, buy-sell back, securities/commodities lending, and margin lending — while the US rule is deliberately scoped to securities lending only, leaving repo and buy-sell back transactions outside SLATE's collection. Canada, as the table also notes, has no dedicated regime of any scope yet.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

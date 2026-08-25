@@ -18,14 +18,18 @@ Open **[`index.md`](./index.md)** (or **[`index.html`](./index.html)** for the s
 ├── CLAUDE.md                  # Guidance for Claude Code working in this repo
 ├── README.md                  # This file
 └── docs/
-    ├── capital_markets_self_paced_learning_path.md   # Full original curriculum, all modules in one doc
-    ├── module-01-fundamentals.{md,html}  … module-15-listed-derivatives.{md,html}
-    ├── abbreviations.{md,html}           # Acronym glossary
-    ├── systems-landscape.{md,html}       # Front/Middle/Back Office systems by region
-    ├── sftr-reporting.{md,html}          # SFTR deep dive
-    ├── dmo-uk-reporting.{md,html}        # UK DMO gilt reporting deep dive
-    ├── upi-uti-dsb-deep-dive.{md,html}   # UTI/UPI/ANNA-DSB deep dive
-    └── docx/                             # Supplementary Word documents
+    ├── 1-capital-markets/                            # Non-reporting modules & reference material
+    │   ├── capital_markets_self_paced_learning_path.md   # Full original curriculum, all modules in one doc
+    │   ├── module-01-fundamentals.{md,html}  … module-13-parties-leis.{md,html}, module-15-listed-derivatives.{md,html}
+    │   ├── abbreviations.{md,html}           # Acronym glossary
+    │   ├── systems-landscape.{md,html}       # Front/Middle/Back Office systems by region
+    │   └── Capital-Markets.docx               # Supplementary Word document
+    └── 2-reporting/                                  # Reporting-focused modules & deep dives
+        ├── module-14-regulatory-reporting.{md,html}  # Regulatory Reporting + IT View
+        ├── sftr-reporting.{md,html}          # SFTR deep dive
+        ├── dmo-uk-reporting.{md,html}        # UK DMO gilt reporting deep dive
+        ├── upi-uti-dsb-deep-dive.{md,html}   # UTI/UPI/ANNA-DSB deep dive
+        └── SFTR architecture.docx, SFTR-Haircut.docx   # Supplementary Word documents
 ```
 
 Each module has a matching `.md` and `.html` version (same content). The `.md` files are the source of truth; edit those first.

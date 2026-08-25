@@ -1,0 +1,1182 @@
+<!doctype html>
+<title>Module 1 — Capital Markets Fundamentals</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 1 of 14</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Capital Markets Fundamentals</h1>
+    <p class="dek">The core distinctions every trade record you'll ever look at is built on top of — who's involved, who owns the risk, where the trade happens, and when/how it actually settles.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#primary-secondary"><span class="toc-num">01</span>Primary vs Secondary</a></li>
+      <li><a href="#buy-sell"><span class="toc-num">02</span>Buy-side vs Sell-side</a></li>
+      <li><a href="#dealer-broker"><span class="toc-num">03</span>Dealer vs Broker</a></li>
+      <li><a href="#offices"><span class="toc-num">04</span>Front / Middle / Back</a></li>
+      <li><a href="#exchange-otc"><span class="toc-num">05</span>Exchange vs OTC</a></li>
+      <li><a href="#settlement"><span class="toc-num">06</span>T, T+1, T+2 with dates</a></li>
+      <li><a href="#custodian-csd"><span class="toc-num">07</span>Custodian vs CSD</a></li>
+      <li><a href="#notional-swap"><span class="toc-num">08</span>Notional &amp; IR Swaps</a></li>
+      <li><a href="#actors"><span class="toc-num">—</span>Full Cast Reference</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="primary-secondary">
+      <p class="sec-eyebrow"><span class="n">01</span> · What is Capital Markets?</p>
+      <h2>Primary vs Secondary Market</h2>
+      <p class="lede">Capital Markets is where entities raise money by issuing securities, and where investors then trade those securities among themselves. Almost everything you'll see in trade data is the second thing.</p>
+
+      <table>
+        <thead><tr><th>Actor</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><b>Government of Canada</b></td><td>Issuer — creates the bond, raises cash</td></tr>
+          <tr><td><b>Initial Investors</b></td><td>First owners of the new bond at issuance</td></tr>
+          <tr><td><b>Goldman Sachs</b></td><td>Investor reselling the bond later (secondary seller)</td></tr>
+          <tr><td><b>Bank Of Toronto</b></td><td>Investor / dealer buying in the secondary market</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Primary Market — new issuance</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Flow · Primary Issuance</span><span class="t-id">ISIN CA1358XXXXX</span></div>
+        <pre>Government of Canada                         Investors
+----------------------                       (Banks / Funds)
+       |                                            |
+       |  issues "Canada 5% Bond 2035"               |
+       |  Total Face Value: CAD 500,000,000          |
+       |--------------------------------------------&gt;|
+       |     (brand-new bonds, ISIN: CA1358XXXXX)     |
+       |                                            |
+       |&lt;--------------------------------------------|
+       |        CAD 500,000,000 cash                  |
+       |                                            |</pre>
+        <div class="result"><b>Result:</b> Government raises CAD 500,000,000 cash. The bond "Canada 5% Bond 2035" now exists for the first time.</div>
+      </div>
+
+      <div class="explainer">
+        <h4>Coupon Rate vs. Yield — what does "5%" actually mean?</h4>
+        <p style="margin-bottom: 8px;">The 5% in "Canada 5% Bond 2035" is called the <b>coupon rate</b>, not APR (APR is loan/credit terminology). The coupon rate is fixed at issuance and never changes — it's a label printed on the bond. What <i>does</i> change over time is the <b>yield</b>: the effective annualized return an investor actually earns, which depends on the price they paid, not just the coupon.</p>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Concept · Coupon vs. Yield</span><span class="t-id">The "true APR"</span></div>
+          <pre>Coupon Rate  = fixed, printed on the bond, never changes
+               "Canada 5% Bond 2035" always pays 5% of face value/year
+
+Yield        = the REAL annualized return, given what you actually paid
+               - Buy at par (100.00)   -&gt; Yield ~= Coupon Rate (5.00%)
+               - Buy below par (98.50) -&gt; Yield  &gt;  Coupon Rate (you paid
+                                           less, still get 5% + your
+                                           money back at par -&gt; better return)
+               - Buy above par (101.80)-&gt; Yield  &lt;  Coupon Rate</pre>
+        </div>
+        <p>Yield is the number that behaves like "APR" — the honest, price-adjusted effective annual return. Coupon rate is closer to a label on the product. Full yield math (Yield to Maturity) is covered properly in <a href="./module-04-equity.html">Module 4</a>/8 — for now, just don't conflate the two.</p>
+
+        <h5>Worked example — Bank Of Toronto buys a different 5%-coupon bond each year</h5>
+        <p style="margin-bottom: 8px;">The clearest way to see "coupon rate never changes, yield always does" is to watch the same 5% coupon behave differently every year, purely because the price paid and the face value bought are different each time.</p>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Formulas · Coupon vs. Yield</span><span class="t-id">Fixed vs. Derived</span></div>
+          <pre>Annual Coupon Cash Flow = Face Value x Coupon Rate       &lt;- FIXED, issuer decides
+Current Yield            = Annual Coupon Cash Flow / Price Paid   &lt;- VARIES, market decides
+
+Price Paid = Face Value x (Market Price / 100)</pre>
+        </div>
+
+        <div style="overflow-x: auto; margin: 4px 0 18px;">
+        <table style="min-width: 840px; margin: 0;">
+          <thead><tr><th>Year</th><th>Face Value (CAD)</th><th>Coupon</th><th>Market Price</th><th>Price Paid</th><th>Coupon Cash Flow</th><th>Current Yield</th><th>Yield vs. Coupon</th><th>Bank Of Toronto's Position</th></tr></thead>
+          <tbody>
+            <tr><td><b>2026</b></td><td>10,000,000</td><td>5%</td><td>98.50 (discount)</td><td>9,850,000</td><td>500,000</td><td><b>5.08%</b></td><td>Yield &gt; Coupon</td><td><b>More profit</b> — paid below face value, so the fixed coupon is a bigger return on cash actually put down.</td></tr>
+            <tr><td><b>2027</b></td><td>15,000,000</td><td>5%</td><td>101.25 (premium)</td><td>15,187,500</td><td>750,000</td><td><b>4.94%</b></td><td>Yield &lt; Coupon</td><td><b>Less profit</b> — paid above face value; same coupon, smaller return on cash put down.</td></tr>
+            <tr><td><b>2028</b></td><td>8,000,000</td><td>5%</td><td>95.00 (deep discount)</td><td>7,600,000</td><td>400,000</td><td><b>5.26%</b></td><td>Yield &gt; Coupon</td><td><b>Best year of the four</b> — biggest discount to par, biggest gap in Bank Of Toronto's favor.</td></tr>
+            <tr><td><b>2029</b></td><td>20,000,000</td><td>5%</td><td>103.75 (premium)</td><td>20,750,000</td><td>1,000,000</td><td><b>4.82%</b></td><td>Yield &lt; Coupon</td><td><b>Worst year of the four</b> — largest premium paid, real return furthest below the printed rate.</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <ul style="margin: 0 0 14px; padding-left: 20px; color: var(--ink-soft);">
+          <li><b>Coupon Rate (5%)</b> — identical in every row; a static field on the security master, fixed at issuance, never recalculated.</li>
+          <li><b>Price</b> — a market-driven field, refreshed daily; the only reason the same 5% coupon produces four different outcomes above.</li>
+          <li><b>Yield</b> — always a <i>derived</i> field: <code>Coupon Cash Flow ÷ Price Paid</code>. If a system stores Yield as static, it's already wrong the moment Price moves.</li>
+        </ul>
+        <div class="callout">Reading "is Bank Of Toronto better or worse off" off the coupon rate alone is meaningless — 2028 and 2029 both show a 5% coupon, yet one is Bank Of Toronto's best year and the other its worst, purely from price paid. This uses simple <b>Current Yield</b> for clarity; <b>Yield to Maturity (YTM)</b> — which also folds in the gain/loss recovered when price unwinds back to par at maturity — is covered properly in <a href="./module-04-equity.html">Module 4</a>/8.</div>
+
+        <h5>One Issuance, Many Investors — can multiple investors buy slices of the same bond?</h5>
+        <p style="margin-bottom: 8px;">Yes — this is the normal case, not the exception. The total CAD 500,000,000 face value is one big pool that gets <b>split across many investors</b>, each taking whatever face-value slice they want (in minimum denominations, e.g. CAD 1,000 or CAD 5,000 lots). Every slice shares the exact same ISIN, coupon rate (5%), and maturity (2035) — they're fungible units of one security, the same way every share of Apple stock is identical regardless of who holds how many.</p>
+        <div class="ticket gold">
+          <div class="ticket-head"><span class="t-label">Flow · Issuance Allocation</span><span class="t-id">CAD 500,000,000 total</span></div>
+          <pre>                     Government of Canada
+                issues ISIN CA1358XXXXX
+                Total Face Value: CAD 500,000,000
+                Coupon: 5%   Maturity: 2035
+                            |
+    (allocated across many investors in the SAME issuance)
+                            |
+    -----------------------+-----------------------
+    |            |               |               |
+    v            v               v               v
+Bank Of      Goldman Sachs   Maple Leaf      ... hundreds more
+Toronto                      Pension Fund     investors ...
+CAD 50M      CAD 120M        CAD 30M          CAD 300M (combined)
+face value   face value      face value       face value
+
+50,000,000 + 120,000,000 + 30,000,000 + 300,000,000 = CAD 500,000,000
+(same ISIN, same 5% coupon, same 2035 maturity for every investor,
+ regardless of how much face value they hold)</pre>
+        </div>
+        <div class="callout">This is exactly why the secondary market example below works: Goldman Sachs, holding a CAD 120,000,000 slice from issuance, can later sell just CAD 10,000,000 of it to Bank Of Toronto — every unit of face value of that ISIN is identical and interchangeable. Only the <i>quantity</i> held differs between investors.</div>
+        <p style="margin-top: 12px;"><b>How allocation actually happens (briefly):</b> government bonds are typically issued via an <b>auction</b> — investors submit bids for how much face value they want and at what price/yield, and the government allocates the total across accepted bids. Corporate bonds usually go through <b>syndication/book-building</b> — underwriting banks canvas demand from many buy-side investors and allocate the issue accordingly. Either way: one ISIN, one coupon, many holders.</p>
+      </div>
+
+      <h3>Secondary Market — trading an existing bond</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Flow · Secondary Trade</span><span class="t-id">Price 98.50</span></div>
+        <pre>Goldman Sachs (Seller)                    Bank Of Toronto (Buyer)
+-----------------------                   ------------------------
+       |                                            |
+       |  Sells CAD 10,000,000 face value of         |
+       |  "Canada 5% Bond 2035" @ Price 98.50        |
+       |--------------------------------------------&gt;|
+       |       Bonds (same ISIN, existing since      |
+       |         primary issuance — nothing new)     |
+       |                                            |
+       |&lt;--------------------------------------------|
+       |   Cash = CAD 9,850,000                      |
+       |   (10,000,000 x 98.50 / 100)                |
+       |                                            |</pre>
+        <div class="result"><b>Result:</b> Government of Canada is <b>not</b> involved and receives no cash. Only ownership changes hands — this is what ~95% of trade/reporting data actually represents.</div>
+      </div>
+
+      <div class="explainer">
+        <h4>Why 98.50? — bond price mechanics explained</h4>
+
+        <h5>Why divide by 100 — it's a quoting convention, not math you derive</h5>
+        <p style="margin-bottom: 8px;">Bond prices are quoted as <b>"price per 100 of face value"</b> — a rate, not a dollar amount.</p>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Convention · Price to Value</span><span class="t-id">Rate × Scale</span></div>
+          <pre>Quoted Price = 98.50  means:
+"For every CAD 100 of face value, this bond costs CAD 98.50 today."
+
+To get the cash value of ANY face amount traded, scale by that ratio:
+
+  Market Value = Face Value Traded x (Quoted Price / 100)
+
+Example: Face Value Traded = CAD 10,000,000
+  Market Value = 10,000,000 x (98.50 / 100)
+               = 10,000,000 x 0.9850
+               = CAD 9,850,000</pre>
+        </div>
+        <p style="margin-top: 4px;">Why "per 100" instead of a flat dollar figure? Because the same bond trades in wildly different face-value chunks — Goldman Sachs might trade CAD 10,000,000 face value, another investor CAD 250,000 face value, of the exact same bond. One universal "per 100" rate lets everyone use the same quoted number regardless of trade size — exactly like an FX exchange rate (EUR/USD = 1.08) or a unit price multiplied by quantity.</p>
+
+        <h5>Why is the price 98.50 and not 100?</h5>
+        <p style="margin-bottom: 8px;">At issuance, a bond is usually priced at (or near) 100 — called <b>"par."</b> You pay CAD 100 and get back CAD 100 at maturity, plus coupons. After issuance, bond prices move <b>inversely to prevailing market interest rates</b>:</p>
+        <div class="ticket gold">
+          <div class="ticket-head"><span class="t-label">Mechanic · Price vs. Interest Rates</span><span class="t-id">Inverse relationship</span></div>
+          <pre>At issuance:
+  Canada 5% Bond 2035 issued at Price = 100.00 (par)
+  Market interest rates at the time  ~= 5.00%
+  -&gt; A 5% coupon is exactly competitive. Fair price = 100.
+
+Later, market interest rates rise to ~5.30%:
+  -&gt; Newly issued bonds now offer 5.30%, better than this old bond's 5%.
+  -&gt; Nobody pays 100 for a bond paying 5% when 5.30% is available.
+  -&gt; The bond's PRICE must drop so its effective yield rises to compete.
+  -&gt; Market repricing settles around Price = 98.50.
+
+(If rates had instead FALLEN to ~4.70%, this bond's fixed 5% would look
+ attractive, and its price would rise ABOVE par, e.g. 101.80.)</pre>
+        </div>
+        <div class="callout"><b>Not an arbitrary discount</b> — 98.50 is the market's real-time answer to "given today's interest rates, what does this fixed 5% cash-flow stream have to cost so a buyer earns a fair, competitive return?" Full mechanics (yield, duration) are covered in <a href="./module-04-equity.html">Module 4</a>/8. For now: <b>price moves opposite to interest rates.</b></div>
+
+        <h5>Is the seller (Goldman Sachs) actually taking a loss?</h5>
+        <p style="margin-bottom: 8px;">You cannot tell from 98.50 alone — it depends on what the seller originally paid, plus coupons collected along the way.</p>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Scenario · Cost Basis vs. Coupons</span><span class="t-id">Net P&amp;L</span></div>
+          <pre>Scenario: Goldman Sachs bought this bond 2 years ago AT ISSUANCE (par = 100.00)
+          Face value = CAD 10,000,000
+          Cost then  = CAD 10,000,000  (10,000,000 x 100.00/100)
+
+Today, Goldman Sachs sells at 98.50:
+          Proceeds now = CAD 9,850,000  (10,000,000 x 98.50/100)
+
+Price-only comparison:
+          9,850,000 - 10,000,000 = -CAD 150,000   &lt;- looks like a loss
+
+BUT Goldman Sachs also collected 2 years of coupons while holding it:
+          Coupon = 5% x CAD 10,000,000 = CAD 500,000 / year
+          2 years of coupons = CAD 1,000,000
+
+Net result over the holding period:
+          -150,000 (price)  +  1,000,000 (coupons)  =  +CAD 850,000 net gain
+
+  -&gt; Even though the SALE PRICE is below what they originally paid,
+     Goldman Sachs still came out ahead once coupon income is included.</pre>
+        </div>
+        <p>Two more nuances worth keeping: the 98.50 price says nothing about either party's individual P&amp;L — it's just today's fair market price, and Bank Of Toronto isn't "getting a discount" by buying at it. And a seller might sell below their original cost for reasons unrelated to "loss" — needing cash, rebalancing a portfolio, or expecting rates to rise further. Selling "below par" is routine, not inherently a bad decision.</p>
+
+        <div class="quote-model"><b>Mental model:</b> Price (98.50) = today's fair value per 100 face value, driven by interest rates. Gain/loss = today's price vs. <i>your own</i> cost basis, plus coupons collected. Two completely different questions.</div>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If you see "Trade" data in a reporting system, assume secondary market unless the record explicitly says "New Issue" / "Primary" / "Syndication".</div>
+    </section>
+
+    <section class="mod" id="buy-sell">
+      <p class="sec-eyebrow"><span class="n">02</span> · Who's on each side of a trade</p>
+      <h2>Buy-side vs Sell-side</h2>
+      <p class="lede">Buy-side deploys someone's capital. Sell-side provides the market that buy-side clients trade against.</p>
+
+      <table>
+        <thead><tr><th>Actor</th><th>Side</th><th>Role in this example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Maple Leaf Pension Fund</b></td><td><span class="side-tag buy">Buy-side</span></td><td>Investing retiree contributions into bonds</td></tr>
+          <tr><td><b>Bank Of Toronto</b></td><td><span class="side-tag sell">Sell-side</span></td><td>Quotes a price, takes the other side of the trade</td></tr>
+          <tr><td><b>Interbank Market</b></td><td><span class="side-tag sell">Sell-side</span></td><td>Where Bank Of Toronto sources bonds it doesn't hold</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Flow · Client Order to Fill</span><span class="t-id">CAD 50,000,000</span></div>
+        <pre>Maple Leaf Pension Fund       Bank Of Toronto            Interbank Market
+     (BUY-SIDE)                (SELL-SIDE / DEALER)         (Other Dealers)
+       |                              |                              |
+       | 1. "Buy CAD 50,000,000       |                              |
+       |    Canada 5% Bond 2035"      |                              |
+       |------------------------------&gt;|                              |
+       |                              |                              |
+       |                              | 2. Sources bonds from        |
+       |                              |    inventory / interbank     |
+       |                              |------------------------------&gt;|
+       |                              |&lt;------------------------------|
+       |                              |   Bought @ 98.40              |
+       |                              |                              |
+       | 3. Quotes price 98.50        |                              |
+       |&lt;------------------------------|                              |
+       |                              |                              |
+       | 4. Fund accepts & pays       |                              |
+       |    CAD 49,250,000            |                              |
+       |    (50,000,000 x 98.50/100)  |                              |
+       |------------------------------&gt;|                              |
+       |&lt;------------------------------|                              |
+       |     Bonds, CAD 50,000,000     |                              |
+       |     face value                |                              |</pre>
+        <div class="result"><b>Bank Of Toronto's spread</b> (a preview of "valuation" — <a href="./module-10-valuation.html">Module 10</a>): sold @ 98.50, bought @ 98.40 → 0.10 × 50,000,000 / 100 = <b>CAD 50,000 profit</b>.</div>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Buy-side = deploying someone's capital (pension holders, fund investors). Sell-side = providing the market/liquidity buy-side clients trade against.</div>
+    </section>
+
+    <section class="mod" id="dealer-broker">
+      <p class="sec-eyebrow"><span class="n">03</span> · Who owns the risk</p>
+      <h2>Dealer vs Broker</h2>
+      <p class="lede">The core question for any actor: does this party take the risk onto its own book, or just pass it through?</p>
+
+      <h3>Dealer (Principal) — Bank Of Toronto takes the bond onto its own book</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Flow · Principal Trade</span><span class="t-id">Held on book</span></div>
+        <pre>Client A                    Bank Of Toronto                Client B
+(Seller)                    (DEALER)                       (Buyer)
+   |                              |                              |
+   | Sells CAD 5,000,000 bond     |                              |
+   | @ price 99.00                |                              |
+   |------------------------------&gt;|                              |
+   |&lt;------------------------------|                              |
+   |     Cash CAD 4,950,000        |                              |
+   |                              |                              |
+   |                        [ Bond now sits on Bank Of Toronto's
+   |                          OWN balance sheet — Bank Of Toronto
+   |                          carries MARKET RISK until resold ]
+   |                              |                              |
+   |                              |  Later, sells to Client B     |
+   |                              |  @ price 99.20                |
+   |                              |------------------------------&gt;|
+   |                              |&lt;------------------------------|
+   |                              |     Cash CAD 4,960,000        |</pre>
+        <div class="result"><b>Bank Of Toronto's profit</b> = 4,960,000 − 4,950,000 = <b>CAD 10,000</b> (and it carried price risk on the bond in between the two trades).</div>
+      </div>
+
+      <h3>Broker (Agent) — Bank Of Toronto never owns the bond</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Flow · Agency Trade</span><span class="t-id">Pass-through</span></div>
+        <pre>Client A                    Bank Of Toronto                Client B
+(Seller)                    (BROKER)                       (Buyer)
+   |                              |                              |
+   |--[order: sell CAD 5M bond]--&gt;|                              |
+   |                              |--[matches order]-------------&gt;|
+   |                              |                              |
+   |&lt;===============  Bond, CAD 5,000,000  ===================&gt;|
+   |&lt;===============  Cash, CAD 4,950,000  ====================|
+   |      (bond &amp; cash move DIRECTLY between the two clients;    |
+   |       Bank Of Toronto's books are never touched)             |
+   |                              |                              |
+   |------[pays commission CAD 2,000]------------------------------&gt;|
+   |                              |&lt;------------------------------|
+   |                              |    Commission CAD 2,000       |</pre>
+        <div class="result"><b>Bank Of Toronto's profit</b> = <b>CAD 2,000 commission only</b>. Zero market risk held on the bond itself.</div>
+      </div>
+
+      <h3>Fund</h3>
+      <p>A <b>fund</b> (e.g., Maple Leaf Pension Fund above) pools many individuals' or institutions' money and invests it according to a mandate. It is almost always a <b>buy-side</b> actor sitting on the client side of dealer/broker trades like the ones above.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> "Never holding the bond itself" is the tell for a broker. A dealer, by definition, does hold it — even briefly — and that's exactly what creates its market risk.</div>
+    </section>
+
+    <section class="mod" id="offices">
+      <p class="sec-eyebrow"><span class="n">04</span> · Where in the organization</p>
+      <h2>Front Office / Middle Office / Back Office</h2>
+      <p class="lede">Every field in a "reporting" table was produced by exactly one of these three offices, in this order.</p>
+
+      <table>
+        <thead><tr><th>Office</th><th>Actor / System</th><th>Produces</th></tr></thead>
+        <tbody>
+          <tr><td><b>Front Office</b></td><td>Trader, trading system</td><td>The raw trade — who, what, price, quantity</td></tr>
+          <tr><td><b>Middle Office</b></td><td>Risk officer, valuation engine, confirmations</td><td>Validated trade, MTM value, signed confirmation</td></tr>
+          <tr><td><b>Back Office</b></td><td>Settlement ops, custodian, reporting engine</td><td>Settled position, ledger entry, regulatory report</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Flow · Trade Lifecycle, T to T+2</span><span class="t-id">Trade CAD 10,000,000</span></div>
+        <pre>Day T  (Trade Date)
+--------------------
+FRONT OFFICE
+  Trader at Bank Of Toronto sells CAD 10,000,000 face value of
+  "Canada 5% Bond 2035" to Goldman Sachs @ price 98.50
+        |
+        v
+MIDDLE OFFICE   (same day, T)
+  - Checks risk limit: max exposure to Goldman Sachs = CAD 20,000,000
+    Current exposure after this trade = CAD 9,850,000  -&gt; OK, within limit
+  - Computes trade value:
+        10,000,000 x 98.50 / 100 = CAD 9,850,000
+  - Sends confirmation to Goldman Sachs
+  - Goldman Sachs affirms: trade details match  -&gt; CONFIRMED
+        |
+        v
+Day T+2  (Settlement Date — standard for bonds is "T+2")
+-----------------------------------------------------------
+BACK OFFICE
+  - Delivers CAD 10,000,000 face value of bonds via custodian/CSD
+  - Receives CAD 9,850,000 cash into Bank Of Toronto's account
+  - Books the entry into the general ledger
+  - Reconciles Bank Of Toronto's internal record vs custodian statement
+  - Reports the trade to the regulator (e.g., MiFID II), if required</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> When debugging a data issue, ask "which office produces this field?" — it tells you which upstream system to check.</div>
+    </section>
+
+    <section class="mod" id="exchange-otc">
+      <p class="sec-eyebrow"><span class="n">05</span> · Where the trade happens</p>
+      <h2>Exchange-Traded vs OTC</h2>
+      <p class="lede">This gap is the entire reason "regulatory reporting" exists as a discipline — regulators trust the exchange to be the record for listed products, but need firms to actively report OTC trades.</p>
+
+      <table>
+        <thead><tr><th>Actor</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><b>Investors A–G</b></td><td>Multiple independent participants trading on the exchange</td></tr>
+          <tr><td><b>Stock Exchange (e.g., NYSE)</b></td><td><span class="side-tag infra">Infra</span> Central, regulated venue matching all buyers/sellers</td></tr>
+          <tr><td><b>Bank Of Toronto, Goldman Sachs</b></td><td>The only two parties to a private OTC contract</td></tr>
+          <tr><td><b>Trade Repository</b></td><td><span class="side-tag infra">Infra</span> Where OTC derivative details must be reported</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Exchange-Traded — centralized, many-to-many</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Flow · Central Order Book</span><span class="t-id">AAPL 227.15</span></div>
+        <pre>    Investor A   Investor B   Bank Of Toronto   Investor C
+         \            |              |               /
+          \           |              |              /
+           v           v              v             v
+       +-------------------------------------------------+
+       |         STOCK EXCHANGE  (e.g., NYSE)             |
+       |         Central Order Book                       |
+       |         Apple Inc. shares — Price: USD 227.15    |
+       +-------------------------------------------------+
+           ^           ^              ^             ^
+          /            |              |              \
+         /             |              |               \
+    Investor D    Investor E     Investor F        Investor G</pre>
+        <div class="result">Price is <b>public</b> and visible to all participants. Contract is identical for everyone (1 share = 1 share). No bilateral reporting needed — the exchange itself is the record.</div>
+      </div>
+
+      <h3>OTC — bilateral, privately negotiated</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Flow · Private Contract</span><span class="t-id">Reportable to Trade Repository</span></div>
+        <pre>Bank Of Toronto   &lt;====  Private Interest Rate Swap  ====&gt;   Goldman Sachs
+
+     Notional:            CAD 100,000,000
+     Bank Of Toronto pays: Fixed 4.00%
+     Goldman Sachs pays:   Floating (CORRA + spread)
+     Maturity:             5 years
+
+  - Terms are visible ONLY to these two parties.
+  - No central exchange records this trade.
+  - Both parties must separately report trade details to a Trade
+    Repository (e.g., under EMIR / MiFID II) for regulator visibility.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If a product trades OTC, assume its data doesn't exist anywhere centrally unless someone's reporting pipeline puts it there — that pipeline is your job.</div>
+    </section>
+
+    <section class="mod" id="settlement">
+      <p class="sec-eyebrow"><span class="n">06</span> · When cash and securities actually move</p>
+      <h2>Settlement Conventions — T, T+1, T+2 with real dates</h2>
+      <p class="lede"><b>T</b> ("Trade Date") is the day the trade is agreed. <b>T+n</b> ("Settlement Date") is n <b>business days</b> later — weekends and market holidays don't count, which is why T+2 isn't just "add 2 to the calendar date."</p>
+
+      <table>
+        <thead><tr><th>Product</th><th>Standard settlement</th></tr></thead>
+        <tbody>
+          <tr><td><b>US &amp; Canadian equities</b></td><td>T+1 (moved from T+2 in May 2024)</td></tr>
+          <tr><td><b>Government / corporate bonds</b></td><td>T+1 or T+2, depending on market</td></tr>
+          <tr><td><b>FX spot</b></td><td>T+2 for most pairs (T+1 for USD/CAD)</td></tr>
+          <tr><td><b>OTC derivatives (e.g. IR Swaps)</b></td><td>No notional settles — only periodic net cash flows (Section 08)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Example 1 — no weekend in the way</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Calendar · Clean Week</span><span class="t-id">T+2</span></div>
+        <pre>Trade Date (T)  : Monday,    17 August 2026
+T+1             : Tuesday,   18 August 2026
+T+2             : Wednesday, 19 August 2026   &lt;- Settlement Date</pre>
+      </div>
+
+      <h3>Example 2 — a weekend sits in the middle</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Calendar · Weekend Crossed</span><span class="t-id">T+2</span></div>
+        <pre>Trade Date (T)  : Thursday, 20 August 2026
+T+1             : Friday,   21 August 2026
+                   Saturday, 22 August 2026  &lt;- not a business day, skipped
+                   Sunday,   23 August 2026  &lt;- not a business day, skipped
+T+2             : Monday,   24 August 2026   &lt;- Settlement Date</pre>
+      </div>
+
+      <h3>Example 3 — a public holiday also sits in the way</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Calendar · Holiday Crossed</span><span class="t-id">T+2</span></div>
+        <pre>Trade Date (T)  : Thursday,  3 September 2026
+T+1             : Friday,    4 September 2026
+                   Saturday,  5 September 2026  &lt;- weekend, skipped
+                   Sunday,    6 September 2026  &lt;- weekend, skipped
+                   Monday,    7 September 2026  &lt;- Labour Day (holiday), skipped
+T+2             : Tuesday,   8 September 2026    &lt;- Settlement Date</pre>
+        <div class="result">T+2 landed <b>5 calendar days</b> after T, not 2 — because only business days count, and this stretch had both a weekend AND a holiday.</div>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If a "Settlement Date" field is more than 2 calendar days after "Trade Date," that's not automatically a data bug — check whether a weekend or market holiday fell in between before assuming something's broken.</div>
+    </section>
+
+    <section class="mod" id="custodian-csd">
+      <p class="sec-eyebrow"><span class="n">07</span> · Who physically holds/moves the securities</p>
+      <h2>Custodian vs CSD</h2>
+      <p class="lede">An investor never holds an account directly at the central ledger — there's always a custodian in between.</p>
+
+      <div class="explainer">
+        <h5>Custodian</h5>
+        <p style="margin-bottom: 8px;">A bank that holds securities in safekeeping on behalf of a client (an investor or dealer), carries out settlement instructions, collects coupon/dividend payments on the client's behalf, and produces account statements. Example real-world custodians: <b>BNY Mellon, State Street, Northern Trust</b>.</p>
+        <h5>CSD (Central Securities Depository)</h5>
+        <p style="margin-bottom: 0;">The single, central electronic ledger for a given market that records the <i>ultimate legal ownership</i> of securities in book-entry form (no paper certificates) — the place where final transfer of ownership actually happens on Settlement Date. Each market typically has one main CSD: <b>CDS</b> (Canada), <b>DTC</b> (US), <b>Euroclear / Clearstream</b> (international/Eurobonds).</p>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Flow · Custody Chain</span><span class="t-id">Settlement Date, T+2</span></div>
+        <pre>Bank Of Toronto  ---(client of)---&gt;  Custodian (e.g. BNY Mellon)
+                                            |
+                                  (custodian holds an account at)
+                                            v
+                                  CSD (e.g. CDS / DTC)  &lt;- master ledger
+                                            ^
+                                  (custodian holds an account at)
+                                            |
+Goldman Sachs    ---(client of)---&gt;  Custodian (its own, or same one)
+
+On Settlement Date (T+2):
+  1. Both custodians instruct the CSD to move the bond, on their
+     clients' behalf, from Goldman Sachs' custody account to
+     Bank Of Toronto's custody account.
+  2. The CSD updates its central book-entry record — this is the
+     LEGAL moment ownership changes.
+  3. Cash moves separately via the banking payment system, ideally
+     at the same time (Delivery vs Payment - DvP) so neither side
+     is left holding one leg without the other.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "Custodian" = your own bank holding your positions and dealing with settlement on your behalf. "CSD" = the one central record-of-truth ledger for a market that every custodian ultimately plugs into. When reconciling positions (Back Office, Section 04), your internal books should tie out to your custodian's statement — which itself ties out to the CSD.</div>
+    </section>
+
+    <section class="mod" id="notional-swap">
+      <p class="sec-eyebrow"><span class="n">08</span> · What actually settles on a derivative</p>
+      <h2>Notional Amount &amp; a first look at Interest Rate Swaps</h2>
+      <p class="lede"><b>Notional amount</b> is the reference principal used only to <i>calculate</i> periodic interest cash flows on a derivative — it is never physically exchanged. That's the key difference from a bond trade: a bond's face value is actually delivered (Section 01); a swap's notional is just a number used for arithmetic.</p>
+
+      <p><b>A closely related but genuinely different concept: the Underlier.</b> The <b>Underlier</b> (also called the "Underlying") is the actual reference asset, rate, index, or entity whose value or level <i>drives</i> a derivative's cash flows — as opposed to Notional, which is just the <i>size</i> multiplier applied to whatever the Underlier does. Every derivative has exactly one (or, occasionally, a small basket of) Underlier, but the kind of thing it is changes completely by asset class:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Asset Class</th><th>What the Underlier typically is</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Rates (this section)</td><td>A reference interest rate</td><td><b>CORRA</b> (see callout below)</td></tr>
+          <tr><td>Equity (<a href="./module-04-equity.html">Module 4</a>)</td><td>A stock, or a basket/index of stocks</td><td>Apple Inc. common stock</td></tr>
+          <tr><td>Credit (<a href="./module-09-credit.html">Module 9</a>)</td><td>A company's creditworthiness (the "Reference Entity")</td><td>Northern Rail Corp</td></tr>
+          <tr><td>FX (<a href="./module-06-fx.html">Module 6</a>)</td><td>A currency pair</td><td>USD/CAD</td></tr>
+          <tr><td>Commodity (<a href="./module-07-commodities.html">Module 7</a>)</td><td>A published price index</td><td>ICE Brent Crude</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>For the IRS worked out below, <b>Notional (CAD 100,000,000) and Underlier (CORRA) are two separate numbers describing the same trade, answering two separate questions</b>: Notional answers "how big is this trade," Underlier answers "what does the floating leg actually reset against." Confusing the two is a common beginner mistake — a CAD 100,000,000 notional swap and a CAD 10,000,000 notional swap can reference the identical Underlier (CORRA), and two swaps with the identical Notional can reference completely different Underliers.</p>
+
+      <div class="callout"><b>What actually IS CORRA?</b> <b>CORRA (Canadian Overnight Repo Rate Average)</b> is Canada's risk-free reference rate — calculated and published each business day by the <b>Bank of Canada</b>, derived from actual overnight repurchase (repo) transactions collateralized by Government of Canada securities, not from bank <i>estimates</i> the way the now-discontinued CDOR and LIBOR benchmarks were. Because it's built from real, observable transactions rather than a survey of banks' opinions, it's far harder to manipulate — precisely why global regulators pushed every major currency onto a rate like it (SOFR in the US, SONIA in the UK, €STR in the EU) after the LIBOR-rigging scandals. <a href="./module-08-rates.html">Module 8</a> §1 covers the full CDOR-to-CORRA transition story; this module just needs CORRA as "the number this trade's floating leg resets against."</div>
+
+      <p>Revisiting the OTC swap from Section 05 — Bank Of Toronto and Goldman Sachs, Notional CAD 100,000,000, 5-year maturity, quarterly payments, Bank Of Toronto pays a <b>fixed</b> rate, Goldman Sachs pays a <b>floating</b> rate (CORRA + spread):</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · One Quarterly Payment</span><span class="t-id">Notional CAD 100,000,000</span></div>
+        <pre>Notional (reference only, NEVER exchanged): CAD 100,000,000
+Period: ~91 days (one quarter), day count actual/365
+
+Bank Of Toronto's FIXED leg:
+  100,000,000 x 4.00% x (91 / 365) = CAD 997,260
+
+Goldman Sachs' FLOATING leg (CORRA averaged 3.20% + 0.05% spread = 3.25%):
+  100,000,000 x 3.25% x (91 / 365) = CAD 810,068
+
+NETTING  (only the difference actually moves, one direction):
+  997,260 - 810,068 = CAD 187,192</pre>
+        <div class="result"><b>Result:</b> Bank Of Toronto pays Goldman Sachs <b>CAD 187,192 net</b> on this date. The CAD 100,000,000 notional itself never moves — on this date or any other — it only ever exists to compute the two legs above. This repeats every quarter for 5 years, with the floating leg reset each period to whatever CORRA + spread then is.</div>
+      </div>
+
+      <div class="callout">This is deliberately just the mechanics of one cash flow, not the theory of swaps — pricing/valuing a swap (discount curves, DV01/PV01, mark-to-market) is covered properly in <b><a href="./module-10-valuation.html">Module 10</a>: Valuation</b>. For now, keep two things: (1) notional is a calculation input, not a cash amount that settles, and (2) in practice only one net payment moves per period, not two gross ones.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> If you see a derivative trade record with a huge "Notional" value (e.g. CAD 100,000,000) and no corresponding settlement of that amount anywhere in cash/custody systems, that's expected — notional isn't supposed to settle. Only the periodic net cash flows do.</div>
+    </section>
+
+    <section class="mod" id="actors">
+      <p class="sec-eyebrow">Reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+      <p class="lede">Every actor that appeared across the five flows above, in one table.</p>
+
+      <table>
+        <thead><tr><th>Actor</th><th>Side</th><th>Typical role seen in this module</th></tr></thead>
+        <tbody>
+          <tr><td><b>Government of Canada</b></td><td><span class="side-tag infra">Issuer</span></td><td>Issues new bonds in the primary market</td></tr>
+          <tr><td><b>Maple Leaf Pension Fund</b></td><td><span class="side-tag buy">Buy-side</span></td><td>Invests client/member money into bonds</td></tr>
+          <tr><td><b>Bank Of Toronto</b></td><td><span class="side-tag sell">Sell-side</span></td><td>Dealer (principal) or broker (agent), depending on the trade</td></tr>
+          <tr><td><b>Goldman Sachs</b></td><td><span class="side-tag sell">Sell-side</span></td><td>Counterparty on secondary market and OTC trades</td></tr>
+          <tr><td><b>Stock Exchange (e.g., NYSE)</b></td><td><span class="side-tag infra">Infra</span></td><td>Central venue for exchange-traded products</td></tr>
+          <tr><td><b>Trade Repository</b></td><td><span class="side-tag infra">Infra</span></td><td>Central registry OTC trades must be reported to</td></tr>
+          <tr><td><b>Custodian / CSD</b></td><td><span class="side-tag infra">Infra</span></td><td>Holds/settles securities on owners' behalf (Section 07 above; <a href="./module-13-parties-leis.html">Module 13</a> goes deeper)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mod" id="quiz" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <p class="lede">Work these with real figures before moving to <a href="./module-02-hierarchy.html">Module 2</a>.</p>
+
+      <div class="quiz">
+        <ol>
+          <li>Bank Of Toronto buys a bond at 98.40 and later sells the same bond at 99.10. If the face value traded is CAD 20,000,000, what is Bank Of Toronto's profit, and was Bank Of Toronto acting as dealer or broker?</li>
+          <li>A pension fund sells CAD 8,000,000 face value of a bond through Bank Of Toronto acting purely as broker, at a price of 97.75, for a flat commission of CAD 1,500. How much cash does the pension fund receive, and how much does Bank Of Toronto earn?</li>
+          <li>A trade is agreed on Monday (T) and bonds settle T+2. If Monday is the trade date, which calendar day is the settlement date, and which "office" (front/middle/back) is active on each of those days?</li>
+          <li>Why doesn't a trade of Apple shares on NASDAQ need to be separately reported to a Trade Repository, while a CAD 100,000,000 Interest Rate Swap between Bank Of Toronto and Goldman Sachs does?</li>
+          <li>A trade is agreed on Thursday, 3 September 2026 and settles T+2. Monday, 7 September 2026 is a market holiday. What calendar date is the actual Settlement Date, and why isn't it Saturday, 5 September 2026?</li>
+          <li>What's the difference between what a custodian does and what a CSD does — and why does an investor's custodian need its own account at the CSD rather than the investor holding one directly?</li>
+          <li>On a CAD 100,000,000 notional Interest Rate Swap, Bank Of Toronto pays fixed 4.00% and Goldman Sachs pays floating 3.10% (already including spread) for a 91-day quarter (actual/365). Who pays whom, how much net cash actually moves, and does any part of the CAD 100,000,000 notional itself settle?</li>
+          <li>Two Interest Rate Swaps both reference CORRA as their Underlier — one has Notional CAD 50,000,000, the other CAD 500,000,000. Does sharing the same Underlier mean these two trades are economically similar in size? Why or why not — and what's the one-sentence distinction between what Notional answers and what Underlier answers?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then we move to <b><a href="./module-02-hierarchy.html">Module 2</a>: Asset Class → Product → Instrument → Trade</b>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these before moving on.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Profit = CAD 140,000; Bank Of Toronto acted as dealer</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Dealer Spread</span><span class="t-id">CAD 20,000,000</span></div>
+          <pre>Profit = (99.10 - 98.40) / 100 x 20,000,000
+       = 0.70 / 100 x 20,000,000
+       = CAD 140,000</pre>
+        </div>
+        <p>Bank Of Toronto bought the bond first and held it before selling it on later — that's taking principal risk, the defining trait of a dealer. A broker never takes the position onto its own book, so "buy low, sell high on the same bond" only makes sense for a dealer.</p>
+
+        <h5>Q2 — Pension fund receives CAD 7,818,500; Bank Of Toronto earns CAD 1,500</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Broker Payout</span><span class="t-id">CAD 8,000,000</span></div>
+          <pre>Market value = 8,000,000 x 97.75 / 100 = CAD 7,820,000
+Pension fund receives = 7,820,000 - 1,500 (commission) = CAD 7,818,500
+Bank Of Toronto earns  = CAD 1,500 commission only</pre>
+        </div>
+        <p>As broker/agent, Bank Of Toronto never owns the bond, so its only income is the flat commission — it carries zero market risk on the trade itself.</p>
+
+        <h5>Q3 — Settlement Date = Wednesday</h5>
+        <p style="margin-bottom: 8px;">Monday (T) → Tuesday (T+1) → Wednesday (T+2) — no weekend falls in between since all three days are weekdays.</p>
+        <ul style="margin: 0 0 14px; padding-left: 20px; color: var(--ink-soft);">
+          <li><b style="color: var(--ink);">Front Office</b> is active on T (Monday) — executes the trade.</li>
+          <li><b style="color: var(--ink);">Middle Office</b> is active on T, same day (Monday) — risk checks, valuation, confirmation/affirmation.</li>
+          <li><b style="color: var(--ink);">Back Office</b> is active on T+2 (Wednesday) — delivers bonds, receives cash, books ledger entries, reconciles, reports.</li>
+        </ul>
+
+        <h5>Q4 — The exchange itself is the public record; OTC has no such record</h5>
+        <p>An Apple/NASDAQ trade doesn't need separate Trade Repository reporting because the exchange is already a public, regulated, central venue — regulators see every trade through the exchange's own data feed in real time. The CAD 100,000,000 IR Swap is OTC: a private, bilateral contract between exactly two parties, with no central venue recording it. Regulators would have zero visibility into it unless both counterparties are legally required to separately report the trade to a Trade Repository (e.g. under EMIR / MiFID II) — which is exactly the requirement that exists.</p>
+
+        <h5>Q5 — Settlement Date = Tuesday, 8 September 2026</h5>
+        <div class="ticket gold">
+          <div class="ticket-head"><span class="t-label">Calendar · Holiday Crossed</span><span class="t-id">T+2</span></div>
+          <pre>T          : Thursday,  3 September 2026
+T+1        : Friday,    4 September 2026
+(skipped)  : Saturday,  5 Sept / Sunday, 6 Sept  - weekend
+(skipped)  : Monday,    7 Sept - Labour Day, market holiday
+T+2        : Tuesday,   8 September 2026</pre>
+        </div>
+        <p>It isn't Saturday, 5 September, because Saturday was never a candidate at all — T+2 counts only business days forward from T. This stretch had to skip both the weekend <i>and</i> the following Monday's holiday, pushing the true T+2 a full five calendar days past the trade date.</p>
+
+        <h5>Q6 — A custodian is client-facing; a CSD is the one central ledger the whole market shares</h5>
+        <p>A <b>custodian</b> is the bank that holds an investor's or dealer's securities in safekeeping, executes settlement instructions on their behalf, and produces statements — many different custodians exist, each serving their own roster of clients. A <b>CSD</b> is the single central ledger for a market that records the ultimate legal ownership of every security issued in that market. An investor's custodian needs its own CSD account because the CSD doesn't deal directly with every individual investor — it only maintains a manageable number of large participant accounts (custodians, clearing members, major banks), each of which aggregates and nets the positions of many underlying clients beneath it. The investor's true legal ownership is only as good as this whole chain reconciling correctly, end to end.</p>
+
+        <h5>Q7 — Bank Of Toronto pays Goldman Sachs CAD 224,384 net; no notional settles</h5>
+        <div class="ticket">
+          <div class="ticket-head"><span class="t-label">Math · Swap Netting</span><span class="t-id">Notional CAD 100,000,000</span></div>
+          <pre>Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+Floating leg (Goldman Sachs pays) : 100,000,000 x 3.10% x (91/365) = CAD 772,877
+Net = 997,260 - 772,877 = CAD 224,384</pre>
+        </div>
+        <div class="takeaway"><b>Bank Of Toronto pays Goldman Sachs CAD 224,384 net</b> on this payment date. No part of the CAD 100,000,000 notional itself settles — it only ever exists as the number both legs are calculated from. Only the netted cash difference actually moves.</div>
+
+        <h5>Q8 — No: sharing an Underlier says nothing about economic size</h5>
+        <p>Notional answers "how big is this trade" (CAD 50,000,000 vs. CAD 500,000,000 — a 10x difference in the actual cash flows each period); Underlier answers "what does the floating leg reset against" (CORRA, identical on both trades). Two trades can share the exact same Underlier while being wildly different in size, and two trades can share the exact same Notional while referencing completely different Underliers — the two fields are independent inputs to the cash-flow calculation, not two ways of describing the same thing. This is exactly the distinction Section 08's Underlier callout draws explicitly.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 1 of 14 &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
