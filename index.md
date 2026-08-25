@@ -18,6 +18,8 @@ Also see: [**UPI, UTI &amp; ANNA-DSB Deep Dive**](./docs/2-reporting/upi-uti-dsb
 
 Also see: [**Interest Rate Swap (IRS) Deep Dive**](./docs/1-capital-markets/interest-rate-swap-deep-dive.md) — one 5Y CAD IRS taken through all 20 quarterly settlements: exact fixed vs. floating CORRA calculations, the full payment-date schedule, final settlement at maturity, and the Trade/Valuation fields involved.
 
+Also see: [**MiFID II / MiFIR Reporting Deep Dive**](./docs/2-reporting/mifid-reporting.md) — what makes an instrument "MiFID eligible" (the Article 26(2) scope test), transaction reporting vs. the transparency regime, and exactly what an OTC-executed equity trade is subject to (the Share Trading Obligation and the Systematic Internaliser regime).
+
 ---
 
 ## Modules
@@ -54,6 +56,7 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 | UK DMO Reporting Deep Dive — how GEMMs report gilt auctions &amp; secondary-market trading to the UK DMO (Auction/Daily/Weekly/Aggregated reports) | [dmo-uk-reporting.md](./docs/2-reporting/dmo-uk-reporting.md) | [dmo-uk-reporting.html](./docs/2-reporting/dmo-uk-reporting.html) |
 | UPI, UTI &amp; ANNA-DSB Deep Dive — derivative identifiers explained: UTI generation waterfall, UPI reference-data templates, ANNA-DSB, where each is used | [upi-uti-dsb-deep-dive.md](./docs/2-reporting/upi-uti-dsb-deep-dive.md) | [upi-uti-dsb-deep-dive.html](./docs/2-reporting/upi-uti-dsb-deep-dive.html) |
 | Interest Rate Swap (IRS) Deep Dive — full 20-quarter worked example: fixed vs. floating CORRA calculation, payment-date schedule, final settlement, Trade/Valuation fields | [interest-rate-swap-deep-dive.md](./docs/1-capital-markets/interest-rate-swap-deep-dive.md) | — |
+| MiFID II / MiFIR Reporting Deep Dive — the Article 26(2) eligibility test, transaction reporting vs. transparency, the Share Trading Obligation &amp; Systematic Internaliser regime for OTC equities | [mifid-reporting.md](./docs/2-reporting/mifid-reporting.md) | [mifid-reporting.html](./docs/2-reporting/mifid-reporting.html) |
 
 ---
 

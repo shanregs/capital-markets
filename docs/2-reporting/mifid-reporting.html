@@ -1,0 +1,1070 @@
+<!doctype html>
+<title>MiFID II / MiFIR Reporting Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>MiFID II / MiFIR Reporting Deep Dive</h1>
+    <p class="dek">Transaction Reporting, Transparency &amp; the OTC Equity Rules — exactly what makes an instrument "MiFID eligible," what a full transaction report contains, and what an OTC-executed equity trade is actually subject to.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> <a href="../1-capital-markets/module-04-equity.html">Module 4</a> §8, <a href="../1-capital-markets/module-06-fx.html">Module 6</a> §8, and <a href="./module-14-regulatory-reporting.html">Module 14</a> §4 each touched MiFID II/MiFIR briefly; this module is the deep dive.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is MiFID II / MiFIR?</a></li>
+      <li><a href="#three-obligations"><span class="toc-num">02</span>Three Distinct Obligations</a></li>
+      <li><a href="#eligibility"><span class="toc-num">03</span>What Makes an Instrument Eligible</a></li>
+      <li><a href="#who-reports"><span class="toc-num">04</span>Who Must Report, and How</a></li>
+      <li><a href="#report-content"><span class="toc-num">05</span>Transaction Report Content</a></li>
+      <li><a href="#transparency"><span class="toc-num">06</span>The Transparency Regime</a></li>
+      <li><a href="#otc-equities"><span class="toc-num">07</span>OTC Equities — What They're Subject To</a></li>
+      <li><a href="#worked-example"><span class="toc-num">08</span>Worked End-to-End Example</a></li>
+      <li><a href="#deadlines"><span class="toc-num">09</span>Deadlines &amp; Record-Keeping</a></li>
+      <li><a href="#links"><span class="toc-num">10</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · Two legal instruments, one regime</p>
+      <h2>What Is MiFID II / MiFIR?</h2>
+      <p class="lede">"MiFID II" is colloquial shorthand for <b>two separate pieces of EU law that work together</b> — and the reporting obligations this module is actually about live in the less famous of the two.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Instrument</th><th>Type</th><th>What It Covers</th><th>How It Applies</th></tr></thead>
+        <tbody>
+          <tr><td><b>MiFID II</b> — Directive 2014/65/EU</td><td>Directive</td><td>Investment firm authorization, conduct-of-business rules, best execution (Section 7), market structure (RM/MTF/OTF venue categories)</td><td>Transposed into each member state's own national law — provisions can vary slightly country to country</td></tr>
+          <tr><td><b>MiFIR</b> — Regulation (EU) No 600/2014</td><td>Regulation</td><td>Transparency (Section 6), the Share/Derivatives Trading Obligations (Section 7), <b>Transaction Reporting</b> (Article 26 — Sections 3-5)</td><td>Directly applicable, identical text, in every EU member state — no national transposition step</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>The practical point: the reporting and transparency obligations a trade-capture/reporting system has to build against live in <b>MiFIR</b>, a Regulation, not in the Directive that gives the whole regime its more famous name. <b>UK MiFIR</b> is the UK's onshored, retained-EU-law version post-Brexit, supervised by the <b>FCA</b>, with the old Directive-side conduct rules now living in the FCA's own Handbook (COBS, MAR).</p>
+
+      <p><b>Why it exists:</b> MiFID II/MiFIR replaced the original 2007 MiFID I after the 2008 financial crisis exposed two specific gaps: growing <b>dark/OTC equity trading</b> with almost no public transparency, and near-total absence of any transparency regime for non-equity instruments (bonds, derivatives) at all. Alongside EMIR (systemic derivatives risk) and the G20's 2009 Pittsburgh commitments, MiFID II/MiFIR is the EU's answer to "regulators and the public need to actually see what's trading, at what price, and who's doing it" — a different angle on post-crisis reform than EMIR's "how much risk exists" question.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Where MiFID II/MiFIR Sits Among the Reporting Regimes</span><span class="t-id">EMIR · SFTR · MiFIR</span></div>
+        <pre>EMIR    -&gt;  reports OTC DERIVATIVE ECONOMICS to a Trade Repository —
+            "how much systemic derivatives risk exists?" (Module 2 §7)
+
+SFTR    -&gt;  reports SECURITIES FINANCING TRANSACTIONS to a Trade
+            Repository — "how much collateral re-use/leverage
+            exists?" (SFTR Deep Dive §1)
+
+MiFIR   -&gt;  TWO separate obligations, THIS MODULE:
+            (a) Transaction Reporting -&gt; to the National Competent
+                Authority (NCA) directly, PRIVATE — "did anyone
+                behave abusively on this execution?" (Section 2-5)
+            (b) Transparency -&gt; to the PUBLIC market via the venue
+                or an APA — "what did this actually trade at?"
+                (Section 6-7)
+
+All three can fire off the SAME single trade, answering three
+genuinely different questions, to three different destinations,
+under three different legal texts (Module 14 §1's five-obligation
+framing, now with MiFIR's own internal two-way split added).</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The single biggest source of confusion in this regime is treating "MiFID reporting" as one obligation. It is at minimum <i>two</i>, covered separately in Sections 2, 3-5, and 6-7 below — conflating them is the most common design mistake in a reporting build.</div>
+    </section>
+
+    <section class="mod" id="three-obligations">
+      <p class="sec-eyebrow"><span class="n">02</span> · Don't conflate them</p>
+      <h2>Three Distinct Obligations Under One Umbrella</h2>
+      <p class="lede">Expanding <a href="./module-14-regulatory-reporting.html">Module 14</a> §4's comparison table, MiFID II/MiFIR actually bundles three obligations a firm executing trades in scope must satisfy independently. Getting one right does not satisfy the other two.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Dimension</th><th>Transaction Reporting (Art. 26 / RTS 22)</th><th>Transparency (Arts. 3-13 / RTS 1, RTS 2)</th><th>Best Execution (Art. 27)</th></tr></thead>
+        <tbody>
+          <tr><td><b>Destination</b></td><td>National Competent Authority, directly or via an ARM — never public</td><td>The public market, via the venue or an APA</td><td>The client, on request/periodic disclosure — not a regulator at all</td></tr>
+          <tr><td><b>Purpose</b></td><td>Market abuse detection</td><td>Price discovery — letting the market see what actually traded</td><td>Client protection — proving the firm got the best outcome</td></tr>
+          <tr><td><b>What's published</b></td><td>Nothing public — full economic + party detail, restricted to the regulator</td><td>Price, volume, time — NOT counterparty identity</td><td>Execution-quality summaries (reduced in scope since 2021)</td></tr>
+          <tr><td><b>Sides reporting</b></td><td>Generally single-sided — the executing firm reports its own execution</td><td>One publication per trade, by the designated reporting side</td><td>Owed by the firm to its own client only</td></tr>
+          <tr><td><b>Deadline</b></td><td>T+1 (Section 9)</td><td>As close to real-time as technically possible, subject to deferrals (Section 6)</td><td>Ongoing, not event-driven</td></tr>
+          <tr><td><b>First seen</b></td><td><a href="../1-capital-markets/module-04-equity.html">Module 4</a> §8</td><td><a href="../1-capital-markets/module-04-equity.html">Module 4</a> §7's Exchange vs OTC framing</td><td><a href="../1-capital-markets/module-04-equity.html">Module 4</a> §8 (SI mention)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Same Trade, Two Different MiFIR Outputs</span><span class="t-id">Neither Substitutes the Other</span></div>
+        <pre>Maple Leaf Pension Fund buys SAP SE shares via Bank Of Toronto,
+executed OTC (bilaterally, off any venue's order book):
+
+TRANSACTION REPORT (Section 3-5)         TRANSPARENCY PUBLICATION (Section 6)
+---------------------------------        ------------------------------------
+-&gt; Goes to Bank Of Toronto's NCA          -&gt; Goes PUBLIC, via an APA
+   (e.g. the FCA, or BaFin)                  (Section 6)
+-&gt; Full detail: both parties' LEIs,       -&gt; Price, volume, timestamp ONLY --
+   trader ID, algo flags, price,             no counterparty names at all
+   quantity, venue code "XOFF"            -&gt; Possibly DELAYED if the trade
+-&gt; NEVER visible to the public               qualifies as Large In Scale
+   or to Goldman Sachs, a competitor          (Section 6)
+-&gt; Required EVERY time, no exceptions     -&gt; Required EVERY time too --
+   for size (Section 3)                      size only changes the TIMING,
+                                              never whether it's required
+
+-&gt; Building only ONE of these two pipelines satisfies HALF the
+   regime. A system that publishes to an APA but never files a
+   transaction report (or vice versa) is non-compliant either way.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A transaction report and a transparency publication are not two names for the same document — they carry almost entirely different fields, go to entirely different recipients, and exist to answer entirely different regulatory questions. Section 3 covers who has to file a transaction report at all; Section 6-7 cover the separate transparency obligation, including the specific OTC-equity rules the rest of this module builds toward.</div>
+    </section>
+
+    <section class="mod" id="eligibility">
+      <p class="sec-eyebrow"><span class="n">03</span> · The Article 26(2) scope test</p>
+      <h2>What Makes an Instrument "MiFID Eligible"?</h2>
+      <p class="lede">MiFIR Article 26(2) defines exactly which financial instruments trigger the Transaction Reporting obligation. An instrument is <b>MiFID eligible</b> if <i>any one</i> of three tests is true.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Article 26(2) Scope Test</span><span class="t-id">Any One of Three Conditions</span></div>
+        <pre>(a) THE INSTRUMENT ITSELF is admitted to trading, or actually
+    traded, on an EU/UK trading venue (a Regulated Market, MTF,
+    or OTF -- Module 1 §5's venue categories) -- OR a request for
+    its admission has been made
+
+(b) THE INSTRUMENT'S UNDERLYING is a financial instrument that is
+    admitted to trading or traded on a trading venue (covers a
+    derivative referencing a venue-listed share, bond, or index
+    constituent)
+
+(c) THE INSTRUMENT'S UNDERLYING is an INDEX OR BASKET composed of
+    financial instruments that are admitted to trading or traded
+    on a trading venue (covers, e.g., a derivative on the
+    EURO STOXX 50)</pre>
+      </div>
+
+      <p><b>The critical point most people new to this regime miss:</b> none of these three tests asks <i>where the specific trade in question was executed</i>. They ask only whether the instrument (or its underlying, or its underlying's constituents) is venue-admitted somewhere in the EU/UK. Once that's true, <b>every single trade in that instrument is transaction-reportable — on-venue, OTC, bilateral, block, anonymous, all of it</b> — for as long as the instrument stays admitted. This is the single fact that makes an "OTC equity" transaction-reportable at all (Section 7 builds directly on this).</p>
+
+      <div class="callout"><b>FIRDS — the operational mechanism.</b> No reporting system re-derives the three tests above from first principles for every trade. ESMA operates the <b>Financial Instruments Reference Data System (FIRDS)</b>: EU/UK trading venues submit reference data for every instrument they admit, and ESMA (and, separately post-Brexit, the FCA for UK venues) publishes the resulting consolidated instrument list. A reporting engine checks a trade's ISIN against FIRDS — a simple lookup that encodes the legal test without re-implementing it.</div>
+
+      <h3>Worked example — three trades, three different eligibility answers</h3>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · Trade 1 — OTC Purchase of a Venue-Admitted Share</span><span class="t-id">Bank Of Toronto ↔ Goldman Sachs</span></div>
+        <pre>Instrument: SAP SE ordinary shares
+Admitted to trading on: Deutsche Börse Xetra (an EU Regulated
+  Market) -- present on FIRDS
+
+-&gt; Test (a): YES, admitted on an EU trading venue
+-&gt; MiFID ELIGIBLE, even though THIS specific trade never touched
+   Xetra's order book at all -- it was negotiated bilaterally
+   (Section 7 covers exactly what that OTC execution is then
+   subject to)</pre>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · Trade 2 — OTC Derivative on a Venue-Admitted Underlying</span><span class="t-id">Bank Of Toronto → Maple Leaf Pension Fund</span></div>
+        <pre>Instrument: bilateral OTC Equity Option (Module 4 §4d's product
+  family), Underlying: SAP SE shares
+
+-&gt; Test (a): NO -- the OPTION itself is never admitted to any
+   venue; it's a private bilateral contract
+-&gt; Test (b): YES -- its UNDERLYING (SAP SE shares) IS admitted to
+   trading on Xetra
+-&gt; MiFID ELIGIBLE via Test (b) -- the derivative inherits its
+   underlying's venue-admitted status, even though the option
+   contract itself is entirely bespoke and bilateral</pre>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · Trade 3 — Out of Scope</span><span class="t-id">Bank Of Toronto's Corporate Desk</span></div>
+        <pre>Instrument: ordinary shares of a private (unlisted) company,
+  arranged for a wealth client
+
+-&gt; Test (a): NO -- not admitted to, or traded on, any trading
+   venue anywhere, and no admission request has been made
+-&gt; Test (b) / (c): N/A -- this IS the underlying, there's nothing
+   further to check
+-&gt; NOT MiFID eligible -- no MiFIR Transaction Report is required,
+   regardless of trade size or how "professionally" it's executed</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "MiFID eligible" is a property of the <i>instrument</i> (checked once, via FIRDS), not a property of any individual <i>execution</i>. Section 4's "who reports" and Section 5's "what gets reported" only ever apply once this section's test has already returned YES for the instrument in question.</div>
+    </section>
+
+    <section class="mod" id="who-reports">
+      <p class="sec-eyebrow"><span class="n">04</span> · Investment firms, ARMs &amp; venues</p>
+      <h2>Who Must Report, and How</h2>
+      <p class="lede">The Transaction Reporting obligation falls on the <b>investment firm</b> executing the transaction — not on the end client or counterparty the way EMIR's dual-sided FC/NFC framework works (<a href="../1-capital-markets/module-13-parties-leis.html">Module 13</a> §6).</p>
+
+      <p><b>Generally single-sided, but not the way it first looks.</b> If a trade is between two MiFID investment firms (Bank Of Toronto and Goldman Sachs, say), <i>both</i> independently submit a transaction report — but this is <i>not</i> EMIR's dual-sided, paired-on-UTI model. Each firm reports its own execution, on its own book, to its own (possibly different) NCA; there is no Trade Repository pairing/reconciliation step matching the two reports against each other the way <a href="./module-14-regulatory-reporting.html">Module 14</a> §3 described for EMIR. Two firms' reports for what is economically the same trade simply exist independently, each valid on its own.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Reporting Channel</th><th>How It Works</th></tr></thead>
+        <tbody>
+          <tr><td><b>Direct submission</b></td><td>The investment firm builds and submits its own reports straight to its NCA</td></tr>
+          <tr><td><b>ARM (Approved Reporting Mechanism)</b></td><td>A regulator-authorized third party that validates, formats, and transmits reports on the firm's behalf — the MiFIR-world counterpart to a Trade Repository, but for a fundamentally different report type and destination</td></tr>
+          <tr><td><b>Trading venue transmission</b></td><td>For trades executed on a venue, the venue itself may transmit certain order/execution details on the firm's behalf under specific conditions, reducing (not eliminating) the firm's own burden</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Don't reuse EMIR's dual-sided pairing mental model here — a MiFIR transaction report is a private, single-firm submission with no counterparty-matching step at the regulator's end, which is exactly why Section 5's report has to be self-sufficiently complete (there's no reconciliation process to catch a field-level error the way <a href="./module-14-regulatory-reporting.html">Module 14</a> §3's EMIR pairing does).</div>
+    </section>
+
+    <section class="mod" id="report-content">
+      <p class="sec-eyebrow"><span class="n">05</span> · RTS 22 field groups, worked</p>
+      <h2>Transaction Report Content</h2>
+      <p class="lede">MiFIR's technical standard <b>RTS 22</b> defines roughly <b>65 reportable fields</b>, grouped by what they describe.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field Group</th><th>Contains</th></tr></thead>
+        <tbody>
+          <tr><td><b>Report &amp; venue identification</b></td><td>Report status, executing entity's LEI, trading venue code (or <code>XOFF</code> for OTC — worked example below)</td></tr>
+          <tr><td><b>Buyer/seller identification</b></td><td>LEI (legal entity) or national identifier (natural person), plus investment decision maker and executing trader/algo IDs</td></tr>
+          <tr><td><b>Instrument identification</b></td><td>ISIN (<a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §2), CFI code (<a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §6)</td></tr>
+          <tr><td><b>Transaction details</b></td><td>Trading date/time (to the microsecond, for venue-executed trades), price, quantity, currency</td></tr>
+          <tr><td><b>Flags</b></td><td>Short sale indicator, waiver indicator (Section 6), commodity derivative position-limit flag (<a href="../1-capital-markets/module-07-commodities.html">Module 7</a> §8), OTC post-trade indicator</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Worked example — Trade 1's SAP SE purchase, transaction-reported</h3>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">RTS 22 Transaction Report · Bank Of Toronto's Side</span><span class="t-id">Trade 1 — Section 3</span></div>
+        <pre>Executing entity LEI:      Bank Of Toronto's LEI
+Buyer:                     Maple Leaf Pension Fund's LEI
+Seller:                    Goldman Sachs' LEI
+Investment decision maker: Maple Leaf Pension Fund's portfolio
+                            manager (national ID, per RTS 22)
+Executing trader:          Bank Of Toronto desk trader ID
+
+Instrument (ISIN):         DE0007164600 (SAP SE)
+CFI Code:                  ESVUFR (equity, common share)
+
+Trading date/time:         2026-08-25T14:32:07.219Z
+Venue:                     XOFF (executed OTC -- Section 3's Trade 1)
+Price:                     EUR 190.00 per share
+Quantity:                  10,000 shares
+Trade value:                EUR 1,900,000.00
+
+Short sale indicator:      No
+Waiver indicator:          Not applicable (Section 6 waivers apply
+                            to venue PRE-trade transparency, not to
+                            an off-venue OTC execution)
+
+-&gt; Submitted to Bank Of Toronto's NCA by T+1, NEVER made public
+   (Section 2's comparison table)</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice <code>XOFF</code> — the standard venue code meaning "executed off any trading venue" — appears directly in the transaction report itself. An OTC execution isn't hidden from the regulator by being off-venue; it's explicitly flagged as such and reported with exactly the same field completeness as an on-venue trade would carry.</div>
+    </section>
+
+    <section class="mod" id="transparency">
+      <p class="sec-eyebrow"><span class="n">06</span> · Pre-trade &amp; post-trade</p>
+      <h2>The Transparency Regime</h2>
+      <p class="lede">Entirely separate from Section 3-5's private Transaction Report, MiFIR's transparency regime (Articles 3-13, RTS 1 for equity-like instruments) requires certain trading activity in MiFID-eligible equities to be made <b>public</b>.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Transparency Type</th><th>What It Requires</th><th>Applies To</th></tr></thead>
+        <tbody>
+          <tr><td><b>Pre-trade transparency</b></td><td>Publishing current firm bid/offer quotes and order-book depth, in real time</td><td>Trading venues always; a firm dealing OTC only if it's a Systematic Internaliser for that instrument (Section 7)</td></tr>
+          <tr><td><b>Post-trade transparency</b></td><td>Publishing price, volume, and time for every executed trade, "as close to real-time as technically possible"</td><td>On-venue trades (via the venue); OTC trades (via an APA)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p><b>Deferred publication — the operationally important nuance.</b> A trade that qualifies as <b>Large In Scale (LIS)</b> relative to the instrument's normal trading size can have its post-trade publication <b>delayed</b> — anywhere from minutes to end-of-day (or longer, for the least liquid instruments) — rather than published immediately. This protects a firm executing a large block from adverse market impact while it's still working the position, and it's why a huge OTC block trade and a small OTC trade in the same share can be transparency-compliant on wildly different publication timelines despite an identical transaction-reporting obligation: size changes the <i>timing</i>, never the <i>requirement</i>.</p>
+
+      <h3>Worked example — Trade 1, published for transparency</h3>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Post-Trade Transparency · Trade 1's SAP SE Purchase</span><span class="t-id">Large In Scale Check</span></div>
+        <pre>Illustrative LIS threshold for SAP SE's liquidity band: EUR 650,000
+
+Trade value: EUR 1,900,000.00  (Section 5's report)
+1,900,000 &gt; 650,000  -&gt;  QUALIFIES AS LARGE IN SCALE
+
+-&gt; Bank Of Toronto (as the designated reporting side) publishes
+   via an APA: price EUR 190.00, quantity 10,000 shares, timestamp
+   -- but DEFERRED, e.g. until end of trading day, rather than
+   immediately
+-&gt; NO counterparty names published at any point -- contrast
+   Section 5's transaction report, which names both LEIs privately
+   to the NCA</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The same trade generates two outputs on two entirely different clocks — a private, undeferrable, T+1 transaction report (Section 5), and a public, potentially-deferred transparency publication (this section) — and mixing up which deadline applies to which output is a genuine, common build mistake.</div>
+    </section>
+
+    <section class="mod" id="otc-equities">
+      <p class="sec-eyebrow"><span class="n">07</span> · The question this module exists to answer</p>
+      <h2>OTC Equities — What They're Actually Subject To</h2>
+      <p class="lede">"Traded OTC" does <b>not</b> mean "outside MiFID." An OTC-executed trade in a MiFID-eligible equity (Section 3) is simultaneously subject to up to four separate obligations.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · An OTC Equity Trade's Four Potential Obligations</span><span class="t-id">Overview</span></div>
+        <pre>1. TRANSACTION REPORTING (Section 3-5)
+   -&gt; ALWAYS required if the instrument is MiFID eligible.
+      No exceptions for size, venue, or counterparty type.
+
+2. POST-TRADE TRANSPARENCY (Section 6)
+   -&gt; ALWAYS required too -- publication via an APA, with
+      possible LIS deferral (Section 6). Size changes WHEN,
+      never WHETHER.
+
+3. BEST EXECUTION (MiFID II Art. 27)
+   -&gt; The firm must still take "all sufficient steps" to get the
+      client the best possible result, even with no venue order
+      book to benchmark against directly -- an ongoing conduct
+      obligation, not a per-trade filing.
+
+4. THE SHARE TRADING OBLIGATION -- STO (MiFIR Art. 23)
+   -&gt; THE RULE THAT ACTUALLY RESTRICTS whether a trade can be
+      purely bilateral OTC in the first place (below).</pre>
+      </div>
+
+      <h3>7a. The Share Trading Obligation (STO) — the rule that actually limits OTC equity trading</h3>
+
+      <p>MiFIR Article 23 requires that shares admitted to trading on an EU Regulated Market generally be traded <b>on</b> a venue (a Regulated Market, MTF, OTF, or an equivalent third-country venue) <b>or through a Systematic Internaliser (Section 7b)</b> — not purely bilaterally. Genuine, unstructured bilateral OTC trading in a liquid, EU-RM-admitted share is the <b>exception</b>, permitted only where the trade is:</p>
+      <ul>
+        <li><b>"Non-systematic, ad-hoc, irregular and infrequent,"</b> or</li>
+        <li>Carried out between eligible/professional counterparties and <b>does not contribute to price discovery</b> (e.g. a portfolio transfer, an internal reallocation, or a trade priced by reference to a venue price rather than negotiated fresh).</li>
+      </ul>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · Can This SAP SE Trade Be Pure Bilateral OTC?</span><span class="t-id">STO Carve-Out Test</span></div>
+        <pre>SAP SE: admitted to trading on Deutsche Börse Xetra (Section 3),
+a liquid, actively-traded EU blue-chip
+
+Bank Of Toronto wants to sell 10,000 SAP SE shares to Goldman
+Sachs via a one-off negotiated bilateral trade, priced off
+Xetra's current quote, as an internal portfolio rebalancing --
+NOT part of a regular OTC trading pattern in this name
+
+-&gt; Does the trade contribute to price discovery? NO -- it's
+   referenced to an existing venue price, not independently
+   negotiated
+-&gt; STO carve-out APPLIES -&gt; this specific trade CAN be executed
+   bilaterally OTC
+
+Contrast: if Bank Of Toronto ran a REGULAR, ongoing bilateral
+OTC dealing business in SAP SE shares against client flow
+(systematic, not ad-hoc) -&gt; the carve-out does NOT apply -&gt; Bank
+Of Toronto must either route the flow through a venue, OR
+register as a Systematic Internaliser for SAP SE and trade it
+through that regime instead (Section 7b)</pre>
+      </div>
+
+      <p><b>This is the crux of "what are OTC equities subject to":</b> for the small minority of genuinely ad-hoc, non-price-forming bilateral trades, Sections 1-3 above still apply in full (transaction reporting, transparency, best execution) — but for anything resembling a <b>regular OTC dealing business</b> in a liquid EU share, the STO pushes that activity into the <b>Systematic Internaliser</b> regime instead of leaving it as unstructured bilateral OTC at all.</p>
+
+      <h3>7b. The Systematic Internaliser (SI) regime</h3>
+
+      <p>A firm that deals on its own account executing client orders OTC on an <b>organized, frequent, systematic, and substantial basis</b> in a given instrument — above quantitative thresholds ESMA calibrates and publishes periodically — <b>must register as a Systematic Internaliser</b> for that instrument. Once registered, an SI takes on obligations that make its "OTC" dealing behave much more like a mini trading venue:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>SI Obligation</th><th>What It Means</th></tr></thead>
+        <tbody>
+          <tr><td><b>Pre-trade transparency (Section 6)</b></td><td>Must publish firm, executable quotes, up to a defined Standard Market Size (SMS), that any client can deal on</td></tr>
+          <tr><td><b>Execution at quoted prices</b></td><td>Must generally execute client orders up to SMS at its published quote (subject to legitimate price improvement)</td></tr>
+          <tr><td><b>Post-trade transparency (Section 6)</b></td><td>Must itself publish the trade via an APA, rather than leaving that solely to the client's own investment firm</td></tr>
+          <tr><td><b>Transaction reporting (Section 3-5)</b></td><td>Unchanged — still required, exactly as for any other MiFID-eligible instrument</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · SI vs Non-SI OTC Dealer</span><span class="t-id">Same Instrument, Different Obligations</span></div>
+        <pre>Bank Of Toronto deals SAP SE shares OTC against client flow
+frequently enough to cross ESMA's SI threshold for this name:
+
+-&gt; REGISTERED SI for SAP SE
+-&gt; Must publish firm bid/offer quotes up to SMS (illustrative:
+   SMS = 7,500 shares for this liquidity band)
+-&gt; A client order for 5,000 shares (under SMS) -&gt; Bank Of Toronto
+   MUST deal at (or better than) its published quote
+-&gt; A client order for 50,000 shares (well over SMS) -&gt; SI quoting
+   obligation doesn't bind at that size; negotiated bilaterally,
+   LIS deferral (Section 6) likely available given the size
+
+A SMALLER firm dealing SAP SE OTC only occasionally, below the
+threshold:
+
+-&gt; NOT an SI for SAP SE
+-&gt; No pre-trade quote-publication obligation
+-&gt; STILL owes transaction reporting (Section 3-5) and post-trade
+   transparency (Section 6) on every trade, and its bilateral
+   dealing pattern must stay within the STO's "ad-hoc, irregular,
+   infrequent" carve-out (Section 7a) or it risks needing to
+   become an SI (or route to a venue) itself</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The SI regime is what MiFID II uses to bring transparency to the OTC equity market without forcing every OTC trade onto a formal exchange — a firm crosses from "occasional bilateral dealer" (light obligations, but STO-constrained in how often it can do this) to "Systematic Internaliser" (heavier, venue-like pre-trade quoting obligations) once its own OTC dealing activity in a name becomes big and frequent enough to functionally <i>be</i> a trading venue for that instrument.</div>
+
+      <h3>7c. Full decision framework — is this OTC equity trade compliant?</h3>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Decision Framework · OTC Equity Trade Compliance</span><span class="t-id">Five Questions, In Order</span></div>
+        <pre>Q1. Is the instrument MiFID eligible?                 -&gt; Section 3
+    NO  -&gt; stop, no MiFIR obligations apply at all
+    YES -&gt; continue
+
+Q2. Is a Transaction Report being filed, T+1?          -&gt; Section 5
+    Required regardless of every answer below
+
+Q3. Is post-trade transparency being published,
+    via the venue or an APA (with LIS deferral if
+    applicable)?                                       -&gt; Section 6
+    Required regardless of every answer below
+
+Q4. Is this trade genuinely ad-hoc/non-price-forming,
+    OR is it part of a regular OTC dealing pattern?     -&gt; Section 7a
+    Ad-hoc      -&gt; STO carve-out applies, stays bilateral OTC
+    Regular     -&gt; continue to Q5
+
+Q5. Does the firm's OTC dealing volume in this
+    instrument cross the SI threshold?                  -&gt; Section 7b
+    NO  -&gt; must route to a venue instead of continuing
+           informal bilateral OTC dealing
+    YES -&gt; firm must be registered as an SI and quote
+           accordingly</pre>
+      </div>
+    </section>
+
+    <section class="mod" id="worked-example">
+      <p class="sec-eyebrow"><span class="n">08</span> · Every obligation, one trade</p>
+      <h2>Worked End-to-End Example</h2>
+      <p class="lede">One OTC equity trade, run through every obligation Sections 3-7 introduced, together.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Worked Example · SI-Quoted OTC Sale</span><span class="t-id">Bank Of Toronto (SI for SAP SE) → Maple Leaf Pension Fund</span></div>
+        <pre>Instrument: SAP SE (ISIN DE0007164600) -- Section 3's Test (a),
+            MiFID eligible
+
+Client:     Maple Leaf Pension Fund, order for 5,000 shares
+SI quote:   Bank Of Toronto's published bid/offer for SAP SE,
+            valid up to SMS = 7,500 shares (Section 7b)
+5,000 &lt; 7,500 -&gt; WITHIN SMS -&gt; Bank Of Toronto must deal at (or
+            better than) its own published quote: EUR 190.05
+Trade value: 5,000 x 190.05 = EUR 950,250.00
+
+1) TRANSACTION REPORT (Section 5)
+   -&gt; Filed by Bank Of Toronto to its NCA, T+1, full detail,
+      venue code XOFF, never public
+
+2) POST-TRADE TRANSPARENCY (Section 6)
+   -&gt; EUR 950,250 vs. an illustrative LIS threshold of EUR
+      650,000 for this band -&gt; 950,250 &gt; 650,000 -&gt; QUALIFIES
+      FOR DEFERRAL -- published via APA, price/volume only, but
+      not necessarily instantaneous
+   -&gt; As the registered SI, Bank Of Toronto itself is the
+      publishing party (Section 7b), not the client's own firm
+
+3) BEST EXECUTION (Section 7)
+   -&gt; Bank Of Toronto must be able to demonstrate EUR 190.05 met
+      or bettered prevailing market conditions for this size and
+      instrument -- an ongoing conduct obligation, evidenced on
+      request, not a per-trade filing
+
+4) STO / SI STATUS (Section 7a-b)
+   -&gt; Compliant BY CONSTRUCTION: trading through a registered SI
+      at its published quote is one of the STO's own accepted
+      routes for share trading, not a carve-out exception --
+      Bank Of Toronto's SI registration is precisely what makes
+      this OTC-labeled trade legally equivalent to an on-venue
+      execution for STO purposes</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A single OTC equity trade at a registered SI generates a private transaction report, a public (possibly deferred) transparency publication, an implicit best-execution obligation, and satisfies the Share Trading Obligation all at once, entirely without ever touching a formal exchange order book — proof that "OTC" in MiFID II's world describes <i>where</i> a trade was negotiated, never <i>whether</i> it's regulated.</div>
+    </section>
+
+    <section class="mod" id="deadlines">
+      <p class="sec-eyebrow"><span class="n">09</span> · Two clocks, one record-keeping rule</p>
+      <h2>Deadlines &amp; Record-Keeping</h2>
+      <p class="lede"><b>Transaction Reporting deadline:</b> T+1 — the same close-of-next-business-day discipline as EMIR and SFTR (<a href="../1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §9).</p>
+
+      <p><b>Transparency publication deadline:</b> "as close to real-time as technically possible" for non-deferred trades — materially faster than T+1 — with the LIS deferral windows (Section 6) as the only permitted exception, and those windows are themselves set by ESMA/FCA technical standards (RTS 1) that get periodically recalibrated, exactly the kind of number <a href="../1-capital-markets/systems-landscape.html">systems-landscape</a> §12's "confirm current figures before hard-coding them" caution applies to.</p>
+
+      <p><b>Order record-keeping (MiFID II Article 25):</b> separately from both reporting obligations above, investment firms must retain records of orders and transactions (not just executed trades — unexecuted/cancelled orders too) for a minimum retention period (five years under the current standard), so an NCA can reconstruct trading activity retrospectively during an investigation, not just review what was proactively reported at the time.</p>
+
+      <div class="callout"><b>Callout — verify current thresholds before building against them.</b> LIS bands, SMS calibrations, and the specific quantitative SI thresholds are all set (and periodically revised) by ESMA/FCA technical standards, not by MiFIR's own legal text. Treat every specific number in Sections 6-8 as illustrative, and confirm current figures against Section 10's official sources before encoding them into a rules engine — the same caution the <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a> §7 gives for its own phase-in dates and field counts.</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">10</span> · Where to go for current numbers</p>
+      <h2>Regulatory Perspective — Official Sources &amp; Links</h2>
+      <p class="lede">This module deliberately points to primary regulatory sources rather than restating them, since technical standards and thresholds get revised over time (Section 9's callout).</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>EUR-Lex — Directive 2014/65/EU (MiFID II)</b></td><td>The full legal text of the Directive: authorization, conduct, market structure</td><td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065">eur-lex.europa.eu/.../32014L0065</a></td></tr>
+          <tr><td><b>EUR-Lex — Regulation (EU) 600/2014 (MiFIR)</b></td><td>The full legal text of MiFIR: transparency, trading obligations, transaction reporting</td><td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0600">eur-lex.europa.eu/.../32014R0600</a></td></tr>
+          <tr><td><b>ESMA</b></td><td>RTS 22 (transaction reporting), RTS 1/RTS 2 (transparency), FIRDS, SI/LIS threshold calibrations, Q&amp;As</td><td><a href="https://www.esma.europa.eu">www.esma.europa.eu</a></td></tr>
+          <tr><td><b>FCA — UK MiFIR</b></td><td>UK's onshored regime, UK-specific technical standards, the COBS/MAR Handbook chapters</td><td><a href="https://www.fca.org.uk">www.fca.org.uk</a></td></tr>
+          <tr><td><b>ESMA FIRDS</b></td><td>The consolidated instrument reference-data system underlying Section 3's eligibility test</td><td><a href="https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds">registers.esma.europa.eu/.../esma_registers_firds</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> For a build task, treat the Directive/Regulation texts as the legal source of truth for scope and obligations, ESMA/FCA technical standards (RTS 22, RTS 1, RTS 2) as the source of truth for exact field lists, thresholds, and deferral windows, and FIRDS itself as the operational source of truth for "is this specific ISIN in scope today" — the same three-way split the <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a> §9 draws for its own regime.</div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Recap</p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <div class="quiz">
+        <ol>
+          <li>Using Section 3, is Trade 2's bespoke bilateral OTC equity option on SAP SE shares MiFID eligible? Which specific test does it pass, and why does Test (a) fail for that same instrument?</li>
+          <li>Using Section 2, name one field that appears on a Transaction Report but never on a Transparency publication, and one that appears on a Transparency publication but never (in identifiable form) on the public side of a Transaction Report.</li>
+          <li>Using Section 7a, could Bank Of Toronto run an ongoing, regular bilateral OTC dealing business in SAP SE shares against client flow without ever registering as a Systematic Internaliser? Why or why not?</li>
+          <li>Using Section 6, if Bank Of Toronto executes a EUR 400,000 OTC trade in a liquidity band with an LIS threshold of EUR 650,000, is deferred publication available? What's the practical consequence for how quickly this trade becomes public?</li>
+          <li>Using Section 8's worked example, name all four obligations that trade triggers, and identify which one of the four is an ongoing conduct standard rather than a specific, dated filing.</li>
+          <li>Using Section 4, if Bank Of Toronto and Goldman Sachs are on opposite sides of the same MiFID-eligible trade, does a regulator ever pair and reconcile their two transaction reports against each other the way an EMIR Trade Repository does? Why does this matter for how complete each individual report needs to be?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then return to <a href="./module-14-regulatory-reporting.html">Module 14: Regulatory Reporting</a>, or continue with the <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Answers, with explanations</p>
+      <h2>Answers — Recap Quiz</h2>
+
+      <p><b>1. Yes, eligible via Test (b) — its underlying (SAP SE shares) is admitted to trading on Deutsche Börse Xetra. Test (a) fails because the OPTION CONTRACT ITSELF is never admitted to, or traded on, any venue — it's a bespoke bilateral instrument that only exists between Bank Of Toronto and Maple Leaf Pension Fund.</b></p>
+      <p>Section 3's Trade 2 states this distinction directly: Test (a) asks about the instrument being reported (the option), while Test (b) asks about that instrument's underlying (the shares) — the option inherits eligibility through the underlying's venue-admitted status even though the option contract has no venue presence of its own.</p>
+
+      <p><b>2. Buyer/seller LEI (and the investment decision maker's identity) appears on the Transaction Report (Section 5) but never on a Transparency publication (Section 6), which strips counterparty identity entirely. Conversely, nothing on the Transparency side is unique to it that isn't also present on the Transaction Report — the Transaction Report is a strict superset of economic detail, just restricted to the regulator instead of published.</b></p>
+      <p>Section 2's side-by-side diagram states this explicitly: the Transparency publication carries "price, volume, timestamp ONLY — no counterparty names at all," while the Transaction Report carries "full detail: both parties' LEIs, trader ID, algo flags, price, quantity, venue code."</p>
+
+      <p><b>3. No — not without either routing that flow through a venue or registering as a Systematic Internaliser once its dealing volume crosses ESMA's threshold. The STO's ad-hoc/irregular/infrequent carve-out (Section 7a) only protects genuinely occasional, non-price-forming bilateral trades; a regular ongoing OTC dealing business against client flow is precisely the pattern the carve-out excludes, pushing the firm into the SI regime (Section 7b) instead.</b></p>
+      <p>Section 7a's worked example states this directly in its "Contrast" paragraph: systematic, ongoing bilateral dealing in a liquid EU share is exactly the scenario the STO doesn't allow to remain informal OTC — it has to become either venue-routed or SI-quoted.</p>
+
+      <p><b>4. Yes, deferred publication is available — but the check needs to run the right direction: EUR 400,000 is BELOW the EUR 650,000 illustrative LIS threshold, meaning this trade does NOT qualify as Large In Scale. Practical consequence: this trade must be published as close to real-time as technically possible — no deferral — the opposite of Trade 1's EUR 1,900,000 (Section 6), which exceeded the threshold and did qualify.</b></p>
+      <p>Section 6's worked example shows the comparison the right way round: 1,900,000 &gt; 650,000 qualified Trade 1 for deferral. A smaller EUR 400,000 trade sits under that same threshold, so it publishes promptly instead — this question is designed to catch reversing the inequality.</p>
+
+      <p><b>5. All four of Section 7's obligations: (1) Transaction Reporting, (2) Post-Trade Transparency, (3) Best Execution, and (4) STO/SI compliance. Best Execution is the ongoing conduct standard — evidenced on request rather than filed on a specific date — while the other three are each triggered, dated obligations tied to this specific trade's execution.</b></p>
+      <p>Section 8's worked example numbers each of the four explicitly, and its own framing of Best Execution as "an ongoing conduct obligation, evidenced on request, not a per-trade filing" is the direct textual answer to the second half of the question.</p>
+
+      <p><b>6. No — MiFIR transaction reports are never paired or reconciled against each other the way an EMIR Trade Repository pairs two counterparties' reports on a shared UTI. This matters because each firm's report has to be self-sufficiently correct and complete on its own — there's no regulator-side cross-check that would catch a field-level discrepancy between Bank Of Toronto's and Goldman Sachs' independent reports the way Module 14 §3's EMIR pairing/reconciliation process does.</b></p>
+      <p>Section 4's takeaway states this directly: "there's no reconciliation process to catch a field-level error the way Module 14 §3's EMIR pairing does" — a design consequence of MiFIR's single-sided-per-firm reporting model rather than EMIR's genuinely dual-sided, matched-on-UTI one.</p>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
