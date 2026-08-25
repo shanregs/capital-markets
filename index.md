@@ -57,6 +57,6 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 ## Conventions for every module
 
 - Each module file follows: **Concept → Real trade example (with numbers) → Actors involved → ASCII flow diagram → Takeaway → Recap quiz.**
-- Example bank is always **Bank Of Toronto** — never the real BMO name (this repo happens to live under a `bmo` path, but that's incidental).
+- Example bank is always **Bank Of Toronto** — never the real bank name.
 - Each `.md` module has a matching `.html` version (same content, styled as a standalone page) once built.
 - Update this table's **Status** and links as new modules are written.

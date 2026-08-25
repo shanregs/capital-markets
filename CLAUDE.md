@@ -43,7 +43,7 @@ This taxonomy is the reason Module 8 (Rates) and Module 9 (Credit) exist and wha
 
 ## Content conventions
 
-- Never use "BMO" as the example bank in explanations or examples, even though this repo lives under a `bmo` folder path. Use a fictional example bank called **"Bank Of Toronto"** instead.
+- Never use the real bank name as the example bank in explanations or examples. Use a fictional example bank called **"Bank Of Toronto"** instead.
 
 ## Working in this repo
 

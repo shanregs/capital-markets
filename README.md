@@ -32,7 +32,7 @@ Each module has a matching `.md` and `.html` version (same content). The `.md` f
 
 ## Conventions
 
-- Example bank used throughout: **Bank Of Toronto** (fictional — never the real bank name, even though this repo lives under a `bmo` path).
+- Example bank used throughout: **Bank Of Toronto** (fictional — never the real bank name).
 - Modules 4–9 are the **Asset Class Roadmap** (Equity, Fixed Income, FX, Commodities, Rates, Credit), each covered through the same eight-part pattern. Module 15 (Listed Derivatives) is cross-cutting and sits outside that roadmap.
 - Trade examples map to the real Trade/Valuation Avro schema taxonomy used at work — see the **Work data model reference** section in [`CLAUDE.md`](./CLAUDE.md).
 
