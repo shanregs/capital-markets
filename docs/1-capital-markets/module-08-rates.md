@@ -116,7 +116,7 @@ INTEREST RATE SWAP  —  5Y CAD IRS
      settles at all, exactly Module 1 §8's original point.
 ```
 
-> **Deep dive available:** this section covers one quarter of this trade. For the full picture — this exact 5Y CAD IRS taken through all 20 quarterly settlements, exactly how the floating leg's CORRA compounding works, every payment date over the trade's life, final settlement at maturity, and the Trade/Valuation fields involved — see the standalone [Interest Rate Swap (IRS) Deep Dive](./interest-rate-swap-deep-dive.md).
+> **Deep dive available:** this section covers one quarter of this trade. For the full picture — this exact 5Y CAD IRS taken through all 20 quarterly settlements, exactly how the floating leg's CORRA compounding works, every payment date over the trade's life, final settlement at maturity, and the Trade/Valuation fields involved — see the standalone [Interest Rate Swap (IRS) Deep Dive](./module-19-interest-rate-swap-deep-dive.md).
 
 ### 4b. FRA (Forward Rate Agreement)
 

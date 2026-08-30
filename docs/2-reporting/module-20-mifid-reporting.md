@@ -1,10 +1,10 @@
-# MiFID II / MiFIR Reporting Deep Dive — Transaction Reporting, Transparency &amp; the OTC Equity Rules
+# Module 20 — MiFID II / MiFIR Reporting Deep Dive — Transaction Reporting, Transparency &amp; the OTC Equity Rules
 
 [← Back to Index](../../index.md)
 
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
-> This is a **reference module**, in the same family as the [SFTR Reporting Deep Dive](./sftr-reporting.md), the [UK DMO Reporting Deep Dive](./dmo-uk-reporting.md), and the [UPI, UTI &amp; ANNA-DSB Deep Dive](./upi-uti-dsb-deep-dive.md). [Module 4](../1-capital-markets/module-04-equity.md) §8, [Module 6](../1-capital-markets/module-06-fx.md) §8, and [Module 14](./module-14-regulatory-reporting.md) §4 each touched MiFID II/MiFIR briefly as part of a broader story; this module is the single place that goes deep on the regime itself — exactly what makes an instrument "MiFID eligible," what a full transaction report contains, and — the question that trips up almost everyone new to this regime — what an **OTC-executed** equity trade is actually subject to.
+> This is a **reference module**, in the same family as the [SFTR Reporting Deep Dive](./module-16-sftr-reporting.md), the [UK DMO Reporting Deep Dive](./module-17-dmo-uk-reporting.md), and the [UPI, UTI &amp; ANNA-DSB Deep Dive](./module-18-upi-uti-dsb-deep-dive.md). [Module 4](../1-capital-markets/module-04-equity.md) §8, [Module 6](../1-capital-markets/module-06-fx.md) §8, and [Module 14](./module-14-regulatory-reporting.md) §4 each touched MiFID II/MiFIR briefly as part of a broader story; this module is the single place that goes deep on the regime itself — exactly what makes an instrument "MiFID eligible," what a full transaction report contains, and — the question that trips up almost everyone new to this regime — what an **OTC-executed** equity trade is actually subject to.
 
 ---
 
@@ -451,7 +451,7 @@ SHARES OTC TO A RETAIL-SIZE CLIENT ORDER
 
 **Order record-keeping (MiFID II Article 25):** separately from both reporting obligations above, investment firms must retain records of orders and transactions (not just executed trades — unexecuted/cancelled orders too) for a minimum retention period (five years under the current standard), so an NCA can reconstruct trading activity retrospectively during an investigation, not just review what was proactively reported at the time.
 
-> **Callout — verify current thresholds before building against them.** LIS bands, SMS calibrations, and the specific quantitative SI thresholds are all set (and periodically revised) by ESMA/FCA technical standards, not by MiFIR's own legal text. Treat every specific number in Sections 6-8 as illustrative, and confirm current figures against Section 10's official sources before encoding them into a rules engine — the same caution the [SFTR Reporting Deep Dive](./sftr-reporting.md) §7 gives for its own phase-in dates and field counts.
+> **Callout — verify current thresholds before building against them.** LIS bands, SMS calibrations, and the specific quantitative SI thresholds are all set (and periodically revised) by ESMA/FCA technical standards, not by MiFIR's own legal text. Treat every specific number in Sections 6-8 as illustrative, and confirm current figures against Section 10's official sources before encoding them into a rules engine — the same caution the [SFTR Reporting Deep Dive](./module-16-sftr-reporting.md) §7 gives for its own phase-in dates and field counts.
 
 ---
 
@@ -467,7 +467,7 @@ SHARES OTC TO A RETAIL-SIZE CLIENT ORDER
 | **FCA — UK MiFIR** | UK's onshored regime, UK-specific technical standards, the COBS/MAR Handbook chapters | [www.fca.org.uk](https://www.fca.org.uk) |
 | **ESMA FIRDS** | The consolidated instrument reference-data system underlying Section 3's eligibility test | [registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds](https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds) |
 
-**Takeaway:** for a build task, treat the Directive/Regulation texts as the legal source of truth for scope and obligations, ESMA/FCA technical standards (RTS 22, RTS 1, RTS 2) as the source of truth for exact field lists, thresholds, and deferral windows, and FIRDS itself as the operational source of truth for "is this specific ISIN in scope today" — the same three-way split the [SFTR Reporting Deep Dive](./sftr-reporting.md) §9 draws for its own regime.
+**Takeaway:** for a build task, treat the Directive/Regulation texts as the legal source of truth for scope and obligations, ESMA/FCA technical standards (RTS 22, RTS 1, RTS 2) as the source of truth for exact field lists, thresholds, and deferral windows, and FIRDS itself as the operational source of truth for "is this specific ISIN in scope today" — the same three-way split the [SFTR Reporting Deep Dive](./module-16-sftr-reporting.md) §9 draws for its own regime.
 
 ---
 
@@ -496,7 +496,7 @@ SHARES OTC TO A RETAIL-SIZE CLIENT ORDER
 5. Using Section 8's worked example, name all four obligations that trade triggers, and identify which one of the four is an ongoing conduct standard rather than a specific, dated filing.
 6. Using Section 4, if Bank Of Toronto and Goldman Sachs are on opposite sides of the same MiFID-eligible trade, does a regulator ever pair and reconcile their two transaction reports against each other the way an EMIR Trade Repository does? Why does this matter for how complete each individual report needs to be?
 
-Answer whenever ready — then return to **[Module 14](./module-14-regulatory-reporting.md): Regulatory Reporting**, or continue with the **[SFTR Reporting Deep Dive](./sftr-reporting.md)**.
+Answer whenever ready — then return to **[Module 14](./module-14-regulatory-reporting.md): Regulatory Reporting**, or continue with the **[SFTR Reporting Deep Dive](./module-16-sftr-reporting.md)**.
 
 ---
 

@@ -325,7 +325,7 @@ FIXED INCOME'S VERSION OF THE TWO-AXIS MODEL
 | **CIRO** (Canada) | SRO overseeing Canadian bond dealer conduct ([systems-landscape](./systems-landscape.md) §10) |
 | **HKMA** (Hong Kong) | Genuinely more central here than it was for Equity ([Module 4](./module-04-equity.md) §8, where SFC was the more relevant body): the HKMA directly issues **Exchange Fund Bills &amp; Notes** (Hong Kong's short/medium-term government debt) and acts much like a debt management office for the territory, in addition to its central-bank role |
 | **DTCC** (US) | Its subsidiary **FICC** specifically clears US Treasuries and Treasury repo ([systems-landscape](./systems-landscape.md) §05) — the Fixed Income-specific piece of DTCC that [Module 4](./module-04-equity.md) didn't need to reach for |
-| **DMO** (UK Debt Management Office) | This is its module: the DMO issues UK Gilts via auction — the UK's direct counterpart to how the Government of Canada issues bonds via auction ([Module 1](./module-01-fundamentals.md) §1) and how the US Treasury issues Treasuries (with the Federal Reserve acting as fiscal agent). See the [UK DMO Reporting Deep Dive](../2-reporting/dmo-uk-reporting.md) for exactly what a GEMM reports back to the DMO, and with what data |
+| **DMO** (UK Debt Management Office) | This is its module: the DMO issues UK Gilts via auction — the UK's direct counterpart to how the Government of Canada issues bonds via auction ([Module 1](./module-01-fundamentals.md) §1) and how the US Treasury issues Treasuries (with the Federal Reserve acting as fiscal agent). See the [UK DMO Reporting Deep Dive](../2-reporting/module-17-dmo-uk-reporting.md) for exactly what a GEMM reports back to the DMO, and with what data |
 
 **Takeaway:** two bodies flagged as tangential in [Module 4](./module-04-equity.md) (HKMA, DMO) turn out to be squarely on-topic here — a reminder that Section 8's regulatory perspective genuinely depends on the asset class in front of you, exactly as the Asset Class Roadmap's eight-part pattern intends: the same acronym can be the *main* actor in one module and a footnote in another.
 
@@ -379,7 +379,7 @@ CANADA 5% BOND 2035 — FRONT TO BACK, CANADIAN SYSTEMS VIEW
       bond purchase is neither OTC-derivative nor SFT (contrast
       Section 3's repo, which — per systems-landscape §12 — still
       has NO dedicated SFTR-equivalent reporting regime in Canada
-      as of 2026, unlike the EU/UK sftr-reporting module's regime)
+      as of 2026, unlike the EU/UK module-16-sftr-reporting module's regime)
 ```
 
 **Takeaway:** notice how much of this trade's journey never touches a CCP or a Trade Repository at all — a cash Government of Canada bond purchase settles bilaterally through CDSX and is overseen by CIRO/Bank of Canada, but triggers neither CDCC clearing (that's repo-specific) nor CSA MI 96-101 reporting (that's OTC-derivative-specific). The same "which systems does this trade actually touch" question, asked of Section 3's repo instead, produces a genuinely different answer — CDCC in the back office, and still no Canadian SFT reporting regime at the regulatory layer, a gap [systems-landscape](./systems-landscape.md) §12 already flags.

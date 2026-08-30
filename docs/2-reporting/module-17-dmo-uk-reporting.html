@@ -1,5 +1,5 @@
 <!doctype html>
-<title>UK DMO Reporting Deep Dive</title>
+<title>Module 17 — UK DMO Reporting Deep Dive</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
@@ -472,7 +472,7 @@
   <div class="masthead">
     <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
-      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 17</div>
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-mode="system" aria-pressed="true">System</button>
         <button type="button" data-mode="light" aria-pressed="false">Light</button>
@@ -482,7 +482,7 @@
     <h1>UK DMO Reporting Deep Dive</h1>
     <p class="dek">How Gilt-Edged Market Makers (GEMMs) report gilt auction bidding and secondary-market trading to the UK Debt Management Office — Auction, Daily, Weekly &amp; Aggregated reports, worked with real numbers, plus what data a GEMM's systems actually need to capture.</p>
     <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only), acting as a GEMM.</div>
-    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a>. <a href="../1-capital-markets/module-05-fixed-income.html">Module 5</a> §8 first named the DMO; this module goes deep on what a GEMM actually reports.</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a>. <a href="../1-capital-markets/module-05-fixed-income.html">Module 5</a> §8 first named the DMO; this module goes deep on what a GEMM actually reports.</div>
   </div>
 
   <nav class="toc" aria-label="On this page">
@@ -512,7 +512,7 @@
       <h2>What Is DMO Reporting? — Purpose &amp; Institutional Basis</h2>
       <p class="lede">The <b>UK Debt Management Office (DMO)</b> is an executive agency of HM Treasury, established in 1998, responsible for issuing and managing UK government debt — <b>gilts</b> and <b>Treasury bills</b> — and the government's day-to-day cash management. "DMO reporting" is the operational and commercial reporting a small panel of appointed banks, the <b>GEMMs (Gilt-Edged Market Makers)</b>, must submit to the DMO as a condition of their GEMM status.</p>
 
-      <div class="callout"><b>Important distinction up front.</b> Unlike <a href="./sftr-reporting.html">SFTR</a> or EMIR (<a href="./module-14-regulatory-reporting.html">Module 14</a>), DMO reporting is <b>not a statutory regulatory reporting regime</b>. There's no Trade Repository, no regulation number, no fine from a conduct regulator for missing a deadline. It's reporting owed under a <b>commercial agreement</b> (the GEMM agreement) — closer to a supplier scorecard than a regulatory filing, even though losing GEMM status is commercially serious. Section 9 draws this distinction out fully.</div>
+      <div class="callout"><b>Important distinction up front.</b> Unlike <a href="./module-16-sftr-reporting.html">SFTR</a> or EMIR (<a href="./module-14-regulatory-reporting.html">Module 14</a>), DMO reporting is <b>not a statutory regulatory reporting regime</b>. There's no Trade Repository, no regulation number, no fine from a conduct regulator for missing a deadline. It's reporting owed under a <b>commercial agreement</b> (the GEMM agreement) — closer to a supplier scorecard than a regulatory filing, even though losing GEMM status is commercially serious. Section 9 draws this distinction out fully.</div>
 
       <p><b>Why it exists:</b> two purposes — (1) reliable, well-subscribed auctions, since the DMO needs a panel of dealers committed in advance to bidding meaningfully every time; and (2) monitoring genuine market-making, since GEMM status carries real privileges (Section 2) the DMO needs ongoing evidence are being earned, not just held.</p>
 
@@ -745,7 +745,7 @@ Illustrative GEMM league table (by rolling market share):
     <section class="mod" id="fields">
       <p class="sec-eyebrow"><span class="n">08</span> · What a GEMM's systems must hold</p>
       <h2>What Data Needs to Be Captured — Field Reference by Report Type</h2>
-      <p class="lede">The fields below are what a GEMM's own trade-capture and reporting systems need to hold to actually produce Sections 4–7's reports, grouped the same way <a href="./sftr-reporting.html">SFTR</a> §6 grouped its four report tables.</p>
+      <p class="lede">The fields below are what a GEMM's own trade-capture and reporting systems need to hold to actually produce Sections 4–7's reports, grouped the same way <a href="./module-16-sftr-reporting.html">SFTR</a> §6 grouped its four report tables.</p>
 
       <div class="table-scroll">
       <table>
@@ -813,7 +813,7 @@ total):
     <section class="mod" id="links">
       <p class="sec-eyebrow"><span class="n">11</span> · Primary sources, not restatements</p>
       <h2>Official Sources &amp; Links</h2>
-      <p class="lede">As with <a href="./sftr-reporting.html">SFTR</a> §9, this module points to primary institutional sources rather than restating rules that get periodically revised. If a specific deep link has moved, search the named site directly.</p>
+      <p class="lede">As with <a href="./module-16-sftr-reporting.html">SFTR</a> §9, this module points to primary institutional sources rather than restating rules that get periodically revised. If a specific deep link has moved, search the named site directly.</p>
 
       <div class="table-scroll">
       <table>
@@ -873,7 +873,7 @@ ALONGSIDE ALL OF THE ABOVE -- Section 9's SEPARATE obligation
 
       <div class="quiz">
         <ol>
-          <li>Using Section 1, why is a GEMM's failure to submit a Daily Trade Report a commercial problem rather than a regulatory one, in a way that a missed EMIR or SFTR report (<a href="./module-14-regulatory-reporting.html">Module 14</a>, <a href="./sftr-reporting.html">SFTR module</a>) is not?</li>
+          <li>Using Section 1, why is a GEMM's failure to submit a Daily Trade Report a commercial problem rather than a regulatory one, in a way that a missed EMIR or SFTR report (<a href="./module-14-regulatory-reporting.html">Module 14</a>, <a href="./module-16-sftr-reporting.html">SFTR module</a>) is not?</li>
           <li>Using Section 4, why does Bank Of Toronto's Bid 3 (GBP 200,000,000 @ 98.60) get rejected while Bids 1 and 2 are filled — and at what price do the filled bids actually settle?</li>
           <li>Using Section 4, why are the NCA and PAOF allocations priced at the average accepted price (98.71) rather than the clearing price (98.62) that competitive bidders pay?</li>
           <li>Using Section 5, why does the DMO want GROSS daily turnover rather than Bank Of Toronto's NET position change for the day?</li>

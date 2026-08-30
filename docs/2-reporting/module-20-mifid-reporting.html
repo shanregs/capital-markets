@@ -1,5 +1,5 @@
 <!doctype html>
-<title>MiFID II / MiFIR Reporting Deep Dive</title>
+<title>Module 20 — MiFID II / MiFIR Reporting Deep Dive</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
@@ -472,7 +472,7 @@
   <div class="masthead">
     <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
-      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 20</div>
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-mode="system" aria-pressed="true">System</button>
         <button type="button" data-mode="light" aria-pressed="false">Light</button>
@@ -967,7 +967,7 @@ Trade value: 5,000 x 190.05 = EUR 950,250.00
 
       <p><b>Order record-keeping (MiFID II Article 25):</b> separately from both reporting obligations above, investment firms must retain records of orders and transactions (not just executed trades — unexecuted/cancelled orders too) for a minimum retention period (five years under the current standard), so an NCA can reconstruct trading activity retrospectively during an investigation, not just review what was proactively reported at the time.</p>
 
-      <div class="callout"><b>Callout — verify current thresholds before building against them.</b> LIS bands, SMS calibrations, and the specific quantitative SI thresholds are all set (and periodically revised) by ESMA/FCA technical standards, not by MiFIR's own legal text. Treat every specific number in Sections 6-8 as illustrative, and confirm current figures against Section 10's official sources before encoding them into a rules engine — the same caution the <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a> §7 gives for its own phase-in dates and field counts.</div>
+      <div class="callout"><b>Callout — verify current thresholds before building against them.</b> LIS bands, SMS calibrations, and the specific quantitative SI thresholds are all set (and periodically revised) by ESMA/FCA technical standards, not by MiFIR's own legal text. Treat every specific number in Sections 6-8 as illustrative, and confirm current figures against Section 10's official sources before encoding them into a rules engine — the same caution the <a href="./module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a> §7 gives for its own phase-in dates and field counts.</div>
     </section>
 
     <section class="mod" id="links">
@@ -988,7 +988,7 @@ Trade value: 5,000 x 190.05 = EUR 950,250.00
       </table>
       </div>
 
-      <div class="takeaway"><b>Takeaway.</b> For a build task, treat the Directive/Regulation texts as the legal source of truth for scope and obligations, ESMA/FCA technical standards (RTS 22, RTS 1, RTS 2) as the source of truth for exact field lists, thresholds, and deferral windows, and FIRDS itself as the operational source of truth for "is this specific ISIN in scope today" — the same three-way split the <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a> §9 draws for its own regime.</div>
+      <div class="takeaway"><b>Takeaway.</b> For a build task, treat the Directive/Regulation texts as the legal source of truth for scope and obligations, ESMA/FCA technical standards (RTS 22, RTS 1, RTS 2) as the source of truth for exact field lists, thresholds, and deferral windows, and FIRDS itself as the operational source of truth for "is this specific ISIN in scope today" — the same three-way split the <a href="./module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a> §9 draws for its own regime.</div>
     </section>
 
     <section class="mod" id="quiz">
@@ -1003,7 +1003,7 @@ Trade value: 5,000 x 190.05 = EUR 950,250.00
           <li>Using Section 8's worked example, name all four obligations that trade triggers, and identify which one of the four is an ongoing conduct standard rather than a specific, dated filing.</li>
           <li>Using Section 4, if Bank Of Toronto and Goldman Sachs are on opposite sides of the same MiFID-eligible trade, does a regulator ever pair and reconcile their two transaction reports against each other the way an EMIR Trade Repository does? Why does this matter for how complete each individual report needs to be?</li>
         </ol>
-        <p class="quiz-cta">Answer whenever ready — then return to <a href="./module-14-regulatory-reporting.html">Module 14: Regulatory Reporting</a>, or continue with the <a href="./sftr-reporting.html">SFTR Reporting Deep Dive</a>.</p>
+        <p class="quiz-cta">Answer whenever ready — then return to <a href="./module-14-regulatory-reporting.html">Module 14: Regulatory Reporting</a>, or continue with the <a href="./module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a>.</p>
       </div>
     </section>
 

@@ -1,10 +1,10 @@
-# UPI, UTI &amp; ANNA-DSB Deep Dive — Derivative Identifiers, Explained
+# Module 18 — UPI, UTI &amp; ANNA-DSB Deep Dive — Derivative Identifiers, Explained
 
 [← Back to Index](../../index.md)
 
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
-> This is a **reference module**, in the same family as [sftr-reporting](./sftr-reporting.md) and [dmo-uk-reporting](./dmo-uk-reporting.md). [Module 2](../1-capital-markets/module-02-hierarchy.md) §12 first introduced UPI and UTI with one worked example; this module goes deep — structure, generation rules, the organization that actually runs the system (ANNA-DSB), and exactly which regulatory regimes require which identifier.
+> This is a **reference module**, in the same family as [Module 16 — SFTR](./module-16-sftr-reporting.md) and [Module 17 — UK DMO Reporting](./module-17-dmo-uk-reporting.md). [Module 2](../1-capital-markets/module-02-hierarchy.md) §12 first introduced UPI and UTI with one worked example; this module goes deep — structure, generation rules, the organization that actually runs the system (ANNA-DSB), and exactly which regulatory regimes require which identifier.
 
 ---
 
@@ -77,7 +77,7 @@ UTI ANATOMY — WORKED EXAMPLE
 | 3 | Otherwise, a hierarchy among the counterparties applies (e.g. clearing member &gt; swap dealer/major participant &gt; financial counterparty &gt; non-financial counterparty, per the applicable regime's specific rule) | Two dealers of the same seniority tier trading bilaterally |
 | 4 | If still tied, a simple tie-break (e.g. whichever counterparty's LEI sorts first alphabetically) decides | See the worked example below |
 
-> **Callout — this is a simplified illustration, not the literal current rule text.** The exact waterfall differs in small but legally material ways across EMIR, UK EMIR, Dodd-Frank/CFTC, and other regimes, and gets revised periodically. Treat the table above as the *shape* of the logic, and confirm the current text against Section 8's official links before encoding it into a rules engine — this is the same hedge [SFTR](./sftr-reporting.md) §7 and [dmo-uk-reporting](./dmo-uk-reporting.md) §2 already apply to their own regulatory specifics.
+> **Callout — this is a simplified illustration, not the literal current rule text.** The exact waterfall differs in small but legally material ways across EMIR, UK EMIR, Dodd-Frank/CFTC, and other regimes, and gets revised periodically. Treat the table above as the *shape* of the logic, and confirm the current text against Section 8's official links before encoding it into a rules engine — this is the same hedge [SFTR](./module-16-sftr-reporting.md) §7 and [Module 17 — UK DMO](./module-17-dmo-uk-reporting.md) §2 already apply to their own regulatory specifics.
 
 ```text
 WORKED WATERFALL — BANK OF TORONTO'S BILATERAL CDS WITH GOLDMAN SACHS
@@ -228,9 +228,9 @@ ONE OTC DERIVATIVE, ONE REFERENCE-DATA RECORD, TWO REGULATORY OUTPUTS
 |---|---|---|---|
 | **EMIR / UK EMIR** ([Module 14](./module-14-regulatory-reporting.md) §3) | Yes — pairing key | Yes — mandatory since the EMIR REFIT/UPI phase-in | The regime this module's Section 2/3 worked examples are built around |
 | **Dodd-Frank / CFTC** ([systems-landscape](../1-capital-markets/systems-landscape.md) §5) | Yes | Yes — CFTC adopted UPI, replacing its older internal product taxonomy | US swap data reporting to an SDR (Swap Data Repository) |
-| **SFTR / UK SFTR** ([sftr-reporting](./sftr-reporting.md) §6) | **Yes** — same UTI concept, same pairing purpose | **No** — SFTs use SFTR's own "Type of SFT" codes (`REPO`, `SBSC`, `SLEB`, `MGLD` — [sftr-reporting](./sftr-reporting.md) §2) instead, since SFTs aren't classified through the OTC-derivative product taxonomy UPI was built for | The clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other |
+| **SFTR / UK SFTR** ([Module 16 — SFTR](./module-16-sftr-reporting.md) §6) | **Yes** — same UTI concept, same pairing purpose | **No** — SFTs use SFTR's own "Type of SFT" codes (`REPO`, `SBSC`, `SLEB`, `MGLD` — [Module 16 — SFTR](./module-16-sftr-reporting.md) §2) instead, since SFTs aren't classified through the OTC-derivative product taxonomy UPI was built for | The clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other |
 | **MiFID II / MiFIR** (Section 5 above) | Not typically the primary key — MiFIR transaction reports key off the transaction reference number and the OTC-derivative ISIN | **Uses the DSB's OTHER output** — an OTC-derivative ISIN, not a UPI (Section 5) | The regime most likely to be confused with UPI usage, precisely because it's the same source organization |
-| **UK DMO reporting** ([dmo-uk-reporting](./dmo-uk-reporting.md)) | No | No | Not an OTC derivative regime at all — gilts are cash securities identified by ISIN, and DMO reporting is commercial/contractual ([dmo-uk-reporting](./dmo-uk-reporting.md) §1), not derivatives trade reporting |
+| **UK DMO reporting** ([Module 17 — UK DMO Reporting](./module-17-dmo-uk-reporting.md)) | No | No | Not an OTC derivative regime at all — gilts are cash securities identified by ISIN, and DMO reporting is commercial/contractual ([Module 17 — UK DMO Reporting](./module-17-dmo-uk-reporting.md) §1), not derivatives trade reporting |
 
 **Takeaway:** "does this trade need a UPI?" and "does this trade need a UTI?" are two separate yes/no questions, exactly like [Module 14](./module-14-regulatory-reporting.md) §1's "is this trade reportable?" was five separate yes/no questions against five regimes — SFTR proves a regime can need dual-sided pairing (UTI) without needing product-template aggregation (UPI), because an SFT's "what kind of product is this" question is already answered by a much smaller, SFTR-specific code set.
 
@@ -278,7 +278,7 @@ BANK OF TORONTO'S 5Y CAD IRS WITH GOLDMAN SACHS — FULL IDENTIFIER STACK
 
 ## 8. Official Sources &amp; Links
 
-**Definition:** as with [SFTR](./sftr-reporting.md) §9 and [dmo-uk-reporting](./dmo-uk-reporting.md) §11, this module points to primary sources rather than restating rules that get periodically revised.
+**Definition:** as with [SFTR](./module-16-sftr-reporting.md) §9 and [Module 17 — UK DMO Reporting](./module-17-dmo-uk-reporting.md) §11, this module points to primary sources rather than restating rules that get periodically revised.
 
 | Source | What It Covers | Link |
 |---|---|---|
@@ -289,7 +289,7 @@ BANK OF TORONTO'S 5Y CAD IRS WITH GOLDMAN SACHS — FULL IDENTIFIER STACK
 | **ESMA** | EU technical standards requiring UPI under EMIR REFIT, and the OTC-derivative ISIN requirement under MiFIR | [www.esma.europa.eu](https://www.esma.europa.eu) |
 | **CFTC** | US technical standards requiring UPI/UTI under Dodd-Frank swap data reporting | [www.cftc.gov](https://www.cftc.gov) |
 
-**Takeaway:** treat the DSB's own site as the source of truth for the literal current UPI reference-data schema and lookup tool; CPMI-IOSCO's published technical guidance as the source of truth for the UTI/UPI structural standards themselves; and each jurisdiction's own regulator (ESMA, CFTC, FCA) as the source of truth for exactly when and how that standard becomes a mandatory field on a report in that jurisdiction — the same three-way split [SFTR](./sftr-reporting.md) §9's takeaway already established for a different regime.
+**Takeaway:** treat the DSB's own site as the source of truth for the literal current UPI reference-data schema and lookup tool; CPMI-IOSCO's published technical guidance as the source of truth for the UTI/UPI structural standards themselves; and each jurisdiction's own regulator (ESMA, CFTC, FCA) as the source of truth for exactly when and how that standard becomes a mandatory field on a report in that jurisdiction — the same three-way split [SFTR](./module-16-sftr-reporting.md) §9's takeaway already established for a different regime.
 
 ---
 
@@ -348,7 +348,7 @@ Section 5's diagram states this precisely: "TWO DIFFERENT DSB-ISSUED CODES, on T
 
 **7. SFTR requires a UTI (for the same dual-sided pairing purpose EMIR uses it for) but does NOT require a UPI — SFTs are classified instead through SFTR's own "Type of SFT" codes (`REPO`, `SBSC`, `SLEB`, `MGLD`), since securities financing transactions aren't run through the OTC-derivative product taxonomy UPI was built to describe.**
 
-Section 6's table states this directly, flagging SFTR as "the clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other," cross-referencing [sftr-reporting](./sftr-reporting.md) §2's own SFT-type-code table.
+Section 6's table states this directly, flagging SFTR as "the clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other," cross-referencing [Module 16 — SFTR](./module-16-sftr-reporting.md) §2's own SFT-type-code table.
 
 **8. Because they exist for two structurally separate regimes that don't share reporting infrastructure — EMIR (which wants a UPI, submitted to a Trade Repository) and MiFIR (which wants an OTC-derivative ISIN, submitted for pre/post-trade transparency) — so a MiFID-scope firm genuinely needs BOTH codes on the SAME trade, one for each regime's own report, not as a duplicate but as two separate mandatory fields.**
 

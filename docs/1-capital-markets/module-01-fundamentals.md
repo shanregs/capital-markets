@@ -596,7 +596,7 @@ This is deliberately just the mechanics of one cash flow, not the theory of swap
 
 **Takeaway:** if you ever see a derivative trade record showing a huge "Notional" value (e.g. CAD 100,000,000) with no corresponding settlement of that amount anywhere in cash/custody systems, that's expected — notional isn't supposed to settle. Only the periodic net cash flows do.
 
-> **Deep dive available:** this section covers one quarter of one IRS at the level this curriculum needs going forward. For the full picture — this exact trade taken through all 20 quarterly settlements of its 5-year life, exactly how the floating leg's CORRA compounding works, every payment date, final settlement at maturity, and the Trade/Valuation fields involved — see the standalone [Interest Rate Swap (IRS) Deep Dive](./interest-rate-swap-deep-dive.md).
+> **Deep dive available:** this section covers one quarter of one IRS at the level this curriculum needs going forward. For the full picture — this exact trade taken through all 20 quarterly settlements of its 5-year life, exactly how the floating leg's CORRA compounding works, every payment date, final settlement at maturity, and the Trade/Valuation fields involved — see the standalone [Interest Rate Swap (IRS) Deep Dive](./module-19-interest-rate-swap-deep-dive.md).
 
 ---
 

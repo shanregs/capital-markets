@@ -1,10 +1,10 @@
-# ISDA Product Taxonomy Deep Dive — Theory, Structure &amp; Where It's Actually Used
+# Module 21 — ISDA Product Taxonomy Deep Dive — Theory, Structure &amp; Where It's Actually Used
 
 [← Back to Index](../../index.md)
 
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
-> **Reference module**, in the same family as [SFTR](./sftr-reporting.md), [UK DMO Reporting](./dmo-uk-reporting.md), and [UPI, UTI &amp; ANNA-DSB](./upi-uti-dsb-deep-dive.md). [Module 2](../1-capital-markets/module-02-hierarchy.md) §7–§8 first introduced the ISDA Product Taxonomy's four-level hierarchy with one master table; this module goes deep — theory, full worked paths across every asset class, exactly which systems and regimes consume it, how it feeds the UPI, and how the values actually get configured on a trade.
+> **Reference module**, in the same family as [SFTR](./module-16-sftr-reporting.md), [UK DMO Reporting](./module-17-dmo-uk-reporting.md), and [UPI, UTI &amp; ANNA-DSB](./module-18-upi-uti-dsb-deep-dive.md). [Module 2](../1-capital-markets/module-02-hierarchy.md) §7–§8 first introduced the ISDA Product Taxonomy's four-level hierarchy with one master table; this module goes deep — theory, full worked paths across every asset class, exactly which systems and regimes consume it, how it feeds the UPI, and how the values actually get configured on a trade.
 
 ---
 
@@ -19,7 +19,7 @@
 
 The taxonomy's origin is specific and regulatory: in the aftermath of the 2008 crisis, the **Dodd-Frank Act (2010)** required, for the first time, **real-time public reporting** of swap transactions in the US — every swap had to be disseminated publicly (price, notional-size bucket) shortly after execution, subject to size-based masking for large ("block") trades. That created an immediate practical problem: to set a sensible reporting delay and notional-size threshold, regulators and Swap Data Repositories (SDRs) needed to bucket swaps into comparable categories — a 5Y USD interest rate swap and a 5Y Brent crude oil swap clearly shouldn't share the same block-trade threshold. Rather than have the CFTC, each SDR, and every reporting firm invent its own incompatible bucket scheme, **ISDA — as the industry's own standards body — published a taxonomy everyone could converge on**: freely available, not proprietary, distributed as reference documents/spreadsheets via [isda.org](https://www.isda.org).
 
-**Takeaway:** the taxonomy **classifies**, it does not **identify** — this is the single most important distinction versus the [UPI](./upi-uti-dsb-deep-dive.md), which is easy to conflate since both sit at the "product" layer. A taxonomy path (e.g. `Interest Rate / IRSwap / FixedFloat / Swap`) is a *category label* shared by every trade of that shape; a UPI is a *specific issued code* for one exact combination of economic terms within that category (Section 5 connects the two precisely).
+**Takeaway:** the taxonomy **classifies**, it does not **identify** — this is the single most important distinction versus the [UPI](./module-18-upi-uti-dsb-deep-dive.md), which is easy to conflate since both sit at the "product" layer. A taxonomy path (e.g. `Interest Rate / IRSwap / FixedFloat / Swap`) is a *category label* shared by every trade of that shape; a UPI is a *specific issued code* for one exact combination of economic terms within that category (Section 5 connects the two precisely).
 
 ---
 
@@ -55,9 +55,9 @@ There are exactly **five official ISDA Asset Classes** for derivatives — a sho
 | **Equity** | Payout depends on a stock/index price | Swap, Option, VarianceSwap, Future |
 | **Commodity** | Payout depends on a physical commodity price | Swap, Forward, Option (Energy, Metals, Agriculture sub-classes) |
 
-> **Callout — v1.0 vs v2.0.** ISDA published an initial taxonomy (**v1.0**, ~2012) built specifically to satisfy Dodd-Frank's real-time reporting categories — coarse, oriented around what CFTC block-size rules needed. A more granular **v2.0** (~2016) followed, restructured to align field-by-field with **FpML** (the derivatives industry's own XML messaging standard), and added finer sub-categories in places (an extra qualifier beyond Transaction Type — e.g. a settlement-type or option-style flag — depending on the asset class). Treat exact category names and which version a given system implements as something to confirm per-system, the same hedge this curriculum already applies to the [UTI generation waterfall](./upi-uti-dsb-deep-dive.md) §2 and to [SFTR](./sftr-reporting.md) §7's specifics — these get revised, and a reporting record's taxonomy field is only meaningful alongside a stated version.
+> **Callout — v1.0 vs v2.0.** ISDA published an initial taxonomy (**v1.0**, ~2012) built specifically to satisfy Dodd-Frank's real-time reporting categories — coarse, oriented around what CFTC block-size rules needed. A more granular **v2.0** (~2016) followed, restructured to align field-by-field with **FpML** (the derivatives industry's own XML messaging standard), and added finer sub-categories in places (an extra qualifier beyond Transaction Type — e.g. a settlement-type or option-style flag — depending on the asset class). Treat exact category names and which version a given system implements as something to confirm per-system, the same hedge this curriculum already applies to the [UTI generation waterfall](./module-18-upi-uti-dsb-deep-dive.md) §2 and to [SFTR](./module-16-sftr-reporting.md) §7's specifics — these get revised, and a reporting record's taxonomy field is only meaningful alongside a stated version.
 
-**Takeaway:** the taxonomy is a **classification tree, not a flat code list** — that's precisely why it needs four levels instead of one: "Swap" alone (Transaction Type) is ambiguous across all five asset classes, but `Interest Rate / IRSwap / FixedFloat / Swap` is not. This is the same principle [SFTR](./sftr-reporting.md) §2's small, closed `Type of SFT` code set uses at one level of granularity — the ISDA taxonomy solves the same "what kind of product is this" problem for a far larger, more varied universe of OTC derivatives, so it needs more levels to stay unambiguous.
+**Takeaway:** the taxonomy is a **classification tree, not a flat code list** — that's precisely why it needs four levels instead of one: "Swap" alone (Transaction Type) is ambiguous across all five asset classes, but `Interest Rate / IRSwap / FixedFloat / Swap` is not. This is the same principle [SFTR](./module-16-sftr-reporting.md) §2's small, closed `Type of SFT` code set uses at one level of granularity — the ISDA taxonomy solves the same "what kind of product is this" problem for a far larger, more varied universe of OTC derivatives, so it needs more levels to stay unambiguous.
 
 ---
 
@@ -101,7 +101,7 @@ FIVE TRADES, FIVE FULL TAXONOMY PATHS
     -> "Commodity / Energy / Oil / Swap"
 ```
 
-**Takeaway:** notice **Transaction Type is "Swap" for three of these five trades** (Interest Rate, Equity, Commodity) — proof that no single level of this hierarchy is sufficient alone, and that "what kind of product is this" genuinely requires all four levels read together. Also notice the Credit path's Sub-Product ("Corporate") describes the *reference entity's type* (a corporate borrower, vs. e.g. a sovereign), while every other asset class's Sub-Product describes an *economic feature of the contract itself* (Fixed vs. Floating, Deliverable vs. Non-Deliverable, Price vs. Total Return) — the taxonomy's categories are genuinely asset-class-specific in what they choose to distinguish, echoing the same point the [UPI deep dive](./upi-uti-dsb-deep-dive.md) §3 makes about UPI reference-data templates.
+**Takeaway:** notice **Transaction Type is "Swap" for three of these five trades** (Interest Rate, Equity, Commodity) — proof that no single level of this hierarchy is sufficient alone, and that "what kind of product is this" genuinely requires all four levels read together. Also notice the Credit path's Sub-Product ("Corporate") describes the *reference entity's type* (a corporate borrower, vs. e.g. a sovereign), while every other asset class's Sub-Product describes an *economic feature of the contract itself* (Fixed vs. Floating, Deliverable vs. Non-Deliverable, Price vs. Total Return) — the taxonomy's categories are genuinely asset-class-specific in what they choose to distinguish, echoing the same point the [UPI deep dive](./module-18-upi-uti-dsb-deep-dive.md) §3 makes about UPI reference-data templates.
 
 ---
 
@@ -113,7 +113,7 @@ FIVE TRADES, FIVE FULL TAXONOMY PATHS
 |---|---|---|
 | **What's being classified** | A deliverable *thing* | A bilateral *contract* |
 | **Classification scheme** | **CFI Code** (ISO 10962 — *Classification of Financial Instruments*), a 6-character code baked into most security masters | **ISDA Product Taxonomy** (this module) |
-| **Instrument identifier** | ISIN / CUSIP | No ISIN — UPI instead ([UPI deep dive](./upi-uti-dsb-deep-dive.md)) |
+| **Instrument identifier** | ISIN / CUSIP | No ISIN — UPI instead ([UPI deep dive](./module-18-upi-uti-dsb-deep-dive.md)) |
 | **Governing body** | ISO, via National Numbering Agencies | ISDA (industry trade body, Section 7) |
 
 ```text
@@ -142,7 +142,7 @@ COMPANY, TWO COMPLETELY DIFFERENT CLASSIFICATION WORLDS
 
 ## 5. How the Taxonomy Feeds Into the UPI — the DSB's Reference-Data Schema
 
-**Definition:** this is the piece that makes the ISDA Product Taxonomy and the [UPI](./upi-uti-dsb-deep-dive.md) feel like the same thing even though Section 1 drew a hard line between them — because **they genuinely are related, just at different layers of the same lineage**. When CPMI-IOSCO built its 2017 Technical Guidance defining what a global UPI needed to classify, it didn't invent a brand-new classification framework from scratch — it started from ISDA's already-industry-adopted taxonomy (v2.0) as the base classification logic, then had the DSB operationalize it into a live reference-data system that could actually *issue* codes.
+**Definition:** this is the piece that makes the ISDA Product Taxonomy and the [UPI](./module-18-upi-uti-dsb-deep-dive.md) feel like the same thing even though Section 1 drew a hard line between them — because **they genuinely are related, just at different layers of the same lineage**. When CPMI-IOSCO built its 2017 Technical Guidance defining what a global UPI needed to classify, it didn't invent a brand-new classification framework from scratch — it started from ISDA's already-industry-adopted taxonomy (v2.0) as the base classification logic, then had the DSB operationalize it into a live reference-data system that could actually *issue* codes.
 
 ```text
 FROM INDUSTRY TAXONOMY TO ISSUED IDENTIFIER — THE FULL LINEAGE
@@ -200,7 +200,7 @@ FROM INDUSTRY TAXONOMY TO ISSUED IDENTIFIER — THE FULL LINEAGE
 
 ## 7. Governance &amp; Versioning
 
-**Definition:** ISDA is an **industry trade association**, not a regulator or a market-infrastructure utility like the [ANNA-DSB](./upi-uti-dsb-deep-dive.md) §4 — the same distinction that curriculum already draws for the DSB applies here even more directly, since ISDA doesn't operate any live system at all for the taxonomy; it publishes reference documents.
+**Definition:** ISDA is an **industry trade association**, not a regulator or a market-infrastructure utility like the [ANNA-DSB](./module-18-upi-uti-dsb-deep-dive.md) §4 — the same distinction that curriculum already draws for the DSB applies here even more directly, since ISDA doesn't operate any live system at all for the taxonomy; it publishes reference documents.
 
 ```text
 WHO ACTUALLY CHANGES THE TAXONOMY, AND HOW
@@ -225,13 +225,13 @@ WHO ACTUALLY CHANGES THE TAXONOMY, AND HOW
      and standard-setters decide when it's compulsory.
 ```
 
-**Takeaway:** exactly the same infrastructure-vs-mandate distinction the [UPI deep dive](./upi-uti-dsb-deep-dive.md) §4 draws for the DSB applies to ISDA here, one layer further upstream — "ISDA classifies this trade as X" is a statement about industry convention, not law; "the CFTC requires this trade's public report to use taxonomy category X to determine its block threshold" is the regulatory mandate that actually makes it matter. Confusing the two is the same category error [Module 13](../1-capital-markets/module-13-parties-leis.md) §8 already warns against for infrastructure providers generally.
+**Takeaway:** exactly the same infrastructure-vs-mandate distinction the [UPI deep dive](./module-18-upi-uti-dsb-deep-dive.md) §4 draws for the DSB applies to ISDA here, one layer further upstream — "ISDA classifies this trade as X" is a statement about industry convention, not law; "the CFTC requires this trade's public report to use taxonomy category X to determine its block threshold" is the regulatory mandate that actually makes it matter. Confusing the two is the same category error [Module 13](../1-capital-markets/module-13-parties-leis.md) §8 already warns against for infrastructure providers generally.
 
 ---
 
 ## 8. Configuring Taxonomy Values in Practice — the Product-Master View
 
-**Definition:** the practical IT question — exactly how does a taxonomy path actually get set on a real trade, for a bond, a swap, or anything else? The answer follows the same **template vs. instance** pattern the [UPI deep dive](./upi-uti-dsb-deep-dive.md) §3 already established for UPI itself: **the taxonomy path is a property of the product TEMPLATE, never re-derived or re-entered per individual trade.**
+**Definition:** the practical IT question — exactly how does a taxonomy path actually get set on a real trade, for a bond, a swap, or anything else? The answer follows the same **template vs. instance** pattern the [UPI deep dive](./module-18-upi-uti-dsb-deep-dive.md) §3 already established for UPI itself: **the taxonomy path is a property of the product TEMPLATE, never re-derived or re-entered per individual trade.**
 
 ```text
 WHERE THE TAXONOMY PATH ACTUALLY LIVES — PRODUCT MASTER, NOT TRADE RECORD
@@ -286,7 +286,7 @@ For a **bond**, the equivalent product-master row simply has no taxonomy columns
 | **ISDA (International Swaps and Derivatives Association)** | Publishes the Product Taxonomy itself (v1.0, v2.0, and updates), the ISDA Master Agreement, and CSA documentation | [www.isda.org](https://www.isda.org) |
 | **CFTC (Commodity Futures Trading Commission)** | Dodd-Frank real-time public reporting rules (Part 43), swap data recordkeeping (Part 45), block-trade thresholds by taxonomy category, MAT determinations | [www.cftc.gov](https://www.cftc.gov) |
 | **CPMI (Committee on Payments and Market Infrastructures) / IOSCO** | 2017 Technical Guidance on UPI, which adopted ISDA's taxonomy as its classification basis (Section 5) | [www.bis.org/cpmi](https://www.bis.org/cpmi), [www.iosco.org](https://www.iosco.org) |
-| **ANNA-DSB** | Operates the UPI reference-data system built on this taxonomy's lineage — see the [UPI, UTI &amp; ANNA-DSB Deep Dive](./upi-uti-dsb-deep-dive.md) | [www.anna-dsb.com](https://www.anna-dsb.com) |
+| **ANNA-DSB** | Operates the UPI reference-data system built on this taxonomy's lineage — see the [UPI, UTI &amp; ANNA-DSB Deep Dive](./module-18-upi-uti-dsb-deep-dive.md) | [www.anna-dsb.com](https://www.anna-dsb.com) |
 | **ESMA** | EU/UK EMIR technical standards — where taxonomy-derived category logic reaches EU/UK reports via the UPI rather than a direct field (Section 6's callout) | [www.esma.europa.eu](https://www.esma.europa.eu) |
 
 **Takeaway:** treat ISDA's own published taxonomy documents as the source of truth for the literal current category structure and version; the CFTC's rulebook as the source of truth for exactly how those categories drive US public-reporting obligations; and CPMI-IOSCO's Technical Guidance as the bridge explaining how the same categories became the basis for the globally-adopted UPI — the same three-way "standard, US mandate, global mandate" split this curriculum's other reference modules already apply to their own regimes.
@@ -303,7 +303,7 @@ For a **bond**, the equivalent product-master row simply has no taxonomy columns
 | ISDA | Publishes and governs the Product Taxonomy itself, and the separate Master Agreement (Section 1, Section 7) |
 | CFTC | US regulator whose Dodd-Frank rules make the taxonomy directly load-bearing for public reporting and MAT determinations (Section 6) |
 | CPMI-IOSCO | Standard-setters who adopted ISDA's taxonomy as the classification basis for the global UPI (Section 5) |
-| ANNA-DSB | Operates the UPI reference-data system built on the taxonomy's lineage (Section 5, cross-referenced from the [UPI deep dive](./upi-uti-dsb-deep-dive.md)) |
+| ANNA-DSB | Operates the UPI reference-data system built on the taxonomy's lineage (Section 5, cross-referenced from the [UPI deep dive](./module-18-upi-uti-dsb-deep-dive.md)) |
 | ESMA | EU/UK regulator where the taxonomy's influence reaches reports indirectly, via the UPI (Section 6) |
 
 ---

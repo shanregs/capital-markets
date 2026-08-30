@@ -1,0 +1,996 @@
+<!doctype html>
+<title>Module 23 — Forward, Swap &amp; Option Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 23</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Forward, Swap &amp; Option Deep Dive</h1>
+    <p class="dek">The three OTC derivative building blocks — theory, structural relationships, and a full worked example in every asset class: Rates, Credit, FX, Equity, and Commodity, with real (or clearly-flagged illustrative) numbers throughout.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to the <a href="./module-22-hedging-deep-dive.html">Hedging Deep Dive</a> and the <a href="../2-reporting/module-21-isda-product-taxonomy-deep-dive.html">ISDA Product Taxonomy Deep Dive</a>. Pulls together Forward/Swap/Option examples scattered across Modules 2, 6, 7 &amp; 8, and fills the two gaps (Equity Forward, Commodity Forward) never separately worked.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>The Three Building Blocks</a></li>
+      <li><a href="#forward"><span class="toc-num">02</span>FORWARD</a></li>
+      <li><a href="#swap"><span class="toc-num">03</span>SWAP</a></li>
+      <li><a href="#option"><span class="toc-num">04</span>OPTION</a></li>
+      <li><a href="#matrix"><span class="toc-num">05</span>The Full Matrix</a></li>
+      <li><a href="#exposure"><span class="toc-num">06</span>Exposure Profile</a></li>
+      <li><a href="#taxonomy"><span class="toc-num">07</span>ISDA Taxonomy Tie-In</a></li>
+      <li><a href="#links"><span class="toc-num">08</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · One theory, three shapes</p>
+      <h2>What Are Forward, Swap &amp; Option? — Theory: The Three OTC Building Blocks</h2>
+      <p class="lede">Almost every OTC derivative in this curriculum — across Rates, Credit, FX, Equity, and Commodity — is one of exactly three underlying structures, which is also literally the ISDA Product Taxonomy's Transaction Type controlled vocabulary.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Forward</th><th>Swap</th><th>Option</th></tr></thead>
+        <tbody>
+          <tr><td><b>One-line theory</b></td><td>Obligation to transact ONCE, fixed price, one future date</td><td>Obligation to transact REPEATEDLY, on a schedule</td><td>RIGHT (not obligation) to transact once, by/at expiry</td></tr>
+          <tr><td><b>Number of exchanges</b></td><td>One</td><td>Many (periodic)</td><td>Zero or one</td></tr>
+          <tr><td><b>Premium at inception</b></td><td>None</td><td>None</td><td>Yes — paid upfront</td></tr>
+          <tr><td><b>Payoff shape</b></td><td>Linear, symmetric</td><td>Linear, symmetric, repeated</td><td>Asymmetric — capped for buyer</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">The Structural Relationship</span><span class="t-id">How the Three Fit Together</span></div>
+        <pre>A SWAP is literally a STRIP OF FORWARDS -- one forward-style
+exchange per payment date, bundled into a single legal contract
+instead of negotiated separately. Section 3's IRS worked example
+makes this exact -- each quarterly settlement is its own tiny
+forward-rate calculation.
+
+An OPTION is the RIGHT to enter a Forward, not the obligation.
+Strip away the "right, not obligation" and pay no premium, and an
+Option degenerates into a Forward -- sometimes described as "an
+Option with a 100% guaranteed exercise decision, and therefore no
+premium charged for that certainty."
+
+Forward  ---- repeat many times ---->  Swap
+   |
+   +---- make it optional, charge a premium ---->  Option</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This isn't a curriculum simplification — it's the actual regulatory classification. The ISDA Product Taxonomy's Transaction Type level uses exactly these values, which is why the same three words appear on trade records regardless of asset class (Section 7 returns to this directly).</div>
+    </section>
+
+    <section class="mod" id="forward">
+      <p class="sec-eyebrow"><span class="n">02</span> · One exchange, no premium</p>
+      <h2>FORWARD — Theory &amp; Worked Examples Across Asset Classes</h2>
+      <p class="lede">A bilateral agreement to transact a fixed amount at a fixed price on one future date — no premium, linear payoff, dollar-for-dollar in either direction.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Forward Payoff</span><span class="t-id">Linear, Both Directions</span></div>
+        <pre>Buyer's P&amp;L
+    +  |                    /
+       |                  /
+       |                /
+  -----+--------------+------------------  Market Price at maturity
+       |            / Agreed
+       |          /  (Forward) Price
+    -  |        /
+
+-> unlike Section 4's Option, there is NO flat/capped region on
+   either side -- the line runs straight through, in both directions</pre>
+      </div>
+
+      <h3>FX — reusing Module 2 §10 in full</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">3-Month USD/CAD Forward</span></div>
+        <pre>Forward Rate locked today: 1.3545 (Spot 1.3500 + 0.0045 forward points)
+In 3 months: Bank Of Toronto pays CAD 13,545,000, receives USD 10,000,000
+-> no cash moves today; only the RATE is locked in now</pre>
+      </div>
+
+      <h3>Rates — the FRA, and its cousin IR Forward Debt</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">FRA &amp; IR Forward Debt</span><span class="t-id">Module 8 §4b, §4e</span></div>
+        <pre>FRA (Forward Rate Agreement) -- a "forward" written on a RATE
+------------------------------------------------------------
+3x6 FRA: Bank Of Toronto BUYS (pays fixed, receives floating)
+Notional CAD 20,000,000 | FRA Rate: 4.85% | 91-day reference period
+
+At fixing, 3-month CORRA settles at 4.50% (lower than 4.85%)
+Bank Of Toronto PAYS Goldman Sachs CAD 17,259.79 -- the discounted
+difference between the FRA Rate and the settled floating rate
+
+-> ONE isolated forward-rate exchange, settled ONCE, upfront
+   (discounted) -- Section 3 shows this is what an IRS repeats
+   every quarter, undiscounted
+
+IR FORWARD DEBT -- a "forward" written on a BOND'S PRICE
+------------------------------------------------------------
+Bank Of Toronto agrees TODAY to buy Canada 5% Bond 2035 in 3 months
+Forward Price: 97.80 (today's spot 98.50, minus 3 months of carry)
+In 3 months, if physically settled: pays CAD 9,780,000, receives
+CAD 10,000,000 face value of the bond via DvP
+
+-> structurally identical to the FX Forward above, just
+   referencing a BOND'S PRICE instead of a currency pair's rate</pre>
+      </div>
+
+      <h3>Equity — new worked example</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Equity Forward</span><span class="t-id">Illustrative — fills a gap</span></div>
+        <pre>Built on Module 4 §4a's real KO position: 10,000 shares @ 68.40
+
+Bank Of Toronto (holder) agrees TODAY to sell all 10,000 shares
+to a client in 6 months, at a forward price fixed now.
+
+Forward Price = Spot + Cost of Carry - Expected Dividends
+              = 68.40 + (68.40 x 4.5% x 0.5) - (68.40 x 1.5% x 0.5)
+              = 68.40 + 1.539 - 0.513 = 69.43 (illustrative)
+
+IN 6 MONTHS: client pays 10,000 x 69.43 = USD 694,300, receives
+10,000 KO shares -- regardless of where KO is trading then
+
+-> same cost-of-carry logic as FX forward points, with an extra
+   term for the dividends the SELLER forgoes</pre>
+      </div>
+
+      <h3>Commodity — new worked example</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Commodity Forward</span><span class="t-id">OTC, uncleared version of a Future</span></div>
+        <pre>Bank Of Toronto agrees TODAY, bilaterally with an oil producer
+client, to buy 50,000 bbl WTI crude in 2 months at USD 77.00/bbl
+fixed -- negotiated directly, NOT executed on CME's order book,
+NOT novated to a CCP at execution (contrast Module 7 §4b's Future)
+
+IN 2 MONTHS, if WTI spot is USD 82.00/bbl:
+  Bank Of Toronto still only pays 77.00/bbl -- gain of
+  (82.00 - 77.00) x 50,000 = USD 250,000 vs. buying at spot then
+
+-> ECONOMICALLY near-identical to Module 7 §4b's exchange Future
+   -- the difference is entirely VENUE and CLEARING, not payoff
+   mechanics (Module 15's "standardization is a venue property")</pre>
+      </div>
+
+      <div class="callout"><b>Callout — Credit doesn't have a clean "Forward" building block.</b> Credit's core OTC product (the CDS, Section 3) is already priced as a periodic-premium contract with a contingent payout, not a one-off fixed-price exchange. A "forward-starting CDS" exists, but it's a variant of the Swap-family CDS, not a distinct Forward product — a genuine asset-class-specific exception.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every Forward here shares the exact same shape — one fixed price, agreed today, for one exchange on one future date, no premium — whatever the underlying. What changes is only what the fixed price applies to, and whether an actual asset can ever be delivered.</div>
+    </section>
+
+    <section class="mod" id="swap">
+      <p class="sec-eyebrow"><span class="n">03</span> · A strip of forwards</p>
+      <h2>SWAP — Theory &amp; Worked Examples Across Asset Classes</h2>
+      <p class="lede">An agreement to exchange a series of cash flows over time, calculated off a formula, on the same Notional, repeated on a schedule — structurally a strip of Forwards bundled into one contract.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">5Y CAD IRS</span><span class="t-id">Module 8 §4a</span></div>
+        <pre>Bank Of Toronto pays fixed, receives floating
+Notional CAD 100,000,000 | Fixed Rate 4.00% | Floating: CORRA + spread
+Quarterly settlements, netted, for 5 years (20 total settlements)
+
+-> EACH quarterly settlement is its own isolated fixed-vs-floating
+   comparison -- the SAME calculation as the FRA above, repeated
+   20 times inside one contract instead of 20 separate forwards.
+   This IS Section 1's "Swap = strip of Forwards" claim, made
+   concrete: an IRS really is 20 FRAs, wrapped in one document,
+   undiscounted.
+
+Full 20-settlement walkthrough: see the Interest Rate Swap (IRS)
+Deep Dive.</pre>
+      </div>
+
+      <h3>Credit — the CDS, named a "Swap" but structurally different</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">5Y CDS on Northern Rail Corp</span><span class="t-id">Module 2 §9</span></div>
+        <pre>Notional CAD 20,000,000 | Spread 120bps | Quarterly premium
+
+Bank Of Toronto pays Goldman Sachs CAD 59,836 EVERY QUARTER (the
+periodic, swap-like leg) -- UNLESS Northern Rail Corp defaults, in
+which case Goldman Sachs pays Bank Of Toronto CAD 12,000,000 ONCE
+(a CONTINGENT leg, not a periodic one)
+
+-> ONE leg (the premium) behaves exactly like a swap's periodic
+   exchange. The OTHER leg (the default payout) behaves like
+   Section 4's OPTION -- contingent, capped payout. A CDS is
+   documented AS a swap, but sits on the boundary between the
+   Swap family and the Option family.</pre>
+      </div>
+
+      <h3>FX — the FX Swap (a short-dated exception), and Cross-Currency Swap</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">FX Swap vs. Cross-Currency Swap</span><span class="t-id">A Naming Trap — Module 6 §2</span></div>
+        <pre>FX SWAP (Module 6 §4c): commonly overnight to 1 year, just a Spot
+and a Forward bolted together -- TWO principal exchanges, NO
+periodic interest payments. Closer to Section 2's Forward family
+than a true multi-period Swap.
+
+CROSS-CURRENCY SWAP: longer-dated (years), WITH periodic interest
+payments exchanged in two currencies -- genuinely behaves like the
+IRS, just with two different-currency legs. ISDA classifies it
+under INTEREST RATE, not FX -- its periodic-exchange mechanic is a
+Rates-family Swap, despite involving two currencies.</pre>
+      </div>
+
+      <h3>Equity — Total Return Swap on Apple Inc. shares</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Equity TRS</span><span class="t-id">Module 2 §8</span></div>
+        <pre>Periodic net cash flows tracking the share's price movement PLUS
+dividends, exchanged against a financing-rate leg (typically a
+floating short-term rate) -- same fixed/floating-style exchange
+shape as the IRS, just with "price + dividend return" standing in
+for "fixed rate" as one of the two legs being swapped.</pre>
+      </div>
+
+      <h3>Commodity — Brent Crude Oil Swap</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">1Y Brent Crude Oil Swap</span><span class="t-id">Module 7 §4c</span></div>
+        <pre>Fixed Price: USD 78.00/bbl | Monthly notional: 8,333 bbl
+
+MONTH 1 -- ICE Brent monthly average settles at USD 81.20/bbl
+  Floating leg owed to Bank Of Toronto = 8,333 x 81.20 = USD 676,640
+  Fixed leg owed by Bank Of Toronto    = 8,333 x 78.00 = USD 649,974
+  Net cash flow: Bank Of Toronto RECEIVES USD 26,666
+  -> only the NET amount moves, repeating monthly for 12 months --
+     another Forward-style netted exchange, once per month</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Four of five asset classes' Swaps follow the identical fixed-vs-floating periodic netting mechanic — the outlier is Credit's CDS, whose contingent default leg borrows the Option-family payoff shape. That dual identity isn't a modeling error — it's a real structural fact requiring genuinely different pricing models for its two legs.</div>
+    </section>
+
+    <section class="mod" id="option">
+      <p class="sec-eyebrow"><span class="n">04</span> · A right, not an obligation</p>
+      <h2>OPTION — Theory &amp; Worked Examples Across Asset Classes</h2>
+      <p class="lede">Grants the buyer the right, not the obligation, to transact at a fixed strike by/at expiry, for an upfront premium — capped loss for the buyer, uncapped for the seller.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Option Payoff</span><span class="t-id">Asymmetric, Capped on One Side</span></div>
+        <pre>Buyer's P&amp;L
+    +  |                         /
+       |                       /
+       |                     /
+  -----+-------------------+------------------  Market Price at expiry
+       |. . . . . . . . . /  Strike Price
+    -  |________________/
+       (flat -- capped at premium paid, no matter how far the
+        market moves against the position)</pre>
+      </div>
+
+      <h3>FX — reusing Module 6 §4d in full</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">FX Option</span></div>
+        <pre>USD Call / CAD Put, Notional USD 5,000,000, Strike 1.3600
+Premium: 0.0180 CAD per USD notional = CAD 90,000
+
+Spot to 1.3800: exercise, net benefit CAD 10,000 (after premium)
+Spot to 1.3400: expires worthless, max loss = CAD 90,000 premium</pre>
+      </div>
+
+      <h3>Commodity — reusing Module 7 §4d in full</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Commodity Option</span></div>
+        <pre>Call on CME WTI Crude Oil Future
+Strike USD 80.00/bbl, Notional 100,000 bbl, Premium USD 3.20/bbl
+Premium Paid = USD 320,000
+
+WTI to USD 88.00/bbl: exercise, net benefit USD 480,000
+WTI to USD 74.00/bbl: expires worthless, max loss = USD 320,000 premium</pre>
+      </div>
+
+      <h3>Rates — the Swaption</h3>
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Swaption</span><span class="t-id">1Y-into-5Y Payer — Module 8 §4d</span></div>
+        <pre>Bank Of Toronto buys the RIGHT to enter a 5Y IRS, as fixed-rate
+PAYER, in 1 year -- literally "the option to enter Section 3's
+IRS," Section 1's Forward-vs-Option relationship one layer up
+
+Notional CAD 50,000,000, Strike 4.25%, Premium 0.60% = CAD 300,000
+
+Prevailing 5Y rate at expiry = 4.75%: EXERCISE -- enters the swap
+paying only 4.25% fixed when the market rate is 4.75%
+Prevailing 5Y rate at expiry = 3.90%: DON'T exercise -- a fresh
+market swap beats the 4.25% strike; loss capped at CAD 300,000</pre>
+      </div>
+
+      <h3>Equity — an OTC put, contrasted directly with a listed one</h3>
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">OTC Equity Option</span><span class="t-id">Reusing the Hedging Deep Dive's KO Put</span></div>
+        <pre>Maple Leaf Pension Fund holds 10,000 KO shares (Module 4 §4a). It
+buys a PROTECTIVE PUT directly from Bank Of Toronto (its dealer)
+rather than through a listed options exchange:
+
+KO Put, Strike USD 65.00, Notional 10,000 shares, Expiry 1 month
+Premium USD 1.20/share = USD 12,000
+
+KO falls to 58.00: exercise, avoided loss = USD 70,000
+KO rises to 75.00: expires worthless, max loss = USD 12,000 premium
+
+-> the PAYOFF SHAPE is identical to Module 4 §4d's LISTED AAPL
+   call -- the only real difference is VENUE: negotiated
+   bilaterally, never touches the OCC</pre>
+      </div>
+
+      <div class="callout"><b>Callout — Credit's option-like behavior already lives inside the CDS.</b> Rather than a separate standalone "Credit Option," Section 3 already showed the CDS's default-contingent leg behaves exactly like an Option's payoff. CDS Index Swaptions exist as a true standalone product, but this curriculum doesn't build a separate worked example for that niche instrument.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> The asymmetric shape — premium paid, capped downside, uncapped upside — recurs identically across every underlying. The Swaption is conceptually the most important entry here: it proves Section 1's Forward → Swap, Option-on-Forward relationship generalizes one level up.</div>
+    </section>
+
+    <section class="mod" id="matrix">
+      <p class="sec-eyebrow"><span class="n">05</span> · One glance</p>
+      <h2>The Full Matrix — Forward × Swap × Option, Across Five Asset Classes</h2>
+      <p class="lede">Every worked example from Sections 2–4, in one reference table.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Asset Class</th><th>Forward</th><th>Swap</th><th>Option</th></tr></thead>
+        <tbody>
+          <tr><td><b>Interest Rate</b></td><td>FRA; IR Forward Debt</td><td>Interest Rate Swap</td><td>Swaption</td></tr>
+          <tr><td><b>Credit</b></td><td><i>No standalone product</i></td><td>Credit Default Swap</td><td><i>Embedded in the CDS's protection leg</i></td></tr>
+          <tr><td><b>Foreign Exchange</b></td><td>FX Forward</td><td>FX Swap / Cross-Currency Swap (latter is Interest Rate)</td><td>FX Option</td></tr>
+          <tr><td><b>Equity</b></td><td>Equity Forward (new)</td><td>Equity Total Return Swap</td><td>Equity Option, OTC or listed</td></tr>
+          <tr><td><b>Commodity</b></td><td>Commodity Forward (new)</td><td>Commodity Swap</td><td>Commodity Option</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The grid is nearly complete — Credit is the one asset class where the Forward and Option cells don't have clean standalone entries, absorbed into the CDS's own dual-natured structure. Every other cell follows Section 1's theory exactly.</div>
+    </section>
+
+    <section class="mod" id="exposure">
+      <p class="sec-eyebrow"><span class="n">06</span> · Front-loaded vs. back-loaded risk</p>
+      <h2>Why the Structural Difference Matters — Premium Timing &amp; Counterparty Credit Exposure</h2>
+      <p class="lede">Forward/Swap vs. Option produce genuinely different counterparty credit exposure profiles over a trade's life, directly relevant to Module 11 §2's Current Exposure vs. PFE distinction.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Exposure Profile Over Time</span></div>
+        <pre>FORWARD / SWAP (no premium at inception):
+  Day 1 MTM = CAD 0 (fairly priced at trade date)
+  Current Exposure = CAD 0 on day 1 -- but PFE is NOT zero (Module
+  11 §2: PFE estimated at roughly CAD 4,500,000, 2 years into a
+  5Y CAD 100,000,000 IRS, at 95% confidence)
+  -> RISK BUILDS UP GRADUALLY as rates/prices move, either direction
+
+OPTION (premium paid upfront):
+  Day 1: BUYER has ALREADY PAID the premium (e.g. CAD 90,000 FX
+  Option premium) -- maximum possible loss is fully known and
+  realized from day one; can only shrink toward zero at expiry
+  -> for the SELLER (writer), exposure runs the OPPOSITE way --
+     having COLLECTED the premium, risk is entirely in the FUTURE,
+     potentially large and one-directional</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is why credit-limit and Initial Margin calculations treat a Forward/Swap position and an Option position differently even at identical notional — symmetric and back-loaded vs. asymmetric, front-loaded for the buyer but back-loaded and one-directional for the seller.</div>
+    </section>
+
+    <section class="mod" id="taxonomy">
+      <p class="sec-eyebrow"><span class="n">07</span> · Closing the loop</p>
+      <h2>ISDA Taxonomy Tie-In — Forward, Swap &amp; Option as Transaction Type Values</h2>
+      <p class="lede">The ISDA Product Taxonomy's four-level hierarchy uses these same three words as controlled values at its final level, Transaction Type.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Where Forward/Swap/Option Sit</span><span class="t-id">In the ISDA Taxonomy</span></div>
+        <pre>Interest Rate  -> IRSwap     -> FixedFloat   -> SWAP
+Credit         -> SingleName -> Corporate    -> CREDITDEFAULTSWAP
+                                                 (named "Swap," Section 3's
+                                                 dual-natured exception)
+Foreign Exch.  -> Forward    -> Deliverable  -> FORWARD
+Equity         -> Swap       -> PriceReturn  -> SWAP
+Commodity      -> Energy     -> Oil          -> SWAP
+
+-> Notice OPTION doesn't appear as a Transaction Type value in any
+   of these five paths, because none of Sections 2-3's examples
+   were Options -- Section 4's Swaption, FX Option, Commodity
+   Option, and Equity Option trades would each carry their OWN
+   taxonomy path with Transaction Type = OPTION, distinct from
+   their underlying Forward/Swap cousins.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> This is the concrete answer to "where does the Forward/Swap/Option distinction actually show up in a trade record" — a literal, regulator-facing field value on every OTC derivative's ISDA taxonomy path, which feeds directly into the trade's UPI reference data.</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">08</span> · Primary sources</p>
+      <h2>Official Sources &amp; Links</h2>
+      <p class="lede">Primary sources rather than technical definitions that get revised periodically.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>ISDA</b></td><td>The 2006 ISDA Definitions (and product-specific supplements) — standard legal/economic definitions for Forwards, Swaps, and Options</td><td><a href="https://www.isda.org">isda.org</a></td></tr>
+          <tr><td><b>ISDA Product Taxonomy</b></td><td>Where Forward/Swap/Option formally sit as Transaction Type values</td><td><a href="https://www.isda.org">isda.org</a></td></tr>
+          <tr><td><b>FpML</b></td><td>The XML messaging standard used to transmit trade economics, aligned with ISDA's taxonomy</td><td><a href="https://www.fpml.org">fpml.org</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The 2006 ISDA Definitions are the source of truth for how each product's cash flows and triggering events are legally defined; the ISDA Product Taxonomy for classification; FpML for how the same terms are represented in a trade message.</div>
+    </section>
+
+    <section class="mod" id="cast" style="border-bottom: none;">
+      <p class="sec-eyebrow">Cast reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>Party to every worked example across all three sections</td></tr>
+          <tr><td>Goldman Sachs</td><td>Counterparty on the FX Forward, FRA, CDS protection sale, and Swaption</td></tr>
+          <tr><td>Shell Trading</td><td>Counterparty on the Brent Crude Oil Swap (Section 3)</td></tr>
+          <tr><td>Maple Leaf Pension Fund</td><td>Holder of the KO position hedged with the OTC put (Section 4)</td></tr>
+          <tr><td>Northern Rail Corp</td><td>Reference entity for the CDS (Section 3)</td></tr>
+          <tr><td>ISDA / FpML</td><td>Standard-setters for how these three structures are legally defined and technically transmitted (Section 8)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+
+      <div class="quiz">
+        <ol>
+          <li>Using Section 1, explain in one sentence why a Swap is often described as "a strip of Forwards" and why an Option is described as "the right to enter a Forward."</li>
+          <li>Using Section 2, why does the FRA settle discounted at the start of its reference period, while IR Forward Debt settles at the end — and why doesn't this reflect a genuine structural difference?</li>
+          <li>Using Section 2's callout, why doesn't Credit have a standalone "Forward" product?</li>
+          <li>Using Section 3, in what specific way does the CDS's premium leg behave like a Swap while its default leg behaves like an Option?</li>
+          <li>Using Section 3, why is a Cross-Currency Swap classified under Interest Rate rather than Foreign Exchange?</li>
+          <li>Using Section 4, what does the Swaption prove about how far Section 1's Forward/Option relationship generalizes?</li>
+          <li>Using Section 6, why does a Forward or Swap's exposure grow gradually, while an Option buyer's max exposure is known on day one?</li>
+          <li>Using Section 7, does Transaction Type = OPTION alone tell you the asset class? What would?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — A Swap repeats a Forward-style exchange on a schedule instead of once; an Option is the right, not obligation, to enter that same exchange — strip away optionality and premium, and it collapses back into a Forward</h5>
+        <p>Section 1's diagram states both halves directly; Section 3's IRS (20 quarterly settlements, each its own fixed-vs-floating comparison) makes it concrete.</p>
+
+        <h5>Q2 — The FRA settles early because the rate is already known by then; IR Forward Debt only ever has one settlement date to begin with. Not a structural difference — just a timing convention specific to a rate-referencing forward vs. a price-referencing one</h5>
+        <p>Section 2's FRA and IR Forward Debt examples state their settlement timing explicitly.</p>
+
+        <h5>Q3 — Credit's core OTC product (the CDS) is already a periodic-premium, contingent-payout contract, not a one-off fixed-price exchange; a forward-starting CDS is a Swap-family variant, not a distinct Forward product</h5>
+        <div class="takeaway">Section 2's callout states this as a genuine asset-class-specific exception.</div>
+
+        <h5>Q4 — The premium leg is paid periodically regardless of outcome (a Swap's repeated exchange shape); the default leg pays out once, only if triggered, capped by notional and recovery (an Option's payoff shape)</h5>
+        <p>Section 3's CDS worked example and takeaway state this dual-nature explicitly.</p>
+
+        <h5>Q5 — What makes it a "Swap" — periodic interest exchange over years — is an Interest-Rate-family mechanic; FX's own products never have periodic interest payments, only principal exchanges</h5>
+        <p>Section 3's naming-trap callout cross-references Module 6 §2's own explicit warning.</p>
+
+        <h5>Q6 — It proves the Forward-to-Option relationship isn't limited to a single exchange — an Option can be written on an entire Swap, one layer of abstraction up</h5>
+        <p>Section 4's Swaption example calls it "Section 1's relationship applied one layer up, to an entire Swap instead of a single exchange."</p>
+
+        <h5>Q7 — A Forward/Swap starts at zero MTM with no premium capping cost either way, so exposure grows as prices move; an Option buyer pays the full premium upfront — that IS the max loss, already realized, shrinking toward zero at expiry</h5>
+        <p>Section 6's exposure-profile diagram reuses Module 11 §2's PFE example for the Forward/Swap side.</p>
+
+        <h5>Q8 — No — every asset class has its own Option variant, so Transaction Type = OPTION alone is ambiguous. Asset Class, read with Base Product and Sub-Product, is what actually identifies it</h5>
+        <p>Section 7 cross-references the ISDA Product Taxonomy Deep Dive's point that no single taxonomy level is sufficient alone.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

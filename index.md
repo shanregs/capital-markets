@@ -10,17 +10,7 @@ Also see: [**Abbreviations Glossary**](./docs/1-capital-markets/abbreviations.md
 
 Also see: [**Systems Landscape**](./docs/1-capital-markets/systems-landscape.md) ([HTML](./docs/1-capital-markets/systems-landscape.html)) — the actual Front/Middle/Back Office systems, data flows, and settlement cycles used in Canada, the US, the UK, and the EU, plus the regulatory bodies in each.
 
-Also see: [**SFTR Reporting Deep Dive**](./docs/2-reporting/sftr-reporting.md) ([HTML](./docs/2-reporting/sftr-reporting.html)) — what SFTR is, exactly which trades must be reported, the lifecycle-event reporting model, and links to the primary regulatory sources.
-
-Also see: [**UK DMO Reporting Deep Dive**](./docs/2-reporting/dmo-uk-reporting.md) ([HTML](./docs/2-reporting/dmo-uk-reporting.html)) — how Gilt-Edged Market Makers (GEMMs) report gilt auctions and secondary-market trading to the UK Debt Management Office: Auction, Daily, Weekly, and Aggregated reports, worked with real numbers.
-
-Also see: [**UPI, UTI &amp; ANNA-DSB Deep Dive**](./docs/2-reporting/upi-uti-dsb-deep-dive.md) ([HTML](./docs/2-reporting/upi-uti-dsb-deep-dive.html)) — derivative identifiers explained end to end: UTI structure and generation waterfall, UPI reference-data templates across five asset classes, the ANNA-DSB organization that runs the system, and exactly which reporting regimes need which identifier.
-
-Also see: [**Interest Rate Swap (IRS) Deep Dive**](./docs/1-capital-markets/interest-rate-swap-deep-dive.md) — one 5Y CAD IRS taken through all 20 quarterly settlements: exact fixed vs. floating CORRA calculations, the full payment-date schedule, final settlement at maturity, and the Trade/Valuation fields involved.
-
-Also see: [**MiFID II / MiFIR Reporting Deep Dive**](./docs/2-reporting/mifid-reporting.md) — what makes an instrument "MiFID eligible" (the Article 26(2) scope test), transaction reporting vs. the transparency regime, and exactly what an OTC-executed equity trade is subject to (the Share Trading Obligation and the Systematic Internaliser regime).
-
-Also see: [**ISDA Product Taxonomy Deep Dive**](./docs/2-reporting/isda-product-taxonomy-deep-dive.md) ([HTML](./docs/2-reporting/isda-product-taxonomy-deep-dive.html)) — the four-level classification hierarchy (Asset Class → Base Product → Sub-Product → Transaction Type) explained end to end: full worked paths across every asset class, why bonds never get one, how it feeds the UPI, exactly which regimes cite it, and how the values get configured on a real trade.
+Modules 16–23 are **deep-dive/reference modules** — each expands one topic already touched on by Modules 1–15 into its own full write-up (theory, worked examples with real numbers, an actors cast, and a recap quiz), rather than adding a new asset class or lifecycle stage. See the Modules table below.
 
 ---
 
@@ -43,8 +33,16 @@ Also see: [**ISDA Product Taxonomy Deep Dive**](./docs/2-reporting/isda-product-
 | 13 | Parties, LEIs & Market Infrastructure | Standard (10%) | ✅ Available | [module-13-parties-leis.md](./docs/1-capital-markets/module-13-parties-leis.md) | [module-13-parties-leis.html](./docs/1-capital-markets/module-13-parties-leis.html) |
 | 14 | Regulatory Reporting + IT View | Standard | ✅ Available | [module-14-regulatory-reporting.md](./docs/2-reporting/module-14-regulatory-reporting.md) | [module-14-regulatory-reporting.html](./docs/2-reporting/module-14-regulatory-reporting.html) |
 | 15 | **Listed Derivatives** *(cross-cutting — not part of the 6-asset-class roadmap)* | Standard | ✅ Available | [module-15-listed-derivatives.md](./docs/1-capital-markets/module-15-listed-derivatives.md) | [module-15-listed-derivatives.html](./docs/1-capital-markets/module-15-listed-derivatives.html) |
+| 16 | **SFTR Reporting Deep Dive** *(reference — extends Module 5 §8 / Module 14)* | Reference | ✅ Available | [module-16-sftr-reporting.md](./docs/2-reporting/module-16-sftr-reporting.md) | [module-16-sftr-reporting.html](./docs/2-reporting/module-16-sftr-reporting.html) |
+| 17 | **UK DMO Reporting Deep Dive** *(reference — extends Module 5 §8)* | Reference | ✅ Available | [module-17-dmo-uk-reporting.md](./docs/2-reporting/module-17-dmo-uk-reporting.md) | [module-17-dmo-uk-reporting.html](./docs/2-reporting/module-17-dmo-uk-reporting.html) |
+| 18 | **UPI, UTI &amp; ANNA-DSB Deep Dive** *(reference — extends Module 2 §12)* | Reference | ✅ Available | [module-18-upi-uti-dsb-deep-dive.md](./docs/2-reporting/module-18-upi-uti-dsb-deep-dive.md) | [module-18-upi-uti-dsb-deep-dive.html](./docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html) |
+| 19 | **Interest Rate Swap (IRS) Deep Dive** *(reference — extends Module 8 §4a)* | Reference | ✅ Available | [module-19-interest-rate-swap-deep-dive.md](./docs/1-capital-markets/module-19-interest-rate-swap-deep-dive.md) | — |
+| 20 | **MiFID II / MiFIR Reporting Deep Dive** *(reference — extends Module 4 §8)* | Reference | ✅ Available | [module-20-mifid-reporting.md](./docs/2-reporting/module-20-mifid-reporting.md) | [module-20-mifid-reporting.html](./docs/2-reporting/module-20-mifid-reporting.html) |
+| 21 | **ISDA Product Taxonomy Deep Dive** *(reference — extends Module 2 §7–8)* | Reference | ✅ Available | [module-21-isda-product-taxonomy-deep-dive.md](./docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.md) | [module-21-isda-product-taxonomy-deep-dive.html](./docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html) |
+| 22 | **Hedging Deep Dive** *(reference — cross-cutting across all asset classes)* | Reference | ✅ Available | [module-22-hedging-deep-dive.md](./docs/1-capital-markets/module-22-hedging-deep-dive.md) | [module-22-hedging-deep-dive.html](./docs/1-capital-markets/module-22-hedging-deep-dive.html) |
+| 23 | **Forward, Swap &amp; Option Deep Dive** *(reference — cross-cutting across all asset classes)* | Reference | ✅ Available | [module-23-otc-forward-swap-option-deep-dive.md](./docs/1-capital-markets/module-23-otc-forward-swap-option-deep-dive.md) | [module-23-otc-forward-swap-option-deep-dive.html](./docs/1-capital-markets/module-23-otc-forward-swap-option-deep-dive.html) |
 
-Priority column reflects the weighting in the "Priority for My Current Work" table of the original curriculum doc. Modules 4–9 (the Asset Class Roadmap) are built **one at a time, in order** — Equity first. **The full 14-module path, plus the cross-cutting Module 15 (Listed Derivatives), is now complete.** Module 14 closes the loop by fully annotating the curriculum's own capstone `IRS12345` trade record field-by-field against everything built in Modules 1–13 and 15 — see the curriculum doc's own "Final End-to-End Case Study" to test it cold.
+Priority column reflects the weighting in the "Priority for My Current Work" table of the original curriculum doc; Modules 16–23 are outside that original weighting (marked **Reference**) since they were added afterward as deep dives into topics the first 15 modules already introduced. Modules 4–9 (the Asset Class Roadmap) are built **one at a time, in order** — Equity first. **The full 14-module path, plus the cross-cutting Module 15 (Listed Derivatives), is complete**, and Modules 16–23 layer additional depth on top of it. Module 14 closes the core path's loop by fully annotating the curriculum's own capstone `IRS12345` trade record field-by-field against everything built in Modules 1–13 and 15 — see the curriculum doc's own "Final End-to-End Case Study" to test it cold.
 
 ---
 
@@ -54,12 +52,8 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 |---|---|---|
 | Abbreviations Glossary — identifiers, market structure, products, rates, valuation, settlement, risk, regulation | [abbreviations.md](./docs/1-capital-markets/abbreviations.md) | [abbreviations.html](./docs/1-capital-markets/abbreviations.html) |
 | Systems Landscape — Front/Middle/Back Office systems, data flows &amp; settlement cycles in Canada, US, UK &amp; EU, plus regulators | [systems-landscape.md](./docs/1-capital-markets/systems-landscape.md) | [systems-landscape.html](./docs/1-capital-markets/systems-landscape.html) |
-| SFTR Reporting Deep Dive — what SFTR is, which trades must be reported, lifecycle-event reporting model &amp; official links | [sftr-reporting.md](./docs/2-reporting/sftr-reporting.md) | [sftr-reporting.html](./docs/2-reporting/sftr-reporting.html) |
-| UK DMO Reporting Deep Dive — how GEMMs report gilt auctions &amp; secondary-market trading to the UK DMO (Auction/Daily/Weekly/Aggregated reports) | [dmo-uk-reporting.md](./docs/2-reporting/dmo-uk-reporting.md) | [dmo-uk-reporting.html](./docs/2-reporting/dmo-uk-reporting.html) |
-| UPI, UTI &amp; ANNA-DSB Deep Dive — derivative identifiers explained: UTI generation waterfall, UPI reference-data templates, ANNA-DSB, where each is used | [upi-uti-dsb-deep-dive.md](./docs/2-reporting/upi-uti-dsb-deep-dive.md) | [upi-uti-dsb-deep-dive.html](./docs/2-reporting/upi-uti-dsb-deep-dive.html) |
-| Interest Rate Swap (IRS) Deep Dive — full 20-quarter worked example: fixed vs. floating CORRA calculation, payment-date schedule, final settlement, Trade/Valuation fields | [interest-rate-swap-deep-dive.md](./docs/1-capital-markets/interest-rate-swap-deep-dive.md) | — |
-| MiFID II / MiFIR Reporting Deep Dive — the Article 26(2) eligibility test, transaction reporting vs. transparency, the Share Trading Obligation &amp; Systematic Internaliser regime for OTC equities | [mifid-reporting.md](./docs/2-reporting/mifid-reporting.md) | [mifid-reporting.html](./docs/2-reporting/mifid-reporting.html) |
-| ISDA Product Taxonomy Deep Dive — the four-level classification hierarchy, worked paths per asset class, why bonds never get one, how it feeds the UPI, where it's used &amp; how values are configured | [isda-product-taxonomy-deep-dive.md](./docs/2-reporting/isda-product-taxonomy-deep-dive.md) | [isda-product-taxonomy-deep-dive.html](./docs/2-reporting/isda-product-taxonomy-deep-dive.html) |
+
+These two stay outside the module numbering by design — both are cross-cutting lookup material meant to be consulted alongside *any* module, not a topic deep dive in their own right (see Modules 16–23 above for those).
 
 ---
 

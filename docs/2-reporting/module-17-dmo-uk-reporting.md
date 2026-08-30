@@ -1,10 +1,10 @@
-# UK DMO Reporting Deep Dive — Gilt Market Reporting by GEMMs
+# Module 17 — UK DMO Reporting Deep Dive — Gilt Market Reporting by GEMMs
 
 [← Back to Index](../../index.md)
 
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only), acting here as a **GEMM** (Gilt-Edged Market Maker) — the UK gilt market's version of a primary dealer.
-> This is a **reference module**, in the same family as [sftr-reporting](./sftr-reporting.md). [Module 5](../1-capital-markets/module-05-fixed-income.md) §8 first named the DMO as the UK's gilt-issuing body; this module goes deep on what a GEMM actually reports to the DMO, how often, and with what data.
+> This is a **reference module**, in the same family as [Module 16 — SFTR](./module-16-sftr-reporting.md). [Module 5](../1-capital-markets/module-05-fixed-income.md) §8 first named the DMO as the UK's gilt-issuing body; this module goes deep on what a GEMM actually reports to the DMO, how often, and with what data.
 
 ---
 
@@ -12,7 +12,7 @@
 
 **Definition:** the **UK Debt Management Office (DMO)** is an executive agency of HM Treasury, established in 1998, responsible for issuing and managing UK government debt — **gilts** (UK government bonds) and **Treasury bills** — and for the government's day-to-day cash management. **"DMO reporting"** is the operational and commercial reporting a small panel of appointed banks, the **GEMMs (Gilt-Edged Market Makers)**, must submit to the DMO as a condition of their GEMM status: their gilt-auction bidding activity and their ongoing secondary-market gilt trading.
 
-**Important distinction up front:** unlike [SFTR](./sftr-reporting.md) or EMIR ([Module 14](./module-14-regulatory-reporting.md)), DMO reporting is **not a statutory regulatory reporting regime**. There's no Trade Repository, no EU/UK regulation number, no fine from a conduct regulator for missing a deadline. It's reporting owed under a **commercial agreement** (the GEMM agreement) between each bank and the DMO — closer in spirit to a supplier scorecard than to a regulatory filing, even though the consequences of falling short (losing GEMM status) are commercially serious. Section 9 draws this distinction out fully, alongside the *statutory* UK MiFIR reporting obligation that separately applies to the same gilt trades.
+**Important distinction up front:** unlike [SFTR](./module-16-sftr-reporting.md) or EMIR ([Module 14](./module-14-regulatory-reporting.md)), DMO reporting is **not a statutory regulatory reporting regime**. There's no Trade Repository, no EU/UK regulation number, no fine from a conduct regulator for missing a deadline. It's reporting owed under a **commercial agreement** (the GEMM agreement) between each bank and the DMO — closer in spirit to a supplier scorecard than to a regulatory filing, even though the consequences of falling short (losing GEMM status) are commercially serious. Section 9 draws this distinction out fully, alongside the *statutory* UK MiFIR reporting obligation that separately applies to the same gilt trades.
 
 **Why it exists:** two purposes:
 
@@ -247,7 +247,7 @@ ROLLING 6-MONTH MARKET SHARE — BANK OF TORONTO
 
 ## 8. What Data Needs to Be Captured — Field Reference by Report Type
 
-**Definition:** the fields below are what a GEMM's own trade-capture and reporting systems need to hold to actually produce Sections 4–7's reports, grouped by report type the same way [SFTR](./sftr-reporting.md) §6 grouped its four report tables.
+**Definition:** the fields below are what a GEMM's own trade-capture and reporting systems need to hold to actually produce Sections 4–7's reports, grouped by report type the same way [SFTR](./module-16-sftr-reporting.md) §6 grouped its four report tables.
 
 | Report Type | Core Fields |
 |---|---|
@@ -307,7 +307,7 @@ ONE GILT TRADE, TWO REPORTS, TWO DESTINATIONS
 
 ## 11. Official Sources &amp; Links
 
-**Definition:** as with [SFTR](./sftr-reporting.md) §9, this module points to primary institutional sources rather than restating rules that get periodically revised. If a specific deep link has moved, search the named site directly.
+**Definition:** as with [SFTR](./module-16-sftr-reporting.md) §9, this module points to primary institutional sources rather than restating rules that get periodically revised. If a specific deep link has moved, search the named site directly.
 
 | Source | What It Covers | Link |
 |---|---|---|
@@ -373,7 +373,7 @@ BANK OF TORONTO — ONE WEEK, FOUR REPORTS
 
 ## Recap Quiz
 
-1. Using Section 1, why is a GEMM's failure to submit a Daily Trade Report a *commercial* problem rather than a *regulatory* one, in a way that a missed EMIR or SFTR report ([Module 14](./module-14-regulatory-reporting.md), [SFTR module](./sftr-reporting.md)) is not?
+1. Using Section 1, why is a GEMM's failure to submit a Daily Trade Report a *commercial* problem rather than a *regulatory* one, in a way that a missed EMIR or SFTR report ([Module 14](./module-14-regulatory-reporting.md), [SFTR module](./module-16-sftr-reporting.md)) is not?
 2. Using Section 4, why does Bank Of Toronto's Bid 3 (GBP 200,000,000 @ 98.60) get rejected while Bids 1 and 2 are filled — and at what price do the filled bids actually settle?
 3. Using Section 4, why are the NCA and PAOF allocations priced at the average accepted price (98.71) rather than the clearing price (98.62) that competitive bidders pay?
 4. Using Section 5, why does the DMO want GROSS daily turnover (buys and sells reported separately) rather than Bank Of Toronto's NET position change for the day?

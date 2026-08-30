@@ -1,5 +1,5 @@
 <!doctype html>
-<title>UPI, UTI &amp; ANNA-DSB Deep Dive</title>
+<title>Module 18 — UPI, UTI &amp; ANNA-DSB Deep Dive</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
@@ -472,7 +472,7 @@
   <div class="masthead">
     <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
-      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 18</div>
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-mode="system" aria-pressed="true">System</button>
         <button type="button" data-mode="light" aria-pressed="false">Light</button>
@@ -482,7 +482,7 @@
     <h1>UPI, UTI &amp; ANNA-DSB Deep Dive</h1>
     <p class="dek">Derivative identifiers, explained end to end — UTI structure and generation waterfall, UPI reference-data templates across five asset classes, the organization (ANNA-DSB) that actually runs the system, and exactly which reporting regimes need which identifier.</p>
     <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
-    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./sftr-reporting.html">SFTR</a> and <a href="./dmo-uk-reporting.html">UK DMO Reporting</a> deep dives. <a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §12 first introduced UPI and UTI; this module goes deep.</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./module-16-sftr-reporting.html">SFTR</a> and <a href="./module-17-dmo-uk-reporting.html">UK DMO Reporting</a> deep dives. <a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §12 first introduced UPI and UTI; this module goes deep.</div>
   </div>
 
   <nav class="toc" aria-label="On this page">
@@ -578,7 +578,7 @@ Full UTI:  5493001KJTIIGC8Y1R122026081700001
       </table>
       </div>
 
-      <div class="callout"><b>Callout — this is a simplified illustration, not the literal current rule text.</b> The exact waterfall differs in small but legally material ways across EMIR, UK EMIR, Dodd-Frank/CFTC, and other regimes, and gets revised periodically. Confirm the current text against Section 8's official links before encoding it into a rules engine — the same hedge <a href="./sftr-reporting.html">SFTR</a> §7 and <a href="./dmo-uk-reporting.html">UK DMO</a> §2 already apply to their own regulatory specifics.</div>
+      <div class="callout"><b>Callout — this is a simplified illustration, not the literal current rule text.</b> The exact waterfall differs in small but legally material ways across EMIR, UK EMIR, Dodd-Frank/CFTC, and other regimes, and gets revised periodically. Confirm the current text against Section 8's official links before encoding it into a rules engine — the same hedge <a href="./module-16-sftr-reporting.html">SFTR</a> §7 and <a href="./module-17-dmo-uk-reporting.html">UK DMO</a> §2 already apply to their own regulatory specifics.</div>
 
       <div class="ticket gold">
         <div class="ticket-head"><span class="t-label">Worked Waterfall · Bilateral CDS</span><span class="t-id">Bank Of Toronto ↔ Goldman Sachs</span></div>
@@ -774,7 +774,7 @@ OTC-derivative ISIN (Section 5, ONLY if MiFIR-scope):
     <section class="mod" id="links">
       <p class="sec-eyebrow"><span class="n">08</span> · Primary sources, not restatements</p>
       <h2>Official Sources &amp; Links</h2>
-      <p class="lede">As with <a href="./sftr-reporting.html">SFTR</a> §9 and <a href="./dmo-uk-reporting.html">UK DMO Reporting</a> §11, this module points to primary sources rather than restating rules that get periodically revised.</p>
+      <p class="lede">As with <a href="./module-16-sftr-reporting.html">SFTR</a> §9 and <a href="./module-17-dmo-uk-reporting.html">UK DMO Reporting</a> §11, this module points to primary sources rather than restating rules that get periodically revised.</p>
 
       <div class="table-scroll">
       <table>
@@ -790,7 +790,7 @@ OTC-derivative ISIN (Section 5, ONLY if MiFIR-scope):
       </table>
       </div>
 
-      <div class="takeaway"><b>Takeaway.</b> Treat the DSB's own site as the source of truth for the literal current UPI reference-data schema and lookup tool; CPMI-IOSCO's published technical guidance as the source of truth for the UTI/UPI structural standards themselves; and each jurisdiction's own regulator as the source of truth for exactly when and how that standard becomes a mandatory field on a report in that jurisdiction — the same three-way split <a href="./sftr-reporting.html">SFTR</a> §9's takeaway already established.</div>
+      <div class="takeaway"><b>Takeaway.</b> Treat the DSB's own site as the source of truth for the literal current UPI reference-data schema and lookup tool; CPMI-IOSCO's published technical guidance as the source of truth for the UTI/UPI structural standards themselves; and each jurisdiction's own regulator as the source of truth for exactly when and how that standard becomes a mandatory field on a report in that jurisdiction — the same three-way split <a href="./module-16-sftr-reporting.html">SFTR</a> §9's takeaway already established.</div>
     </section>
 
     <section class="mod" id="quiz">
@@ -838,7 +838,7 @@ OTC-derivative ISIN (Section 5, ONLY if MiFIR-scope):
         <div class="takeaway">Section 5's diagram states this precisely — a reporting engineer who assumes one DSB code per product will silently under-report one of the two legitimately required identifiers.</div>
 
         <h5>Q7 — SFTR requires a UTI but NOT a UPI — SFTs use SFTR's own "Type of SFT" codes instead</h5>
-        <p>Section 6's table flags SFTR as "the clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other," cross-referencing <a href="./sftr-reporting.html">SFTR</a> §2's own SFT-type-code table.</p>
+        <p>Section 6's table flags SFTR as "the clean illustration that UTI and UPI are genuinely independent — a regime can need one without the other," cross-referencing <a href="./module-16-sftr-reporting.html">SFTR</a> §2's own SFT-type-code table.</p>
 
         <h5>Q8 — Because they exist for two structurally separate regimes (EMIR wants a UPI, MiFIR wants an OTC-derivative ISIN) that don't share reporting infrastructure</h5>
         <p>Section 7's takeaway restates Section 5's point in context: no identifier on the worked trade record is truly redundant, even the two that superficially describe "the same product," because each answers to a different regime's own reporting pipeline.</p>

@@ -1,0 +1,954 @@
+<!doctype html>
+<title>Module 22 — Hedging Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 22</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Hedging Deep Dive</h1>
+    <p class="dek">Theory, worked examples, and where it's actually used — hedging vs. speculation vs. arbitrage, symmetric vs. asymmetric hedge instruments, and a full worked example in every asset class: rates, credit, FX, commodities, and equity.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to the <a href="./module-19-interest-rate-swap-deep-dive.md">IRS Deep Dive</a> and the <a href="../2-reporting/module-21-isda-product-taxonomy-deep-dive.html">ISDA Product Taxonomy Deep Dive</a>. Pulls together hedging examples scattered across Modules 2, 6, 7 &amp; 15, and adds an Equity worked example to complete the set.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is Hedging?</a></li>
+      <li><a href="#mechanic"><span class="toc-num">02</span>The Core Mechanic</a></li>
+      <li><a href="#families"><span class="toc-num">03</span>Symmetric vs. Asymmetric</a></li>
+      <li><a href="#rates"><span class="toc-num">04</span>Interest Rate Hedging</a></li>
+      <li><a href="#credit"><span class="toc-num">05</span>Credit Hedging</a></li>
+      <li><a href="#fx"><span class="toc-num">06</span>FX Hedging, Two Ways</a></li>
+      <li><a href="#commodity"><span class="toc-num">07</span>Commodity &amp; Basis Risk</a></li>
+      <li><a href="#equity"><span class="toc-num">08</span>Equity Hedging</a></li>
+      <li><a href="#accounting"><span class="toc-num">09</span>Hedge Accounting &amp; Regulation</a></li>
+      <li><a href="#where-used"><span class="toc-num">10</span>Where It's Used</a></li>
+      <li><a href="#links"><span class="toc-num">11</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · Three motivations, same instruments</p>
+      <h2>What Is Hedging? — Theory &amp; the Three Trading Motivations</h2>
+      <p class="lede">Hedging means deliberately taking a second position whose value moves opposite to an existing risk, so a loss on one side is offset by a gain on the other. The goal is narrowing the range of outcomes, not making money on the hedge itself.</p>
+
+      <p>Hedging, speculation, and arbitrage all use the <b>same instruments</b> this curriculum already built. What distinguishes them isn't the trade's shape — it's whether the trader already has an offsetting exposure.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Motivation</th><th>Existing offsetting exposure?</th><th>Goal</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Hedging</b></td><td>Yes</td><td>Reduce the range of outcomes</td><td>Module 15 §4c: Bank Of Toronto sells T-Note futures against bonds it already owns</td></tr>
+          <tr><td><b>Speculation</b></td><td>No — new directional bet</td><td>Profit from a view</td><td>Module 4 §4c/§4d: Maple Leaf Pension Fund buys E-mini futures &amp; an AAPL call to gain new exposure</td></tr>
+          <tr><td><b>Arbitrage</b></td><td>N/A</td><td>Near risk-free profit from a price gap</td><td>Not covered elsewhere in this curriculum</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Same Instrument, Opposite Motivation</span><span class="t-id">Module 15 vs. Module 4</span></div>
+        <pre>Module 15 §4c:  Bank Of Toronto SELLS 100 CME 10-Year T-Note
+                futures -- because it already OWNS bonds whose
+                value falls when rates rise. The future's loss/gain
+                is designed to CANCEL OUT the bond book's gain/loss.
+                -> THIS IS A HEDGE.
+
+Module 4 §4c:   Maple Leaf Pension Fund BUYS 20 E-mini S&amp;P 500
+                futures -- with no existing short equity position
+                anywhere being offset. It's taking on NEW market
+                exposure on purpose.
+                -> THIS IS SPECULATION / deliberate exposure-taking.
+
+-> Both are FUTURES. Nothing about the CONTRACT TYPE tells you
+   which one is the hedge -- only knowing what ELSE the trader
+   holds does.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A reporting or risk system that infers "is this a hedge?" purely from instrument type will get it wrong every time — hedging is a relationship between two positions, not a property of one trade in isolation. Section 9 covers how systems capture that relationship formally.</div>
+    </section>
+
+    <section class="mod" id="mechanic">
+      <p class="sec-eyebrow"><span class="n">02</span> · Not risk-free</p>
+      <h2>The Core Mechanic — Offsetting P&amp;L, Not Eliminating Risk</h2>
+      <p class="lede">Every hedge pairs two positions whose P&amp;L moves opposite when the same risk factor moves. The combined P&amp;L line is flatter than either position alone — that flattening is the hedge.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">The Generic Shape of Every Hedge</span></div>
+        <pre>UNDERLYING POSITION P&amp;L:   loses money as risk factor moves one way,
+                            gains as it moves the other way
+      (e.g. bond value falls as rates rise)
+
+HEDGE POSITION P&amp;L:        moves the OPPOSITE way to the underlying
+      (e.g. short future GAINS as rates rise)
+
+COMBINED P&amp;L:              flatter than either leg alone -- some
+                            residual movement usually remains
+                            (basis risk, Section 7), but the SWINGS
+                            are smaller than holding the underlying
+                            position unhedged</pre>
+      </div>
+
+      <p><b>Hedging is never free.</b> The cost shows up as either <b>opportunity cost</b> (a symmetric hedge locks in an outcome, giving up upside along with downside) or an <b>explicit premium</b> (an asymmetric hedge costs money upfront, like insurance, protecting only the downside).</p>
+
+      <div class="takeaway"><b>Takeaway.</b> "We hedged the position" does not mean the risk disappeared — it means the range of outcomes narrowed, at a cost. A reporting system showing a hedged position's P&amp;L flat-lining to exactly zero every time is almost certainly wrong — basis risk is the normal case.</div>
+    </section>
+
+    <section class="mod" id="families">
+      <p class="sec-eyebrow"><span class="n">03</span> · The core practical choice</p>
+      <h2>Two Families of Hedge Instruments — Symmetric vs. Asymmetric</h2>
+      <p class="lede">Every hedge instrument in this curriculum falls into one of two families, and the choice between them is the single most important practical decision a hedger makes.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Symmetric hedges</th><th>Asymmetric hedges</th></tr></thead>
+        <tbody>
+          <tr><td><b>Instruments</b></td><td>Forwards, Futures, Swaps</td><td>Options</td></tr>
+          <tr><td><b>Upfront cost</b></td><td>None (futures need margin, not premium)</td><td>A premium, paid upfront</td></tr>
+          <tr><td><b>Payoff shape</b></td><td>Locks in one outcome — dollar-for-dollar either direction</td><td>One-sided — protects the bad direction, keeps the good</td></tr>
+          <tr><td><b>Max loss on hedge itself</b></td><td>Unbounded in the "wrong" direction (by design)</td><td>Capped at the premium paid</td></tr>
+          <tr><td><b>Analogy</b></td><td>A fixed-price contract — locked in, for better or worse</td><td>An insurance policy</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Section 6 puts both families side by side against the exact same underlying need — the clearest illustration that this is a real choice with real trade-offs, not two products that just happen to both be called "hedges."</div>
+    </section>
+
+    <section class="mod" id="rates">
+      <p class="sec-eyebrow"><span class="n">04</span> · Duration/DV01 matching</p>
+      <h2>Worked Example — Interest Rate Hedging (Duration/DV01)</h2>
+      <p class="lede">Reusing Module 10 §3's DV01 for Bank Of Toronto's Canada 5% Bond 2035, and Module 15 §4c's short T-Note futures hedge against that same book.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Interest Rate Hedge</span><span class="t-id">Bond Book vs. T-Note Futures</span></div>
+        <pre>THE EXPOSURE (Module 10 §3):
+  Canada 5% Bond 2035 position
+  Modified Duration: 7.2 | Market Value: CAD 9,850,000
+  DV01 = CAD 7,092 per basis point
+  -> if rates RISE, this bond position LOSES roughly CAD 7,092
+     for every 1bp of rate increase
+
+THE HEDGE (Module 15 §4c):
+  Bank Of Toronto SELLS 100 CME 10-Year T-Note futures @ 112'16
+  -> if rates RISE, bond futures prices FALL, and a SHORT position
+     GAINS -- moving opposite to the bond book's loss
+  Next business day, price falls to 111'24: Variation Margin
+  GAIN = USD 75,000, credited to Bank Of Toronto's margin account,
+  offsetting the loss on the actual bond portfolio being hedged</pre>
+      </div>
+
+      <p><b>Sizing the hedge — the "hedge ratio" question.</b> Not a notional-matching exercise — a bond and a bond future don't have identical price sensitivity to a rate move. The correct approach matches risk sensitivities, not face amounts:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Hedge Ratio — General Formula</span><span class="t-id">Conceptual</span></div>
+        <pre>Number of futures contracts needed  ~  Exposure's DV01
+                                        -----------------------
+                                        Future's DV01 per contract
+
+-> the goal is for the FUTURES POSITION'S total DV01 to
+   approximately match the BOND POSITION'S DV01 (CAD 7,092/bp
+   here), so a given rate move produces roughly equal and
+   opposite dollar moves on each side.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Interest rate hedging is risk-sensitivity matching, not notional matching — Module 1 §8's "notional is a reference number, not what moves," applied to hedge sizing. Using face value instead of DV01 leaves a position under- or over-hedged without anyone realizing it until a large rate move exposes the gap.</div>
+    </section>
+
+    <section class="mod" id="credit">
+      <p class="sec-eyebrow"><span class="n">05</span> · Exact reference-entity match</p>
+      <h2>Worked Example — Credit Hedging (CDS Against Bond Credit Risk)</h2>
+      <p class="lede">Reusing Module 2 §9's CDS in full — the cleanest hedge relationship in this curriculum, because the hedge instrument references the exact same reference entity as the exposure.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Credit Hedge</span><span class="t-id">CDS on Northern Rail Corp</span></div>
+        <pre>THE HYPOTHETICAL EXPOSURE: Bank Of Toronto holds Northern Rail
+Corp bonds (or has lent it money directly) -- if Northern Rail
+Corp defaults, the bond loses value.
+
+THE HEDGE (Module 2 §9, fully worked):
+  Bank Of Toronto BUYS PROTECTION from Goldman Sachs
+  Notional: CAD 20,000,000 | Spread: 120bps | Maturity: 5 years
+
+  NO DEFAULT (normal case) -- Bank Of Toronto PAYS a quarterly
+  premium: CAD 59,836 (the cost of the hedge, paid whether or
+  not the bond ever defaults)
+
+  DEFAULT OCCURS -- Goldman Sachs PAYS Bank Of Toronto:
+    Loss Given Default = 20,000,000 x (1 - 40% recovery)
+                        = CAD 12,000,000
+  -> designed to roughly OFFSET the loss Bank Of Toronto
+     simultaneously takes on the defaulted bond itself</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Close to a "perfect" hedge because the reference-entity match is exact — but the CDS notional must still be sized to the bond exposure, and if Goldman Sachs (the protection seller) is itself more likely to fail exactly when Northern Rail Corp does, that's wrong-way risk: the hedge is least reliable exactly when it's needed most.</div>
+    </section>
+
+    <section class="mod" id="fx">
+      <p class="sec-eyebrow"><span class="n">06</span> · Symmetric vs. asymmetric, head to head</p>
+      <h2>Worked Example — FX Hedging, Two Ways (Forward vs. Option)</h2>
+      <p class="lede">The same need — Bank Of Toronto's client must buy USD in three months — hedged two structurally different ways.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Same Need, Two Hedge Choices</span><span class="t-id">Buy USD in 3 Months</span></div>
+        <pre>OPTION A -- FX FORWARD (Module 2 §10, symmetric, no premium)
+  Locks in TODAY: pay CAD 13,545,000, receive USD 10,000,000,
+  in 3 months, no matter what
+  -> Spot to 1.3700 (USD costlier): Forward SAVED CAD 155,000
+  -> Spot to 1.3400 (USD cheaper):  Forward COST CAD 145,000
+  LOCKED IN EITHER WAY -- no premium, but no upside chance either
+
+OPTION B -- FX OPTION (Module 6 §4d, asymmetric, premium paid)
+  USD Call / CAD Put, Strike 1.3600, Notional USD 5,000,000
+  Premium Paid: 5,000,000 x 0.0180 = CAD 90,000
+  -> Spot to 1.3800 (USD costlier): EXERCISE, saves CAD 100,000
+     vs. spot; net benefit after premium = CAD 10,000
+  -> Spot to 1.3400 (USD cheaper): let it EXPIRE, buy at the
+     cheaper spot instead -- max loss = CAD 90,000 premium, capped</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Forward (symmetric)</th><th>Option (asymmetric)</th></tr></thead>
+        <tbody>
+          <tr><td>Upfront cost</td><td>None</td><td>CAD 90,000 premium</td></tr>
+          <tr><td>If rate moves favorably</td><td>Locked out of the benefit</td><td>Keeps the benefit (minus premium)</td></tr>
+          <tr><td>If rate moves unfavorably</td><td>Fully protected, dollar-for-dollar</td><td>Fully protected, capped loss = premium</td></tr>
+          <tr><td>Worst case (hindsight)</td><td>Gave up upside for nothing</td><td>Lost the premium for nothing</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Neither choice is objectively better — a Forward is cheaper and simpler when fully certain about the future need; an Option costs more but is right when the hedger also wants to preserve upside. The same trade-off recurs identically in Section 8's Equity example.</div>
+    </section>
+
+    <section class="mod" id="commodity">
+      <p class="sec-eyebrow"><span class="n">07</span> · Proxy hedging</p>
+      <h2>Worked Example — Commodity Hedging &amp; Basis Risk (Imperfect Hedges)</h2>
+      <p class="lede">Reusing Module 7 §4d's Commodity Option — the clearest illustration that a hedge doesn't need to reference the exact thing being hedged, but that shortcut carries basis risk.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Mismatched Underlying</span><span class="t-id">Jet Fuel via WTI</span></div>
+        <pre>THE ACTUAL EXPOSURE: an airline (Bank Of Toronto's client) is
+exposed to JET FUEL prices rising -- its real operating cost.
+
+THE HEDGE INSTRUMENT: a WTI Crude Oil Call option (Module 7 §4d)
+  Strike USD 80.00/bbl | Notional 100,000 bbl | Premium USD 3.20/bbl
+  Premium Paid = USD 320,000
+
+WHY WTI, NOT JET FUEL? No sufficiently liquid, exchange-listed
+jet fuel derivative exists -- WTI crude is a PROXY, highly
+correlated (a major input to refining jet fuel) but NOT identical.
+
+THE GAP -- BASIS RISK:
+  WTI +10% and jet fuel +10% -> hedge offsets the cost rise well.
+
+  WTI +10% but jet fuel only +4% (a jet-fuel-specific shock,
+  unrelated to crude) -- the hedge OVER-corrects.
+
+  Jet fuel rises MORE than WTI (widening "crack spread") -- the
+  hedge UNDER-corrects, leaving the airline still exposed.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Contrast with Section 5's CDS, which references the exact same reference entity — here the hedge instrument and the exposure are related but distinct risk factors, so some risk always survives. Basis risk isn't a flaw; it's the cost of hedging with the most liquid available instrument instead of a bespoke one that may not exist.</div>
+    </section>
+
+    <section class="mod" id="equity">
+      <p class="sec-eyebrow"><span class="n">08</span> · Completing the set</p>
+      <h2>Worked Example — Equity Hedging (Protective Put)</h2>
+      <p class="lede">A new worked example, built on Module 4 §4a's existing KO position, completing the asset-class set with the same asymmetric-hedge shape Section 6 showed for FX.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Protective Put</span><span class="t-id">Maple Leaf Pension Fund · KO</span></div>
+        <pre>EXISTING POSITION: 10,000 shares KO, bought @ USD 68.40
+                    (ISIN US1912161007, Module 4 §4a)
+
+Ahead of an uncertain earnings announcement, Maple Leaf Pension
+Fund BUYS a protective put instead of selling outright -- keeps
+the position (and upside) but caps downside:
+
+Trade: KO Put, Strike USD 65.00, Notional 10,000 shares, Expiry
+       1 month
+Premium: USD 1.20/share -> Premium Paid = 10,000 x 1.20 = USD 12,000
+
+AT EXPIRY -- Scenario A: KO falls to USD 58.00 (bad earnings)
+  Put in-the-money: EXERCISE, sell at 65.00 instead of market
+  58.00 -- avoided loss = (65.00 - 58.00) x 10,000 = USD 70,000
+  -> the floor is fixed regardless of how far below 65.00 KO falls
+
+AT EXPIRY -- Scenario B: KO rises to USD 75.00 (good earnings)
+  Put expires WORTHLESS -- selling at market beats exercising
+  Maple Leaf Pension Fund keeps the FULL upside, out only the
+  USD 12,000 premium -- exactly Module 6 §4d's FX Option pattern</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A protective put is economically identical in shape to Section 6's FX Option hedge — pay a premium, keep the upside, cap the downside — applied to equity instead of FX. Maple Leaf Pension Fund could instead have sold E-mini futures (symmetric, no premium, but giving up upside too) — the same symmetric-vs-asymmetric choice applies across asset classes.</div>
+    </section>
+
+    <section class="mod" id="accounting">
+      <p class="sec-eyebrow"><span class="n">09</span> · A legal/accounting label</p>
+      <h2>Hedge Accounting &amp; the Regulatory Angle — "Hedge" Is Not Just a Trading Strategy</h2>
+      <p class="lede">Under IFRS 9/ASC 815 and under EMIR/Dodd-Frank, a genuinely risk-reducing trade can qualify for materially different treatment — but only if formally documented as a hedge at inception.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Consequence of hedge status</th><th>What changes</th><th>Why it matters operationally</th></tr></thead>
+        <tbody>
+          <tr><td><b>Hedge accounting</b> (IFRS 9 / ASC 815)</td><td>Hedge instrument's gain/loss recognized in the same period as the hedged item's offsetting loss/gain</td><td>Without it, a risk-reducing trade can make reported earnings look MORE volatile</td></tr>
+          <tr><td><b>EMIR clearing exemption</b></td><td>Non-financial counterparty hedging a genuine commercial risk counts differently against the NFC+/NFC- threshold</td><td>Determines mandatory central clearing obligation</td></tr>
+          <tr><td><b>Dodd-Frank end-user exception</b></td><td>US non-financial end-user hedging real commercial risk exempt from mandatory clearing</td><td>Same purpose, different jurisdiction</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Callout — a simplified illustration, not the literal current rule text.</b> Exact effectiveness-testing thresholds, NFC+/NFC- calculations, and end-user exception criteria are technical, jurisdiction-specific, and revised periodically — the same hedge this curriculum's other reference modules apply to their own regulatory specifics.</div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Why This Matters for a Booking System's Data Model</span></div>
+        <pre>A trade being ECONOMICALLY a hedge (P&amp;L moves opposite to another
+position) is NOT the same fact as being FORMALLY DESIGNATED a
+hedge for accounting/regulatory purposes -- the second requires:
+
+  -> a "Hedge Designation" flag on the trade record, set AT
+     INCEPTION (not retroactively)
+  -> a documented link to the SPECIFIC hedged item/exposure
+  -> ongoing EFFECTIVENESS TESTING data
+
+Without all three captured, an economically sound hedge (like
+Section 4's futures trade) still gets treated as a plain
+speculative position by accounting and, potentially, by the
+clearing-obligation rules.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> "Hedge" carries real legal and accounting weight — a well-designed trade capture system needs an explicit hedge-designation data model sitting alongside the trade's plain economic terms, because the same instrument can be a hedge or speculation depending on facts the trade record must capture, not infer.</div>
+    </section>
+
+    <section class="mod" id="where-used">
+      <p class="sec-eyebrow"><span class="n">10</span> · Desk by desk</p>
+      <h2>Where Hedging Is Actually Used — Desk-by-Desk Summary</h2>
+      <p class="lede">Every example in this module, mapped by who hedges what with which instruments.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Business function</th><th>Typical exposure hedged</th><th>Typical instrument(s)</th><th>Section</th></tr></thead>
+        <tbody>
+          <tr><td><b>Treasury / ALM</b></td><td>Interest rate risk on the bank's loan/bond book</td><td>IR Swaps, IR Futures</td><td>4</td></tr>
+          <tr><td><b>Corporate Treasury</b> (client)</td><td>FX payables/receivables</td><td>FX Forwards, FX Options</td><td>6</td></tr>
+          <tr><td><b>Corporate Treasury</b> (energy client)</td><td>Commodity input cost</td><td>Commodity Futures/Options/Swaps</td><td>7</td></tr>
+          <tr><td><b>Credit / Loan Portfolio Mgmt</b></td><td>Credit/default risk on bonds or loans</td><td>CDS</td><td>5</td></tr>
+          <tr><td><b>Asset Managers / Pension Funds</b></td><td>Portfolio market-value risk</td><td>Equity Index Futures, Protective Puts</td><td>8</td></tr>
+          <tr><td><b>Dealers / Market Makers</b></td><td>Risk absorbed from client option flow</td><td>Delta-hedging with the underlying</td><td>—</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every row reuses instruments this curriculum already built for entirely different purposes — hedging isn't a separate product category, it's a use of the same product set, distinguished by the existence of an offsetting exposure and, where it matters legally, by formal hedge documentation.</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">11</span> · Primary sources</p>
+      <h2>Official Sources &amp; Links</h2>
+      <p class="lede">Primary sources rather than technical rules that get revised periodically.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>ISDA</b></td><td>Standard derivative documentation used to execute most OTC hedges</td><td><a href="https://www.isda.org">isda.org</a></td></tr>
+          <tr><td><b>IFRS Foundation</b></td><td>IFRS 9 — international hedge accounting requirements</td><td><a href="https://www.ifrs.org">ifrs.org</a></td></tr>
+          <tr><td><b>FASB</b></td><td>ASC 815 — US GAAP hedge accounting standard</td><td><a href="https://www.fasb.org">fasb.org</a></td></tr>
+          <tr><td><b>CFTC</b></td><td>Dodd-Frank's end-user exception for commercial hedgers</td><td><a href="https://www.cftc.gov">cftc.gov</a></td></tr>
+          <tr><td><b>ESMA</b></td><td>EMIR Article 10 — NFC+/NFC- clearing-threshold test and hedging exemption</td><td><a href="https://www.esma.europa.eu">esma.europa.eu</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> ISDA's documentation is the source of truth for how a hedge is papered and executed; IFRS/FASB for how its P&amp;L is recognized; CFTC/ESMA for exactly when a hedging purpose changes a trade's regulatory clearing obligation.</div>
+    </section>
+
+    <section class="mod" id="cast" style="border-bottom: none;">
+      <p class="sec-eyebrow">Cast reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>Hedges its bond book with T-Note futures (Section 4); buys CDS protection on Northern Rail Corp (Section 5); dealer counterparty on client FX and commodity hedges (Sections 6–7)</td></tr>
+          <tr><td>Goldman Sachs</td><td>Protection seller on the Northern Rail Corp CDS (Section 5); counterparty on the FX Forward (Section 6)</td></tr>
+          <tr><td>Northern Rail Corp</td><td>Reference entity for the CDS hedge (Section 5)</td></tr>
+          <tr><td>Maple Leaf Pension Fund</td><td>Buys E-mini futures speculatively (Section 1); hedges its KO position with a protective put (Section 8)</td></tr>
+          <tr><td>Bank Of Toronto's client (FX)</td><td>Hedges a future USD payable, two ways (Section 6)</td></tr>
+          <tr><td>Bank Of Toronto's client (airline)</td><td>Hedges jet fuel cost via a WTI proxy hedge, accepting basis risk (Section 7)</td></tr>
+          <tr><td>ISDA / IFRS Foundation / FASB / CFTC / ESMA</td><td>Documentation and accounting/regulatory standard-setters (Sections 9, 11)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+
+      <div class="quiz">
+        <ol>
+          <li>Using Section 1, what single fact distinguishes a hedge from a speculative trade, even when both use the exact same instrument type?</li>
+          <li>Using Section 2, why is it wrong to describe a well-hedged position's combined P&amp;L as "risk-free"?</li>
+          <li>Using Section 3, what does a hedger give up by choosing a symmetric hedge (a Forward) instead of an asymmetric one (an Option), and vice versa?</li>
+          <li>Using Section 4, why is matching notional amounts the wrong way to size an interest rate hedge, and what should be matched instead?</li>
+          <li>Using Section 5, why is the CDS-on-Northern-Rail-Corp hedge close to a "perfect" match, and what risk does it still carry?</li>
+          <li>Using Section 7, what is basis risk, and why does the airline's WTI hedge carry it while Section 5's CDS mostly doesn't?</li>
+          <li>Using Section 8, in what specific way is the KO protective put's payoff shape identical to Section 6's FX Option hedge?</li>
+          <li>Using Section 9, why can a trade be economically a perfectly good hedge and still fail to get hedge accounting or a clearing exemption?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — Whether the trader already holds an existing exposure the new trade offsets; the instrument itself never reveals which one it is</h5>
+        <p>Section 1's side-by-side example: Bank Of Toronto's short T-Note futures (against owned bonds) vs. Maple Leaf Pension Fund's long E-mini futures (no offsetting position) — same contract type, opposite motivations.</p>
+
+        <h5>Q2 — Some residual movement almost always remains (basis risk, imperfect hedge-ratio sizing, counterparty/wrong-way risk), so the combined P&amp;L is flatter, not flat</h5>
+        <p>Section 2's takeaway states this directly — hedging narrows the range of outcomes, it doesn't erase it.</p>
+
+        <h5>Q3 — Choosing the Forward gives up any chance of a favorable move (locked in either way, no premium); choosing the Option costs an upfront premium in exchange for keeping the upside</h5>
+        <div class="takeaway">Section 6's worked forward-vs-option comparison states this with real numbers on both sides.</div>
+
+        <h5>Q4 — A bond and a bond future don't have identical price sensitivity to a rate move; the correct approach matches DV01 (risk sensitivity), not face value</h5>
+        <p>Section 4's hedge-ratio formula: contracts needed ~ exposure's DV01 ÷ future's DV01 per contract.</p>
+
+        <h5>Q5 — The CDS references the exact same reference entity as the bond, unlike a proxy hedge; it still carries wrong-way risk if the protection seller is more likely to fail exactly when the reference entity does</h5>
+        <p>Section 5's takeaway cross-references Module 2 §9's own wrong-way-risk flag.</p>
+
+        <h5>Q6 — Basis risk is the residual exposure surviving a hedge because the hedge instrument's price driver is related to, but not identical to, the actual exposure's driver (WTI vs. jet fuel); the CDS mostly avoids this by referencing the identical entity</h5>
+        <p>Section 7 walks through both the good-correlation and mismatched scenarios explicitly.</p>
+
+        <h5>Q7 — Both pay a premium upfront for a capped, known maximum loss if the market moves unfavorably, while keeping the full benefit if it moves favorably</h5>
+        <p>Section 8's takeaway: "economically identical in shape" to the FX Option hedge, just applied to equity instead of a currency payable.</p>
+
+        <h5>Q8 — Hedge accounting and clearing exemptions require FORMAL documentation captured at inception (designation, linked hedged item, effectiveness testing) — not just that the P&amp;L happens to move opposite to another position</h5>
+        <p>Section 9's diagram: economic hedging and formal hedge designation are two different facts, and only the second changes accounting/regulatory treatment.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

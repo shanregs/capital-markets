@@ -1,5 +1,5 @@
 <!doctype html>
-<title>ISDA Product Taxonomy Deep Dive</title>
+<title>Module 21 — ISDA Product Taxonomy Deep Dive</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
@@ -472,7 +472,7 @@
   <div class="masthead">
     <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
-      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 21</div>
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-mode="system" aria-pressed="true">System</button>
         <button type="button" data-mode="light" aria-pressed="false">Light</button>
@@ -482,7 +482,7 @@
     <h1>ISDA Product Taxonomy Deep Dive</h1>
     <p class="dek">Theory, full structure, and exactly where it's used — the four-level classification hierarchy, worked paths across every asset class, how it feeds the UPI, which regimes actually cite it, and how the values get configured on a real trade (and why a bond never gets one).</p>
     <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
-    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./sftr-reporting.html">SFTR</a>, <a href="./dmo-uk-reporting.html">UK DMO Reporting</a>, and <a href="./upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB</a> deep dives. <a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §7–§8 first introduced the taxonomy's hierarchy; this module goes deep.</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./module-16-sftr-reporting.html">SFTR</a>, <a href="./module-17-dmo-uk-reporting.html">UK DMO Reporting</a>, and <a href="./module-18-upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB</a> deep dives. <a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §7–§8 first introduced the taxonomy's hierarchy; this module goes deep.</div>
   </div>
 
   <nav class="toc" aria-label="On this page">
@@ -521,7 +521,7 @@
 
       <p>The taxonomy's origin is specific and regulatory: after the 2008 crisis, the <b>Dodd-Frank Act (2010)</b> required, for the first time, <b>real-time public reporting</b> of swap transactions in the US — subject to size-based masking for large ("block") trades. Regulators and Swap Data Repositories needed to bucket swaps into comparable categories, so a 5Y USD interest rate swap and a 5Y Brent crude oil swap wouldn't share the same block-trade threshold. Rather than every SDR inventing its own scheme, <b>ISDA — the industry's own standards body — published a taxonomy everyone could converge on</b>, freely available via <a href="https://www.isda.org">isda.org</a>.</p>
 
-      <div class="takeaway"><b>Takeaway.</b> The taxonomy <b>classifies</b>, it does not <b>identify</b> — the single most important distinction versus the <a href="./upi-uti-dsb-deep-dive.html">UPI</a>. A taxonomy path is a category label shared by every trade of that shape; a UPI is a specific issued code for one exact combination of economic terms within that category (Section 5 connects the two precisely).</div>
+      <div class="takeaway"><b>Takeaway.</b> The taxonomy <b>classifies</b>, it does not <b>identify</b> — the single most important distinction versus the <a href="./module-18-upi-uti-dsb-deep-dive.html">UPI</a>. A taxonomy path is a category label shared by every trade of that shape; a UPI is a specific issued code for one exact combination of economic terms within that category (Section 5 connects the two precisely).</div>
     </section>
 
     <section class="mod" id="hierarchy">
@@ -560,9 +560,9 @@ them alone is enough to identify the product.</pre>
       </table>
       </div>
 
-      <div class="callout"><b>Callout — v1.0 vs v2.0.</b> ISDA published an initial taxonomy (<b>v1.0</b>, ~2012) built for Dodd-Frank's real-time reporting categories — coarse, oriented around CFTC block-size rules. A more granular <b>v2.0</b> (~2016) followed, aligned field-by-field with <b>FpML</b> (the industry's own XML messaging standard), adding finer sub-categories in places. Treat exact category names and which version a given system implements as something to confirm per-system — the same hedge this curriculum applies to the <a href="./upi-uti-dsb-deep-dive.html">UTI generation waterfall</a> §2 and <a href="./sftr-reporting.html">SFTR</a> §7's specifics.</div>
+      <div class="callout"><b>Callout — v1.0 vs v2.0.</b> ISDA published an initial taxonomy (<b>v1.0</b>, ~2012) built for Dodd-Frank's real-time reporting categories — coarse, oriented around CFTC block-size rules. A more granular <b>v2.0</b> (~2016) followed, aligned field-by-field with <b>FpML</b> (the industry's own XML messaging standard), adding finer sub-categories in places. Treat exact category names and which version a given system implements as something to confirm per-system — the same hedge this curriculum applies to the <a href="./module-18-upi-uti-dsb-deep-dive.html">UTI generation waterfall</a> §2 and <a href="./module-16-sftr-reporting.html">SFTR</a> §7's specifics.</div>
 
-      <div class="takeaway"><b>Takeaway.</b> The taxonomy is a <b>classification tree, not a flat code list</b> — "Swap" alone (Transaction Type) is ambiguous across all five asset classes, but <code>Interest Rate / IRSwap / FixedFloat / Swap</code> is not. The same principle <a href="./sftr-reporting.html">SFTR</a> §2's small, closed <code>Type of SFT</code> code set uses at one level of granularity — the ISDA taxonomy solves the same problem for a far larger, more varied universe of OTC derivatives.</div>
+      <div class="takeaway"><b>Takeaway.</b> The taxonomy is a <b>classification tree, not a flat code list</b> — "Swap" alone (Transaction Type) is ambiguous across all five asset classes, but <code>Interest Rate / IRSwap / FixedFloat / Swap</code> is not. The same principle <a href="./module-16-sftr-reporting.html">SFTR</a> §2's small, closed <code>Type of SFT</code> code set uses at one level of granularity — the ISDA taxonomy solves the same problem for a far larger, more varied universe of OTC derivatives.</div>
     </section>
 
     <section class="mod" id="worked-examples">
@@ -603,7 +603,7 @@ COMMODITY  (Module 7's 1Y Brent Crude Oil Swap, notional
   -> "Commodity / Energy / Oil / Swap"</pre>
       </div>
 
-      <div class="takeaway"><b>Takeaway.</b> Notice <b>Transaction Type is "Swap" for three of five trades</b> (Interest Rate, Equity, Commodity) — no single level of this hierarchy is sufficient alone. Also notice the Credit path's Sub-Product describes the <i>reference entity's type</i>, while every other asset class's Sub-Product describes an economic feature of the contract itself — the categories are genuinely asset-class-specific, echoing the <a href="./upi-uti-dsb-deep-dive.html">UPI deep dive</a> §3's point about reference-data templates.</div>
+      <div class="takeaway"><b>Takeaway.</b> Notice <b>Transaction Type is "Swap" for three of five trades</b> (Interest Rate, Equity, Commodity) — no single level of this hierarchy is sufficient alone. Also notice the Credit path's Sub-Product describes the <i>reference entity's type</i>, while every other asset class's Sub-Product describes an economic feature of the contract itself — the categories are genuinely asset-class-specific, echoing the <a href="./module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a> §3's point about reference-data templates.</div>
     </section>
 
     <section class="mod" id="bonds">
@@ -727,7 +727,7 @@ Agreement itself, Module 12) periodically:
    requires its use.</pre>
       </div>
 
-      <div class="takeaway"><b>Takeaway.</b> The same infrastructure-vs-mandate distinction the <a href="./upi-uti-dsb-deep-dive.html">UPI deep dive</a> §4 draws for the DSB applies to ISDA here, one layer further upstream — "ISDA classifies this trade as X" is industry convention, not law; "the CFTC requires this trade's public report to use category X" is the regulatory mandate that actually makes it matter.</div>
+      <div class="takeaway"><b>Takeaway.</b> The same infrastructure-vs-mandate distinction the <a href="./module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a> §4 draws for the DSB applies to ISDA here, one layer further upstream — "ISDA classifies this trade as X" is industry convention, not law; "the CFTC requires this trade's public report to use category X" is the regulatory mandate that actually makes it matter.</div>
     </section>
 
     <section class="mod" id="configuring">

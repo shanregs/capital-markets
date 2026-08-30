@@ -1,10 +1,10 @@
-# Interest Rate Swap (IRS) Deep Dive — Full Worked Example, Money Flows &amp; Settlement Schedule
+# Module 19 — Interest Rate Swap (IRS) Deep Dive — Full Worked Example, Money Flows &amp; Settlement Schedule
 
 [← Back to Index](../../index.md)
 
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
-> This is a **reference module**, in the same family as the [SFTR Reporting Deep Dive](../2-reporting/sftr-reporting.md), the [UK DMO Reporting Deep Dive](../2-reporting/dmo-uk-reporting.md), and the [UPI, UTI &amp; ANNA-DSB Deep Dive](../2-reporting/upi-uti-dsb-deep-dive.md). [Module 1](./module-01-fundamentals.md) §8 and [Module 8](./module-08-rates.md) §4a/§5 both introduce the Interest Rate Swap with a single one-quarter worked example; this module goes deep — one real trade, taken end to end through all **20 quarterly settlements** of its 5-year life, with exact dates, exact cash amounts, exactly how the CORRA floating leg is calculated, and every field a Trade/Valuation record needs to carry.
+> This is a **reference module**, in the same family as the [SFTR Reporting Deep Dive](../2-reporting/module-16-sftr-reporting.md), the [UK DMO Reporting Deep Dive](../2-reporting/module-17-dmo-uk-reporting.md), and the [UPI, UTI &amp; ANNA-DSB Deep Dive](../2-reporting/module-18-upi-uti-dsb-deep-dive.md). [Module 1](./module-01-fundamentals.md) §8 and [Module 8](./module-08-rates.md) §4a/§5 both introduce the Interest Rate Swap with a single one-quarter worked example; this module goes deep — one real trade, taken end to end through all **20 quarterly settlements** of its 5-year life, with exact dates, exact cash amounts, exactly how the CORRA floating leg is calculated, and every field a Trade/Valuation record needs to carry.
 
 ---
 
