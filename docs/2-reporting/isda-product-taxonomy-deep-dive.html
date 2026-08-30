@@ -1,0 +1,898 @@
+<!doctype html>
+<title>ISDA Product Taxonomy Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Reference Module</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>ISDA Product Taxonomy Deep Dive</h1>
+    <p class="dek">Theory, full structure, and exactly where it's used — the four-level classification hierarchy, worked paths across every asset class, how it feeds the UPI, which regimes actually cite it, and how the values get configured on a real trade (and why a bond never gets one).</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to <a href="./sftr-reporting.html">SFTR</a>, <a href="./dmo-uk-reporting.html">UK DMO Reporting</a>, and <a href="./upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB</a> deep dives. <a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §7–§8 first introduced the taxonomy's hierarchy; this module goes deep.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is the Taxonomy?</a></li>
+      <li><a href="#hierarchy"><span class="toc-num">02</span>The Four-Level Hierarchy</a></li>
+      <li><a href="#worked-examples"><span class="toc-num">03</span>Worked Examples, By Asset Class</a></li>
+      <li><a href="#bonds"><span class="toc-num">04</span>Bonds &amp; Cash Securities</a></li>
+      <li><a href="#upi-lineage"><span class="toc-num">05</span>How It Feeds the UPI</a></li>
+      <li><a href="#where-used"><span class="toc-num">06</span>Where It's Actually Used</a></li>
+      <li><a href="#governance"><span class="toc-num">07</span>Governance &amp; Versioning</a></li>
+      <li><a href="#configuring"><span class="toc-num">08</span>Configuring Values in Practice</a></li>
+      <li><a href="#links"><span class="toc-num">09</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · Two things "ISDA" means</p>
+      <h2>What Is the ISDA Product Taxonomy? — Origin, Purpose &amp; the Two Things "ISDA" Means</h2>
+      <p class="lede">ISDA standardizes two genuinely separate things people conflate: the Master Agreement (a legal contract template) and the Product Taxonomy (a classification scheme). This module is about the second.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>ISDA standardizes...</th><th>What it is</th><th>Covered in</th></tr></thead>
+        <tbody>
+          <tr><td><b>The ISDA Master Agreement</b></td><td>A legal contract template two counterparties sign once, governing every OTC trade between them (netting, default, collateral)</td><td><a href="../1-capital-markets/module-12-collateral-margin.html">Module 12</a></td></tr>
+          <tr><td><b>The ISDA Product Taxonomy</b></td><td>A classification scheme — a controlled vocabulary for labelling what KIND of derivative a trade is</td><td>This module</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>The taxonomy's origin is specific and regulatory: after the 2008 crisis, the <b>Dodd-Frank Act (2010)</b> required, for the first time, <b>real-time public reporting</b> of swap transactions in the US — subject to size-based masking for large ("block") trades. Regulators and Swap Data Repositories needed to bucket swaps into comparable categories, so a 5Y USD interest rate swap and a 5Y Brent crude oil swap wouldn't share the same block-trade threshold. Rather than every SDR inventing its own scheme, <b>ISDA — the industry's own standards body — published a taxonomy everyone could converge on</b>, freely available via <a href="https://www.isda.org">isda.org</a>.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> The taxonomy <b>classifies</b>, it does not <b>identify</b> — the single most important distinction versus the <a href="./upi-uti-dsb-deep-dive.html">UPI</a>. A taxonomy path is a category label shared by every trade of that shape; a UPI is a specific issued code for one exact combination of economic terms within that category (Section 5 connects the two precisely).</div>
+    </section>
+
+    <section class="mod" id="hierarchy">
+      <p class="sec-eyebrow"><span class="n">02</span> · Structure</p>
+      <h2>The Taxonomy Hierarchy — Four Levels, Five Asset Classes</h2>
+      <p class="lede">A four-level hierarchy, one rung more granular than the "Product" layer in this curriculum's own Asset Class → Product → Instrument → Trade model.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Four Levels</span><span class="t-id">Restated &amp; extended from Module 2 §7</span></div>
+        <pre>Asset Class  ->  Base Product  ->  Sub-Product  ->  Transaction Type
+======================================================================
+
+Interest Rate      -> IRSwap     -> FixedFloat   -> Swap
+Credit              -> SingleName -> Corporate    -> CreditDefaultSwap
+Foreign Exchange    -> Forward    -> Deliverable   -> Forward
+Equity              -> Swap       -> PriceReturn   -> Swap
+Commodity           -> Energy     -> Oil           -> Swap
+
+Each level narrows the category further left-to-right. A trade's
+full "taxonomy path" is all four values read together -- none of
+them alone is enough to identify the product.</pre>
+      </div>
+
+      <p>There are exactly <b>five official ISDA Asset Classes</b> for derivatives — a short, closed list, distinct from the open-ended "Asset Class" values you'd see once cash instruments are included too.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>ISDA Asset Class</th><th>Plain-English meaning</th><th>Example Base Products</th></tr></thead>
+        <tbody>
+          <tr><td><b>Interest Rate</b></td><td>Cash flows depend on interest rates</td><td>IRSwap, FRA, Swaption, CapFloor, Cross-Currency Swap</td></tr>
+          <tr><td><b>Credit</b></td><td>Payout depends on a default/credit event</td><td>SingleName, Index (CDX/iTraxx), TotalReturnSwap</td></tr>
+          <tr><td><b>Foreign Exchange</b></td><td>Payout depends on currency rates</td><td>Forward, Swap, Option, NDF</td></tr>
+          <tr><td><b>Equity</b></td><td>Payout depends on a stock/index price</td><td>Swap, Option, VarianceSwap, Future</td></tr>
+          <tr><td><b>Commodity</b></td><td>Payout depends on a physical commodity price</td><td>Swap, Forward, Option (Energy, Metals, Agriculture)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Callout — v1.0 vs v2.0.</b> ISDA published an initial taxonomy (<b>v1.0</b>, ~2012) built for Dodd-Frank's real-time reporting categories — coarse, oriented around CFTC block-size rules. A more granular <b>v2.0</b> (~2016) followed, aligned field-by-field with <b>FpML</b> (the industry's own XML messaging standard), adding finer sub-categories in places. Treat exact category names and which version a given system implements as something to confirm per-system — the same hedge this curriculum applies to the <a href="./upi-uti-dsb-deep-dive.html">UTI generation waterfall</a> §2 and <a href="./sftr-reporting.html">SFTR</a> §7's specifics.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> The taxonomy is a <b>classification tree, not a flat code list</b> — "Swap" alone (Transaction Type) is ambiguous across all five asset classes, but <code>Interest Rate / IRSwap / FixedFloat / Swap</code> is not. The same principle <a href="./sftr-reporting.html">SFTR</a> §2's small, closed <code>Type of SFT</code> code set uses at one level of granularity — the ISDA taxonomy solves the same problem for a far larger, more varied universe of OTC derivatives.</div>
+    </section>
+
+    <section class="mod" id="worked-examples">
+      <p class="sec-eyebrow"><span class="n">03</span> · Five asset classes, five paths</p>
+      <h2>Worked Examples — Full Taxonomy Path, Asset Class by Asset Class</h2>
+      <p class="lede">Five trades already built elsewhere in this curriculum, pulled through the full four-level path.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Five Trades · Five Full Taxonomy Paths</span><span class="t-id">Bank Of Toronto</span></div>
+        <pre>INTEREST RATE  (Module 8's 5Y CAD IRS, Bank Of Toronto pays fixed)
+  Asset Class: Interest Rate | Base Product: IRSwap
+  Sub-Product: FixedFloat    | Transaction Type: Swap
+  -> "Interest Rate / IRSwap / FixedFloat / Swap"
+
+CREDIT  (Module 2 §9's 5Y CDS on Northern Rail Corp, Bank Of
+         Toronto buys protection from Goldman Sachs)
+  Asset Class: Credit        | Base Product: SingleName
+  Sub-Product: Corporate     | Transaction Type: CreditDefaultSwap
+  -> "Credit / SingleName / Corporate / CreditDefaultSwap"
+  (Module 9 §4a's Northstar Resources Inc. CDS, used throughout the
+   UPI/UTI deep dive, carries this identical taxonomy path)
+
+FOREIGN EXCHANGE  (Module 2 §10's 3M USD/CAD Forward, Bank Of
+                   Toronto buys USD from Goldman Sachs)
+  Asset Class: Foreign Exchange | Base Product: Forward
+  Sub-Product: Deliverable      | Transaction Type: Forward
+  -> "Foreign Exchange / Forward / Deliverable / Forward"
+
+EQUITY  (Module 2 §8's Total Return Swap on Apple Inc. shares)
+  Asset Class: Equity        | Base Product: Swap
+  Sub-Product: PriceReturn   | Transaction Type: Swap
+  -> "Equity / Swap / PriceReturn / Swap"
+
+COMMODITY  (Module 7's 1Y Brent Crude Oil Swap, notional
+           100,000 barrels)
+  Asset Class: Commodity     | Base Product: Energy
+  Sub-Product: Oil           | Transaction Type: Swap
+  -> "Commodity / Energy / Oil / Swap"</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Notice <b>Transaction Type is "Swap" for three of five trades</b> (Interest Rate, Equity, Commodity) — no single level of this hierarchy is sufficient alone. Also notice the Credit path's Sub-Product describes the <i>reference entity's type</i>, while every other asset class's Sub-Product describes an economic feature of the contract itself — the categories are genuinely asset-class-specific, echoing the <a href="./upi-uti-dsb-deep-dive.html">UPI deep dive</a> §3's point about reference-data templates.</div>
+    </section>
+
+    <section class="mod" id="bonds">
+      <p class="sec-eyebrow"><span class="n">04</span> · A common category error</p>
+      <h2>Are Bonds and Cash Securities Ever Classified with ISDA Taxonomy?</h2>
+      <p class="lede">No — the taxonomy classifies bilateral contracts, not deliverable things. A bond, share, or unit of commercial paper exists and can be held on its own; that's exactly why cash instruments use a different scheme entirely.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>Cash Instruments (bonds, equities, MM)</th><th>OTC Derivatives</th></tr></thead>
+        <tbody>
+          <tr><td><b>What's being classified</b></td><td>A deliverable thing</td><td>A bilateral contract</td></tr>
+          <tr><td><b>Classification scheme</b></td><td><b>CFI Code</b> (ISO 10962), baked into most security masters</td><td><b>ISDA Product Taxonomy</b> (this module)</td></tr>
+          <tr><td><b>Instrument identifier</b></td><td>ISIN / CUSIP</td><td>No ISIN — UPI instead</td></tr>
+          <tr><td><b>Governing body</b></td><td>ISO, via National Numbering Agencies</td><td>ISDA (industry trade body, Section 7)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Same Company · Two Classification Worlds</span><span class="t-id">Northern Rail Corp</span></div>
+        <pre>Northern Rail Corp 4.5% Bond 2030 (a cash instrument):
+  ISIN: (issued by a National Numbering Agency)
+  CFI Code: DBFUFR (illustrative -- debt, straight bond,
+            fixed rate, registered)
+  -> NO ISDA taxonomy field. It's a deliverable security, full stop.
+
+5Y CDS on Northern Rail Corp (Module 2 §9, a derivative CONTRACT
+that merely references the same company):
+  Taxonomy path: Credit / SingleName / Corporate / CreditDefaultSwap
+  -> NO CFI code, NO ISIN. It's a bilateral contract, classified
+     by ISDA taxonomy, identified by a UPI instead of an ISIN.</pre>
+      </div>
+
+      <div class="callout"><b>Nuance — a derivative ON a bond still gets ISDA-classified normally.</b> A bond option or bond future is itself a derivative contract and gets its own taxonomy path (typically Interest Rate or Credit) like any other OTC derivative — it's the underlying cash bond itself that never carries an ISDA classification, not "anything connected to a bond."</div>
+
+      <div class="takeaway"><b>Takeaway.</b> The fastest sanity check: if a record has an ISIN and a CFI code, it's a cash instrument and taxonomy fields should be empty; if it has a UPI and no ISIN, it's a derivative and taxonomy fields are mandatory. A rules engine that populates both, or neither, has a bug.</div>
+    </section>
+
+    <section class="mod" id="upi-lineage">
+      <p class="sec-eyebrow"><span class="n">05</span> · Grammar vs. dictionary</p>
+      <h2>How the Taxonomy Feeds Into the UPI — the DSB's Reference-Data Schema</h2>
+      <p class="lede">The taxonomy and the UPI feel like the same thing because they genuinely are related — just at different layers of the same lineage.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Diagram · Industry Taxonomy to Issued Identifier</span><span class="t-id">Full Lineage</span></div>
+        <pre>ISDA PRODUCT TAXONOMY (this module)
+  Industry-published classification scheme (v1.0 -> v2.0).
+  A CONTROLLED VOCABULARY -- Asset Class / Base Product /
+  Sub-Product / Transaction Type. No codes issued, no lookup
+  system -- just the category definitions themselves.
+       |
+       v
+CPMI-IOSCO TECHNICAL GUIDANCE (2017)
+  Global regulatory standard-setters adopt ISDA's taxonomy
+  structure as the BASIS for a harmonized product-classification
+  framework every G20 jurisdiction's regulators could converge on.
+       |
+       v
+DSB UPI REFERENCE-DATA SCHEMA (operated by ANNA-DSB, since 2022)
+  Turns the taxonomy's categories into ACTUAL FIELDS on a live,
+  queryable reference-data template per asset class -- and,
+  critically, ISSUES A CODE (the UPI itself) for each unique
+  combination of those fields.
+       |
+       v
+EMIR / DODD-FRANK / OTHER REGIMES' TRADE REPORTS
+  Consume the ISSUED UPI as a single mandatory field -- the
+  reporting firm never re-derives the taxonomy path by hand.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Think of the ISDA Product Taxonomy as the <b>grammar</b>, and the UPI reference-data template as the <b>dictionary built from that grammar</b>. A reporting engineer never populates "ISDA Taxonomy" and "UPI" as two independently-derived fields on the same trade — the UPI's reference data already encodes the taxonomy path.</div>
+    </section>
+
+    <section class="mod" id="where-used">
+      <p class="sec-eyebrow"><span class="n">06</span> · Beyond the UPI</p>
+      <h2>Where the Taxonomy Is Actually Used — Beyond the UPI</h2>
+      <p class="lede">The taxonomy predates the UPI by roughly a decade and has several uses that have nothing to do with UPI reference data at all.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Use</th><th>How the taxonomy is actually consumed</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><b>Dodd-Frank real-time public reporting</b> (CFTC Part 43)</td><td>Sets which block-trade notional threshold applies — separate thresholds per taxonomy category</td><td>The taxonomy's original reason for existing</td></tr>
+          <tr><td><b>Dodd-Frank recordkeeping</b> (Part 45) &amp; CFTC's own Swaps Report</td><td>SDRs bucket submitted swap data by taxonomy category for the CFTC's own market statistics</td><td>Same categories, different consumer</td></tr>
+          <tr><td><b>SEF / MAT determinations</b></td><td>A Made-Available-to-Trade determination is scoped in taxonomy terms (e.g. Fixed-Float USD IRS, given tenor buckets)</td><td>Governs execution-venue obligations</td></tr>
+          <tr><td><b>CCP clearing-mandate determinations</b></td><td>Published against taxonomy-shaped product descriptions</td><td>Complements <a href="../1-capital-markets/module-08-rates.html">Module 8</a> §5's clearing mechanics</td></tr>
+          <tr><td><b>UPI reference data</b> (Section 5)</td><td>Basis for the DSB's product classification fields</td><td>The newest use</td></tr>
+          <tr><td><b>Internal bank product masters</b></td><td>Every OTC product template tagged with a taxonomy path at onboarding</td><td>Section 8's practical IT view</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Callout — EMIR doesn't literally name a field "ISDA Taxonomy."</b> EMIR's own reporting technical standards (and the CPMI-IOSCO CDE fields it aligned to during REFIT) use their own product-classification fields — historically CFI-style, more recently the UPI itself — rather than a field literally labelled "ISDA Taxonomy." The category logic still traces back to ISDA's work (Section 5), but by the time it reaches an EU/UK report it's been absorbed into the UPI. The CFTC/Dodd-Frank rows above are where the taxonomy remains a directly-named, load-bearing concept.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> The taxonomy's footprint is broadest and most explicit in the <b>US Dodd-Frank/CFTC regime</b>, while in the <b>EU/UK EMIR world</b> it survives mainly as the ancestry behind the UPI. Knowing which regime you're building for tells you whether "ISDA Taxonomy" needs to be a first-class field, or whether it only informs how you map a product to its UPI.</div>
+    </section>
+
+    <section class="mod" id="governance">
+      <p class="sec-eyebrow"><span class="n">07</span> · Who changes it</p>
+      <h2>Governance &amp; Versioning</h2>
+      <p class="lede">ISDA is an industry trade association, not a regulator or a live-operating market-infrastructure utility like ANNA-DSB — it publishes reference documents, it doesn't run a system.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Who Actually Changes the Taxonomy, and How</span></div>
+        <pre>ISDA's own asset-class-specific working groups/committees
+(member firms -- dealers, buy-side, infrastructure providers --
+the same governance model that maintains the ISDA Master
+Agreement itself, Module 12) periodically:
+
+  -> propose new Base Products / Sub-Products / Transaction
+     Types as new derivative structures emerge
+  -> consult industry members on proposed changes
+  -> publish a revised taxonomy version (v1.0 -> v2.0, and
+     incremental updates) as reference documents on isda.org --
+     free, not proprietary
+
+-> ISDA does NOT mandate that anyone use the taxonomy. It becomes
+   mandatory only where a REGULATOR (CFTC, under Dodd-Frank) or a
+   downstream STANDARD (CPMI-IOSCO's UPI guidance, Section 5)
+   requires its use.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The same infrastructure-vs-mandate distinction the <a href="./upi-uti-dsb-deep-dive.html">UPI deep dive</a> §4 draws for the DSB applies to ISDA here, one layer further upstream — "ISDA classifies this trade as X" is industry convention, not law; "the CFTC requires this trade's public report to use category X" is the regulatory mandate that actually makes it matter.</div>
+    </section>
+
+    <section class="mod" id="configuring">
+      <p class="sec-eyebrow"><span class="n">08</span> · Template, not per-trade</p>
+      <h2>Configuring Taxonomy Values in Practice — the Product-Master View</h2>
+      <p class="lede">The taxonomy path is a property of the product TEMPLATE, never re-derived or re-entered per individual trade — the same template-vs-instance pattern the UPI deep dive already established for UPI itself.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Product Master · Illustrative Static Reference Data</span><span class="t-id">Bank Of Toronto</span></div>
+        <pre>Product Name              | Asset Class | Base Product | Sub-Product | Txn Type
+-------------------------------------------------------------------------------
+CAD Fixed-Float IRS       | Interest Rate | IRSwap     | FixedFloat  | Swap
+Single-Name CDS (Corp)    | Credit        | SingleName | Corporate   | CreditDefaultSwap
+USD/CAD Deliverable Fwd   | Foreign Exch. | Forward    | Deliverable | Forward
+Equity TRS (Price Return) | Equity        | Swap       | PriceReturn | Swap
+Brent Crude Swap          | Commodity     | Energy     | Oil         | Swap
+
+WHEN A TRADER BOOKS A NEW TRADE:
+  1. Trade capture system asks "which product template?"
+  2. Trader selects "CAD Fixed-Float IRS" (an EXISTING template)
+  3. Taxonomy path flows onto the trade record AUTOMATICALLY from
+     the product master row -- never manually typed by the trader
+  4. Trade-specific fields (notional, tenor, counterparty, rate)
+     do NOT affect the taxonomy path at all
+
+IF THE DESK WANTS TO TRADE SOMETHING GENUINELY NEW:
+  -> Product Control / New Product Committee classifies it against
+     the taxonomy FIRST, creates a NEW product-master row, and only
+     then can trades against that new template be booked
+  -> Also the trigger for requesting a new UPI reference-data
+     record from the DSB -- usually the same onboarding event</pre>
+      </div>
+
+      <p>For a <b>bond</b>, the equivalent product-master row simply has no taxonomy columns populated at all — it carries a <b>CFI code</b> instead, because it's a security master entry, not a derivative product template.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Taxonomy Path belongs on the <b>Product</b> table, not the <b>Trade</b> table — trades inherit it by reference, the same way <a href="../1-capital-markets/module-02-hierarchy.html">Module 2</a> §1's hierarchy establishes that product-defining attributes live at the Product layer. A system that lets the same product shape carry different taxonomy paths on different trades has a data-integrity bug, not a flexible feature.</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">09</span> · Primary sources</p>
+      <h2>Official Sources &amp; Links</h2>
+      <p class="lede">Primary sources rather than rules that get periodically revised.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>ISDA</b></td><td>Product Taxonomy (v1.0, v2.0, updates), Master Agreement, CSA documentation</td><td><a href="https://www.isda.org">isda.org</a></td></tr>
+          <tr><td><b>CFTC</b></td><td>Dodd-Frank real-time reporting (Part 43), recordkeeping (Part 45), block thresholds, MAT determinations</td><td><a href="https://www.cftc.gov">cftc.gov</a></td></tr>
+          <tr><td><b>CPMI / IOSCO</b></td><td>2017 Technical Guidance on UPI, adopting ISDA's taxonomy as its basis</td><td><a href="https://www.bis.org/cpmi">bis.org/cpmi</a>, <a href="https://www.iosco.org">iosco.org</a></td></tr>
+          <tr><td><b>ANNA-DSB</b></td><td>Operates the UPI system built on this taxonomy's lineage</td><td><a href="https://www.anna-dsb.com">anna-dsb.com</a></td></tr>
+          <tr><td><b>ESMA</b></td><td>EU/UK EMIR technical standards — taxonomy logic reaches reports via the UPI</td><td><a href="https://www.esma.europa.eu">esma.europa.eu</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> ISDA's own documents are the source of truth for the current category structure and version; the CFTC's rulebook for how those categories drive US reporting obligations; CPMI-IOSCO's Technical Guidance for how they became the basis for the global UPI — the same three-way split this curriculum's other reference modules apply to their own regimes.</div>
+    </section>
+
+    <section class="mod" id="cast" style="border-bottom: none;">
+      <p class="sec-eyebrow">Cast reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>Counterparty across every worked taxonomy path (Section 3); owner of the illustrative product master (Section 8)</td></tr>
+          <tr><td>Goldman Sachs</td><td>Counterparty across the Credit and FX worked examples (Section 3)</td></tr>
+          <tr><td>Northern Rail Corp</td><td>Reference entity for the Credit worked example (Section 3, Module 2 §9)</td></tr>
+          <tr><td>ISDA</td><td>Publishes and governs the Product Taxonomy and the separate Master Agreement (Section 1, Section 7)</td></tr>
+          <tr><td>CFTC</td><td>US regulator whose Dodd-Frank rules make the taxonomy directly load-bearing (Section 6)</td></tr>
+          <tr><td>CPMI-IOSCO</td><td>Standard-setters who adopted ISDA's taxonomy as the basis for the global UPI (Section 5)</td></tr>
+          <tr><td>ANNA-DSB</td><td>Operates the UPI reference-data system built on the taxonomy's lineage (Section 5)</td></tr>
+          <tr><td>ESMA</td><td>EU/UK regulator where the taxonomy's influence reaches reports indirectly, via the UPI (Section 6)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+
+      <div class="quiz">
+        <ol>
+          <li>Using Section 1, what is the difference between what the ISDA Product Taxonomy does and what the UPI does, even though both sit at the "product" layer?</li>
+          <li>Using Section 2, why does the taxonomy need four levels instead of a single flat code — what would go wrong with just a Transaction Type value like "Swap" on its own?</li>
+          <li>Using Section 3, what is the full taxonomy path for Bank Of Toronto's 5Y CAD IRS, and which single level of that path differs between the IRS and the Equity TRS example?</li>
+          <li>Using Section 4, does a Northern Rail Corp bond ever get an ISDA taxonomy path? Does a CDS referencing Northern Rail Corp? Explain the distinction.</li>
+          <li>Using Section 5, describe the lineage from the ISDA Product Taxonomy to an actual issued UPI — what does each layer add?</li>
+          <li>Using Section 6, name one use of the taxonomy in US Dodd-Frank/CFTC regulation that has nothing to do with the UPI at all.</li>
+          <li>Using Section 7, is ISDA a regulator? What actually makes using its taxonomy mandatory for a given trade?</li>
+          <li>Using Section 8, where does the taxonomy path live in a well-designed data model — the Trade record or the Product record — and why does that matter operationally?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — The taxonomy classifies (a category label, e.g. Interest Rate/IRSwap/FixedFloat/Swap); the UPI identifies (a specific issued code for one exact combination of economic terms, built on the taxonomy's categories but adding Underlier, Notional Currency, Tenor)</h5>
+        <p>Section 1's takeaway states this directly as the most important distinction to hold onto.</p>
+
+        <h5>Q2 — "Swap" alone is ambiguous: it's the Transaction Type for Interest Rate, Equity, AND Commodity in Section 3's worked examples, so without the other three levels there'd be no way to tell a 5Y CAD IRS apart from a Brent Crude Oil Swap</h5>
+        <p>Section 2's takeaway makes this point, and Section 3 demonstrates it concretely — three of five trades share the identical Transaction Type value.</p>
+
+        <h5>Q3 — "Interest Rate / IRSwap / FixedFloat / Swap"; versus the Equity TRS's "Equity / Swap / PriceReturn / Swap," Base Product differs (IRSwap vs. Swap) while Transaction Type is identical ("Swap") for both</h5>
+        <div class="takeaway">Section 3's worked-examples block lists both paths directly, flagging the shared Transaction Type as proof no single level suffices alone.</div>
+
+        <h5>Q4 — No, the bond never gets a taxonomy path (it gets a CFI code instead); yes, the CDS does ("Credit / SingleName / Corporate / CreditDefaultSwap"), because the CDS itself is the bilateral contract being classified — the taxonomy classifies contracts, never the thing a contract references</h5>
+        <p>Section 4's worked comparison walks through exactly this pair, with a nuance callout clarifying that even a derivative ON a bond still gets ISDA-classified normally.</p>
+
+        <h5>Q5 — ISDA's taxonomy supplies the base vocabulary (no codes, no live system); CPMI-IOSCO's 2017 guidance adopts it as the basis for a global standard; the DSB operationalizes it into a live schema and issues a UPI per unique combination; EMIR/Dodd-Frank reports then consume that already-issued UPI</h5>
+        <p>Section 5's lineage diagram states each layer explicitly, using the "grammar vs. dictionary built from that grammar" analogy.</p>
+
+        <h5>Q6 — Any of: setting the block-trade notional threshold for Dodd-Frank real-time public reporting, bucketing swaps for the CFTC's own published market statistics, or scoping a SEF's MAT determination</h5>
+        <p>Section 6's table lists all three as uses that predate, and are independent of, the UPI's 2022 introduction.</p>
+
+        <h5>Q7 — No, ISDA is an industry trade association, not a regulator; using its taxonomy becomes mandatory only where an actual regulator (CFTC) or downstream standard (CPMI-IOSCO's UPI guidance) requires it</h5>
+        <p>Section 7's diagram and takeaway state this directly, drawing the same infrastructure-vs-mandate distinction the UPI deep dive's Section 4 established for the DSB.</p>
+
+        <h5>Q8 — On the Product record, not the Trade record — trades inherit the taxonomy path by reference; a system letting the same product shape carry different paths on different trades has a data-integrity bug</h5>
+        <p>Section 8's product-master diagram ties this back to Module 2 §1's point that product-defining attributes live at the Product layer, not the Trade layer.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

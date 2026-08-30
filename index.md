@@ -20,6 +20,8 @@ Also see: [**Interest Rate Swap (IRS) Deep Dive**](./docs/1-capital-markets/inte
 
 Also see: [**MiFID II / MiFIR Reporting Deep Dive**](./docs/2-reporting/mifid-reporting.md) — what makes an instrument "MiFID eligible" (the Article 26(2) scope test), transaction reporting vs. the transparency regime, and exactly what an OTC-executed equity trade is subject to (the Share Trading Obligation and the Systematic Internaliser regime).
 
+Also see: [**ISDA Product Taxonomy Deep Dive**](./docs/2-reporting/isda-product-taxonomy-deep-dive.md) ([HTML](./docs/2-reporting/isda-product-taxonomy-deep-dive.html)) — the four-level classification hierarchy (Asset Class → Base Product → Sub-Product → Transaction Type) explained end to end: full worked paths across every asset class, why bonds never get one, how it feeds the UPI, exactly which regimes cite it, and how the values get configured on a real trade.
+
 ---
 
 ## Modules
@@ -57,6 +59,7 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 | UPI, UTI &amp; ANNA-DSB Deep Dive — derivative identifiers explained: UTI generation waterfall, UPI reference-data templates, ANNA-DSB, where each is used | [upi-uti-dsb-deep-dive.md](./docs/2-reporting/upi-uti-dsb-deep-dive.md) | [upi-uti-dsb-deep-dive.html](./docs/2-reporting/upi-uti-dsb-deep-dive.html) |
 | Interest Rate Swap (IRS) Deep Dive — full 20-quarter worked example: fixed vs. floating CORRA calculation, payment-date schedule, final settlement, Trade/Valuation fields | [interest-rate-swap-deep-dive.md](./docs/1-capital-markets/interest-rate-swap-deep-dive.md) | — |
 | MiFID II / MiFIR Reporting Deep Dive — the Article 26(2) eligibility test, transaction reporting vs. transparency, the Share Trading Obligation &amp; Systematic Internaliser regime for OTC equities | [mifid-reporting.md](./docs/2-reporting/mifid-reporting.md) | [mifid-reporting.html](./docs/2-reporting/mifid-reporting.html) |
+| ISDA Product Taxonomy Deep Dive — the four-level classification hierarchy, worked paths per asset class, why bonds never get one, how it feeds the UPI, where it's used &amp; how values are configured | [isda-product-taxonomy-deep-dive.md](./docs/2-reporting/isda-product-taxonomy-deep-dive.md) | [isda-product-taxonomy-deep-dive.html](./docs/2-reporting/isda-product-taxonomy-deep-dive.html) |
 
 ---
 
