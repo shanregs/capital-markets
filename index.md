@@ -10,7 +10,9 @@ Also see: [**Abbreviations Glossary**](./docs/1-capital-markets/abbreviations.md
 
 Also see: [**Systems Landscape**](./docs/1-capital-markets/systems-landscape.md) ([HTML](./docs/1-capital-markets/systems-landscape.html)) — the actual Front/Middle/Back Office systems, data flows, and settlement cycles used in Canada, the US, the UK, and the EU, plus the regulatory bodies in each.
 
-Modules 16–23 are **deep-dive/reference modules** — each expands one topic already touched on by Modules 1–15 into its own full write-up (theory, worked examples with real numbers, an actors cast, and a recap quiz), rather than adding a new asset class or lifecycle stage. See the Modules table below.
+Modules 16–24 are **deep-dive/reference modules** — each expands one topic already touched on by Modules 1–15 into its own full write-up (theory, worked examples with real numbers, an actors cast, and a recap quiz), rather than adding a new asset class or lifecycle stage. See the Modules table below.
+
+Also see: [**Complete OTC Derivative Lifecycle — USD/CAD FX Forward**](./docs/1-capital-markets/module-24-otc-derivative-usd-cad-forward-complete-lifecycle.md) ([HTML](./docs/1-capital-markets/module-24-otc-derivative-usd-cad-forward-complete-lifecycle.html)) — one Bank Of Toronto FX Forward taken through every operational stage at once (Trade Capture → Confirmation → Enrichment → Valuation → MTM → Collateral → Settlement → Regulatory Reporting), system by system and field by field, closing with a suggested microservices/event-driven architecture.
 
 ---
 
@@ -41,8 +43,9 @@ Modules 16–23 are **deep-dive/reference modules** — each expands one topic a
 | 21 | **ISDA Product Taxonomy Deep Dive** *(reference — extends Module 2 §7–8)* | Reference | ✅ Available | [module-21-isda-product-taxonomy-deep-dive.md](./docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.md) | [module-21-isda-product-taxonomy-deep-dive.html](./docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html) |
 | 22 | **Hedging Deep Dive** *(reference — cross-cutting across all asset classes)* | Reference | ✅ Available | [module-22-hedging-deep-dive.md](./docs/1-capital-markets/module-22-hedging-deep-dive.md) | [module-22-hedging-deep-dive.html](./docs/1-capital-markets/module-22-hedging-deep-dive.html) |
 | 23 | **Forward, Swap &amp; Option Deep Dive** *(reference — cross-cutting across all asset classes)* | Reference | ✅ Available | [module-23-otc-forward-swap-option-deep-dive.md](./docs/1-capital-markets/module-23-otc-forward-swap-option-deep-dive.md) | [module-23-otc-forward-swap-option-deep-dive.html](./docs/1-capital-markets/module-23-otc-forward-swap-option-deep-dive.html) |
+| 24 | **Complete OTC Derivative Lifecycle — USD/CAD FX Forward** *(reference — full end-to-end architecture walkthrough)* | Reference | ✅ Available | [module-24-otc-derivative-usd-cad-forward-complete-lifecycle.md](./docs/1-capital-markets/module-24-otc-derivative-usd-cad-forward-complete-lifecycle.md) | [module-24-otc-derivative-usd-cad-forward-complete-lifecycle.html](./docs/1-capital-markets/module-24-otc-derivative-usd-cad-forward-complete-lifecycle.html) |
 
-Priority column reflects the weighting in the "Priority for My Current Work" table of the original curriculum doc; Modules 16–23 are outside that original weighting (marked **Reference**) since they were added afterward as deep dives into topics the first 15 modules already introduced. Modules 4–9 (the Asset Class Roadmap) are built **one at a time, in order** — Equity first. **The full 14-module path, plus the cross-cutting Module 15 (Listed Derivatives), is complete**, and Modules 16–23 layer additional depth on top of it. Module 14 closes the core path's loop by fully annotating the curriculum's own capstone `IRS12345` trade record field-by-field against everything built in Modules 1–13 and 15 — see the curriculum doc's own "Final End-to-End Case Study" to test it cold.
+Priority column reflects the weighting in the "Priority for My Current Work" table of the original curriculum doc; Modules 16–24 are outside that original weighting (marked **Reference**) since they were added afterward as deep dives into topics the first 15 modules already introduced. Modules 4–9 (the Asset Class Roadmap) are built **one at a time, in order** — Equity first. **The full 14-module path, plus the cross-cutting Module 15 (Listed Derivatives), is complete**, and Modules 16–24 layer additional depth on top of it. Module 14 closes the core path's loop by fully annotating the curriculum's own capstone `IRS12345` trade record field-by-field against everything built in Modules 1–13 and 15 — see the curriculum doc's own "Final End-to-End Case Study" to test it cold.
 
 ---
 
@@ -53,7 +56,7 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 | Abbreviations Glossary — identifiers, market structure, products, rates, valuation, settlement, risk, regulation | [abbreviations.md](./docs/1-capital-markets/abbreviations.md) | [abbreviations.html](./docs/1-capital-markets/abbreviations.html) |
 | Systems Landscape — Front/Middle/Back Office systems, data flows &amp; settlement cycles in Canada, US, UK &amp; EU, plus regulators | [systems-landscape.md](./docs/1-capital-markets/systems-landscape.md) | [systems-landscape.html](./docs/1-capital-markets/systems-landscape.html) |
 
-These two stay outside the module numbering by design — both are cross-cutting lookup material meant to be consulted alongside *any* module, not a topic deep dive in their own right (see Modules 16–23 above for those).
+These two stay outside the module numbering by design — both are cross-cutting lookup material meant to be consulted alongside *any* module, not a topic deep dive in their own right (see Modules 16–24 above for those).
 
 ---
 

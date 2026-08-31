@@ -1,0 +1,1239 @@
+<!doctype html>
+<title>Module 24 — USD/CAD FX Forward Lifecycle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.1rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 58ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 6px 0 6px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.82rem;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.4rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 8px 10px 8px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 560px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 24</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Complete OTC Derivative Lifecycle — USD/CAD FX Forward</h1>
+    <p class="dek">One single trade — Bank Of Toronto's USD/CAD FX Forward with ABC Canada Inc. — taken through every stage of its real operational lifecycle, system by system, field by field: Trade Capture → Confirmation → Enrichment → Valuation → MTM → Collateral → Settlement → Regulatory Reporting, closing with a suggested microservices/event-driven architecture.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module — full end-to-end architecture walkthrough.</b> Where <a href="./module-06-fx.html">Module 6</a> §4b, <a href="../2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a>, <a href="./module-22-hedging-deep-dive.html">Module 22</a>, and <a href="./module-23-otc-forward-swap-option-deep-dive.html">Module 23</a> each cover one slice of an FX Forward, this module takes one trade through every stage at once.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#purpose"><span class="toc-num">01</span>Purpose &amp; Business Scenario</a></li>
+      <li><a href="#capture"><span class="toc-num">02</span>Lifecycle &amp; Trade Capture</a></li>
+      <li><a href="#confirmation"><span class="toc-num">03</span>Confirmation</a></li>
+      <li><a href="#enrichment"><span class="toc-num">04</span>Enrichment</a></li>
+      <li><a href="#valuation"><span class="toc-num">05</span>Valuation</a></li>
+      <li><a href="#mtm"><span class="toc-num">06</span>MTM</a></li>
+      <li><a href="#collateral"><span class="toc-num">07</span>Collateral</a></li>
+      <li><a href="#settlement"><span class="toc-num">08</span>Settlement</a></li>
+      <li><a href="#regulatory"><span class="toc-num">09</span>Regulatory Reporting</a></li>
+      <li><a href="#architecture"><span class="toc-num">10</span>End-to-End Architecture</a></li>
+      <li><a href="#identifiers"><span class="toc-num">11</span>Identifiers &amp; Data Modeling</a></li>
+      <li><a href="#events"><span class="toc-num">12</span>Event-Driven Architecture</a></li>
+      <li><a href="#timeline"><span class="toc-num">13</span>Lifecycle Changes &amp; Timeline</a></li>
+      <li><a href="#bigpicture"><span class="toc-num">14</span>Big Picture &amp; Vocabulary</a></li>
+      <li><a href="#next"><span class="toc-num">15</span>Recommended Next Step</a></li>
+      <li><a href="#cast"><span class="toc-num">·</span>Actors</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="purpose">
+      <p class="sec-eyebrow"><span class="n">01</span> · The business scenario</p>
+      <h2>Purpose &amp; Business Scenario</h2>
+      <p class="lede">This module walks one complete OTC derivative trade — a USD/CAD FX Forward — from Trade Capture through Confirmation, Enrichment, Valuation, MTM, Collateral, Settlement, and Regulatory Reporting, covering both the business lifecycle and the data/fields each stage generates or consumes.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Role</th><th>Party</th></tr></thead>
+        <tbody>
+          <tr><td>Bank</td><td>Bank Of Toronto</td></tr>
+          <tr><td>Client / Counterparty</td><td>ABC Canada Inc.</td></tr>
+          <tr><td>Trade</td><td>USD/CAD FX Forward</td></tr>
+          <tr><td>Product</td><td>FX Forward</td></tr>
+          <tr><td>Purpose</td><td>Hedge future USD payment</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>ABC Canada expects to pay a US supplier <b>USD 10,000,000</b> on 30-Nov-2026. ABC is concerned that USD/CAD may rise, making the future USD payment more expensive in CAD terms, and therefore enters an OTC FX Forward with Bank Of Toronto, executed on <b>30-Aug-2026</b>.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Trade Economics</span><span class="t-id">Executed 30-Aug-2026</span></div>
+        <pre>Trade Date              : 30-Aug-2026
+Value Date / Maturity   : 30-Nov-2026
+Currency Pair           : USD/CAD
+Buy Currency            : USD          Sell Currency: CAD
+USD Notional            : USD 10,000,000
+Forward Rate            : CAD 1.3545 per USD
+CAD Notional            : CAD 13,545,000
+Settlement              : Physical (Deliverable Forward)
+Business Purpose        : Hedge
+Direction (ABC)         : Buy USD / Sell CAD
+Governing Agreement     : ISDA Master Agreement + CSA (Module 12)
+ISDA Taxonomy Path      : Foreign Exchange / Forward / Deliverable / Forward
+Hedge Designation       : Yes -- hedges a known future USD payable (Module 22 §9)
+
+ABC has locked in: USD 10,000,000 x CAD 1.3545 = CAD 13,545,000</pre>
+      </div>
+
+      <div class="callout"><b>Callout — USD/CAD is a G10, fully convertible pair, so Deliverable is the default.</b> Not every FX Forward needs a Deliverable-vs-NDF decision the way an emerging-market currency does. CAD, like every other G10 currency, has no capital-account restrictions, so a USD/CAD forward — like this trade — almost always settles physically. Contrast this with the <b>INR</b> example this module was originally built around: because INR is not fully convertible, USD/INR forwards split into an onshore Deliverable Forward (via an RBI-authorized dealer bank) versus an offshore NDF, which settles only a USD cash difference. The NDF Flag field kept on this trade's data model (Section 04) is still worth carrying on every FX Forward record for exactly that reason — it reads N on almost every G10 trade like this one, but the same schema needs to be ready for the day it carries an EM currency pair where the answer genuinely varies.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every field this module tracks downstream — enrichment, valuation, collateral, settlement, regulatory reporting — traces back to this one trade record. Nothing about the scenario is exotic: it's the single most common reason a corporate treasury enters an FX Forward at all.</div>
+    </section>
+
+    <section class="mod" id="capture">
+      <p class="sec-eyebrow"><span class="n">02</span> · The eight stages</p>
+      <h2>High-Level Lifecycle &amp; Stage 1 — Trade Capture</h2>
+      <p class="lede">The same trade identifier should generally allow downstream systems to trace the trade throughout its lifecycle.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Diagram · Eight-Stage Lifecycle</span></div>
+        <pre>OTC FX FORWARD
+      |
+      v
+1. Trade Capture -> 2. Confirmation -> 3. Enrichment -> 4. Valuation
+      |
+      v
+5. MTM -> 6. Collateral -> 7. Settlement -> 8. Regulatory Reporting</pre>
+      </div>
+
+      <h3>Stage 1 — Trade Capture</h3>
+      <p>The trader and ABC agree the trade. The front-office trading system captures the economic terms, and a unique trade identifier is generated (<code>Trade ID = BOT-FX-20260830-00012345</code>), then the trade is passed to downstream systems.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Trade ID</td><td>BOT-FX-20260830-00012345</td></tr>
+          <tr><td>Product Type</td><td>FX_FORWARD</td></tr>
+          <tr><td>Trade / Effective Date</td><td>2026-08-30</td></tr>
+          <tr><td>Maturity Date</td><td>2026-11-30</td></tr>
+          <tr><td>Buy / Sell Currency</td><td>USD / CAD</td></tr>
+          <tr><td>Buy / Sell Amount</td><td>10,000,000 USD / 13,545,000 CAD</td></tr>
+          <tr><td>Forward Rate</td><td>1.3545</td></tr>
+          <tr><td>Client</td><td>ABC Canada Inc. (Counterparty ID ABC12345)</td></tr>
+          <tr><td>Trader / Desk</td><td>TRADER001 / FX-CANADA</td></tr>
+          <tr><td>Legal Entity / Book</td><td>Bank Of Toronto / FX_HEDGE_BOOK</td></tr>
+          <tr><td>Settlement Type</td><td>PHYSICAL</td></tr>
+          <tr><td>Execution Timestamp</td><td>2026-08-30 10:32:15 ET</td></tr>
+          <tr><td>Trade Status</td><td>NEW</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Trade Capture records the raw economic agreement and stamps it with the Trade ID everything downstream keys off — nothing regulatory, valuation-related, or collateral-related exists on the record yet.</div>
+    </section>
+
+    <section class="mod" id="confirmation">
+      <p class="sec-eyebrow"><span class="n">03</span> · Legal agreement on terms</p>
+      <h2>Stage 2 — Confirmation</h2>
+      <p class="lede">The trade economics captured by Bank Of Toronto are compared with the counterparty's understanding, and a confirmation document/message is generated — both parties confirm "we agree that this is the trade we entered into."</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Example Confirmation</span><span class="t-id">CONF-FX-20260830-00012345</span></div>
+        <pre>Trade                : USD/CAD FX Forward
+Trade Date           : 30-Aug-2026
+Value Date           : 30-Nov-2026
+Party A              : Bank Of Toronto
+Party B              : ABC Canada Inc.
+Party A buys         : USD 10,000,000
+Party A sells        : CAD 13,545,000
+Forward Rate         : CAD 1.3545 per USD
+Settlement           : Physical</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Category</th><th>Fields</th></tr></thead>
+        <tbody>
+          <tr><td>Identification</td><td>Trade ID, Confirmation ID</td></tr>
+          <tr><td>Parties</td><td>Party A, Party B</td></tr>
+          <tr><td>Dates</td><td>Trade Date, Value Date</td></tr>
+          <tr><td>Amounts / Rate</td><td>Buy Amount, Sell Amount, Forward Rate</td></tr>
+          <tr><td>Legal</td><td>Master Agreement</td></tr>
+          <tr><td>Operations</td><td>Confirmation Status, Settlement Instructions</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Confirmation is the legal checkpoint — it's where a two-sided verbal/electronic agreement becomes a matched, evidenced contract, the same dual-sided matching concept <a href="../2-reporting/module-18-upi-uti-dsb-deep-dive.html">Module 18</a> covers for regulatory UTI pairing.</div>
+    </section>
+
+    <section class="mod" id="enrichment">
+      <p class="sec-eyebrow"><span class="n">04</span> · Adding the standardized layer</p>
+      <h2>Stage 3 — Enrichment</h2>
+      <p class="lede">The original trade contains business economics, but downstream systems need additional standardized information — LEIs, UTI, UPI, product classification, booking entity, jurisdiction, counterparty classification, regulatory and risk attributes. This is especially important for regulatory reporting.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Example Enriched Trade</span></div>
+        <pre>Trade ID              : BOT-FX-20260830-00012345
+Product               : FX Forward
+Currency Pair         : USD/CAD
+Buy/Sell Amount       : 10,000,000 USD / 13,545,000 CAD
+Forward Rate          : 1.3545
+Bank LEI              : 5493001KJTIIGC8Y1R12
+Counterparty LEI      : 549300ABCEXAMPLE45
+UTI                   : 5493001KJTIIGC8Y1R1220260830FX00012345
+UPI                   : FX9M3RXQ2K18
+ISDA Taxonomy Path    : Foreign Exchange / Forward / Deliverable / Forward
+Underlier             : USD/CAD
+NDF Flag              : N (Deliverable Forward)
+Hedge Designation     : Y -- hedges ABC's forecasted USD payable
+Counterparty Country  : CA
+Ctpty Classification  : Non-Financial Counterparty (NFC) -- Module 22 §9
+Booking Entity        : Bank Of Toronto
+Jurisdiction          : Canada / Other applicable regimes
+Settlement Type       : Physical</pre>
+      </div>
+
+      <p class="callout"><b>Note.</b> The LEI, UTI and UPI above are illustrative placeholders — same format convention as <a href="../2-reporting/module-18-upi-uti-dsb-deep-dive.html">Module 18</a> (20-character LEI-prefixed UTI) and <a href="../2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a> (12-character UPI). In a real implementation they must come from authoritative sources/processes, not be assigned by the booking system itself.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Enrichment is where a purely economic trade record picks up every identifier and classification field the rest of this curriculum's Modules 18 and 21 build out in full — none of it is invented per-trade; it's looked up or requested from authoritative reference data.</div>
+    </section>
+
+    <section class="mod" id="valuation">
+      <p class="sec-eyebrow"><span class="n">05</span> · What is it worth today?</p>
+      <h2>Stage 4 — Valuation</h2>
+      <p class="lede">The trade was agreed at a forward rate of 1.3545 CAD/USD, but the market forward rate changes every day. Suppose shortly afterward the current market 3-month USD/CAD forward rate is 1.3650 — the original trade has become valuable to the party that buys USD at 1.3545.</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Simplified FX Forward Valuation</span></div>
+        <pre>MTM ~ Notional x (Current Forward Rate - Contract Forward Rate)
+      (for a USD buyer, ignoring discounting and other conventions)
+
+Notional = USD 10,000,000
+Contract Rate = CAD 1.3545
+Current Forward Rate = CAD 1.3650
+
+Difference = 1.3650 - 1.3545 = CAD 0.0105/USD
+
+Approximate value = 10,000,000 x 0.0105 = CAD 105,000
+
+-> ABC's position is economically favorable.</pre>
+      </div>
+
+      <p>A production valuation engine does not simply use Notional × rate difference — it considers the current spot FX rate, forward FX points/curve, remaining maturity, interest-rate curves, discount factors, settlement convention, market data timestamp, and CVA/FVA where applicable:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Conceptual PV Formula</span></div>
+        <pre>PV = Expected future cash-flow difference x Discount Factor</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Valuation Date</td><td>2026-09-01</td></tr>
+          <tr><td>Spot / Forward USD/CAD</td><td>1.3490 / 1.3650</td></tr>
+          <tr><td>Contract Rate</td><td>1.3545</td></tr>
+          <tr><td>Remaining Days</td><td>90</td></tr>
+          <tr><td>Discount Factor</td><td>0.985</td></tr>
+          <tr><td>Present Value</td><td>CAD 103,425</td></tr>
+          <tr><td>Pricing Source / Model</td><td>Market Data Service / FX Forward PV</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The exact FX-forward pricing methodology depends on the bank's own valuation framework, but every version answers the same question — what would this trade cost to replace, at today's market rates, discounted back to today.</div>
+    </section>
+
+    <section class="mod" id="mtm">
+      <p class="sec-eyebrow"><span class="n">06</span> · Who's gaining, who's losing</p>
+      <h2>Stage 5 — MTM</h2>
+      <p class="lede">MTM = Mark-to-Market. It answers: "if we valued this trade using today's market prices, how much would we gain or lose?" The signs reverse between counterparties because they hold opposite positions.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Simplified MTM</span></div>
+        <pre>Trade Rate = 1.3545 | Market Forward Rate = 1.3650 | Notional = USD 10M
+
+(1.3650 - 1.3545) x 10M = CAD 105,000
+
+ABC perspective:              +CAD 105,000
+Bank Of Toronto perspective:  -CAD 105,000</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Date</th><th>Market Forward Rate</th><th>Approx. MTM to USD Buyer</th></tr></thead>
+        <tbody>
+          <tr><td>30-Aug</td><td>1.3545</td><td>0</td></tr>
+          <tr><td>01-Sep</td><td>1.3650</td><td>+105,000 CAD</td></tr>
+          <tr><td>30-Sep</td><td>1.3400</td><td>-145,000 CAD</td></tr>
+          <tr><td>31-Oct</td><td>1.3750</td><td>+205,000 CAD</td></tr>
+          <tr><td>30-Nov</td><td>1.3900</td><td>+355,000 CAD</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The trade can move from positive to negative and back during its life — this is exactly why daily valuation matters, and exactly the swing Section 07's collateral mechanism exists to manage.</div>
+    </section>
+
+    <section class="mod" id="collateral">
+      <p class="sec-eyebrow"><span class="n">07</span> · Managing counterparty credit risk</p>
+      <h2>Stage 6 — Collateral</h2>
+      <p class="lede">OTC derivatives create counterparty credit risk — if Bank Of Toronto owes ABC a large amount and Bank Of Toronto defaults, ABC loses that value. To reduce this risk, parties exchange collateral under a CSA (Credit Support Annex), as cash, government securities, or other eligible collateral.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Concept</th><th>What it protects against</th></tr></thead>
+        <tbody>
+          <tr><td><b>Variation Margin (VM)</b></td><td>Reflects changes in the current value of positions — MTM increases, collateral requirement may increase</td></tr>
+          <tr><td><b>Initial Margin (IM)</b></td><td>Protection against potential future exposure during the period needed to close/replace positions after a default; applicability depends on counterparties, regulation, and documentation</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Example Collateral Calculation</span></div>
+        <pre>Portfolio MTM = +CAD 105,000 to ABC
+Threshold = CAD 50,000
+Minimum Transfer Amount (MTA) = CAD 10,000
+
+Simplified collateral requirement = 105,000 - 50,000 = CAD 55,000
+
+-> collateral processing is generally portfolio/CSA based, not a
+   standalone per-trade calculation</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>CSA ID</td><td>CSA-BOT-ABC-001</td></tr>
+          <tr><td>Portfolio Value / Threshold / MTA</td><td>CAD 105,000 / CAD 50,000 / CAD 10,000</td></tr>
+          <tr><td>Collateral Requirement</td><td>CAD 55,000</td></tr>
+          <tr><td>Collateral Type / Currency</td><td>Cash / CAD</td></tr>
+          <tr><td>Margin Type</td><td>VM</td></tr>
+          <tr><td>Call / Settlement Date</td><td>2026-09-01 / 2026-09-02</td></tr>
+          <tr><td>Collateral / Dispute Status</td><td>CALLED / NONE</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Collateral exists to protect against exactly the MTM swings Section 06 showed — a trade with zero MTM at inception still needs a CSA in place, because the risk it protects against is a future swing, not today's snapshot.</div>
+    </section>
+
+    <section class="mod" id="settlement">
+      <p class="sec-eyebrow"><span class="n">08</span> · What actually exchanges</p>
+      <h2>Stage 7 — Settlement</h2>
+      <p class="lede">The trade reaches maturity on 30-Nov-2026. The contract says ABC buys USD 10M and pays CAD 13,545,000 — the FX forward is physically settled.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Physical Settlement</span><span class="t-id">30-Nov-2026</span></div>
+        <pre>ABC Canada Inc.                      Bank Of Toronto
+       |                                   |
+       |---------- CAD 13,545,000 -------->|
+       |                                   |
+       |<----------- USD 10M --------------|</pre>
+      </div>
+
+      <p>The settlement system needs instructions for both currencies — <b>SSI = Standard Settlement Instructions</b>:</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th></th><th>USD</th><th>CAD</th></tr></thead>
+        <tbody>
+          <tr><td>Amount</td><td>10,000,000</td><td>13,545,000</td></tr>
+          <tr><td>Settlement Account</td><td>USD account</td><td>CAD account</td></tr>
+          <tr><td>SSI</td><td>ABC-USD-SSI-001</td><td>ABC-CAD-SSI-001</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Field</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Settlement ID</td><td>SET-FX-20261130-00012345</td></tr>
+          <tr><td>Value Date</td><td>2026-11-30</td></tr>
+          <tr><td>Settlement / Payment Status</td><td>PENDING → RELEASED</td></tr>
+          <tr><td>USD / CAD Settlement Status</td><td>SETTLED / SETTLED</td></tr>
+          <tr><td>Final Status</td><td>COMPLETE</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Settlement risk.</b> FX transactions introduce settlement risk — Bank Of Toronto could send USD while ABC fails to deliver CAD, or vice versa. This is why FX settlement infrastructure, payment controls, and settlement-risk management (Module 6's CLS/PvP mechanism) matter.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> If this had instead been booked as a currency-pair NDF (Section 01's callout), only a single net USD cash payment would move here — no CAD would ever change hands. In practice, a USD/CAD trade like this one essentially never is.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">09</span> · What must be reported</p>
+      <h2>Stage 8 — Regulatory Reporting</h2>
+      <p class="lede">OTC derivatives are often subject to regulatory reporting requirements depending on jurisdiction, counterparty type, product, trading location, legal entity, and reporting regime — EMIR, UK EMIR, CFTC, Canadian derivatives reporting, ASIC, MAS, HKMA among others; the exact fields and rules differ by regime.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Conceptual Regulatory Trade Data</span></div>
+        <pre>UTI, UPI, LEI (Reporting &amp; Other Counterparty), Trade ID
+Product Classification, Asset Class
+Notional + Currency, Price + Currency
+Trade / Effective / Maturity Date, Settlement Type, Direction
+Execution Timestamp, Clearing Status, Collateralisation
+Valuation Amount + Currency, Action Type, Event Type
+Reporting Timestamp</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regulatory Field</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>UTI</td><td>5493001KJTIIGC8Y1R1220260830FX00012345</td></tr>
+          <tr><td>UPI</td><td>FX9M3RXQ2K18</td></tr>
+          <tr><td>ISDA Taxonomy Path</td><td>Foreign Exchange / Forward / Deliverable / Forward</td></tr>
+          <tr><td>Reporting / Other Ctpty LEI</td><td>5493001KJTIIGC8Y1R12 / 549300ABCEXAMPLE45</td></tr>
+          <tr><td>Asset Class / Currency Pair</td><td>Foreign Exchange / USD-CAD</td></tr>
+          <tr><td>Notional / Price</td><td>10,000,000 USD / 1.3545 CAD</td></tr>
+          <tr><td>Settlement Type / NDF Flag</td><td>Physical (Deliverable) / N</td></tr>
+          <tr><td>Clearing Status / Collateralisation</td><td>Not Cleared / Bilateral</td></tr>
+          <tr><td>Hedging Exemption Claimed</td><td>Y — NFC hedging a commercial FX exposure</td></tr>
+          <tr><td>Action / Event Type</td><td>NEW / NEW_TRADE</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>The trade does not necessarily have only one regulatory event over its life:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Trade Lifecycle Events</span></div>
+        <pre>NEW -> AMENDMENT -> VALUATION UPDATE -> COLLATERAL UPDATE
+    -> PARTIAL TERMINATION -> NOVATION -> EARLY TERMINATION
+    -> MATURITY -> CANCEL / ERROR CORRECTION</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A reporting platform needs to distinguish trade-level data from event-level changes — this conceptual example is illustrative only, not a jurisdiction-specific template; confirm exact fields against the actual regime in force (Module 21 §6's regime-by-regime map applies the same caution).</div>
+    </section>
+
+    <section class="mod" id="architecture">
+      <p class="sec-eyebrow"><span class="n">10</span> · Systems and data flow</p>
+      <h2>End-to-End Architecture</h2>
+      <p class="lede">A typical OTC derivatives platform decomposes the lifecycle into distinct systems, each with a clear responsibility.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">End-to-End Data Flow</span></div>
+        <pre>FRONT OFFICE -> Trade Capture -> Confirmation -> Enrichment
+                                                       |
+                                          +------------+------------+
+                                          v                         v
+                                    Valuation/Risk           Regulatory Enrichment
+                                          |                         |
+                                          v                         v
+                                        MTM                 Regulatory Report
+                                          |                         |
+                                          v                         v
+                                     Collateral          Trade Repository
+                                          |
+                                          v
+                                     Settlement
+                                          |
+                                          v
+                                     Accounting</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>System</th><th>Primary Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td>Front Office</td><td>Execute/capture trade</td></tr>
+          <tr><td>Trade Store</td><td>Persist trade</td></tr>
+          <tr><td>Confirmation System</td><td>Confirm economics</td></tr>
+          <tr><td>Static / Reference Data</td><td>Counterparty/entity data; product/instrument data</td></tr>
+          <tr><td>Market Data</td><td>Spot/forward curves</td></tr>
+          <tr><td>Valuation / Risk Engine</td><td>Calculate PV/MTM; exposure/risk</td></tr>
+          <tr><td>Collateral System</td><td>Margin/collateral</td></tr>
+          <tr><td>Settlement System</td><td>Payments</td></tr>
+          <tr><td>Regulatory Platform / Trade Repository</td><td>Regulatory reporting; receive reports</td></tr>
+          <tr><td>Accounting</td><td>P&amp;L/accounting</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> No single system owns the whole lifecycle — each stage this module walked through (Sections 02–09) maps onto a distinct system with its own system-of-record responsibility.</div>
+    </section>
+
+    <section class="mod" id="identifiers">
+      <p class="sec-eyebrow"><span class="n">11</span> · Trade, product, counterparty</p>
+      <h2>Identifiers &amp; Data Modeling</h2>
+      <p class="lede">Identifiers are extremely important when designing a regulatory data platform (RDP) — Trade ID, UTI, UPI, and LEI each answer a genuinely different question.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Four Identifiers, Four Questions</span></div>
+        <pre>LEI  -> identifies Counterparty / Reporting Entity
+UTI  -> identifies the Transaction (BOT-FX-20260830-00012345 internally;
+        5493001KJTIIGC8Y1R1220260830FX00012345 for regulatory pairing)
+UPI  -> identifies the Product (FX9M3RXQ2K18)</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Question</th><th>Answer for this trade</th></tr></thead>
+        <tbody>
+          <tr><td>Product — "What is being traded?"</td><td>FX Forward</td></tr>
+          <tr><td>Counterparty — "Who is involved?"</td><td>Bank Of Toronto, ABC Canada Inc.</td></tr>
+          <tr><td>Trade — "What specific transaction occurred?"</td><td>Trade ID BOT-FX-20260830-00012345</td></tr>
+          <tr><td>Position — "What exposure remains?"</td><td>Depends on all transactions netted together, not this trade alone</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>A normalized internal canonical trade representation, extended with the ISDA taxonomy and hedge fields Section 04 introduced:</p>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Example Canonical Trade Model</span><span class="t-id">JSON, illustrative</span></div>
+        <pre>{
+  "tradeId": "BOT-FX-20260830-00012345",
+  "productType": "FX_FORWARD",
+  "assetClass": "FX",
+  "buyCurrency": "USD", "buyAmount": 10000000,
+  "sellCurrency": "CAD", "sellAmount": 13545000,
+  "contractRate": 1.3545,
+  "settlementType": "PHYSICAL",
+  "ndfFlag": false,
+  "isdaTaxonomy": {
+    "assetClass": "FOREIGN_EXCHANGE", "baseProduct": "FORWARD",
+    "subProduct": "DELIVERABLE", "transactionType": "FORWARD"
+  },
+  "hedge": { "isHedge": true,
+    "hedgedExposure": "FORECASTED_USD_PAYABLE_2026_11_30" },
+  "counterparty": { "lei": "549300ABCEXAMPLE45", "classification": "NFC" },
+  "reportingEntity": { "lei": "5493001KJTIIGC8Y1R12" },
+  "regulatory": {
+    "uti": "5493001KJTIIGC8Y1R1220260830FX00012345",
+    "upi": "FX9M3RXQ2K18"
+  }
+}</pre>
+      </div>
+
+      <p class="callout">This is illustrative and should not be treated as a prescribed regulatory schema.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Trade, Product, Counterparty, and Position are four genuinely different questions a data model must answer separately — collapsing any two of them into one field is a common design mistake in an RDP.</div>
+    </section>
+
+    <section class="mod" id="events">
+      <p class="sec-eyebrow"><span class="n">12</span> · Microservices &amp; Kafka</p>
+      <h2>Event-Driven Architecture</h2>
+      <p class="lede">For an RDP architecture, an event-oriented model is often useful — each stage of the lifecycle becomes an event other services can react to independently.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Event-Based Model</span></div>
+        <pre>TradeCreated -> TradeConfirmed -> TradeEnriched -> TradeValued
+    -> MTMUpdated -> CollateralUpdated -> SettlementInitiated
+    -> SettlementCompleted -> RegulatoryReported
+
+Each event can carry: Event ID, Trade ID, UTI, Event Type,
+Event Timestamp, Source System, Previous/New State, Version,
+Correlation ID, Payload</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Service</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>trade-service</td><td>Root of the decomposition</td></tr>
+          <tr><td>confirmation / enrichment / valuation / risk / collateral / settlement / regulatory-service</td><td>One microservice per lifecycle stage</td></tr>
+          <tr><td>reference-data / counterparty / market-data / identifier / audit / notification-service</td><td>Supporting services consumed by the above</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Example Kafka Event Flow</span></div>
+        <pre>trade.created       -> confirmation-service, enrichment-service,
+                       risk-service, regulatory-service
+
+valuation.updated   -> risk-service, collateral-service,
+                       regulatory-service
+
+settlement.completed -> accounting-service, regulatory-service,
+                        audit-service</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> An event bus lets each downstream consumer react to the same underlying change independently and at its own pace — a <code>valuation.updated</code> event fans out to three services simultaneously, rather than forcing one blocking synchronous chain.</div>
+    </section>
+
+    <section class="mod" id="timeline">
+      <p class="sec-eyebrow"><span class="n">13</span> · Static vs. dynamic data</p>
+      <h2>What Changes During the Lifecycle, and the Full Timeline</h2>
+      <p class="lede">The trade's core economics generally remain the same — but dynamic fields (market spot, forward curve, PV, MTM, exposure, collateral, settlement/reporting status) change constantly, which is why an RDP should distinguish static/contractual data from dynamic data.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Static / contractual data</th><th>Dynamic data</th></tr></thead>
+        <tbody>
+          <tr><td>Trade ID, Product, Notional, Currency, Contract Rate, Trade Date, Maturity Date, Counterparties</td><td>Valuation, MTM, Market Data, Exposure, Collateral, Settlement Status, Reporting Status</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Full Example Timeline</span></div>
+        <pre>30-Aug-2026
+  10:32 Trade executed -> 10:33 Captured -> 10:34 Confirmed
+  10:35 Enrichment completed -> 10:36 Regulatory IDs generated
+  End of day: Trade valued, MTM calculated
+
+01-Sep-2026
+  Market moves -> Forward curve changes -> Trade revalued
+  -> MTM changes -> Collateral requirement recalculated
+  -> Collateral call generated if required
+
+30-Nov-2026
+  Maturity -> Settlement instructions validated
+  -> USD payment + CAD payment -> Settlement completed
+  -> Trade closed -> Final regulatory lifecycle event</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Most of what makes an OTC derivative operationally interesting happens AFTER trade date — the contractual terms are frozen at execution, but the dynamic fields keep every downstream system busy for the trade's entire life.</div>
+    </section>
+
+    <section class="mod" id="bigpicture">
+      <p class="sec-eyebrow"><span class="n">14</span> · Pulling it together</p>
+      <h2>Most Important Fields, the Big Picture &amp; Vocabulary</h2>
+      <p class="lede">The mental model behind every stage this module covered, and the field set worth remembering per stage.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Stage</th><th>Key Data</th></tr></thead>
+        <tbody>
+          <tr><td>Trade Capture</td><td>Trade ID, product, notional, currencies, rate, dates</td></tr>
+          <tr><td>Confirmation</td><td>Confirmation ID, contractual terms, parties</td></tr>
+          <tr><td>Enrichment</td><td>LEI, UTI, UPI, classification, jurisdiction</td></tr>
+          <tr><td>Valuation</td><td>Spot, forward curve, discount factor, PV</td></tr>
+          <tr><td>MTM</td><td>Market value, valuation currency, P&amp;L</td></tr>
+          <tr><td>Collateral</td><td>CSA, VM/IM, threshold, MTA, collateral</td></tr>
+          <tr><td>Settlement</td><td>SSI, payment amount, value date, settlement status</td></tr>
+          <tr><td>Regulatory</td><td>UTI, UPI, LEIs, action/event, valuation, reporting fields</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">The Big Picture</span></div>
+        <pre>TRADE -> what did we do?
+CONFIRMATION -> what did both parties agree?
+ENRICHMENT -> who/what/how for downstream processing?
+VALUATION -> what is it worth today?
+MTM -> who is gaining or losing?
+COLLATERAL -> how much credit protection?
+SETTLEMENT -> what actually gets exchanged?
+REGULATORY REPORTING -> what must be reported to the
+                         regulator/repository?</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>OTC / Derivative</td><td>Over The Counter / contract whose value derives from an underlying</td></tr>
+          <tr><td>Forward / Option</td><td>Obligation to transact in future at an agreed price / right, not obligation</td></tr>
+          <tr><td>Call / Put / Strike / Premium</td><td>Right to buy / right to sell / exercise price / price paid for the option</td></tr>
+          <tr><td>Spot / Forward Rate</td><td>Current market price / agreed or market future FX rate</td></tr>
+          <tr><td>Notional / Maturity</td><td>Reference amount used for calculation / contract end date</td></tr>
+          <tr><td>MTM / PV</td><td>Current market value / present value</td></tr>
+          <tr><td>VM / IM</td><td>Variation Margin / Initial Margin</td></tr>
+          <tr><td>CSA / SSI</td><td>Credit Support Annex / Standard Settlement Instructions</td></tr>
+          <tr><td>LEI / UTI / UPI</td><td>Legal Entity Identifier / Unique Transaction Identifier / Unique Product Identifier</td></tr>
+          <tr><td>Trade Repository</td><td>Infrastructure receiving regulatory reports</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Eight questions, eight stages, one trade record — every worked example in this module answers exactly one of these questions, in order.</div>
+    </section>
+
+    <section class="mod" id="next">
+      <p class="sec-eyebrow"><span class="n">15</span> · Where to next</p>
+      <h2>Recommended Next Step</h2>
+      <p class="lede">After understanding this FX Forward example, study the same lifecycle for an Interest Rate Swap (IRS) — see <a href="./module-19-interest-rate-swap-deep-dive.md">Module 19</a>, which already takes one 5Y CAD IRS through all 20 quarterly settlements at this same level of field-by-field detail.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">What an IRS Adds on Top</span></div>
+        <pre>IRS
+ +-- Fixed Rate / Floating Rate
+ +-- Reference Rate (CORRA / SOFR / SONIA)
+ +-- Reset Dates / Payment Dates / Accrual Period
+ +-- Day Count Convention / Compounding / Discounting
+ +-- MTM / Collateral / Settlement / Regulatory Reporting</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The IRS example connects directly to CORRA, which is central to Rates-desk regulatory data platform (RDP) work more broadly.</div>
+    </section>
+
+    <section class="mod" id="cast">
+      <p class="sec-eyebrow">Cast reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td>Bank Of Toronto</td><td>Sells USD / buys CAD forward to ABC Canada Inc.; the reporting/booking entity whose systems this module walks through end to end</td></tr>
+          <tr><td>ABC Canada Inc.</td><td>Buy-side client — a Canadian resident hedging a real USD 10,000,000 payable due 30-Nov-2026</td></tr>
+          <tr><td>A US supplier</td><td>The (unnamed) counterparty ABC ultimately owes the USD 10,000,000 to — outside this trade, the underlying commercial reason for the hedge</td></tr>
+          <tr><td>Trade Repository / Regulatory Platform</td><td>Downstream systems receiving the enriched, valued, and event-tagged trade record</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+
+      <div class="quiz">
+        <ol>
+          <li>Using Section 01's callout, why is a USD/CAD forward almost always a Deliverable Forward rather than an NDF, and what field on the trade record captures that distinction?</li>
+          <li>Using Section 04, name two fields this module's enrichment adds that a raw trade-capture record does not have, and explain what each answers.</li>
+          <li>Using Sections 05–06, why does the trade's MTM change even though its contractual terms never change after execution?</li>
+          <li>Using Section 07, what specific risk does posting collateral under a CSA reduce, and why does that risk exist even for a trade with zero MTM at inception?</li>
+          <li>Using Section 08 vs. Section 01's callout, what would settlement look like for this same trade if it had instead been booked as a currency-pair NDF?</li>
+          <li>Using Section 12, why does an event-based (Kafka-style) architecture suit this lifecycle better than a single monolithic "update the trade" service call?</li>
+          <li>Using Section 04's enriched trade, what does the ISDA Taxonomy Path field tell a downstream system that the UPI field alone does not?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — CAD, like every other G10 currency, is fully convertible with no capital-account restrictions, so both currencies can and do physically exchange at maturity without special authorization; the NDF Flag field (N) captures this directly, and would flip to Y for a currency like INR that isn't fully convertible</h5>
+        <p>Section 01's callout contrasts the G10 default (CAD) against the INR example the module was originally built around.</p>
+
+        <h5>Q2 — Any two of: LEIs (which entities), UTI (which transaction, for regulatory pairing), UPI (which product template), ISDA Taxonomy Path (how the product is classified), Hedge Designation (is this formally linked to an offsetting exposure) — none exist on the raw capture record</h5>
+        <p>Section 04's enriched-trade example shows these fields appearing only after enrichment.</p>
+
+        <h5>Q3 — MTM measures value against today's market forward rate, not the fixed contract rate; the contract rate never moves, but the market's own forward rate moves every day</h5>
+        <div class="takeaway">Section 05's formula treats Contract Forward Rate as a constant and Current Forward Rate as the only variable.</div>
+
+        <h5>Q4 — Collateral reduces counterparty credit risk — that whichever party owes money on MTM doesn't pay if it defaults; this exists even at zero initial MTM because value can swing significantly by maturity</h5>
+        <p>Section 06's timeline shows the same trade ranging from -145,000 to +355,000 CAD over its life.</p>
+
+        <h5>Q5 — Only a single net USD cash payment would move, calculated against a reference fixing rate — no CAD would ever be exchanged (even though a USD/CAD trade essentially never is booked this way in practice)</h5>
+        <p>Section 01's callout and Section 08's physical settlement diagram, read together, describe exactly this contrast.</p>
+
+        <h5>Q6 — Different downstream consumers (risk, collateral, regulatory, accounting) each need to react to the same change independently and at their own pace, without a single blocking chain</h5>
+        <p>Section 12's Kafka flow shows one <code>valuation.updated</code> event fanning out to three services simultaneously.</p>
+
+        <h5>Q7 — The UPI identifies WHICH issued product-reference-data record matches; the ISDA Taxonomy Path is the human-readable classification the UPI's reference data was built from, telling a downstream system the asset class/base product/sub-product/transaction type without a lookup</h5>
+        <p><a href="../2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a> §5 covers this exact lineage — the taxonomy is the "grammar," the UPI reference data is the "dictionary" built from it.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Module 24 &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

@@ -1,6 +1,6 @@
 # Capital Markets — Self-Paced Learning Path
 
-A self-paced study plan for learning Capital Markets from an IT/reporting perspective — one recurring mental model, worked through 15 core modules plus 8 numbered deep-dive/reference modules (16–23) and standalone reference material:
+A self-paced study plan for learning Capital Markets from an IT/reporting perspective — one recurring mental model, worked through 15 core modules plus 9 numbered deep-dive/reference modules (16–24) and standalone reference material:
 
 ```
 Asset Class → Product → Instrument/Security → Trade → Valuation → Exposure/Risk → Collateral/Margin → Clearing & Settlement → Regulatory Reporting
@@ -24,6 +24,7 @@ Open **[`index.md`](./index.md)** (or **[`index.html`](./index.html)** for the s
     │   ├── module-19-interest-rate-swap-deep-dive.md         # Reference: IRS deep dive (no .html yet)
     │   ├── module-22-hedging-deep-dive.{md,html}             # Reference: Hedging deep dive
     │   ├── module-23-otc-forward-swap-option-deep-dive.{md,html}  # Reference: Forward/Swap/Option deep dive
+    │   ├── module-24-otc-derivative-usd-cad-forward-complete-lifecycle.{md,html}  # Module 24: full lifecycle walkthrough
     │   ├── abbreviations.{md,html}           # Acronym glossary
     │   ├── systems-landscape.{md,html}       # Front/Middle/Back Office systems by region
     │   └── Capital-Markets.docx               # Supplementary Word document
@@ -37,7 +38,7 @@ Open **[`index.md`](./index.md)** (or **[`index.html`](./index.html)** for the s
         └── SFTR architecture.docx, SFTR-Haircut.docx   # Supplementary Word documents
 ```
 
-Modules 16–23 are deep-dive/reference modules — each expands one topic the first 15 modules already touched into a full write-up. See `index.md`'s Modules table for the current numbered list.
+Modules 16–24 are deep-dive/reference modules — each expands one topic the first 15 modules already touched into a full write-up. See `index.md`'s Modules table for the current numbered list.
 
 Each module has a matching `.md` and `.html` version (same content). The `.md` files are the source of truth; edit those first.
 
