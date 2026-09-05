@@ -120,11 +120,11 @@ TRADE 3 — OTC DERIVATIVE
 
 The same four-layer mental model applies everywhere, but what actually settles at the bottom of it is different enough per asset class to justify a dedicated module later ([Module 4](./module-04-equity.md) for bonds, [Module 5](./module-05-fixed-income.md) for equity, [Module 6](./module-06-fx.md)/7 for derivatives).
 
-| Asset Class | Product | Instrument (example) | Identifier | "Size" field | What actually settles |
-|---|---|---|---|---|---|
-| Fixed Income | Government Bond | Canada 5% Bond 2035 | ISIN | Quantity (face value) | Face value + accrued interest |
-| Equity | Common Stock | Apple Inc. shares | Ticker / ISIN | Quantity (shares) | Shares + cash |
-| Derivatives (OTC) | Interest Rate Swap | 5Y CAD IRS | No ISIN typically (UPI under newer rules) | Notional (reference only) | Only net cash-flow differences |
+| Cash / Derivative | Asset Class | Product | Instrument (example) | Identifier | "Size" field | What actually settles |
+|---|---|---|---|---|---|---|
+| CASH | Fixed Income | Government Bond | Canada 5% Bond 2035 | ISIN | Quantity (face value) | Face value + accrued interest |
+| CASH | Equity | Common Stock | Apple Inc. shares | Ticker / ISIN | Quantity (shares) | Shares + cash |
+| DERIVATIVE | Derivatives (OTC) | Interest Rate Swap | 5Y CAD IRS | No ISIN typically (UPI under newer rules) | Notional (reference only) | Only net cash-flow differences |
 
 **Takeaway:** if you can name the Asset Class, Product, and Instrument, you can already guess what "settlement" will mean for that trade before ever opening [Module 4](./module-04-equity.md)/5/6 — bonds and equities move something real, OTC derivatives (mostly) don't.
 
@@ -329,18 +329,18 @@ FX FORWARD  —  Bank Of Toronto needs USD 10,000,000 in 3 months
 
 This extends Section 4's three-row table to the fuller set introduced in Sections 6–10 — the single reference table to come back to whenever you need to place an unfamiliar instrument.
 
-| Asset Class | Product | Example Instrument | Identifier | ISDA Classification (derivatives only) | What actually settles |
-|---|---|---|---|---|---|
-| Fixed Income | Government Bond | Canada 5% Bond 2035 | ISIN | n/a — cash instrument | Face value + accrued interest |
-| Fixed Income | Corporate Bond | Bank Of Toronto 4.5% Bond 2030 | ISIN | n/a — cash instrument | Face value + accrued interest |
-| Money Market | Commercial Paper | 90-Day CP — Bank Of Toronto | ISIN/CUSIP | n/a — cash instrument | Face value at maturity |
-| Equity | Common Stock | Apple Inc. shares | Ticker/ISIN | n/a — cash instrument | Shares + cash |
-| FX | FX Spot | USD/CAD spot | Currency pair | n/a — cash/spot, not a derivative | Both currencies, T+1/T+2 |
-| Interest Rate Derivative | Interest Rate Swap | 5Y CAD IRS | UPI (no ISIN) | Interest Rate / IRSwap / FixedFloat / Swap | Net cash flows only |
-| Credit Derivative | Credit Default Swap | 5Y CDS on Northern Rail Corp | UPI (no ISIN) | Credit / SingleName / Corporate / CreditDefaultSwap | Premium; contingent payout on default |
-| FX Derivative | FX Forward | 3M USD/CAD Forward | UPI (no ISIN) | Foreign Exchange / Forward / Deliverable / Forward | Both currencies, on the value date |
-| Equity Derivative | Equity Swap | TRS on Apple Inc. shares | UPI (no ISIN) | Equity / Swap / PriceReturn / Swap | Net cash flows tracking price + dividends |
-| Commodity Derivative | Commodity Swap | 1Y Brent Crude Swap | UPI (no ISIN) | Commodity / Energy / Oil / Swap | Net cash flows only |
+| Cash / Derivative | Asset Class | Product | Example Instrument | Identifier | ISDA Classification (derivatives only) | What actually settles |
+|---|---|---|---|---|---|---|
+| CASH | Fixed Income | Government Bond | Canada 5% Bond 2035 | ISIN | n/a — cash instrument | Face value + accrued interest |
+| CASH | Fixed Income | Corporate Bond | Bank Of Toronto 4.5% Bond 2030 | ISIN | n/a — cash instrument | Face value + accrued interest |
+| CASH | Money Market | Commercial Paper | 90-Day CP — Bank Of Toronto | ISIN/CUSIP | n/a — cash instrument | Face value at maturity |
+| CASH | Equity | Common Stock | Apple Inc. shares | Ticker/ISIN | n/a — cash instrument | Shares + cash |
+| CASH | FX | FX Spot | USD/CAD spot | Currency pair | n/a — cash/spot, not a derivative | Both currencies, T+1/T+2 |
+| DERIVATIVE | Interest Rate Derivative | Interest Rate Swap | 5Y CAD IRS | UPI (no ISIN) | Interest Rate / IRSwap / FixedFloat / Swap | Net cash flows only |
+| DERIVATIVE | Credit Derivative | Credit Default Swap | 5Y CDS on Northern Rail Corp | UPI (no ISIN) | Credit / SingleName / Corporate / CreditDefaultSwap | Premium; contingent payout on default |
+| DERIVATIVE | FX Derivative | FX Forward | 3M USD/CAD Forward | UPI (no ISIN) | Foreign Exchange / Forward / Deliverable / Forward | Both currencies, on the value date |
+| DERIVATIVE | Equity Derivative | Equity Swap | TRS on Apple Inc. shares | UPI (no ISIN) | Equity / Swap / PriceReturn / Swap | Net cash flows tracking price + dividends |
+| DERIVATIVE | Commodity Derivative | Commodity Swap | 1Y Brent Crude Swap | UPI (no ISIN) | Commodity / Energy / Oil / Swap | Net cash flows only |
 
 **Takeaway:** one quick way to sanity-check a reporting record — if it has an ISIN, it's almost certainly a cash instrument (top rows); if it has a UPI (Unique Product Identifier, the newer global standard replacing ad-hoc OTC identifiers) and an ISDA Taxonomy field instead, it's a derivative (bottom rows). That single distinction routes you to completely different downstream systems for valuation, collateral, and regulatory reporting (Modules 8–12).
 

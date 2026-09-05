@@ -558,12 +558,12 @@ BACKWARDATION (downward-sloping curve):
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>What it is</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>What it is</th></tr></thead>
         <tbody>
-          <tr><td><b>Physical Commodity</b></td><td>The actual tangible good — a 100oz Gold Bar, a barrel of crude, a tonne of wheat — bought and sold with physical delivery, storage, and title transfer</td></tr>
-          <tr><td><b>Commodity Future</b></td><td>A standardized, exchange-traded contract to buy/sell a set quantity of a commodity at a fixed price on a fixed future date — almost always closed out or rolled before delivery (Section 01)</td></tr>
-          <tr><td><b>Commodity Option</b></td><td>A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) a commodity future at a fixed strike, for a premium — same asymmetric payoff as <a href="./module-04-equity.html">Module 4</a> §4d and <a href="./module-06-fx.html">Module 6</a> §2</td></tr>
-          <tr><td><b>Commodity Swap</b></td><td>Two counterparties exchange cash flows over a period — one side pays a <b>fixed</b> price, the other pays a <b>floating</b> price referencing a published index (e.g. ICE Brent) — reusing <a href="./module-02-hierarchy.html">Module 2</a> §7's 1Y Brent Crude Oil Swap</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Physical Commodity</b></td><td>The actual tangible good — a 100oz Gold Bar, a barrel of crude, a tonne of wheat — bought and sold with physical delivery, storage, and title transfer</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Commodity Future</b></td><td>A standardized, exchange-traded contract to buy/sell a set quantity of a commodity at a fixed price on a fixed future date — almost always closed out or rolled before delivery (Section 01)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Commodity Option</b></td><td>A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) a commodity future at a fixed strike, for a premium — same asymmetric payoff as <a href="./module-04-equity.html">Module 4</a> §4d and <a href="./module-06-fx.html">Module 6</a> §2</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Commodity Swap</b></td><td>Two counterparties exchange cash flows over a period — one side pays a <b>fixed</b> price, the other pays a <b>floating</b> price referencing a published index (e.g. ICE Brent) — reusing <a href="./module-02-hierarchy.html">Module 2</a> §7's 1Y Brent Crude Oil Swap</td></tr>
         </tbody>
       </table>
       </div>
@@ -776,12 +776,12 @@ REPORTING — exchange-traded futures are reported to the CFTC
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
         <tbody>
-          <tr><td>Physical Commodity</td><td>OTC (dealer-to-dealer, or dealer-to-refiner/producer)</td><td>Bilateral (the norm — Section 04a)</td></tr>
-          <tr><td>Commodity Future</td><td><b>Exchange-traded</b> (CME, ICE, LME)</td><td>Centrally cleared from execution (Section 05)</td></tr>
-          <tr><td>Commodity Option</td><td>Mostly exchange-traded (options ON futures); some bespoke OTC</td><td>Centrally cleared if exchange-listed; bilateral if OTC (Section 04d's airline hedge is OTC-style, bespoke strike/expiry)</td></tr>
-          <tr><td>Commodity Swap</td><td>OTC</td><td>Mostly bilateral; a growing share clears via ICE Clear or LCH for standardized benchmarks (e.g. Brent, WTI)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Physical Commodity</td><td>OTC (dealer-to-dealer, or dealer-to-refiner/producer)</td><td>Bilateral (the norm — Section 04a)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Commodity Future</td><td><b>Exchange-traded</b> (CME, ICE, LME)</td><td>Centrally cleared from execution (Section 05)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Commodity Option</td><td>Mostly exchange-traded (options ON futures); some bespoke OTC</td><td>Centrally cleared if exchange-listed; bilateral if OTC (Section 04d's airline hedge is OTC-style, bespoke strike/expiry)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Commodity Swap</td><td>OTC</td><td>Mostly bilateral; a growing share clears via ICE Clear or LCH for standardized benchmarks (e.g. Brent, WTI)</td></tr>
         </tbody>
       </table>
       </div>

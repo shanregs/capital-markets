@@ -53,12 +53,12 @@ COMMODITIES
 └── Commodity Swaps        (periodic net cash flows referencing a commodity price index — Module 2 §7)
 ```
 
-| Product | What it is |
-|---|---|
-| **Physical Commodity** | The actual tangible good — a 100oz Gold Bar, a barrel of crude, a tonne of wheat — bought and sold with physical delivery, storage, and title transfer |
-| **Commodity Future** | A standardized, exchange-traded contract to buy/sell a set quantity of a commodity at a fixed price on a fixed future date — almost always closed out or rolled before delivery (Section 1) |
-| **Commodity Option** | A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) a commodity future at a fixed strike, for a premium — same asymmetric payoff as [Module 4](./module-04-equity.md) §4d and [Module 6](./module-06-fx.md) §2 |
-| **Commodity Swap** | Two counterparties exchange cash flows over a period — one side usually pays a **fixed** price, the other pays a **floating** price referencing a published index (e.g. ICE Brent) — reusing the exact structure from [Module 2](./module-02-hierarchy.md) §7's 1Y Brent Crude Oil Swap |
+| Cash / Derivative | Product | What it is |
+|---|---|---|
+| CASH | **Physical Commodity** | The actual tangible good — a 100oz Gold Bar, a barrel of crude, a tonne of wheat — bought and sold with physical delivery, storage, and title transfer |
+| DERIVATIVE | **Commodity Future** | A standardized, exchange-traded contract to buy/sell a set quantity of a commodity at a fixed price on a fixed future date — almost always closed out or rolled before delivery (Section 1) |
+| DERIVATIVE | **Commodity Option** | A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) a commodity future at a fixed strike, for a premium — same asymmetric payoff as [Module 4](./module-04-equity.md) §4d and [Module 6](./module-06-fx.md) §2 |
+| DERIVATIVE | **Commodity Swap** | Two counterparties exchange cash flows over a period — one side usually pays a **fixed** price, the other pays a **floating** price referencing a published index (e.g. ICE Brent) — reusing the exact structure from [Module 2](./module-02-hierarchy.md) §7's 1Y Brent Crude Oil Swap |
 
 > **A fifth product, briefly:** commodities also include the **Commodity Warrant** — an exchange-listed, long-dated call option issued *by a bank* (not written bilaterally the way Section 4d's option is) — economically closest to Section 2's Option, but issued and distributed more like a security. It's a niche product next to the other four and isn't covered with its own worked example here.
 
@@ -277,12 +277,12 @@ Commodities split cleanly along the Section 3 physical/contract line: physical g
 
 **Definition:** Commodities is the first asset class in this roadmap where the exchange-traded, centrally-cleared product (Futures) is genuinely the dominant, most liquid way most participants get commodity exposure — closer to [Module 4](./module-04-equity.md)'s Equity default than to [Module 5](./module-05-fixed-income.md)'s Fixed Income or [Module 6](./module-06-fx.md)'s FX defaults. Physical trades and OTC Swaps/Options remain bilateral.
 
-| Product | Exchange or OTC? | Bilateral or Centrally Cleared? |
-|---|---|---|
-| Physical Commodity | OTC (dealer-to-dealer, or dealer-to-refiner/producer) | Bilateral (the norm — Section 4a) |
-| Commodity Future | **Exchange-traded** (CME, ICE, LME) | Centrally cleared from execution (Section 05) |
-| Commodity Option | Mostly exchange-traded (options ON futures); some bespoke OTC | Centrally cleared if exchange-listed; bilateral if OTC (Section 4d's airline hedge is OTC-style, bespoke strike/expiry) |
-| Commodity Swap | OTC | Mostly bilateral; a growing share clears via ICE Clear or LCH for standardized benchmarks (e.g. Brent, WTI) |
+| Cash / Derivative | Product | Exchange or OTC? | Bilateral or Centrally Cleared? |
+|---|---|---|---|
+| CASH | Physical Commodity | OTC (dealer-to-dealer, or dealer-to-refiner/producer) | Bilateral (the norm — Section 4a) |
+| DERIVATIVE | Commodity Future | **Exchange-traded** (CME, ICE, LME) | Centrally cleared from execution (Section 05) |
+| DERIVATIVE | Commodity Option | Mostly exchange-traded (options ON futures); some bespoke OTC | Centrally cleared if exchange-listed; bilateral if OTC (Section 4d's airline hedge is OTC-style, bespoke strike/expiry) |
+| DERIVATIVE | Commodity Swap | OTC | Mostly bilateral; a growing share clears via ICE Clear or LCH for standardized benchmarks (e.g. Brent, WTI) |
 
 **Takeaway:** unlike every other module's single dominant default, Commodities genuinely splits down the middle by product — Futures behave like [Module 4](./module-04-equity.md)'s Equity (exchange, centrally cleared, novated instantly), while Physical and most Swaps behave like [Module 5](./module-05-fixed-income.md)'s Fixed Income or [Module 6](./module-06-fx.md)'s FX (OTC, bilateral). Knowing *which* Commodity product a trade record represents is the single fastest way to predict its whole downstream lifecycle.
 

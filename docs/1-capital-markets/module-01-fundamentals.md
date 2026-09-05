@@ -466,12 +466,12 @@ OTC  —  bilateral, privately negotiated
 
 Current standard conventions (as of 2026):
 
-| Product | Standard settlement |
-|---|---|
-| US & Canadian equities | T+1 (moved from T+2 in May 2024) |
-| Government / corporate bonds | T+1 or T+2, depending on market |
-| FX spot | T+2 for most pairs (T+1 for USD/CAD) |
-| OTC derivatives (e.g. Interest Rate Swaps) | No notional settles at all — only periodic net cash flows (see Section 8) |
+| Cash / Derivative | Product | Standard settlement |
+|---|---|---|
+| CASH | US & Canadian equities | T+1 (moved from T+2 in May 2024) |
+| CASH | Government / corporate bonds | T+1 or T+2, depending on market |
+| CASH | FX spot | T+2 for most pairs (T+1 for USD/CAD) |
+| DERIVATIVE | OTC derivatives (e.g. Interest Rate Swaps) | No notional settles at all — only periodic net cash flows (see Section 8) |
 
 ### Example 1 — no weekend in the way
 

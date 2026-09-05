@@ -48,12 +48,12 @@ EQUITY
     └── Equity Options
 ```
 
-| Product | What it is |
-|---|---|
-| **Common Stock** | Ordinary shares — one vote per share (typically), dividends at the board's full discretion, last claim on assets if the company is wound up |
-| **Preferred Stock** | A hybrid instrument — carries a *fixed dividend rate* like a bond coupon, but the dividend is still only paid if the board declares it; ranks ahead of common stock but behind all debt in bankruptcy; usually no voting rights |
-| **Equity Future** | An exchange-traded contract to buy/sell a stock or index at a future date at an agreed price today; index futures are typically cash-settled, not physically delivered |
-| **Equity Option** | A contract giving the buyer the **right, not the obligation**, to buy (call) or sell (put) shares at a fixed strike price, by or at expiry, in exchange for an upfront premium |
+| Cash / Derivative | Product | What it is |
+|---|---|---|
+| CASH | **Common Stock** | Ordinary shares — one vote per share (typically), dividends at the board's full discretion, last claim on assets if the company is wound up |
+| CASH | **Preferred Stock** | A hybrid instrument — carries a *fixed dividend rate* like a bond coupon, but the dividend is still only paid if the board declares it; ranks ahead of common stock but behind all debt in bankruptcy; usually no voting rights |
+| DERIVATIVE | **Equity Future** | An exchange-traded contract to buy/sell a stock or index at a future date at an agreed price today; index futures are typically cash-settled, not physically delivered |
+| DERIVATIVE | **Equity Option** | A contract giving the buyer the **right, not the obligation**, to buy (call) or sell (put) shares at a fixed strike price, by or at expiry, in exchange for an upfront premium |
 
 **Takeaway:** Common and Preferred Stock sit in the same "Cash Equity" bucket because both are real, deliverable securities — the difference between them is entirely about the *economics* of the claim (fixed-ish dividend, higher priority, no vote for Preferred vs. variable dividend, lowest priority, a vote for Common). Futures and Options sit in a different bucket entirely, because neither one *is* the stock — Section 3 makes this distinction concrete.
 
@@ -239,11 +239,11 @@ COCA-COLA COMMON STOCK  —  FULL LIFECYCLE
 
 ### How Clearing differs for the derivative products
 
-| Product | CCP | What "Clearing" adds |
-|---|---|---|
-| Common/Preferred Stock | NSCC (US example above) / CDCC / LCH / Eurex, per country ([systems-landscape](./systems-landscape.md) §04–07) | Multilateral netting before one T+1/T+2 DvP settlement |
-| Equity Future | CME Clearing | Novation ([Module 3](./module-03-trade-lifecycle.md) §06) plus **daily** Variation Margin for the life of the contract — Position and Valuation/P&amp;L are not a one-time check, they run every business day |
-| Listed Equity Option | **OCC (Options Clearing Corporation)** | Novation of the option contract itself; premium settles T+1; if exercised, a *separate* physical stock settlement follows T+1 after exercise |
+| Cash / Derivative | Product | CCP | What "Clearing" adds |
+|---|---|---|---|
+| CASH | Common/Preferred Stock | NSCC (US example above) / CDCC / LCH / Eurex, per country ([systems-landscape](./systems-landscape.md) §04–07) | Multilateral netting before one T+1/T+2 DvP settlement |
+| DERIVATIVE | Equity Future | CME Clearing | Novation ([Module 3](./module-03-trade-lifecycle.md) §06) plus **daily** Variation Margin for the life of the contract — Position and Valuation/P&amp;L are not a one-time check, they run every business day |
+| DERIVATIVE | Listed Equity Option | **OCC (Options Clearing Corporation)** | Novation of the option contract itself; premium settles T+1; if exercised, a *separate* physical stock settlement follows T+1 after exercise |
 
 > **A naming collision worth flagging:** "OCC" means two completely different things in US capital markets. Here, in an equities/derivatives context, it's the **Options Clearing Corporation** — the CCP for all US-listed equity options. In a banking/prudential context ([systems-landscape](./systems-landscape.md) §10), "OCC" instead means the **Office of the Comptroller of the Currency** — the regulator that charters and supervises national banks. Same acronym, same country, unrelated organizations — always check context.
 

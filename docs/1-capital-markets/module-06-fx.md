@@ -35,12 +35,12 @@ FX
 └── FX Options     (the RIGHT, not obligation, to exchange at a fixed rate)
 ```
 
-| Product | What it is |
-|---|---|
-| **FX Spot** | An agreement to exchange two currencies almost immediately — T+1 for most pairs, T+2 for a few ([Module 1](./module-01-fundamentals.md) §6) |
-| **FX Forward** | An agreement to exchange two currencies on a specified future date, at a rate fixed today ([Module 2](./module-02-hierarchy.md) §10's worked example) |
-| **FX Swap** | Two linked exchanges in opposite directions — a "near leg" (usually spot) and a "far leg" (a forward) — economically a short-term currency-denominated loan, not a long-dated interest rate product |
-| **FX Option** | A contract giving the buyer the right, not the obligation, to exchange currency at a fixed strike rate by/at expiry, for a premium |
+| Cash / Derivative | Product | What it is |
+|---|---|---|
+| CASH | **FX Spot** | An agreement to exchange two currencies almost immediately — T+1 for most pairs, T+2 for a few ([Module 1](./module-01-fundamentals.md) §6) |
+| DERIVATIVE | **FX Forward** | An agreement to exchange two currencies on a specified future date, at a rate fixed today ([Module 2](./module-02-hierarchy.md) §10's worked example) |
+| DERIVATIVE | **FX Swap** | Two linked exchanges in opposite directions — a "near leg" (usually spot) and a "far leg" (a forward) — economically a short-term currency-denominated loan, not a long-dated interest rate product |
+| DERIVATIVE | **FX Option** | A contract giving the buyer the right, not the obligation, to exchange currency at a fixed strike rate by/at expiry, for a premium |
 
 > **A naming trap:** "FX Swap" is **not** the same thing as a **Cross-Currency Swap** — a longer-dated product with periodic interest payments exchanged in two currencies over years, which behaves much more like the Interest Rate Swap from [Module 1](./module-01-fundamentals.md) §8 and belongs properly to [Module 8](./module-08-rates.md) (Rates). An FX Swap is short-dated (commonly overnight to one year) and has no periodic interest payments at all — just two exchanges of principal.
 
@@ -258,13 +258,13 @@ FX mostly doesn't use the identifiers Modules 4 and 5 relied on — there's no I
 
 **Definition:** the overwhelming majority of FX trades — Spot, Forward, Swap, and most Options — are **OTC and bilateral**, settled via CLS's PvP mechanism (Section 5) rather than novated to a CCP. A smaller but growing share of Forwards and NDFs clear centrally, and listed FX futures/options exist on exchange as a separate, smaller market.
 
-| Product | Exchange or OTC? | Bilateral or Centrally Cleared? |
-|---|---|---|
-| FX Spot | OTC | Bilateral (settled via CLS's PvP, not a CCP — Section 05) |
-| FX Forward | OTC | Mostly bilateral; a growing share clears via LCH ForexClear or CME (especially NDFs) |
-| FX Swap | OTC | Bilateral (the norm) |
-| FX Option | OTC | Mostly bilateral |
-| FX Futures/Options (listed) | **Exchange-traded** (e.g. CME) | Centrally cleared — a smaller, separate market from OTC FX, not in this module's four core products but worth knowing exists |
+| Cash / Derivative | Product | Exchange or OTC? | Bilateral or Centrally Cleared? |
+|---|---|---|---|
+| CASH | FX Spot | OTC | Bilateral (settled via CLS's PvP, not a CCP — Section 05) |
+| DERIVATIVE | FX Forward | OTC | Mostly bilateral; a growing share clears via LCH ForexClear or CME (especially NDFs) |
+| DERIVATIVE | FX Swap | OTC | Bilateral (the norm) |
+| DERIVATIVE | FX Option | OTC | Mostly bilateral |
+| DERIVATIVE | FX Futures/Options (listed) | **Exchange-traded** (e.g. CME) | Centrally cleared — a smaller, separate market from OTC FX, not in this module's four core products but worth knowing exists |
 
 **Takeaway:** FX is structurally closer to [Module 5](./module-05-fixed-income.md)'s Fixed Income (bilateral OTC as the default) than to [Module 4](./module-04-equity.md)'s Equity (centrally cleared as the default) — but FX adds a third mechanism, CLS's PvP, that neither of those two asset classes has: settlement-risk mitigation without a CCP's counterparty-risk mitigation. Bilateral counterparty risk ([Module 3](./module-03-trade-lifecycle.md) §6) and settlement risk (this module) are two different risks, and CLS only solves the second one.
 

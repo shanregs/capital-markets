@@ -400,14 +400,14 @@ This is one of the highest-priority modules.
 
 ### Compare valuation across trade types
 
-| Trade | Basic valuation idea |
-|---|---|
-| Equity | Price × Quantity |
-| Bond | Price + Accrued Interest |
-| FX Forward | Difference between contract and market forward |
-| IRS | PV of future cash-flow differences |
-| Option | Pricing model |
-| Repo | Cash/interest vs collateral value |
+| Cash / Derivative / SFT | Trade | Basic valuation idea |
+|---|---|---|
+| CASH | Equity | Price × Quantity |
+| CASH | Bond | Price + Accrued Interest |
+| DERIVATIVE | FX Forward | Difference between contract and market forward |
+| DERIVATIVE | IRS | PV of future cash-flow differences |
+| DERIVATIVE | Option | Pricing model |
+| SFT | Repo | Cash/interest vs collateral value |
 
 ### Goal
 

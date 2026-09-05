@@ -559,12 +559,12 @@
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>What it is</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>What it is</th></tr></thead>
         <tbody>
-          <tr><td><b>Common Stock</b></td><td>Ordinary shares — one vote per share (typically), dividends at the board's full discretion, last claim on assets if the company is wound up</td></tr>
-          <tr><td><b>Preferred Stock</b></td><td>A hybrid instrument — carries a fixed dividend rate like a bond coupon, but the dividend is still only paid if declared; ranks ahead of common stock but behind all debt in bankruptcy; usually no voting rights</td></tr>
-          <tr><td><b>Equity Future</b></td><td>An exchange-traded contract to buy/sell a stock or index at a future date at an agreed price; index futures are typically cash-settled</td></tr>
-          <tr><td><b>Equity Option</b></td><td>A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) shares at a fixed strike, by/at expiry, for an upfront premium</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Common Stock</b></td><td>Ordinary shares — one vote per share (typically), dividends at the board's full discretion, last claim on assets if the company is wound up</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Preferred Stock</b></td><td>A hybrid instrument — carries a fixed dividend rate like a bond coupon, but the dividend is still only paid if declared; ranks ahead of common stock but behind all debt in bankruptcy; usually no voting rights</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Equity Future</b></td><td>An exchange-traded contract to buy/sell a stock or index at a future date at an agreed price; index futures are typically cash-settled</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Equity Option</b></td><td>A contract giving the buyer the right, not the obligation, to buy (call) or sell (put) shares at a fixed strike, by/at expiry, for an upfront premium</td></tr>
         </tbody>
       </table>
       </div>
@@ -736,11 +736,11 @@ REPORTING — trade reported to the relevant Trade Repository/
       <h3>How Clearing differs for the derivative products</h3>
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>CCP</th><th>What "Clearing" adds</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>CCP</th><th>What "Clearing" adds</th></tr></thead>
         <tbody>
-          <tr><td>Common/Preferred Stock</td><td>NSCC (US example above) / CDCC / LCH / Eurex, per country</td><td>Multilateral netting before one T+1/T+2 DvP settlement</td></tr>
-          <tr><td>Equity Future</td><td>CME Clearing</td><td>Novation (<a href="./module-03-trade-lifecycle.html">Module 3</a> §06) plus <b>daily</b> Variation Margin for the life of the contract</td></tr>
-          <tr><td>Listed Equity Option</td><td><b>OCC</b> (Options Clearing Corporation)</td><td>Novation of the option; premium settles T+1; if exercised, a separate physical stock settlement follows T+1 after exercise</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Common/Preferred Stock</td><td>NSCC (US example above) / CDCC / LCH / Eurex, per country</td><td>Multilateral netting before one T+1/T+2 DvP settlement</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Equity Future</td><td>CME Clearing</td><td>Novation (<a href="./module-03-trade-lifecycle.html">Module 3</a> §06) plus <b>daily</b> Variation Margin for the life of the contract</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Listed Equity Option</td><td><b>OCC</b> (Options Clearing Corporation)</td><td>Novation of the option; premium settles T+1; if exercised, a separate physical stock settlement follows T+1 after exercise</td></tr>
         </tbody>
       </table>
       </div>

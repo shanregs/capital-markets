@@ -542,12 +542,12 @@
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>What it is</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>What it is</th></tr></thead>
         <tbody>
-          <tr><td><b>FX Spot</b></td><td>An agreement to exchange two currencies almost immediately — T+1 for most pairs, T+2 for a few (<a href="./module-01-fundamentals.html">Module 1</a> §6)</td></tr>
-          <tr><td><b>FX Forward</b></td><td>An agreement to exchange two currencies on a specified future date, at a rate fixed today (<a href="./module-02-hierarchy.html">Module 2</a> §10's worked example)</td></tr>
-          <tr><td><b>FX Swap</b></td><td>Two linked exchanges in opposite directions — a "near leg" (usually spot) and a "far leg" (a forward) — economically a short-term currency-denominated loan, not a long-dated interest rate product</td></tr>
-          <tr><td><b>FX Option</b></td><td>A contract giving the buyer the right, not the obligation, to exchange currency at a fixed strike rate by/at expiry, for a premium</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>FX Spot</b></td><td>An agreement to exchange two currencies almost immediately — T+1 for most pairs, T+2 for a few (<a href="./module-01-fundamentals.html">Module 1</a> §6)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>FX Forward</b></td><td>An agreement to exchange two currencies on a specified future date, at a rate fixed today (<a href="./module-02-hierarchy.html">Module 2</a> §10's worked example)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>FX Swap</b></td><td>Two linked exchanges in opposite directions — a "near leg" (usually spot) and a "far leg" (a forward) — economically a short-term currency-denominated loan, not a long-dated interest rate product</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>FX Option</b></td><td>A contract giving the buyer the right, not the obligation, to exchange currency at a fixed strike rate by/at expiry, for a premium</td></tr>
         </tbody>
       </table>
       </div>
@@ -755,13 +755,13 @@ WITH CLS (PvP):
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
         <tbody>
-          <tr><td>FX Spot</td><td>OTC</td><td>Bilateral (settled via CLS's PvP, not a CCP — Section 05)</td></tr>
-          <tr><td>FX Forward</td><td>OTC</td><td>Mostly bilateral; a growing share clears via LCH ForexClear or CME (especially NDFs)</td></tr>
-          <tr><td>FX Swap</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
-          <tr><td>FX Option</td><td>OTC</td><td>Mostly bilateral</td></tr>
-          <tr><td>FX Futures/Options (listed)</td><td><b>Exchange-traded</b> (e.g. CME)</td><td>Centrally cleared — a smaller, separate market from OTC FX, not in this module's four core products but worth knowing exists</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>FX Spot</td><td>OTC</td><td>Bilateral (settled via CLS's PvP, not a CCP — Section 05)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>FX Forward</td><td>OTC</td><td>Mostly bilateral; a growing share clears via LCH ForexClear or CME (especially NDFs)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>FX Swap</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>FX Option</td><td>OTC</td><td>Mostly bilateral</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>FX Futures/Options (listed)</td><td><b>Exchange-traded</b> (e.g. CME)</td><td>Centrally cleared — a smaller, separate market from OTC FX, not in this module's four core products but worth knowing exists</td></tr>
         </tbody>
       </table>
       </div>

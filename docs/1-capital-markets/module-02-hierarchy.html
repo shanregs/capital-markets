@@ -648,11 +648,11 @@ TRADE 3 — OTC DERIVATIVE
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Asset Class</th><th>Product</th><th>Instrument (example)</th><th>Identifier</th><th>"Size" field</th><th>What actually settles</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Asset Class</th><th>Product</th><th>Instrument (example)</th><th>Identifier</th><th>"Size" field</th><th>What actually settles</th></tr></thead>
         <tbody>
-          <tr><td><b>Fixed Income</b></td><td>Government Bond</td><td>Canada 5% Bond 2035</td><td>ISIN</td><td>Quantity (face value)</td><td>Face value + accrued interest</td></tr>
-          <tr><td><b>Equity</b></td><td>Common Stock</td><td>Apple Inc. shares</td><td>Ticker / ISIN</td><td>Quantity (shares)</td><td>Shares + cash</td></tr>
-          <tr><td><b>Derivatives (OTC)</b></td><td>Interest Rate Swap</td><td>5Y CAD IRS</td><td>No ISIN typically (UPI under newer rules)</td><td>Notional (reference only)</td><td>Only net cash-flow differences</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Fixed Income</b></td><td>Government Bond</td><td>Canada 5% Bond 2035</td><td>ISIN</td><td>Quantity (face value)</td><td>Face value + accrued interest</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Equity</b></td><td>Common Stock</td><td>Apple Inc. shares</td><td>Ticker / ISIN</td><td>Quantity (shares)</td><td>Shares + cash</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Derivatives (OTC)</b></td><td>Interest Rate Swap</td><td>5Y CAD IRS</td><td>No ISIN typically (UPI under newer rules)</td><td>Notional (reference only)</td><td>Only net cash-flow differences</td></tr>
         </tbody>
       </table>
       </div>
@@ -876,18 +876,18 @@ Bank Of Toronto agrees TODAY with Goldman Sachs:
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Asset Class</th><th>Product</th><th>Example Instrument</th><th>Identifier</th><th>ISDA Classification</th><th>What actually settles</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Asset Class</th><th>Product</th><th>Example Instrument</th><th>Identifier</th><th>ISDA Classification</th><th>What actually settles</th></tr></thead>
         <tbody>
-          <tr><td>Fixed Income</td><td>Government Bond</td><td>Canada 5% Bond 2035</td><td><span class="id-tag">ISIN</span></td><td>n/a — cash instrument</td><td>Face value + accrued interest</td></tr>
-          <tr><td>Fixed Income</td><td>Corporate Bond</td><td>Bank Of Toronto 4.5% Bond 2030</td><td><span class="id-tag">ISIN</span></td><td>n/a — cash instrument</td><td>Face value + accrued interest</td></tr>
-          <tr><td>Money Market</td><td>Commercial Paper</td><td>90-Day CP — Bank Of Toronto</td><td><span class="id-tag">ISIN/CUSIP</span></td><td>n/a — cash instrument</td><td>Face value at maturity</td></tr>
-          <tr><td>Equity</td><td>Common Stock</td><td>Apple Inc. shares</td><td><span class="id-tag">Ticker/ISIN</span></td><td>n/a — cash instrument</td><td>Shares + cash</td></tr>
-          <tr><td>FX</td><td>FX Spot</td><td>USD/CAD spot</td><td><span class="id-tag">Currency pair</span></td><td>n/a — cash/spot, not a derivative</td><td>Both currencies, T+1/T+2</td></tr>
-          <tr><td>Interest Rate Derivative</td><td>Interest Rate Swap</td><td>5Y CAD IRS</td><td><span class="id-tag gold">UPI</span></td><td>Interest Rate / IRSwap / FixedFloat / Swap</td><td>Net cash flows only</td></tr>
-          <tr><td>Credit Derivative</td><td>Credit Default Swap</td><td>5Y CDS on Northern Rail Corp</td><td><span class="id-tag gold">UPI</span></td><td>Credit / SingleName / Corporate / CreditDefaultSwap</td><td>Premium; contingent payout on default</td></tr>
-          <tr><td>FX Derivative</td><td>FX Forward</td><td>3M USD/CAD Forward</td><td><span class="id-tag gold">UPI</span></td><td>Foreign Exchange / Forward / Deliverable / Forward</td><td>Both currencies, on the value date</td></tr>
-          <tr><td>Equity Derivative</td><td>Equity Swap</td><td>TRS on Apple Inc. shares</td><td><span class="id-tag gold">UPI</span></td><td>Equity / Swap / PriceReturn / Swap</td><td>Net cash flows tracking price + dividends</td></tr>
-          <tr><td>Commodity Derivative</td><td>Commodity Swap</td><td>1Y Brent Crude Swap</td><td><span class="id-tag gold">UPI</span></td><td>Commodity / Energy / Oil / Swap</td><td>Net cash flows only</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Fixed Income</td><td>Government Bond</td><td>Canada 5% Bond 2035</td><td><span class="id-tag">ISIN</span></td><td>n/a — cash instrument</td><td>Face value + accrued interest</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Fixed Income</td><td>Corporate Bond</td><td>Bank Of Toronto 4.5% Bond 2030</td><td><span class="id-tag">ISIN</span></td><td>n/a — cash instrument</td><td>Face value + accrued interest</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Money Market</td><td>Commercial Paper</td><td>90-Day CP — Bank Of Toronto</td><td><span class="id-tag">ISIN/CUSIP</span></td><td>n/a — cash instrument</td><td>Face value at maturity</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Equity</td><td>Common Stock</td><td>Apple Inc. shares</td><td><span class="id-tag">Ticker/ISIN</span></td><td>n/a — cash instrument</td><td>Shares + cash</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>FX</td><td>FX Spot</td><td>USD/CAD spot</td><td><span class="id-tag">Currency pair</span></td><td>n/a — cash/spot, not a derivative</td><td>Both currencies, T+1/T+2</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Interest Rate Derivative</td><td>Interest Rate Swap</td><td>5Y CAD IRS</td><td><span class="id-tag gold">UPI</span></td><td>Interest Rate / IRSwap / FixedFloat / Swap</td><td>Net cash flows only</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Credit Derivative</td><td>Credit Default Swap</td><td>5Y CDS on Northern Rail Corp</td><td><span class="id-tag gold">UPI</span></td><td>Credit / SingleName / Corporate / CreditDefaultSwap</td><td>Premium; contingent payout on default</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>FX Derivative</td><td>FX Forward</td><td>3M USD/CAD Forward</td><td><span class="id-tag gold">UPI</span></td><td>Foreign Exchange / Forward / Deliverable / Forward</td><td>Both currencies, on the value date</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Equity Derivative</td><td>Equity Swap</td><td>TRS on Apple Inc. shares</td><td><span class="id-tag gold">UPI</span></td><td>Equity / Swap / PriceReturn / Swap</td><td>Net cash flows tracking price + dividends</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Commodity Derivative</td><td>Commodity Swap</td><td>1Y Brent Crude Swap</td><td><span class="id-tag gold">UPI</span></td><td>Commodity / Energy / Oil / Swap</td><td>Net cash flows only</td></tr>
         </tbody>
       </table>
       </div>

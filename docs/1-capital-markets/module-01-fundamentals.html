@@ -913,12 +913,12 @@ BACK OFFICE
       <p class="lede"><b>T</b> ("Trade Date") is the day the trade is agreed. <b>T+n</b> ("Settlement Date") is n <b>business days</b> later — weekends and market holidays don't count, which is why T+2 isn't just "add 2 to the calendar date."</p>
 
       <table>
-        <thead><tr><th>Product</th><th>Standard settlement</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Product</th><th>Standard settlement</th></tr></thead>
         <tbody>
-          <tr><td><b>US &amp; Canadian equities</b></td><td>T+1 (moved from T+2 in May 2024)</td></tr>
-          <tr><td><b>Government / corporate bonds</b></td><td>T+1 or T+2, depending on market</td></tr>
-          <tr><td><b>FX spot</b></td><td>T+2 for most pairs (T+1 for USD/CAD)</td></tr>
-          <tr><td><b>OTC derivatives (e.g. IR Swaps)</b></td><td>No notional settles — only periodic net cash flows (Section 08)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>US &amp; Canadian equities</b></td><td>T+1 (moved from T+2 in May 2024)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Government / corporate bonds</b></td><td>T+1 or T+2, depending on market</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>FX spot</b></td><td>T+2 for most pairs (T+1 for USD/CAD)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>OTC derivatives (e.g. IR Swaps)</b></td><td>No notional settles — only periodic net cash flows (Section 08)</td></tr>
         </tbody>
       </table>
 
