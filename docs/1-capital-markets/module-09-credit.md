@@ -100,6 +100,8 @@ CDS (CONTRACT)  vs  REFERENCE OBLIGATION (SECURITY IT POINTS TO)
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked example available.** See [Credit Default Swap (CDS) — Complete Example](../../examples/Credit_Default_Swap_CDS_Complete_Example.md) ([HTML](../../examples/Credit_Default_Swap_CDS_Complete_Example.html)) for the full Northstar Resources Inc. trade — Running Coupon, Upfront Payment, MTM, and a Credit Event payout — through the complete trade lifecycle.
+
 ### 4a. Single-Name CDS — Trade Inception
 
 ```text

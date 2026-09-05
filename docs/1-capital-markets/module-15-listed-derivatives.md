@@ -94,6 +94,8 @@ OTC CONTRACT (NEGOTIATED)  vs  LISTED CONTRACT (STANDARDIZED)
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked example available.** See [Listed Futures & Listed Options — Complete Example](../../examples/Listed_Futures_and_Options_Complete_Example.md) ([HTML](../../examples/Listed_Futures_and_Options_Complete_Example.html)) for the full CME 10-Year T-Note Future hedge and the AAPL listed call option, both taken through the complete trade lifecycle.
+
 ### 4a. Equity Index Future — recap
 
 Full worked example in **[Module 4](./module-04-equity.md) §4c**: Maple Leaf Pension Fund buys 20 E-mini S&amp;P 500 futures @ 5,920.00, notional USD 5,920,000, USD 50/point multiplier, daily variation margin against CME Clearing.

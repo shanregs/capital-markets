@@ -89,6 +89,8 @@ FOUR PURE CONTRACTS  vs  ONE CONTRACT-ON-A-SECURITY
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked examples available.** This module's products form a connected lesson chain, each with its own full standalone example: [Interest Rate Swap (IRS)](../../examples/Interest_Rate_Swap_IRS_Complete_Example.md) ([HTML](../../examples/Interest_Rate_Swap_IRS_Complete_Example.html)) → [FRA](../../examples/FRA_Forward_Rate_Agreement_Complete_Example.md) ([HTML](../../examples/FRA_Forward_Rate_Agreement_Complete_Example.html)) → [Cap](../../examples/Interest_Rate_Cap_Complete_Example.md) ([HTML](../../examples/Interest_Rate_Cap_Complete_Example.html)) → [Floor](../../examples/Interest_Rate_Floor_Complete_Example.md) ([HTML](../../examples/Interest_Rate_Floor_Complete_Example.html)) → [Collar](../../examples/Interest_Rate_Collar_Complete_Example.md) ([HTML](../../examples/Interest_Rate_Collar_Complete_Example.html)) → [Swaption](../../examples/Swaption_Complete_Example.md) ([HTML](../../examples/Swaption_Complete_Example.html)) → [Cross-Currency Swap](../../examples/Cross_Currency_Swap_Complete_Example.md) ([HTML](../../examples/Cross_Currency_Swap_Complete_Example.html)).
+
 ### 4a. Interest Rate Swap
 
 Reusing [Module 1](./module-01-fundamentals.md) §8's worked example directly:

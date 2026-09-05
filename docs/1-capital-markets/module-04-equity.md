@@ -86,6 +86,8 @@ Equity Option (CONTRACT):
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked examples available.** For the cash equity trade below, see [Cash Equity Trade — Complete Example](../../examples/Cash_Equity_Trade_Complete_Example.md) ([HTML](../../examples/Cash_Equity_Trade_Complete_Example.html)). For the derivative side of this asset class, see [Equity Total Return Swap — Complete Example](../../examples/Equity_Total_Return_Swap_Complete_Example.md) ([HTML](../../examples/Equity_Total_Return_Swap_Complete_Example.html)) — both walk the full trade lifecycle with real numbers.
+
 ### 4a. Common Stock
 
 ```text

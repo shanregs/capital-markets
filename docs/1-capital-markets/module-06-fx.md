@@ -84,6 +84,8 @@ FX PRODUCTS  —  ALL CONTRACTS, NO "SECURITY" EQUIVALENT
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked examples available.** [FX Spot — Complete Example](../../examples/FX_Spot_Complete_Example.md) ([HTML](../../examples/FX_Spot_Complete_Example.html)), [FX Forward — Complete Example](../../examples/FX_Forward_Complete_Example.md) ([HTML](../../examples/FX_Forward_Complete_Example.html)), and [FX Option — Complete USD/CAD Example](../../examples/FX_Option_Complete_USDCAD_Example.md) ([HTML](../../examples/FX_Option_Complete_USDCAD_Example.html)) each walk one of this section's products through the full trade lifecycle with real numbers.
+
 ### 4a. FX Spot
 
 ```text

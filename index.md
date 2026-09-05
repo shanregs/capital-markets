@@ -60,6 +60,59 @@ These two stay outside the module numbering by design — both are cross-cutting
 
 ---
 
+## Complete Worked Examples
+
+Standalone, numbers-first worked examples under [`examples/`](./examples/) — each one walks a single trade end-to-end (Business Scenario → Trade Economics → worked numeric scenarios → Valuation/MTM → Trade Lifecycle → Trade Capture → Confirmation → Regulatory Reporting → a comparison table against the nearest related product). These sit alongside the Modules table above rather than replacing it — each links back to the module(s) that introduce the underlying concept.
+
+### Cash Instruments
+
+| Example | Relates to | Markdown | HTML |
+|---|---|---|---|
+| Cash Equity Trade | [Module 4 — Equity](./docs/1-capital-markets/module-04-equity.md) | [Cash_Equity_Trade_Complete_Example.md](./examples/Cash_Equity_Trade_Complete_Example.md) | [HTML](./examples/Cash_Equity_Trade_Complete_Example.html) |
+| Fixed Income Bond Trade | [Module 5 — Fixed Income](./docs/1-capital-markets/module-05-fixed-income.md) | [Fixed_Income_Bond_Complete_Example.md](./examples/Fixed_Income_Bond_Complete_Example.md) | [HTML](./examples/Fixed_Income_Bond_Complete_Example.html) |
+| FX Spot Trade | [Module 6 — FX](./docs/1-capital-markets/module-06-fx.md) | [FX_Spot_Complete_Example.md](./examples/FX_Spot_Complete_Example.md) | [HTML](./examples/FX_Spot_Complete_Example.html) |
+| Physical Commodity Trade | [Module 7 — Commodities](./docs/1-capital-markets/module-07-commodities.md) | [Commodity_Physical_Complete_Example.md](./examples/Commodity_Physical_Complete_Example.md) | [HTML](./examples/Commodity_Physical_Complete_Example.html) |
+
+### Securities Financing (SFT)
+
+| Example | Relates to | Markdown | HTML |
+|---|---|---|---|
+| Repo / Securities Financing Transaction | [Module 5 §8](./docs/1-capital-markets/module-05-fixed-income.md), [Module 16 — SFTR](./docs/2-reporting/module-16-sftr-reporting.md) | [Repo_Securities_Financing_Complete_Example.md](./examples/Repo_Securities_Financing_Complete_Example.md) | [HTML](./examples/Repo_Securities_Financing_Complete_Example.html) |
+
+### OTC Derivatives — Rates Chain (FRA → CDS)
+
+Reads best in order — each lesson links to the next: **FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS**.
+
+| Example | Relates to | Markdown | HTML |
+|---|---|---|---|
+| Interest Rate Swap (IRS) | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md), [Module 19 — IRS Deep Dive](./docs/1-capital-markets/module-19-interest-rate-swap-deep-dive.md) | [Interest_Rate_Swap_IRS_Complete_Example.md](./examples/Interest_Rate_Swap_IRS_Complete_Example.md) | [HTML](./examples/Interest_Rate_Swap_IRS_Complete_Example.html) |
+| FRA — Forward Rate Agreement | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md) | [FRA_Forward_Rate_Agreement_Complete_Example.md](./examples/FRA_Forward_Rate_Agreement_Complete_Example.md) | [HTML](./examples/FRA_Forward_Rate_Agreement_Complete_Example.html) |
+| Interest Rate Cap | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md) | [Interest_Rate_Cap_Complete_Example.md](./examples/Interest_Rate_Cap_Complete_Example.md) | [HTML](./examples/Interest_Rate_Cap_Complete_Example.html) |
+| Interest Rate Floor | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md) | [Interest_Rate_Floor_Complete_Example.md](./examples/Interest_Rate_Floor_Complete_Example.md) | [HTML](./examples/Interest_Rate_Floor_Complete_Example.html) |
+| Interest Rate Collar | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md) | [Interest_Rate_Collar_Complete_Example.md](./examples/Interest_Rate_Collar_Complete_Example.md) | [HTML](./examples/Interest_Rate_Collar_Complete_Example.html) |
+| Swaption | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md) | [Swaption_Complete_Example.md](./examples/Swaption_Complete_Example.md) | [HTML](./examples/Swaption_Complete_Example.html) |
+| Cross-Currency Swap | [Module 8 — Rates](./docs/1-capital-markets/module-08-rates.md), [Module 6 — FX](./docs/1-capital-markets/module-06-fx.md) | [Cross_Currency_Swap_Complete_Example.md](./examples/Cross_Currency_Swap_Complete_Example.md) | [HTML](./examples/Cross_Currency_Swap_Complete_Example.html) |
+| Credit Default Swap (CDS) | [Module 9 — Credit](./docs/1-capital-markets/module-09-credit.md) | [Credit_Default_Swap_CDS_Complete_Example.md](./examples/Credit_Default_Swap_CDS_Complete_Example.md) | [HTML](./examples/Credit_Default_Swap_CDS_Complete_Example.html) |
+
+### OTC Derivatives — Other Asset Classes
+
+| Example | Relates to | Markdown | HTML |
+|---|---|---|---|
+| FX Forward | [Module 6 — FX](./docs/1-capital-markets/module-06-fx.md), [Module 2 §10](./docs/1-capital-markets/module-02-hierarchy.md), [Module 24](./docs/1-capital-markets/module-24-otc-derivative-usd-cad-forward-complete-lifecycle.md) | [FX_Forward_Complete_Example.md](./examples/FX_Forward_Complete_Example.md) | [HTML](./examples/FX_Forward_Complete_Example.html) |
+| FX Option | [Module 6 — FX](./docs/1-capital-markets/module-06-fx.md) | [FX_Option_Complete_USDCAD_Example.md](./examples/FX_Option_Complete_USDCAD_Example.md) | [HTML](./examples/FX_Option_Complete_USDCAD_Example.html) |
+| Commodity Swap | [Module 7 — Commodities](./docs/1-capital-markets/module-07-commodities.md) | [Commodity_Swap_Complete_Example.md](./examples/Commodity_Swap_Complete_Example.md) | [HTML](./examples/Commodity_Swap_Complete_Example.html) |
+| Equity Total Return Swap (TRS) | [Module 4 — Equity](./docs/1-capital-markets/module-04-equity.md), [Module 23](./docs/1-capital-markets/module-23-otc-forward-swap-option-deep-dive.md) | [Equity_Total_Return_Swap_Complete_Example.md](./examples/Equity_Total_Return_Swap_Complete_Example.md) | [HTML](./examples/Equity_Total_Return_Swap_Complete_Example.html) |
+
+### Listed Derivatives
+
+| Example | Relates to | Markdown | HTML |
+|---|---|---|---|
+| Listed Futures & Listed Options | [Module 15 — Listed Derivatives](./docs/1-capital-markets/module-15-listed-derivatives.md) | [Listed_Futures_and_Options_Complete_Example.md](./examples/Listed_Futures_and_Options_Complete_Example.md) | [HTML](./examples/Listed_Futures_and_Options_Complete_Example.html) |
+
+Example bank used throughout: **Canada Bank of Toronto (CBT)** in the FRA→CDS rates chain and the FX Option example; **Bank Of Toronto** in every other example — both fictional, for illustration only.
+
+---
+
 ## Conventions for every module
 
 - Each module file follows: **Concept → Real trade example (with numbers) → Actors involved → ASCII flow diagram → Takeaway → Recap quiz.**

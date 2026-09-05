@@ -289,6 +289,8 @@ SCENARIO B — Northern Rail Corp (the reference entity) defaults during the 5 y
 
 **Definition:** An FX Forward locks in today an exchange rate for a currency exchange that will actually happen on a future date. Unlike FX Spot ([Module 1](./module-01-fundamentals.md), settled T+1/T+2), a Forward's value date can be weeks or months out — useful for hedging a known future cash need without being exposed to rate movement between now and then.
 
+> **Complete worked example available.** See [FX Forward — Complete Example](../../examples/FX_Forward_Complete_Example.md) ([HTML](../../examples/FX_Forward_Complete_Example.html)) for this exact trade taken through the full lifecycle — trade capture, MTM, settlement, and regulatory reporting.
+
 ```text
 FX FORWARD  —  Bank Of Toronto needs USD 10,000,000 in 3 months
 ========================================================================
@@ -412,6 +414,8 @@ ONE PRODUCT (ONE UPI) -- THREE UNRELATED TRADES (THREE UTIs)
 ## 13. Worked Example — Interest Rate Swap (IRS)
 
 **Definition:** an IRS is an agreement to exchange a **fixed** stream of interest payments for a **floating** stream, both calculated off the same **Notional** ([Module 1](./module-01-fundamentals.md) §8), which itself never changes hands. Unlike Section 9's CDS (a contingent payout that may never happen) or Section 10's FX Forward (two real currency amounts that eventually settle), an IRS's notional **never settles at all** — only a small net difference moves, and it moves **every single period**, not once at maturity.
+
+> **Complete worked example available.** See [Interest Rate Swap (IRS) — Complete Example](../../examples/Interest_Rate_Swap_IRS_Complete_Example.md) ([HTML](../../examples/Interest_Rate_Swap_IRS_Complete_Example.html)) — the first lesson in a connected FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS chain of standalone examples under [`examples/`](../../examples/).
 
 ```text
 INTEREST RATE SWAP  —  Bank Of Toronto pays fixed, receives floating vs CORRA

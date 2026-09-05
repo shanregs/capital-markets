@@ -101,6 +101,8 @@ PHYSICAL COMMODITY (TANGIBLE GOOD)  vs  DERIVATIVE (PRICE-REFERENCING CONTRACT)
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked examples available.** [Physical Commodity Trade — Complete Example](../../examples/Commodity_Physical_Complete_Example.md) ([HTML](../../examples/Commodity_Physical_Complete_Example.html)) and [Commodity Swap — Complete Example](../../examples/Commodity_Swap_Complete_Example.md) ([HTML](../../examples/Commodity_Swap_Complete_Example.html)) walk the cash and derivative sides of this asset class through the full trade lifecycle with real numbers.
+
 ### 4a. Physical Commodity
 
 ```text

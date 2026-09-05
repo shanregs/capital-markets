@@ -119,6 +119,8 @@ BOND (SECURITY)  vs  REPO (CONTRACT)
 
 ## 4. Real-World Trade Examples — Buyer → Seller → Trade
 
+> **Complete worked examples available.** For the government bond trade below, see [Fixed Income Bond Trade — Complete Example](../../examples/Fixed_Income_Bond_Complete_Example.md) ([HTML](../../examples/Fixed_Income_Bond_Complete_Example.html)). For this module's repo trade, see [Repo / Securities Financing — Complete Example](../../examples/Repo_Securities_Financing_Complete_Example.md) ([HTML](../../examples/Repo_Securities_Financing_Complete_Example.html)) — both walk the full trade lifecycle with real numbers.
+
 ### 4a. Government Bond
 
 ```text

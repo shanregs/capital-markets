@@ -949,6 +949,22 @@ Report 4 — TERMINATION (Tue 18-Aug, by Wed 19-Aug T+1)
       </div>
 
       <div class="takeaway"><b>Takeaway.</b> Even a plain overnight repo — the simplest possible SFT — generates at minimum a New and a Termination report, and potentially a Valuation Update and a Reuse report depending on what Goldman Sachs does with the collateral before returning it. A month-long term repo with several collateral substitutions would generate many more discrete reports across that period, all tied together by one UTI (except the Reuse report, which stands alone).</div>
+
+      <p><b>The "submit to REGIS-TR" step, in practice:</b> Bank Of Toronto's back office rarely builds and formats the raw SFTR XML message by hand. A reporting-technology vendor such as <b>Cappitech</b> (Section 09) typically sits between the bank's internal trade/collateral systems and the chosen Trade Repository — validating field completeness, mapping internal data onto the regulator's schema, and handling the actual submission (and any rejection/resubmission cycle) to REGIS-TR, DTCC, or UnaVista on the bank's behalf:</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Flow · Trade to Regulator</span><span class="t-id">Reporting technology in the middle</span></div>
+        <pre>Bank Of Toronto's Trade/Collateral Systems
+        |
+        v
+Reporting Technology Vendor (e.g. Cappitech) -- validates, maps, formats
+        |
+        v
+Trade Repository (REGIS-TR / DTCC / UnaVista) -- accepts, pairs UTIs
+        |
+        v
+Regulator (ESMA / FCA) -- draws down TR data for market oversight</pre>
+      </div>
     </section>
 
     <section class="mod" id="links">
@@ -966,6 +982,7 @@ Report 4 — TERMINATION (Tue 18-Aug, by Wed 19-Aug T+1)
           <tr><td><b>DTCC</b></td><td>Authorized Trade Repository accepting SFTR (and EMIR) reports</td><td><a href="https://www.dtcc.com" target="_blank" rel="noopener">www.dtcc.com</a></td></tr>
           <tr><td><b>LSEG UnaVista</b></td><td>Authorized Trade Repository for SFTR/EMIR/MiFIR reporting</td><td><a href="https://www.lseg.com" target="_blank" rel="noopener">www.lseg.com</a></td></tr>
           <tr><td><b>REGIS-TR</b></td><td>The Trade Repository used in this module's worked examples</td><td><a href="https://www.regis-tr.com" target="_blank" rel="noopener">www.regis-tr.com</a></td></tr>
+          <tr><td><b>Cappitech</b> (S&amp;P Global)</td><td>Not a Trade Repository itself — a regulatory reporting technology platform (an ARM-style vendor) banks use to generate, validate, and submit SFTR (and EMIR/MiFIR) reports <i>to</i> a Trade Repository like DTCC, UnaVista, or REGIS-TR</td><td><a href="https://www.cappitech.com" target="_blank" rel="noopener">www.cappitech.com</a></td></tr>
           <tr><td><b>FSB</b></td><td>Global post-crisis shadow-banking workstream SFTR implements</td><td><a href="https://www.fsb.org" target="_blank" rel="noopener">www.fsb.org</a></td></tr>
         </tbody>
       </table>

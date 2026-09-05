@@ -565,7 +565,23 @@
       </table>
       </div>
 
-      <div class="takeaway"><b>Takeaway.</b> If you're ever handed an unfamiliar field in a trade record and asked "where does this come from?", the fastest diagnostic is to place it on this nine-stage timeline — the stage tells you which office produced it and which upstream system owns the source of truth.</div>
+      <p>The systems sitting behind those three offices are <b>not</b> the same system for every trade — they differ by asset class. The table below is a Bank Of Toronto-wide snapshot, pulling together each asset class's own Front/Middle/Back Office systems (already introduced in that asset class's own module §9) into one side-by-side view; see <a href="./systems-landscape.html">systems-landscape</a> for the fuller per-country picture these are drawn from.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Capital Market Entity</th><th>Front Office Systems</th><th>Middle Office Systems</th><th>Back Office / Clearing Systems</th></tr></thead>
+        <tbody>
+          <tr><td><b>Equity</b> (<a href="./module-04-equity.html">Module 4</a> §9)</td><td>OMS/EMS (e.g. Bloomberg AIM, Charles River IMS, or Eze OMS — illustrative), FIX-connected smart order router</td><td>Trade capture/confirmation; CIRO market-surveillance feed under UMIR; Murex/Calypso for any equity-derivative overlay</td><td><b>CDS/CDSX</b> (CNS, DvP book-entry settlement, T+1)</td></tr>
+          <tr><td><b>Fixed Income</b> (<a href="./module-05-fixed-income.html">Module 5</a> §9)</td><td><b>CanDeal</b>; Bloomberg ALLQ/BondTrader (illustrative); the Bank of Canada's own auction system for new-issue Government of Canada bonds</td><td>Bilateral/platform trade confirmation; valuation &amp; risk systems (Murex, Calypso, Summit — illustrative)</td><td><b>CDSX</b> (bond DvP settlement, T+2); <b>CDCC</b> (fixed income repo clearing)</td></tr>
+          <tr><td><b>FX</b> (<a href="./module-06-fx.html">Module 6</a> §9)</td><td><b>EBS</b>, <b>Refinitiv Matching/FXall</b>, <b>360T</b>; Bank Of Toronto's own eFX pricing/aggregation platform</td><td>Trade capture and confirmation via SWIFT MT300-type messages; risk systems (Murex, Calypso FX module)</td><td><b>CLS</b> (PvP settlement for CLS-eligible pairs); <b>Lynx</b> carries the CAD leg into CLS; correspondent banking/SWIFT payment messages for non-CLS-eligible pairs</td></tr>
+          <tr><td><b>Commodities</b> (<a href="./module-07-commodities.html">Module 7</a> §9)</td><td><b>NGX</b> (Calgary — Canadian-domiciled physical/financial AECO gas, power, crude) <i>or</i> <b>CME Globex / ICE</b> (global benchmark venues, via a Futures Commission Merchant relationship)</td><td>Commodity risk/confirmation system (Murex/Calypso-class); ICE eConfirm-style electronic confirmation</td><td><b>NGX Clearing</b> (part of ICE) <i>or</i> <b>CME Clearing / ICE Clear</b></td></tr>
+          <tr><td><b>Rates</b> (<a href="./module-08-rates.html">Module 8</a> §9)</td><td>Bloomberg; interdealer-broker screens (illustrative: ICAP, Tradition) for OTC; <b>Montreal Exchange (MX)</b>'s "SOLA" engine for exchange-listed CGB/CORRA futures</td><td><b>MarkitWire / ICE Link</b> (OTC confirmation/affirmation); Calypso/Murex (swap valuation, DV01/curve risk)</td><td><b>LCH SwapClear</b> (mandatory central clearing for standardized CAD IRS); <b>CDCC</b> (clears MX-listed CAD rate futures)</td></tr>
+          <tr><td><b>Credit</b> (<a href="./module-09-credit.html">Module 9</a> §9)</td><td><b>MarkitWire / ICE Link</b>, Bloomberg</td><td>The SAME MarkitWire/ICE Link platform also handles confirmation/affirmation here — a genuine contrast with Rates; Calypso/Murex handle ongoing valuation (upfront/running-coupon calculations)</td><td><b>ICE Clear Credit</b> (if centrally cleared) <i>or</i> bilateral settlement; <b>DTCC's Trade Information Warehouse (TIW)</b> holds the lifecycle record either way</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> If you're ever handed an unfamiliar field in a trade record and asked "where does this come from?", the fastest diagnostic is to place it on this nine-stage timeline — the stage tells you which office produced it and which upstream system owns the source of truth. Layer the systems table on top of that, and the same diagnostic extends one step further: the <i>asset class</i> tells you which specific platform that office was actually looking at when the field was created.</div>
     </section>
 
     <section class="mod" id="order-execution">

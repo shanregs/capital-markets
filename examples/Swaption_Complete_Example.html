@@ -1,0 +1,808 @@
+<!doctype html>
+<title>Swaption — Complete CAD Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Swaption — Complete CAD Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-swaption"><span class="toc-num">01</span>What Is a Swaption?</a></li>
+      <li><a href="#s2-business-scenario"><span class="toc-num">02</span>Business Scenario</a></li>
+      <li><a href="#s3-the-participants"><span class="toc-num">03</span>The Participants</a></li>
+      <li><a href="#s4-the-trade"><span class="toc-num">04</span>The Trade</a></li>
+      <li><a href="#s5-why-payer-swaption"><span class="toc-num">05</span>Why "Payer" Swaption?</a></li>
+      <li><a href="#s6-what-happens-on-the-decision-date-two-scenarios"><span class="toc-num">06</span>What Happens on the Decision Date — Two Scenarios</a></li>
+      <li><a href="#s7-why-this-is-fundamentally-different-from-a-cap"><span class="toc-num">07</span>Why This Is Fundamentally Different From a Cap</a></li>
+      <li><a href="#s8-payoff-shape-at-exercise"><span class="toc-num">08</span>Payoff Shape at Exercise</a></li>
+      <li><a href="#s9-valuation-and-mtm-before-exercise"><span class="toc-num">09</span>Valuation and MTM (Before Exercise)</a></li>
+      <li><a href="#s10-after-exercise-the-swaption-becomes-an-irs"><span class="toc-num">10</span>After Exercise — The Swaption Becomes an IRS</a></li>
+      <li><a href="#s11-what-data-does-the-valuation-engine-need"><span class="toc-num">11</span>What Data Does the Valuation Engine Need?</a></li>
+      <li><a href="#s12-the-swaption-trade-lifecycle"><span class="toc-num">12</span>The Swaption Trade Lifecycle</a></li>
+      <li><a href="#s13-trade-capture"><span class="toc-num">13</span>Trade Capture</a></li>
+      <li><a href="#s14-confirmation"><span class="toc-num">14</span>Confirmation</a></li>
+      <li><a href="#s15-regulatory-reporting"><span class="toc-num">15</span>Regulatory Reporting</a></li>
+      <li><a href="#s16-swaption-vs-cap-vs-irs-where-the-distinction-becomes-clear"><span class="toc-num">16</span>Swaption vs Cap vs IRS — Where the Distinction Becomes Clear</a></li>
+      <li><a href="#s17-next-lesson-cross-currency-swap"><span class="toc-num">—</span>Next Lesson: Cross-Currency Swap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+<p class="lede"><i>Continuing the same institutional style used in the IRS, FX Option, FRA, Cap, Floor, and Collar lessons: real institutions (RBC, TD, BMO, CIBC, Scotiabank, JPMorgan, Goldman Sachs, etc.) are referenced for context, while <b>Canada Bank of Toronto (CBT)</b> remains the fictional primary dealer used to build the worked example. CORRA — administered and published by the Bank of Canada — is used as the CAD reference rate.</i></p>
+
+
+    <section class="mod" id="s1-what-is-a-swaption">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What Is a Swaption?</h2>
+<p class="lede">A <b>Swaption</b> is an option to <b>enter an Interest Rate Swap</b> at a future date, on terms agreed today. Unlike a <a href="./Interest_Rate_Cap_Complete_Example.html">Cap or Floor</a> — which are strips of many small per-period options — a Swaption is a <b>single option on one entire multi-year swap</b>, exercised (or not) on <b>one</b> decision date.</p>
+<div class="ticket"><pre>SWAPTION
+ │
+ +-- ONE option
+ +-- On ONE future decision date
+ +-- Right to enter an ENTIRE multi-year IRS
+ +-- "Payer Swaption"    = right to enter as the FIXED-RATE PAYER
+ +-- "Receiver Swaption" = right to enter as the FIXED-RATE RECEIVER</pre></div>
+<p>If the underlying <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS</a> is the "many periods" instrument and the <a href="./FRA_Forward_Rate_Agreement_Complete_Example.html">FRA</a> is the "one period" instrument, a Swaption answers a different question entirely: <b>"do I even want to enter this swap at all, once I know more?"</b></p>
+
+    </section>
+
+    <section class="mod" id="s2-business-scenario">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Business Scenario</h2>
+<p class="lede">Suppose:</p>
+<ul><li>ABC Mining Corporation is bidding on a large capital project. If ABC wins the contract (expected to be confirmed in <b>6 months</b>), it will need to draw down a <b>5-year, CAD 50,000,000 term loan</b>, and will want to swap that loan's floating CORRA exposure into fixed — exactly the <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS example</a>'s structure.</li><li>ABC doesn't want to commit to an IRS today, because the loan itself is contingent on winning the bid.</li><li>But ABC is worried that if it <b>waits</b> and rates rise in the meantime, entering the IRS later will lock in a worse fixed rate.</li><li>ABC buys a <b>6-month Payer Swaption</b> on a 5-year CAD IRS, struck at <b>4.75%</b>, from CBT.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s3-the-participants">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>The Participants</h2>
+<div class="ticket"><pre>                 SWAPTION
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+       ABC                       CBT
+ Canadian Corp.          Canada Bank of Toronto
+        │                         │
+        │   Buys Payer Swaption   │
+        │  (right to pay 4.75%    │
+        │   fixed on a 5Y IRS,    │
+        │   starting in 6 months) │
+        └─────────────────────────┘</pre></div>
+<h3>Roles</h3>
+<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Role</th></tr></thead><tbody><tr><td>ABC Mining Corporation</td><td>Swaption buyer (Payer Swaption)</td></tr><tr><td>Canada Bank of Toronto</td><td>Swaption seller / dealer</td></tr><tr><td>CBT Rates Trading Desk</td><td>Prices the swaption and hedges the resulting swap risk</td></tr><tr><td>CBT Risk Management</td><td>Monitors option Greeks and, post-exercise, the swap's ongoing exposure</td></tr><tr><td>CBT Operations</td><td>Confirmation, exercise notice processing, and (if exercised) new IRS trade capture</td></tr><tr><td>CBT Regulatory Reporting</td><td>Regulatory reporting for the swaption, and separately for the IRS if exercised</td></tr><tr><td>External market</td><td>Provides the swap rate curve and swaption volatility surface</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s4-the-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Trade</h2>
+<h3>Trade Economics</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>SWO-20260905-00001</td></tr><tr><td>Product</td><td>Swaption (Payer)</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Underlying Swap Notional</td><td>CAD 50,000,000</td></tr><tr><td>Strike (Swap Fixed Rate)</td><td>4.75%</td></tr><tr><td>Option Type</td><td>Payer Swaption (right to pay fixed)</td></tr><tr><td>Option Expiry (decision date)</td><td>05-Mar-2027 (6 months)</td></tr><tr><td>Underlying Swap Tenor</td><td>5 years, starting 05-Mar-2027</td></tr><tr><td>Reference Rate (if exercised)</td><td>Compounded CORRA (3-month)</td></tr><tr><td>Exercise Style</td><td>European (one decision date)</td></tr><tr><td>Buyer</td><td>ABC Mining Corporation</td></tr><tr><td>Seller</td><td>Canada Bank of Toronto</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Premium</td><td>CAD 612,000 (paid upfront, 07-Sep-2026)</td></tr></tbody></table></div>
+<p>The key economic statement is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>ABC has the right, on 05-Mar-2027, to enter a 5-year CAD 50,000,000 IRS paying 4.75% fixed — but only if it wants to.</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s5-why-payer-swaption">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Why "Payer" Swaption?</h2>
+<p class="lede">ABC's future loan will make it a floating-rate payer — exactly like the <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS example</a>'s Bank Of Toronto, ABC will want to <b>pay fixed, receive floating</b> to neutralize that exposure. The right to enter that specific position is therefore a <b>Payer Swaption</b>.</p>
+<div class="ticket"><pre>ABC's future loan
+        │
+        ▼
+   Will pay CORRA (floating)
+        │
+ABC holds a Payer Swaption
+        │
+        ▼
+   Right to pay Fixed 4.75% / receive CORRA
+        │
+        ▼
+   If exercised, CORRA cancels against the loan,
+   exactly like the IRS example's mechanic</pre></div>
+
+    </section>
+
+    <section class="mod" id="s6-what-happens-on-the-decision-date-two-scenarios">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>What Happens on the Decision Date — Two Scenarios</h2>
+<p class="lede"><b>Scenario A — ABC wins the bid, and 5-year swap rates have risen to 5.40%:</b></p>
+<div class="ticket"><pre>Market rate for a new 5Y IRS today: 5.40%
+ABC's Swaption strike:              4.75%
+
+ABC EXERCISES — entering the swap at 4.75% is far better than
+the 5.40% available in the market</pre></div>
+<div class="ticket"><pre>Result: ABC now holds a 5-year Payer IRS at 4.75%, exactly as
+        if it had entered an IRS the ordinary way — the
+        Swaption has converted into a plain IRS</pre></div>
+<p><b>Scenario B — ABC does NOT win the bid (no loan materializes):</b></p>
+<div class="ticket"><pre>ABC simply lets the Swaption expire
+        ↓
+No obligation, no swap, no ongoing exposure
+        ↓
+Maximum loss = the CAD 612,000 premium already paid</pre></div>
+<p><b>Scenario C — ABC wins the bid, but 5-year swap rates have fallen to 4.20%:</b></p>
+<div class="ticket"><pre>Market rate for a new 5Y IRS today: 4.20%
+ABC's Swaption strike:              4.75%
+
+ABC does NOT exercise — entering a fresh IRS in the market at
+4.20% is cheaper than the swaption's 4.75% strike</pre></div>
+<div class="ticket"><pre>Result: ABC lets the Swaption lapse, then enters a brand-new
+        5Y IRS in the market at the better 4.20% rate. Its only
+        cost from the swaption was the CAD 612,000 premium.</pre></div>
+
+    </section>
+
+    <section class="mod" id="s7-why-this-is-fundamentally-different-from-a-cap">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Why This Is Fundamentally Different From a Cap</h2>
+<div class="ticket"><pre>CAP:      12 SEPARATE decisions (one per caplet), each small
+SWAPTION: ONE decision, on the ENTIRE 5-year swap at once</pre></div>
+<p>A Cap protects a stream of individual future periods independently; a Swaption is a single all-or-nothing bet on whether to lock in one swap rate for the whole life of a future position. This is why a Swaption's premium, for a comparable notional and tenor, behaves differently from a Cap's — it depends on the volatility of a <b>single</b> swap rate observed on <b>one</b> date, not on 12 independent rate observations.</p>
+
+    </section>
+
+    <section class="mod" id="s8-payoff-shape-at-exercise">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Payoff Shape at Exercise</h2>
+<div class="ticket"><pre>ABC's Payoff (Payer Swaption)
+    +  |                         /
+       |                       /
+       |                     /
+  -----+-------------------+------------------  5Y Swap Rate at expiry
+       |. . . . . . . . . /  Strike (4.75%)
+    -  |________________/
+       (flat — capped at the premium paid, no matter how far
+        rates fall below the strike; uncapped gain if rates
+        rise well above it)</pre></div>
+<p>The same asymmetric shape as every other option in this series (<a href="./FX_Option_Complete_USDCAD_Example.html">FX Option</a>, <a href="./Interest_Rate_Cap_Complete_Example.html">Cap</a>, <a href="./Interest_Rate_Floor_Complete_Example.html">Floor</a>) — a Swaption is simply an option whose underlying is an entire swap rather than a spot price or a single period's rate.</p>
+
+    </section>
+
+    <section class="mod" id="s9-valuation-and-mtm-before-exercise">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Valuation and MTM (Before Exercise)</h2>
+<div class="ticket"><pre>Forward Swap Rate Curve (expected 5Y swap rate, starting 6 months forward)
+          +
+Swaption Volatility Surface (uncertainty around that expectation)
+          +
+Discount Curve
+          ↓
+     Swaption Value (via a Black-style swaption pricing model)</pre></div>
+<div class="ticket"><pre>Market-implied forward 5Y swap rate ↑  → Payer Swaption becomes MORE valuable to ABC
+Market-implied forward 5Y swap rate ↓  → Payer Swaption becomes LESS valuable to ABC
+Implied volatility ↑                    → Swaption becomes MORE valuable (more chance
+                                           of a favorable exercise decision)</pre></div>
+<p>Suppose one month later, the market-implied forward 5Y swap rate for that same starting date has risen to 5.00%:</p>
+<div class="ticket"><pre>MTM (illustrative, via option pricing model) ≈ +CAD 340,000 to ABC</pre></div>
+
+    </section>
+
+    <section class="mod" id="s10-after-exercise-the-swaption-becomes-an-irs">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>After Exercise — The Swaption Becomes an IRS</h2>
+<p class="lede">If ABC exercises (Scenario A), the trade record doesn't just close out — it <b>generates a brand-new IRS trade</b>, which then follows the exact lifecycle already covered in the <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS example</a>:</p>
+<div class="ticket"><pre>Swaption Exercise Notice
+        ↓
+New IRS Trade Capture (Notional CAD 50,000,000, Fixed 4.75%,
+                        5-year term, starting 05-Mar-2027)
+        ↓
+Confirmation, Enrichment, Valuation, MTM, Collateral,
+Quarterly Settlement — everything from the IRS example, Sections 16-23</pre></div>
+<p>This is a genuinely important operational fact for a reporting system: a Swaption's <b>Action Type</b> on its exercise date isn't just "Termination" — it's "Exercise," and it must be linked to the <b>new</b> UTI generated for the resulting IRS.</p>
+
+    </section>
+
+    <section class="mod" id="s11-what-data-does-the-valuation-engine-need">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>What Data Does the Valuation Engine Need?</h2>
+<ul><li>Trade ID</li><li>Underlying Swap Notional, Fixed Rate (Strike), Floating Index</li><li>Option Expiry (Decision Date)</li><li>Underlying Swap Start Date, Tenor, Payment Frequency</li><li>Exercise Style (European, in this example)</li><li>Forward Swap Rate Curve</li><li>Swaption Volatility Surface (often quoted as a "swaption grid" — expiry × underlying tenor)</li><li>Discount Curve</li></ul>
+
+    </section>
+
+    <section class="mod" id="s12-the-swaption-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>The Swaption Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+      ↓
+Confirmation
+      ↓
+Enrichment (LEI, UTI, UPI)
+      ↓
+Static Data
+      ↓
+Market Data (Forward Swap Curve, Swaption Vol Surface, Discount Curve)
+      ↓
+Valuation (pre-exercise)
+      ↓
+MTM
+      ↓
+Risk / Exposure
+      ↓
+Collateral
+      ↓
+Decision Date
+      ↓
+   ┌──────────────┴──────────────┐
+   ▼                              ▼
+EXERCISE                       EXPIRE
+   ↓                              ↓
+New IRS Trade Capture           Trade closed, no further
+(→ IRS lifecycle from here)     obligation
+      ↓
+Regulatory Reporting (Swaption, then separately the new IRS)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s13-trade-capture">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>SWO-20260905-00001</td></tr><tr><td>Product</td><td>Swaption (Payer)</td></tr><tr><td>Underlying Notional</td><td>CAD 50,000,000</td></tr><tr><td>Strike</td><td>4.75%</td></tr><tr><td>Option Expiry</td><td>05-Mar-2027</td></tr><tr><td>Underlying Swap Tenor</td><td>5 years</td></tr><tr><td>Direction</td><td>Buy Payer Swaption</td></tr><tr><td>Premium</td><td>CAD 612,000</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s14-confirmation">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Confirmation</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Mining Corporation</td></tr><tr><td>Party B</td><td>Canada Bank of Toronto</td></tr><tr><td>Party A</td><td>Buys the right to pay Fixed 4.75% on a 5Y IRS</td></tr><tr><td>Party B</td><td>Sells that right (must enter as floating-rate payer, if exercised)</td></tr><tr><td>Underlying Notional</td><td>CAD 50,000,000</td></tr><tr><td>Option Expiry</td><td>05-Mar-2027</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual regulatory record could contain:</p>
+<ul><li>UTI (Swaption) — and a <b>separate, new UTI</b> for the resulting IRS if exercised</li><li>UPI</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li>Asset Class (Interest Rate)</li><li>Product Type (Swaption — Payer/Receiver flag)</li><li>Underlying Swap Notional, Strike, Tenor</li><li>Option Expiry Date</li><li>Premium, Premium Currency</li><li>Trade Date</li><li>Clearing Status</li><li>Collateralisation</li><li>Valuation Amount</li><li>Action Type (New → Exercise or Expire)</li><li>Reporting Timestamp</li></ul>
+
+    </section>
+
+    <section class="mod" id="s16-swaption-vs-cap-vs-irs-where-the-distinction-becomes-clear">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>Swaption vs Cap vs IRS — Where the Distinction Becomes Clear</h2>
+<div class="table-scroll"><table><thead><tr><th>Aspect</th><th>Cap</th><th>Swaption</th><th>IRS</th></tr></thead><tbody><tr><td>Number of decisions</td><td>Many (one per caplet)</td><td><b>One</b> (single expiry date)</td><td>None — an obligation, not an option</td></tr><tr><td>What's being optioned</td><td>Each individual period's rate</td><td><b>The decision to enter an entire swap</b></td><td>N/A</td></tr><tr><td>Premium</td><td>Yes, upfront</td><td>Yes, upfront</td><td>No</td></tr><tr><td>If never exercised/entered</td><td>Each caplet independently pays or doesn't</td><td><b>The whole swap simply never happens</b></td><td>N/A — always happens</td></tr><tr><td>Typical use</td><td>Ongoing protection on an existing floating exposure</td><td>Protecting a <b>future, contingent</b> need for a swap</td><td>Hedging a <b>known, current</b> floating exposure</td></tr></tbody></table></div>
+<div class="ticket"><pre>CAP:      many small options, each on ONE period
+SWAPTION: one large option, on an ENTIRE swap
+IRS:      no optionality at all — a firm obligation from day one</pre></div>
+<h3>Mental Model</h3>
+<div class="ticket"><pre>Uncertain future NEED for a swap → Swaption → Right (not obligation)
+to enter the swap later, on terms fixed today</pre></div>
+<p>A Swaption is what you get when you take the IRS itself — not just one period of it — and wrap it in an option, exactly the same conceptual step <a href="../docs/1-capital-markets/module-08-rates.html">Module 8 §2</a> describes as "an option to enter an IRS at a future date."</p>
+
+    </section>
+
+    <section class="mod" id="s17-next-lesson-cross-currency-swap">
+      <p class="sec-eyebrow"><span class="n">—</span></p>
+      <h2>Next Lesson: Cross-Currency Swap</h2>
+<p class="lede">The natural next step continues the same progression:</p>
+<div class="ticket"><pre>Swaption → Cross-Currency Swap → CDS</pre></div>
+<p>A Cross-Currency Swap looks like an IRS at first glance — periodic exchanges of interest — but adds a genuinely new feature none of this series' products have shown yet: the <b>notional itself is physically exchanged</b>, in two different currencies, both at the start of the trade and again at maturity.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

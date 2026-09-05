@@ -1,0 +1,817 @@
+<!doctype html>
+<title>Cross-Currency Swap — Complete CAD/USD Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Cross-Currency Swap — Complete CAD/USD Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-cross-currency-swap"><span class="toc-num">01</span>What Is a Cross-Currency Swap?</a></li>
+      <li><a href="#s2-business-scenario"><span class="toc-num">02</span>Business Scenario</a></li>
+      <li><a href="#s3-the-participants"><span class="toc-num">03</span>The Participants</a></li>
+      <li><a href="#s4-the-trade"><span class="toc-num">04</span>The Trade</a></li>
+      <li><a href="#s5-exchange-of-notional-at-inception-a-real-cash-event"><span class="toc-num">05</span>Exchange of Notional at Inception — A Real Cash Event</a></li>
+      <li><a href="#s6-quarterly-interest-exchange-both-currencies-every-period"><span class="toc-num">06</span>Quarterly Interest Exchange — Both Currencies, Every Period</a></li>
+      <li><a href="#s7-why-the-legs-aren-t-netted"><span class="toc-num">07</span>Why the Legs Aren't Netted</a></li>
+      <li><a href="#s8-final-exchange-of-notional-at-maturity-at-the-original-rate"><span class="toc-num">08</span>Final Exchange of Notional at Maturity — At the ORIGINAL Rate</a></li>
+      <li><a href="#s9-the-full-cash-flow-timeline"><span class="toc-num">09</span>The Full Cash Flow Timeline</a></li>
+      <li><a href="#s10-valuation-and-mtm"><span class="toc-num">10</span>Valuation and MTM</a></li>
+      <li><a href="#s11-what-data-does-the-valuation-engine-need"><span class="toc-num">11</span>What Data Does the Valuation Engine Need?</a></li>
+      <li><a href="#s12-collateral-now-with-an-fx-dimension"><span class="toc-num">12</span>Collateral — Now With an FX Dimension</a></li>
+      <li><a href="#s13-the-cross-currency-swap-trade-lifecycle"><span class="toc-num">13</span>The Cross-Currency Swap Trade Lifecycle</a></li>
+      <li><a href="#s14-trade-capture"><span class="toc-num">14</span>Trade Capture</a></li>
+      <li><a href="#s15-confirmation"><span class="toc-num">15</span>Confirmation</a></li>
+      <li><a href="#s16-regulatory-reporting"><span class="toc-num">16</span>Regulatory Reporting</a></li>
+      <li><a href="#s17-cross-currency-swap-vs-irs-vs-fx-forward-where-the-distincti"><span class="toc-num">17</span>Cross-Currency Swap vs IRS vs FX Forward — Where the Distinction Becomes Clear</a></li>
+      <li><a href="#s18-next-lesson-credit-default-swap-cds"><span class="toc-num">—</span>Next Lesson: Credit Default Swap (CDS)</a></li>
+    </ol>
+  </nav>
+
+  <main>
+<p class="lede"><i>Continuing the same institutional style used in the IRS, FX Option, FRA, Cap, Floor, Collar, and Swaption lessons: real institutions (RBC, TD, BMO, CIBC, Scotiabank, JPMorgan, Goldman Sachs, etc.) are referenced for context, while <b>Canada Bank of Toronto (CBT)</b> remains the fictional primary dealer used to build the worked example. CORRA — administered and published by the Bank of Canada — is used as the CAD reference rate.</i></p>
+
+
+    <section class="mod" id="s1-what-is-a-cross-currency-swap">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What Is a Cross-Currency Swap?</h2>
+<p class="lede">A <b>Cross-Currency Swap (CCS)</b> exchanges both <b>principal</b> and <b>periodic interest payments</b> in two different currencies, over a multi-year term. It looks like an <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS</a> at first glance — periodic exchanges of interest — but adds a genuinely new feature: the <b>notional is physically exchanged</b>, in two currencies, both at the <b>start</b> of the trade and again at <b>maturity</b>, at the <b>same original exchange rate</b> both times.</p>
+<div class="ticket"><pre>CROSS-CURRENCY SWAP
+ │
+ +-- Notional EXCHANGED at inception (both currencies, real cash)
+ +-- Periodic interest payments exchanged throughout the term
+ +-- Notional RE-EXCHANGED at maturity, at the ORIGINAL rate
+     (not the then-current spot rate)</pre></div>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Classification callout:</b> despite involving two currencies, a Cross-Currency Swap is classified under <b>Interest Rate</b>, not Foreign Exchange, in the ISDA taxonomy — because its periodic-exchange mechanic is fundamentally a Rates-family Swap, not an FX-family product. <a href="../docs/1-capital-markets/module-06-fx.html">Module 6 §2</a> flags this explicitly as one of the easiest classification mistakes to make in this entire curriculum.</p></div>
+
+    </section>
+
+    <section class="mod" id="s2-business-scenario">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Business Scenario</h2>
+<p class="lede">Suppose:</p>
+<ul><li>ABC Mining Corporation is Canadian, with CAD as its functional currency, but its newly-won project (the one financed via the <a href="./Swaption_Complete_Example.html">Swaption example</a>'s IRS) requires paying a <b>US-based equipment supplier USD 50,000,000</b> upfront, then servicing that cost over 5 years.</li><li>Rather than borrowing directly in USD (a market where ABC has no existing banking relationships or credit lines), ABC borrows in <b>CAD</b>, its natural currency, and enters a <b>Cross-Currency Swap</b> with CBT to convert that CAD borrowing into the USD it actually needs.</li><li>At the same time, ABC wants its ongoing interest payments to be in CAD (matching its own revenue currency), while paying down the USD side's economics through CBT.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s3-the-participants">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>The Participants</h2>
+<div class="ticket"><pre>                CROSS-CURRENCY SWAP
+                        │
+        ┌───────────────┴───────────────┐
+        │                               │
+       ABC                             CBT
+ Canadian Corp.                 Canada Bank of Toronto
+        │                               │
+        │  Pays CAD interest (floating) │
+        │  Receives USD interest (fixed)│
+        │  Exchanges CAD/USD principal  │
+        │  at inception AND maturity    │
+        └───────────────────────────────┘</pre></div>
+<h3>Roles</h3>
+<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Role</th></tr></thead><tbody><tr><td>ABC Mining Corporation</td><td>CCS counterparty — receives USD principal upfront, pays CAD interest</td></tr><tr><td>Canada Bank of Toronto</td><td>CCS counterparty — receives CAD principal upfront, pays USD interest</td></tr><tr><td>CBT Rates &amp; FX Trading Desks</td><td>Jointly price and hedge the swap — a genuinely cross-desk product</td></tr><tr><td>CBT Risk Management</td><td>Monitors both interest rate risk (both currencies) and FX risk on the notional exchange</td></tr><tr><td>CBT Operations</td><td>Confirmation, periodic settlement (two currencies), and final notional re-exchange</td></tr><tr><td>CBT Regulatory Reporting</td><td>Regulatory reporting — classified as an Interest Rate product</td></tr><tr><td>External market</td><td>Provides CORRA, SOFR (USD reference rate), the CAD/USD basis spread, and spot FX</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s4-the-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Trade</h2>
+<h3>Trade Economics</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>CCS-20260905-00001</td></tr><tr><td>Product</td><td>Cross-Currency Swap</td></tr><tr><td>Notional (CAD leg)</td><td>CAD 67,500,000</td></tr><tr><td>Notional (USD leg)</td><td>USD 50,000,000</td></tr><tr><td>Initial Exchange Rate</td><td>1.3500 (CAD per USD)</td></tr><tr><td>ABC pays</td><td>Floating CORRA (on the CAD leg)</td></tr><tr><td>ABC receives</td><td>Fixed 4.20% (on the USD leg)</td></tr><tr><td>CBT pays</td><td>Fixed 4.20% (on the USD leg)</td></tr><tr><td>CBT receives</td><td>Floating CORRA (on the CAD leg)</td></tr><tr><td>Term</td><td>5 years</td></tr><tr><td>Payment Frequency</td><td>Quarterly</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Effective Date</td><td>08-Sep-2026</td></tr><tr><td>Maturity Date</td><td>08-Sep-2031</td></tr></tbody></table></div>
+<p>The key economic statement is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>On 08-Sep-2026, ABC gives CBT CAD 67,500,000 and receives USD 50,000,000 in return. For the next 5 years, ABC pays CORRA-based interest on the CAD amount and receives fixed 4.20% interest on the USD amount. On 08-Sep-2031, the ENTIRE principal amounts are exchanged back — CAD 67,500,000 back to CBT, USD 50,000,000 back to ABC — at the SAME 1.3500 rate used at inception.</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s5-exchange-of-notional-at-inception-a-real-cash-event">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Exchange of Notional at Inception — A Real Cash Event</h2>
+<div class="ticket"><pre>ABC                                            CBT
+ │                                              │
+ │  pays CAD 67,500,000                         │
+ │---------------------------------------------&gt;│
+ │                                              │
+ │&lt;---------------------------------------------│
+ │           receives USD 50,000,000            │
+ │                                              │
+   ABC now has the USD it needs for its supplier,
+   funded through a CAD borrowing it's comfortable with</pre></div>
+<p>This is the single biggest structural difference from an IRS: <b>the notional genuinely moves</b>, just like a <a href="./Cash_Equity_Trade_Complete_Example.html">cash equity trade</a> or an <a href="./FX_Spot_Complete_Example.html">FX Spot trade</a>, not just a reference number for calculating interest.</p>
+
+    </section>
+
+    <section class="mod" id="s6-quarterly-interest-exchange-both-currencies-every-period">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Quarterly Interest Exchange — Both Currencies, Every Period</h2>
+<p class="lede">Suppose for the first quarterly period, compounded 3-month CORRA fixes at <b>4.80%</b>.</p>
+<div class="ticket"><pre>ABC's CAD leg (floating, pays CBT):
+  67,500,000 × 4.80% × 90/365
+  ≈ CAD 799,726
+
+CBT's USD leg (fixed, pays ABC):
+  50,000,000 × 4.20% × 90/360   (USD convention typically Act/360)
+  ≈ USD 525,000</pre></div>
+<p>Unlike an IRS, these two legs are in <b>different currencies</b> — they are <b>not netted against each other</b> the way the <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS example §8</a>'s same-currency fixed and floating legs are. Both payments settle in full, gross, each in their own currency:</p>
+<div class="ticket"><pre>ABC ──────── CAD 799,726 ────────► CBT
+CBT ──────── USD 525,000 ────────► ABC</pre></div>
+
+    </section>
+
+    <section class="mod" id="s7-why-the-legs-aren-t-netted">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Why the Legs Aren't Netted</h2>
+<div class="ticket"><pre>Same currency (IRS):        Fixed CAD ↔ Floating CAD  → NET, one payment
+Different currencies (CCS): Floating CAD ↔ Fixed USD  → GROSS, two separate payments,
+                                                          typically via CLS PvP if eligible</pre></div>
+<p>Because CAD and USD are different currencies, there's no single number to "net" them into — each leg settles independently, exactly like the <a href="./FX_Spot_Complete_Example.html">FX Spot example §6</a>'s PvP settlement mechanic, just recurring every quarter instead of happening once.</p>
+
+    </section>
+
+    <section class="mod" id="s8-final-exchange-of-notional-at-maturity-at-the-original-rate">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Final Exchange of Notional at Maturity — At the ORIGINAL Rate</h2>
+<p class="lede">On 08-Sep-2031, the notional amounts are exchanged back — but critically, <b>at the original 1.3500 rate agreed in 2026, not at whatever the spot rate happens to be on that date</b>:</p>
+<div class="ticket"><pre>Suppose spot USD/CAD on 08-Sep-2031 has moved to 1.4200 (USD stronger)
+
+Re-exchange STILL happens at the ORIGINAL rate:
+  ABC pays back USD 50,000,000
+  CBT pays back CAD 67,500,000
+
+NOT at the current spot rate — if it were, ABC would owe:
+  50,000,000 × 1.4200 = CAD 71,000,000  (CAD 3,500,000 MORE)</pre></div>
+<p>This is precisely why a Cross-Currency Swap is a genuinely different risk profile from a plain <a href="./FX_Forward_Complete_Example.html">FX Forward</a>: the FX rate risk on the <b>notional itself</b> is fixed at inception for the full 5-year term, while only the ongoing <i>interest</i> legs carry floating-rate risk (on the CAD side, in this example).</p>
+
+    </section>
+
+    <section class="mod" id="s9-the-full-cash-flow-timeline">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>The Full Cash Flow Timeline</h2>
+<div class="ticket"><pre>Inception (08-Sep-2026):
+  ABC  → CAD 67,500,000 → CBT
+  CBT  → USD 50,000,000 → ABC
+
+Every quarter for 5 years (20 payment dates):
+  ABC  → Floating CORRA interest on CAD 67,500,000 → CBT
+  CBT  → Fixed 4.20% interest on USD 50,000,000    → ABC
+
+Maturity (08-Sep-2031):
+  ABC  → USD 50,000,000 → CBT   (re-exchange, ORIGINAL rate)
+  CBT  → CAD 67,500,000 → ABC   (re-exchange, ORIGINAL rate)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s10-valuation-and-mtm">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Valuation and MTM</h2>
+<p class="lede">A Cross-Currency Swap's valuation combines <b>three</b> things an IRS alone never needs together: two separate discount curves (one per currency) and the FX rate itself, since the notional exchange legs have real, discountable cash flow value.</p>
+<div class="ticket"><pre>PV(CAD leg, in CAD)     — discounted off the CAD (CORRA) curve
+          +
+PV(USD leg, in USD)     — discounted off the USD (SOFR) curve
+          +
+PV(final notional exchange, both currencies)
+          ↓
+Convert one side to the other's currency at the CURRENT spot rate
+          ↓
+        Net MTM (in one chosen currency, e.g. CAD)</pre></div>
+<div class="ticket"><pre>CAD rates ↑ relative to USD rates  → generally favors the CAD payer (ABC)
+Spot USD/CAD moves                 → directly changes the MTM, because the
+                                       notional re-exchange is a REAL future
+                                       cash flow, not just a reference number</pre></div>
+<p>This is why a Cross-Currency Swap desk sits at the intersection of the Rates desk and the FX desk — its valuation genuinely needs both curve families plus an FX conversion, unlike any single-currency product in this series.</p>
+
+    </section>
+
+    <section class="mod" id="s11-what-data-does-the-valuation-engine-need">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>What Data Does the Valuation Engine Need?</h2>
+<ul><li>Trade ID</li><li>Notional (both currencies) and Initial Exchange Rate</li><li>Fixed Rate (USD leg) / Floating Index (CAD leg)</li><li>Trade Date, Effective Date, Maturity Date</li><li>Payment Frequency (both legs — sometimes different)</li><li>Day Count Conventions (both legs — often different, e.g. Act/365 CAD vs Act/360 USD)</li><li>CAD Discount Curve (CORRA-based)</li><li>USD Discount Curve (SOFR-based)</li><li>Cross-Currency Basis Spread (the CAD/USD-specific adjustment reflecting relative funding costs)</li><li>Current Spot FX Rate</li></ul>
+
+    </section>
+
+    <section class="mod" id="s12-collateral-now-with-an-fx-dimension">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>Collateral — Now With an FX Dimension</h2>
+<div class="ticket"><pre>MTM (in CAD, after FX conversion)
+        ↓
+   Exposure
+        ↓
+   CSA terms (which currency is collateral posted in?)
+        ↓
+   Margin calculation
+        ↓
+Collateral call — itself sometimes subject to FX conversion
+                  if the CSA's collateral currency differs
+                  from the trade's valuation currency</pre></div>
+
+    </section>
+
+    <section class="mod" id="s13-the-cross-currency-swap-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>The Cross-Currency Swap Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+      ↓
+Confirmation
+      ↓
+Enrichment (LEI, UTI, UPI)
+      ↓
+Static Data
+      ↓
+Market Data (CAD curve, USD curve, CCS basis spread, spot FX)
+      ↓
+Initial Notional Exchange (Settlement — real cash, both currencies)
+      ↓
+Valuation
+      ↓
+MTM
+      ↓
+Risk / Exposure (rates AND FX)
+      ↓
+Collateral
+      ↓
+[Repeat quarterly for 5 years:]
+   Interest Calculation (both legs, gross) → Settlement (both currencies)
+      ↓
+Final Notional Re-Exchange (Settlement — at ORIGINAL rate)
+      ↓
+Regulatory Reporting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s14-trade-capture">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>CCS-20260905-00001</td></tr><tr><td>Product</td><td>Cross-Currency Swap</td></tr><tr><td>Notional CAD</td><td>67,500,000</td></tr><tr><td>Notional USD</td><td>50,000,000</td></tr><tr><td>Initial FX Rate</td><td>1.3500</td></tr><tr><td>ABC pays</td><td>Floating CORRA (CAD)</td></tr><tr><td>ABC receives</td><td>Fixed 4.20% (USD)</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Effective Date</td><td>08-Sep-2026</td></tr><tr><td>Maturity Date</td><td>08-Sep-2031</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-confirmation">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Confirmation</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Mining Corporation</td></tr><tr><td>Party B</td><td>Canada Bank of Toronto</td></tr><tr><td>Party A pays</td><td>CORRA floating on CAD 67,500,000</td></tr><tr><td>Party B pays</td><td>Fixed 4.20% on USD 50,000,000</td></tr><tr><td>Initial Exchange</td><td>CAD 67,500,000 ↔ USD 50,000,000</td></tr><tr><td>Final Exchange</td><td>Same amounts, same rate, at maturity</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s16-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual regulatory record could contain:</p>
+<ul><li>UTI</li><li>UPI</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li>Asset Class: <b>Interest Rate</b> (not Foreign Exchange — Section 1's classification callout)</li><li>Notional (both currencies), Initial Exchange Rate</li><li>Fixed Rate / Floating Rate Index (both legs)</li><li>Trade Date / Effective Date / Maturity Date</li><li>Payment Frequency (both legs)</li><li>Clearing Status</li><li>Collateralisation</li><li>Valuation Amount, Valuation Currency</li><li>Action Type / Event Type (including the Initial and Final Exchange as distinct settlement events)</li><li>Reporting Timestamp</li></ul>
+
+    </section>
+
+    <section class="mod" id="s17-cross-currency-swap-vs-irs-vs-fx-forward-where-the-distincti">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>Cross-Currency Swap vs IRS vs FX Forward — Where the Distinction Becomes Clear</h2>
+<div class="table-scroll"><table><thead><tr><th>Aspect</th><th>IRS</th><th>FX Forward</th><th>Cross-Currency Swap</th></tr></thead><tbody><tr><td>Currencies</td><td>One</td><td>Two</td><td>Two</td></tr><tr><td>Notional settles?</td><td>Never</td><td>Once, at maturity</td><td><b>Twice</b> — at inception AND maturity</td></tr><tr><td>Interest exchanged?</td><td>Yes, every period, netted</td><td>No</td><td>Yes, every period, <b>gross</b> (not netted)</td></tr><tr><td>ISDA Asset Class</td><td>Interest Rate</td><td>Foreign Exchange</td><td><b>Interest Rate</b> (not FX!)</td></tr><tr><td>Discount curves needed</td><td>One</td><td>One (implicitly, via forward points)</td><td><b>Two</b>, plus a cross-currency basis spread</td></tr><tr><td>FX rate risk on notional</td><td>None</td><td>Full, on one future date</td><td><b>None on the notional</b> (fixed at the original rate); only ongoing interest legs carry rate risk</td></tr></tbody></table></div>
+<div class="ticket"><pre>IRS:   1 currency,  notional never moves,        interest netted
+FX FWD: 2 currencies, notional moves ONCE,         no interest legs
+CCS:   2 currencies, notional moves TWICE,         interest moves every period, gross</pre></div>
+<h3>Mental Model</h3>
+<div class="ticket"><pre>Need to convert a borrowing from one currency to another,
+for a MULTI-YEAR term, with ongoing interest in both
+        ↓
+   CROSS-CURRENCY SWAP
+        ↓
+Real principal exchanged twice, real interest exchanged
+every period, FX rate on the principal locked for the
+whole term</pre></div>
+<p>A Cross-Currency Swap is what you get when you take an IRS's periodic-exchange mechanic and an FX Forward's genuine two-currency settlement, and combine them into one instrument that does both, repeatedly, across many years.</p>
+
+    </section>
+
+    <section class="mod" id="s18-next-lesson-credit-default-swap-cds">
+      <p class="sec-eyebrow"><span class="n">—</span></p>
+      <h2>Next Lesson: Credit Default Swap (CDS)</h2>
+<p class="lede">The natural final step in this progression:</p>
+<div class="ticket"><pre>Cross-Currency Swap → CDS</pre></div>
+<p>A fully worked CDS example — Reference Entity, Running Coupon, Upfront Payment, and a Credit Event payout — already exists in this same examples folder: see <a href="./Credit_Default_Swap_CDS_Complete_Example.html">Credit Default Swap (CDS) — Complete Example</a>. Everything from Sections 1 (Fixed vs Floating exchange mechanics), 9-10 (Valuation and MTM), and 16 (side-by-side comparison against a cash bond) in that lesson completes the same FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS progression this chain of lessons has been building toward.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

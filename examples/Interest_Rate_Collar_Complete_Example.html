@@ -1,0 +1,780 @@
+<!doctype html>
+<title>Interest Rate Collar — Complete CAD Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Interest Rate Collar — Complete CAD Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-collar"><span class="toc-num">01</span>What Is a Collar?</a></li>
+      <li><a href="#s2-business-scenario"><span class="toc-num">02</span>Business Scenario</a></li>
+      <li><a href="#s3-the-participants"><span class="toc-num">03</span>The Participants</a></li>
+      <li><a href="#s4-the-trade"><span class="toc-num">04</span>The Trade</a></li>
+      <li><a href="#s5-why-the-floor-premium-offsets-the-cap-premium"><span class="toc-num">05</span>Why the Floor Premium Offsets the Cap Premium</a></li>
+      <li><a href="#s6-per-period-settlement-three-zones"><span class="toc-num">06</span>Per-Period Settlement — Three Zones</a></li>
+      <li><a href="#s7-worked-example-quarter-1-corra-in-the-middle-zone"><span class="toc-num">07</span>Worked Example — Quarter 1 (CORRA in the Middle Zone)</a></li>
+      <li><a href="#s8-worked-example-quarter-6-corra-above-the-cap"><span class="toc-num">08</span>Worked Example — Quarter 6 (CORRA Above the Cap)</a></li>
+      <li><a href="#s9-worked-example-quarter-9-corra-below-the-floor"><span class="toc-num">09</span>Worked Example — Quarter 9 (CORRA Below the Floor)</a></li>
+      <li><a href="#s10-scenario-summary-across-the-collar-s-life"><span class="toc-num">10</span>Scenario Summary Across the Collar's Life</a></li>
+      <li><a href="#s11-valuation-and-mtm"><span class="toc-num">11</span>Valuation and MTM</a></li>
+      <li><a href="#s12-what-data-does-the-valuation-engine-need"><span class="toc-num">12</span>What Data Does the Valuation Engine Need?</a></li>
+      <li><a href="#s13-the-collar-trade-lifecycle"><span class="toc-num">13</span>The Collar Trade Lifecycle</a></li>
+      <li><a href="#s14-trade-capture"><span class="toc-num">14</span>Trade Capture</a></li>
+      <li><a href="#s15-confirmation"><span class="toc-num">15</span>Confirmation</a></li>
+      <li><a href="#s16-regulatory-reporting"><span class="toc-num">16</span>Regulatory Reporting</a></li>
+      <li><a href="#s17-collar-vs-cap-vs-floor-where-the-distinction-becomes-clear"><span class="toc-num">17</span>Collar vs Cap vs Floor — Where the Distinction Becomes Clear</a></li>
+      <li><a href="#s18-next-lesson-swaption-option-to-enter-an-interest-rate-swap"><span class="toc-num">—</span>Next Lesson: Swaption — Option to Enter an Interest Rate Swap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+<p class="lede"><i>Continuing the same institutional style used in the IRS, FX Option, FRA, Cap, and Floor lessons: real institutions (RBC, TD, BMO, CIBC, Scotiabank, JPMorgan, Goldman Sachs, etc.) are referenced for context, while <b>Canada Bank of Toronto (CBT)</b> remains the fictional primary dealer used to build the worked example. CORRA — administered and published by the Bank of Canada — is used as the CAD reference rate.</i></p>
+
+
+    <section class="mod" id="s1-what-is-a-collar">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What Is a Collar?</h2>
+<p class="lede">An <b>Interest Rate Collar</b> combines a <a href="./Interest_Rate_Cap_Complete_Example.html">Cap</a> and a <a href="./Interest_Rate_Floor_Complete_Example.html">Floor</a> into a single structure — the buyer <b>buys a Cap</b> (protection against rates rising) and simultaneously <b>sells a Floor</b> (giving up protection against rates falling below a lower level), collecting a premium on the Floor that offsets the Cap's cost.</p>
+<div class="ticket"><pre>COLLAR
+ │
+ +-- BUY a Cap  (struck HIGH)  — protection if rates rise
+ +-- SELL a Floor (struck LOW)  — give up upside if rates fall
+ +-- Net Premium = Cap Premium PAID − Floor Premium RECEIVED
+ +-- Interest rate is effectively "collared" between the two strikes</pre></div>
+<p>The whole point is <b>cost</b>: a standalone Cap (see the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap example</a>) can be expensive, especially in a volatile market. Selling a Floor alongside it brings in premium income that narrows — or in a <b>zero-cost collar</b>, completely eliminates — the net cost, in exchange for capping the borrower's <i>downside benefit</i> as well as its downside risk.</p>
+
+    </section>
+
+    <section class="mod" id="s2-business-scenario">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Business Scenario</h2>
+<p class="lede">Suppose:</p>
+<ul><li>ABC Mining Corporation still has its <b>CAD 50,000,000 floating-rate loan</b> (CORRA + 1.25%, quarterly resets) from the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap example</a>.</li><li>ABC's treasury team likes the idea of Cap protection, but doesn't want to pay the full CAD 875,000 premium out of pocket.</li><li>ABC agrees to <b>give up</b> some of the benefit it would get if rates fall very low, in exchange for a much cheaper (or free) hedge.</li><li>ABC buys a Cap struck at <b>5.00%</b> and simultaneously <b>sells</b> a Floor struck at <b>3.25%</b>, both referencing the same notional, term, and reset dates.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s3-the-participants">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>The Participants</h2>
+<div class="ticket"><pre>                   COLLAR
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+       ABC                       CBT
+ Canadian Corp.          Canada Bank of Toronto
+        │                         │
+        │   BUYS Cap @ 5.00%      │
+        │   SELLS Floor @ 3.25%   │
+        └─────────────────────────┘</pre></div>
+<h3>Roles</h3>
+<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Role</th></tr></thead><tbody><tr><td>ABC Mining Corporation</td><td>Collar buyer — long the Cap leg, short the Floor leg</td></tr><tr><td>Canada Bank of Toronto</td><td>Collar seller — short the Cap leg, long the Floor leg</td></tr><tr><td>CBT Rates Trading Desk</td><td>Prices both legs and hedges the net option risk</td></tr><tr><td>CBT Risk Management</td><td>Monitors combined option Greeks and counterparty risk</td></tr><tr><td>CBT Operations</td><td>Confirmation, fixings, and settlement per period, both legs</td></tr><tr><td>CBT Regulatory Reporting</td><td>Regulatory reporting — as <b>two linked derivative legs</b></td></tr><tr><td>External market</td><td>Provides CORRA fixings and the volatility surface for both legs</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s4-the-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Trade</h2>
+<h3>Trade Economics</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>COL-20260905-00001</td></tr><tr><td>Product</td><td>Interest Rate Collar (Cap bought + Floor sold)</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>Cap Rate (bought)</td><td>5.00%</td></tr><tr><td>Floor Rate (sold)</td><td>3.25%</td></tr><tr><td>Reference Rate</td><td>Compounded CORRA (3-month)</td></tr><tr><td>Term</td><td>3 years (12 quarterly periods)</td></tr><tr><td>Buyer of Collar</td><td>ABC Mining Corporation</td></tr><tr><td>Seller of Collar</td><td>Canada Bank of Toronto</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Cap Premium (ABC pays)</td><td>CAD 875,000</td></tr><tr><td>Floor Premium (ABC receives)</td><td>CAD 740,000</td></tr><tr><td><b>Net Premium (ABC pays)</b></td><td><b>CAD 135,000</b></td></tr></tbody></table></div>
+<p>The key economic statement is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>ABC's effective borrowing cost is collared between approximately 3.25% + 1.25% = 4.50% and 5.00% + 1.25% = 6.25% for the next 3 years, for a much smaller net premium than the standalone Cap would have cost.</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s5-why-the-floor-premium-offsets-the-cap-premium">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Why the Floor Premium Offsets the Cap Premium</h2>
+<div class="ticket"><pre>Cap Premium (ABC PAYS CBT)          CAD 875,000
+Floor Premium (ABC RECEIVES from CBT) CAD 740,000
+--------------------------------------------------
+Net Premium (ABC pays CBT)           CAD 135,000</pre></div>
+<p>If ABC had instead chosen a Floor Rate that made the two premiums exactly equal, this would be a <b>zero-cost collar</b> — a very common real-world structure precisely because it hedges a borrower's key risk (rates spiking) at no net upfront cash cost.</p>
+
+    </section>
+
+    <section class="mod" id="s6-per-period-settlement-three-zones">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Per-Period Settlement — Three Zones</h2>
+<div class="ticket"><pre>CORRA fixing this quarter:
+
+        Below 3.25%              Between 3.25% and 5.00%           Above 5.00%
+             │                              │                            │
+             ▼                              ▼                            ▼
+    ABC's SOLD FLOOR is           Neither leg triggers          ABC's BOUGHT CAP
+    triggered — ABC PAYS          — no payment either way       is triggered — CBT
+    CBT the difference                                          PAYS ABC the
+                                                                 difference</pre></div>
+
+    </section>
+
+    <section class="mod" id="s7-worked-example-quarter-1-corra-in-the-middle-zone">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Worked Example — Quarter 1 (CORRA in the Middle Zone)</h2>
+<p class="lede">Suppose CORRA fixes at <b>4.10%</b> — inside the collar band (3.25%–5.00%).</p>
+<div class="ticket"><pre>4.10% is above the Floor (3.25%) and below the Cap (5.00%)
+        ↓
+Neither the Cap nor the Floor leg triggers
+        ↓
+Settlement Amount = CAD 0 (on both legs)</pre></div>
+<p>ABC simply pays its loan at CORRA + 1.25% = 5.35% for the quarter, with no derivative cash flow at all — exactly as if it had no hedge in place for this particular quarter.</p>
+
+    </section>
+
+    <section class="mod" id="s8-worked-example-quarter-6-corra-above-the-cap">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Worked Example — Quarter 6 (CORRA Above the Cap)</h2>
+<p class="lede">Suppose CORRA fixes at <b>5.80%</b>.</p>
+<div class="ticket"><pre>50,000,000 × (5.80% − 5.00%) × 90/365 ≈ CAD 98,630 (undiscounted)
+Discounted (same method as the Cap example) ≈ CAD 97,282</pre></div>
+<p>CBT pays ABC <b>≈ CAD 97,282</b> on the Cap leg — the Floor leg does not trigger (5.80% is well above 3.25%). ABC's effective borrowing cost is held near the 6.25% ceiling.</p>
+
+    </section>
+
+    <section class="mod" id="s9-worked-example-quarter-9-corra-below-the-floor">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Worked Example — Quarter 9 (CORRA Below the Floor)</h2>
+<p class="lede">Suppose CORRA fixes at <b>2.70%</b> — this is the scenario a standalone Cap buyer would have loved (free ride on low rates), but ABC gave that away by selling the Floor.</p>
+<div class="ticket"><pre>50,000,000 × (3.25% − 2.70%) × 90/365 ≈ CAD 67,808 (undiscounted)
+Discounted ≈ CAD 67,325</pre></div>
+<p>This time, <b>ABC pays CBT ≈ CAD 67,325</b> on the Floor leg it sold — because CORRA fell below 3.25%, CBT exercises its right on the Floor, and ABC owes the difference. ABC's effective borrowing cost is held near the 4.50% floor, even though the raw loan rate (CORRA + 1.25% = 3.95%) would have been cheaper without the Collar.</p>
+<div class="ticket"><pre>This is the Collar's central trade-off:
+  ABC gave up some Cap premium cost
+        in exchange for
+  ABC giving up some benefit when rates fall very low</pre></div>
+
+    </section>
+
+    <section class="mod" id="s10-scenario-summary-across-the-collar-s-life">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Scenario Summary Across the Collar's Life</h2>
+<div class="table-scroll"><table><thead><tr><th>Scenario</th><th>CORRA Fixing</th><th>Cap Leg</th><th>Floor Leg</th><th>Net Cash Flow</th><th>ABC's Effective Rate</th></tr></thead><tbody><tr><td>Rates spike</td><td>5.80%</td><td>CBT pays ABC</td><td>—</td><td>+ to ABC</td><td>Held near 6.25% ceiling</td></tr><tr><td>Rates mid-range</td><td>4.10%</td><td>—</td><td>—</td><td>CAD 0</td><td>CORRA + 1.25% (unhedged that quarter)</td></tr><tr><td>Rates fall moderately</td><td>3.25%–5.00%</td><td>—</td><td>—</td><td>CAD 0</td><td>Floats freely inside the band</td></tr><tr><td>Rates fall sharply</td><td>2.70%</td><td>—</td><td>ABC pays CBT</td><td>− from ABC</td><td>Held near 4.50% floor</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s11-valuation-and-mtm">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Valuation and MTM</h2>
+<p class="lede">A Collar's MTM is simply the <b>net</b> of its two option legs:</p>
+<div class="ticket"><pre>Collar MTM = Cap MTM (long position) − Floor MTM (short position)</pre></div>
+<div class="ticket"><pre>Market-implied forward CORRA ↑  → Cap leg gains value, Floor leg loses value
+                                   → Collar MTM generally RISES (net long Cap-like exposure)
+Market-implied forward CORRA ↓  → Cap leg loses value, Floor leg gains value (against ABC,
+                                   since ABC is short the Floor)
+                                   → Collar MTM generally FALLS
+Implied volatility ↑             → BOTH legs' absolute value rises — the NET effect partially
+                                   cancels, unlike a standalone Cap or Floor</pre></div>
+<p>This last point is the key operational lesson: a Collar's <b>Vega</b> is much smaller than either leg's individual Vega, because ABC is long volatility on one leg and short volatility on the other — a genuinely different risk profile from either the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap</a> or <a href="./Interest_Rate_Floor_Complete_Example.html">Floor</a> example on its own.</p>
+
+    </section>
+
+    <section class="mod" id="s12-what-data-does-the-valuation-engine-need">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>What Data Does the Valuation Engine Need?</h2>
+<p class="lede">Everything from the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap</a> and <a href="./Interest_Rate_Floor_Complete_Example.html">Floor</a> examples, <b>for both legs</b>, plus:</p>
+<ul><li>A flag identifying the two legs as economically linked (a single Collar structure, not two unrelated trades)</li><li>Net Premium (rather than two separate gross premiums, for a single cash settlement)</li><li>Combined Greeks reporting (net Delta, net Vega across both legs)</li></ul>
+
+    </section>
+
+    <section class="mod" id="s13-the-collar-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>The Collar Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture (TWO linked legs: Cap bought + Floor sold)
+      ↓
+Confirmation
+      ↓
+Enrichment (LEI, UTI, UPI — one per leg, or a package UPI depending on the regime)
+      ↓
+Static Data
+      ↓
+Market Data (Forward Curve, Discount Curve, Volatility Surface)
+      ↓
+Valuation (both legs, netted)
+      ↓
+MTM (net)
+      ↓
+Risk / Exposure (net Greeks)
+      ↓
+Collateral
+      ↓
+[Repeat per period:]
+   Fixing → Determine which leg (if any) triggers → Settlement
+      ↓
+Regulatory Reporting (both legs)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s14-trade-capture">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>COL-20260905-00001</td></tr><tr><td>Product</td><td>Interest Rate Collar</td></tr><tr><td>Leg 1</td><td>Buy Cap, Strike 5.00%, Premium CAD 875,000 (paid)</td></tr><tr><td>Leg 2</td><td>Sell Floor, Strike 3.25%, Premium CAD 740,000 (received)</td></tr><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Reference Index</td><td>CORRA</td></tr><tr><td>Net Premium</td><td>CAD 135,000 (paid)</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Maturity</td><td>05-Sep-2029</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-confirmation">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Confirmation</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Mining Corporation</td></tr><tr><td>Party B</td><td>Canada Bank of Toronto</td></tr><tr><td>Party A</td><td>Buys Cap @ 5.00%, Sells Floor @ 3.25%</td></tr><tr><td>Party B</td><td>Sells Cap @ 5.00%, Buys Floor @ 3.25%</td></tr><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>Term</td><td>3 years, quarterly</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s16-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual regulatory record — typically reported as <b>two linked derivative legs</b> sharing a package/strategy identifier — would contain:</p>
+<ul><li>UTI (per leg, or one shared per the regime's linked-transaction convention)</li><li>UPI (per leg — one for the Cap shape, one for the Floor shape)</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li>Asset Class (Interest Rate)</li><li>Product Type: Cap (Leg 1), Floor (Leg 2)</li><li>Notional, Strike (per leg)</li><li>Net Premium</li><li>Trade Date / Maturity Date</li><li>Clearing Status</li><li>Collateralisation</li><li>Valuation Amount (net)</li><li>Action Type / Event Type</li><li>Reporting Timestamp</li></ul>
+
+    </section>
+
+    <section class="mod" id="s17-collar-vs-cap-vs-floor-where-the-distinction-becomes-clear">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>Collar vs Cap vs Floor — Where the Distinction Becomes Clear</h2>
+<div class="table-scroll"><table><thead><tr><th>Aspect</th><th>Cap (standalone)</th><th>Floor (standalone)</th><th>Collar</th></tr></thead><tbody><tr><td>Legs</td><td>One (bought)</td><td>One (bought)</td><td>Two (one bought, one sold)</td></tr><tr><td>Premium</td><td>Paid in full</td><td>Paid in full</td><td><b>Net</b> — often much smaller, or zero</td></tr><tr><td>Upside if rates favorable</td><td>Fully kept</td><td>Fully kept</td><td><b>Given up beyond the sold leg's strike</b></td></tr><tr><td>Protection if rates unfavorable</td><td>Full, above the strike</td><td>Full, below the strike</td><td>Full, but only to the sold leg's strike</td></tr><tr><td>Typical use</td><td>Pure protection, cost not a concern</td><td>Pure protection, cost not a concern</td><td>Cost-conscious hedging</td></tr></tbody></table></div>
+<div class="ticket"><pre>CAP alone:    pay premium, keep ALL upside, capped downside risk
+FLOOR alone:  pay premium, keep ALL upside, capped downside risk (opposite direction)
+COLLAR:       pay LESS (or nothing) net, but upside is now ALSO capped</pre></div>
+<h3>Mental Model</h3>
+<div class="ticket"><pre>Want Cap-like protection but don't want to pay the full premium?
+        ↓
+     COLLAR
+        ↓
+Buy the Cap, sell a Floor to fund it, accept a capped
+range of outcomes instead of one-sided protection</pre></div>
+
+    </section>
+
+    <section class="mod" id="s18-next-lesson-swaption-option-to-enter-an-interest-rate-swap">
+      <p class="sec-eyebrow"><span class="n">—</span></p>
+      <h2>Next Lesson: Swaption — Option to Enter an Interest Rate Swap</h2>
+<p class="lede">The natural next step continues the same progression:</p>
+<div class="ticket"><pre>Collar → Swaption → Cross-Currency Swap → CDS</pre></div>
+<p>A Swaption is a genuinely different kind of optionality: instead of a strip of small per-period options like a Cap, Floor, or Collar, it is a <b>single option on an entire multi-year swap</b>, exercised (or not) on one decision date.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

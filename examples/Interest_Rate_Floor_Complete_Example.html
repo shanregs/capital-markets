@@ -1,0 +1,789 @@
+<!doctype html>
+<title>Interest Rate Floor — Complete CAD Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Interest Rate Floor — Complete CAD Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-floor"><span class="toc-num">01</span>What Is a Floor?</a></li>
+      <li><a href="#s2-business-scenario"><span class="toc-num">02</span>Business Scenario</a></li>
+      <li><a href="#s3-the-participants"><span class="toc-num">03</span>The Participants</a></li>
+      <li><a href="#s4-the-trade"><span class="toc-num">04</span>The Trade</a></li>
+      <li><a href="#s5-floorlet-settlement-the-mirror-of-a-caplet"><span class="toc-num">05</span>Floorlet Settlement — The Mirror of a Caplet</a></li>
+      <li><a href="#s6-worked-example-quarter-1-corra-fixes-below-the-floor-rate"><span class="toc-num">06</span>Worked Example — Quarter 1 (CORRA Fixes Below the Floor Rate)</a></li>
+      <li><a href="#s7-worked-example-quarter-5-corra-fixes-above-the-floor-rate"><span class="toc-num">07</span>Worked Example — Quarter 5 (CORRA Fixes Above the Floor Rate)</a></li>
+      <li><a href="#s8-scenario-summary-across-the-floor-s-life"><span class="toc-num">08</span>Scenario Summary Across the Floor's Life</a></li>
+      <li><a href="#s9-why-the-fund-pays-a-premium-at-all"><span class="toc-num">09</span>Why the Fund Pays a Premium At All</a></li>
+      <li><a href="#s10-valuation-and-mtm-before-each-fixing"><span class="toc-num">10</span>Valuation and MTM (Before Each Fixing)</a></li>
+      <li><a href="#s11-what-data-does-the-valuation-engine-need"><span class="toc-num">11</span>What Data Does the Valuation Engine Need?</a></li>
+      <li><a href="#s12-the-floor-trade-lifecycle"><span class="toc-num">12</span>The Floor Trade Lifecycle</a></li>
+      <li><a href="#s13-trade-capture"><span class="toc-num">13</span>Trade Capture</a></li>
+      <li><a href="#s14-confirmation"><span class="toc-num">14</span>Confirmation</a></li>
+      <li><a href="#s15-regulatory-reporting"><span class="toc-num">15</span>Regulatory Reporting</a></li>
+      <li><a href="#s16-floor-vs-cap-where-the-distinction-becomes-clear"><span class="toc-num">16</span>Floor vs Cap — Where the Distinction Becomes Clear</a></li>
+      <li><a href="#s17-next-lesson-collar-interest-rate-collar"><span class="toc-num">—</span>Next Lesson: Collar — Interest Rate Collar</a></li>
+    </ol>
+  </nav>
+
+  <main>
+<p class="lede"><i>Continuing the same institutional style used in the IRS, FX Option, FRA, and Cap lessons: real institutions (RBC, TD, BMO, CIBC, Scotiabank, JPMorgan, Goldman Sachs, etc.) are referenced for context, while <b>Canada Bank of Toronto (CBT)</b> remains the fictional primary dealer used to build the worked example. CORRA — administered and published by the Bank of Canada — is used as the CAD reference rate.</i></p>
+
+
+    <section class="mod" id="s1-what-is-a-floor">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What Is a Floor?</h2>
+<p class="lede">An <b>Interest Rate Floor</b> is the mirror image of the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap</a>: it protects the holder of a <b>floating-rate asset</b> (an investor or lender) against rates <b>falling</b>, without giving up the benefit if rates rise. Like a Cap, a Floor is a <b>strip of options</b> — one per period, each called a <b>floorlet</b>.</p>
+<div class="ticket"><pre>FLOOR
+ │
+ +-- A strip of FLOORLETS (one option per period)
+ +-- Buyer pays an upfront PREMIUM
+ +-- Buyer receives a payment ONLY if the reference rate
+     falls BELOW the Floor Rate in that period
+ +-- If the rate stays above, buyer receives NOTHING —
+     but also pays NOTHING extra</pre></div>
+<p>Where a Cap protects a <b>borrower</b> (short the floating rate, worried it rises), a Floor protects an <b>investor</b> (long the floating rate, worried it falls) — the same underlier, the same mechanic, opposite economic direction.</p>
+
+    </section>
+
+    <section class="mod" id="s2-business-scenario">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Business Scenario</h2>
+<p class="lede">Suppose this time:</p>
+<ul><li><b>ABC Mining Corporation's own pension fund</b> holds a <b>CAD 40,000,000</b> position in floating-rate notes, paying compounded <b>CORRA + 0.60%</b>, resetting quarterly.</li><li>The pension fund's actuarial return targets assume a <i>minimum</i> level of interest income — if CORRA falls too far, the fund's floating-rate income could drop below what it needs to meet obligations.</li><li>The pension fund is comfortable keeping the <i>upside</i> if rates rise, but wants a guaranteed <b>floor</b> under its income.</li><li>It buys a <b>2-year Interest Rate Floor</b> from CBT, struck at <b>3.50%</b>.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s3-the-participants">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>The Participants</h2>
+<div class="ticket"><pre>                   FLOOR
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+  ABC Pension Fund               CBT
+                          Canada Bank of Toronto
+        │                         │
+        │   Buys Floor            │
+        │  (Pays Premium,         │
+        │   Receives if           │
+        │   CORRA &lt; 3.50%)        │
+        └─────────────────────────┘</pre></div>
+<h3>Roles</h3>
+<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Role</th></tr></thead><tbody><tr><td>ABC Mining Corporation Pension Fund</td><td>Floor buyer (protecting its floating-rate note income)</td></tr><tr><td>Canada Bank of Toronto</td><td>Floor seller / dealer (writer of the floorlets)</td></tr><tr><td>CBT Rates Trading Desk</td><td>Prices the strip of floorlets and hedges the option risk</td></tr><tr><td>CBT Risk Management</td><td>Monitors option Greeks and counterparty risk</td></tr><tr><td>CBT Operations</td><td>Confirmation, fixings, and settlement per floorlet</td></tr><tr><td>CBT Regulatory Reporting</td><td>Regulatory reporting</td></tr><tr><td>External market</td><td>Provides CORRA fixings and the volatility surface used to price each floorlet</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s4-the-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Trade</h2>
+<h3>Trade Economics</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>FLR-20260905-00001</td></tr><tr><td>Product</td><td>Interest Rate Floor</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Notional</td><td>CAD 40,000,000</td></tr><tr><td>Floor Rate (Strike)</td><td>3.50%</td></tr><tr><td>Reference Rate</td><td>Compounded CORRA (3-month)</td></tr><tr><td>Term</td><td>2 years (8 quarterly floorlets)</td></tr><tr><td>Buyer</td><td>ABC Mining Corporation Pension Fund</td></tr><tr><td>Seller</td><td>Canada Bank of Toronto</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>First Floorlet Period</td><td>05-Dec-2026 → 05-Mar-2027</td></tr><tr><td>Premium</td><td>CAD 460,000 (paid upfront, 07-Sep-2026)</td></tr><tr><td>Day Count</td><td>Act/365</td></tr></tbody></table></div>
+<p>The key economic statement is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>The pension fund has purchased protection: for each of the next 8 quarters, if CORRA fixes below 3.50%, CBT pays the fund the difference on CAD 40,000,000; if CORRA fixes at or above 3.50%, nothing is paid on that floorlet.</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s5-floorlet-settlement-the-mirror-of-a-caplet">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Floorlet Settlement — The Mirror of a Caplet</h2>
+<div class="ticket"><pre>Floorlet Settlement (if Reference Rate &lt; Floor Rate)
+=
+Notional × (Floor Rate − Reference Rate) × (Days/365)
+─────────────────────────────────────────────────────
+1 + (Reference Rate × Days/365)
+
+Floorlet Settlement (if Reference Rate ≥ Floor Rate) = 0</pre></div>
+<p>Notice the subtraction is <b>flipped</b> relative to the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap example §5</a> — a floorlet pays out when the reference rate is <i>below</i> the strike, a caplet pays out when it's <i>above</i>.</p>
+
+    </section>
+
+    <section class="mod" id="s6-worked-example-quarter-1-corra-fixes-below-the-floor-rate">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Worked Example — Quarter 1 (CORRA Fixes Below the Floor Rate)</h2>
+<p class="lede">Suppose on the first fixing date (05-Dec-2026), compounded 3-month CORRA is observed at <b>2.90%</b>.</p>
+<p><b>Step 1 — Interest differential (undiscounted):</b></p>
+<div class="ticket"><pre>40,000,000 × (3.50% − 2.90%) × 90/365
+= 40,000,000 × 0.0060 × 0.2466
+≈ CAD 59,178</pre></div>
+<p><b>Step 2 — Discount factor:</b></p>
+<div class="ticket"><pre>1 / (1 + 2.90% × 90/365)
+= 1 / (1 + 0.00715)
+≈ 0.99290</pre></div>
+<p><b>Step 3 — Discounted settlement amount:</b></p>
+<div class="ticket"><pre>59,178 × 0.99290
+≈ CAD 58,758</pre></div>
+<p>Since CORRA (2.90%) fell below the Floor Rate (3.50%), CBT pays the pension fund <b>CAD 58,758</b> — topping up the fund's floating-rate note income back toward the 3.50% floor level.</p>
+
+    </section>
+
+    <section class="mod" id="s7-worked-example-quarter-5-corra-fixes-above-the-floor-rate">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Worked Example — Quarter 5 (CORRA Fixes Above the Floor Rate)</h2>
+<p class="lede">Suppose over a year later, CORRA fixes at <b>4.80%</b> for that quarter.</p>
+<div class="ticket"><pre>Reference Rate (4.80%) ≥ Floor Rate (3.50%)
+        ↓
+Floorlet Settlement = CAD 0</pre></div>
+<p>The pension fund receives nothing on this floorlet — but its floating-rate note income for that quarter is also <b>higher</b>, because CORRA rose. The fund keeps the full benefit of the higher rate, unlike a Receiver IRS, which would have forced it to hand that upside to its swap counterparty.</p>
+<div class="ticket"><pre>Receiver IRS (if the fund had used one instead):
+  Rates rise → fund still receives only the fixed leg → benefit is GIVEN UP
+
+FLOOR:
+  Rates rise → floorlet simply pays zero → fund KEEPS the benefit</pre></div>
+
+    </section>
+
+    <section class="mod" id="s8-scenario-summary-across-the-floor-s-life">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Scenario Summary Across the Floor's Life</h2>
+<div class="table-scroll"><table><thead><tr><th>Scenario</th><th>CORRA Fixing</th><th>Floorlet Payout to Fund</th><th>Fund's Net Position</th></tr></thead><tbody><tr><td>Rates fall sharply</td><td>2.90%</td><td>≈ CAD 58,758</td><td>Protected — lost income topped up</td></tr><tr><td>Rates fall moderately</td><td>3.30%</td><td>Small, proportional payout</td><td>Mostly protected</td></tr><tr><td>Rates at the strike</td><td>3.50%</td><td>CAD 0</td><td>Income exactly at the floored level</td></tr><tr><td>Rates rise</td><td>4.80%</td><td>CAD 0</td><td>Fund keeps the full benefit of higher rates</td></tr></tbody></table></div>
+<p><b>The pension fund's minimum floating-rate income is effectively floored at approximately 3.50% + 0.60% = 4.10% per quarter, while its upside is uncapped</b> — the same asymmetric option shape as a Cap, just protecting the opposite side of the rate move.</p>
+
+    </section>
+
+    <section class="mod" id="s9-why-the-fund-pays-a-premium-at-all">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Why the Fund Pays a Premium At All</h2>
+<div class="ticket"><pre>Buyer's Payoff Per Floorlet
+    +  |  \
+       |    \
+       |      \
+  -----+-------+-------------------  CORRA at fixing
+       |        \. . . . . . . . . Floor Rate (3.50%)
+    -  |          \________________
+       (flat — never negative; capped downside is the premium
+        already paid, upside protection triggers as rates fall further)</pre></div>
+<p>Exactly as in the <a href="./Interest_Rate_Cap_Complete_Example.html">Cap example §9</a>, the fund can never lose more than the premium already paid, and gains every time CORRA falls below 3.50% — so CBT must be compensated upfront for taking on that one-sided risk.</p>
+
+    </section>
+
+    <section class="mod" id="s10-valuation-and-mtm-before-each-fixing">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Valuation and MTM (Before Each Fixing)</h2>
+<div class="ticket"><pre>Forward Curve (expected future CORRA)
+          +
+Volatility Surface
+          +
+Discount Curve
+          ↓
+     Floorlet Value (via a Black-style option model)
+          ↓
+   Sum across all remaining floorlets
+          ↓
+        Floor MTM</pre></div>
+<div class="ticket"><pre>Market-implied forward CORRA ↓  → Floor becomes MORE valuable to the fund
+Market-implied forward CORRA ↑  → Floor becomes LESS valuable to the fund
+Implied volatility ↑             → Floor becomes MORE valuable to the fund</pre></div>
+<p>This is the mirror-image sensitivity of the Cap's valuation (<a href="./Interest_Rate_Cap_Complete_Example.html">Cap example §10</a>) — same inputs, opposite direction.</p>
+
+    </section>
+
+    <section class="mod" id="s11-what-data-does-the-valuation-engine-need">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>What Data Does the Valuation Engine Need?</h2>
+<ul><li>Trade ID</li><li>Notional</li><li>Floor Rate (Strike)</li><li>Reference Index (CORRA)</li><li>Trade Date, Floorlet Period Start/End dates (all 8)</li><li>Fixing Dates (all 8)</li><li>Day Count Convention</li><li>Forward Curve</li><li>Discount Curve</li><li>Volatility Surface</li></ul>
+
+    </section>
+
+    <section class="mod" id="s12-the-floor-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>The Floor Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+      ↓
+Confirmation
+      ↓
+Enrichment (LEI, UTI, UPI)
+      ↓
+Static Data
+      ↓
+Market Data (Forward Curve, Discount Curve, Volatility Surface)
+      ↓
+Valuation (all remaining floorlets)
+      ↓
+MTM
+      ↓
+Risk / Exposure (incl. Vega)
+      ↓
+Collateral
+      ↓
+[Repeat per floorlet:]
+   Fixing (CORRA observed) → Settlement Amount Calculation → Settlement (or zero)
+      ↓
+Regulatory Reporting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s13-trade-capture">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>FLR-20260905-00001</td></tr><tr><td>Product</td><td>Interest Rate Floor</td></tr><tr><td>Notional</td><td>CAD 40,000,000</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Floor Rate</td><td>3.50%</td></tr><tr><td>Reference Index</td><td>CORRA</td></tr><tr><td>Number of Floorlets</td><td>8</td></tr><tr><td>Direction</td><td>Buy Floor</td></tr><tr><td>Premium</td><td>CAD 460,000</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Maturity</td><td>05-Sep-2028</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s14-confirmation">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Confirmation</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Mining Corporation Pension Fund</td></tr><tr><td>Party B</td><td>Canada Bank of Toronto</td></tr><tr><td>Party A pays</td><td>Premium (upfront)</td></tr><tr><td>Party B pays</td><td>Any floorlet where CORRA &lt; 3.50%</td></tr><tr><td>Notional</td><td>CAD 40,000,000</td></tr><tr><td>Term</td><td>2 years, quarterly floorlets</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual regulatory record could contain:</p>
+<ul><li>UTI</li><li>UPI</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li>Asset Class (Interest Rate)</li><li>Product Type (Floor)</li><li>Notional</li><li>Floor Rate</li><li>Floating Rate Index</li><li>Premium, Premium Currency</li><li>Trade Date / Maturity Date</li><li>Number of Floorlets / Floorlet Schedule</li><li>Clearing Status</li><li>Collateralisation</li><li>Valuation Amount</li><li>Action Type / Event Type</li><li>Reporting Timestamp</li></ul>
+
+    </section>
+
+    <section class="mod" id="s16-floor-vs-cap-where-the-distinction-becomes-clear">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>Floor vs Cap — Where the Distinction Becomes Clear</h2>
+<div class="table-scroll"><table><thead><tr><th>Aspect</th><th>Cap</th><th>Floor</th></tr></thead><tbody><tr><td>Protects</td><td>Floating-rate <b>borrower</b></td><td>Floating-rate <b>investor/lender</b></td></tr><tr><td>Pays out when rate is</td><td><b>Above</b> the strike</td><td><b>Below</b> the strike</td></tr><tr><td>Worry being hedged</td><td>Rates rising</td><td>Rates falling</td></tr><tr><td>Structure</td><td>Strip of caplets</td><td>Strip of floorlets</td></tr><tr><td>Premium</td><td>Yes, upfront</td><td>Yes, upfront</td></tr><tr><td>Combine the two</td><td>Buying a Cap + Selling a Floor = a <b>Collar</b> (next lesson)</td><td>Buying a Floor + Selling a Cap = a <b>Collar</b>, from the opposite side</td></tr></tbody></table></div>
+<div class="ticket"><pre>CAP:   protects against rates going UP    (borrower's worry)
+FLOOR: protects against rates going DOWN  (investor's worry)</pre></div>
+<h3>Mental Model</h3>
+<div class="ticket"><pre>Single-direction rate protection, opposite side of the market
+        ↓
+       FLOOR
+        ↓
+Pay a premium once, get paid whenever rates fall below the strike,
+pay nothing extra when they don't</pre></div>
+
+    </section>
+
+    <section class="mod" id="s17-next-lesson-collar-interest-rate-collar">
+      <p class="sec-eyebrow"><span class="n">—</span></p>
+      <h2>Next Lesson: Collar — Interest Rate Collar</h2>
+<p class="lede">The natural next step continues the same progression:</p>
+<div class="ticket"><pre>Floor → Collar → Swaption → Cross-Currency Swap → CDS</pre></div>
+<p>A Collar combines a Cap and a Floor into a single structure — typically buying one and selling the other — to narrow the premium cost, at the price of also narrowing the range of rates the hedger benefits from.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
