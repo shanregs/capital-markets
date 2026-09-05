@@ -1,0 +1,744 @@
+<!doctype html>
+<title>Equity Total Return Swap (TRS) — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Equity Total Return Swap (TRS) — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-an-equity-trs"><span class="toc-num">01</span>What is an Equity TRS?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-why-bank-of-toronto-actually-buys-the-shares"><span class="toc-num">03</span>Why Bank Of Toronto Actually Buys the Shares</a></li>
+      <li><a href="#s4-the-two-legs"><span class="toc-num">04</span>The Two Legs</a></li>
+      <li><a href="#s5-first-quarterly-reset-suppose-aapl-rises"><span class="toc-num">05</span>First Quarterly Reset — Suppose AAPL Rises</a></li>
+      <li><a href="#s6-net-settlement"><span class="toc-num">06</span>Net Settlement</a></li>
+      <li><a href="#s7-what-if-aapl-falls-instead"><span class="toc-num">07</span>What if AAPL Falls Instead?</a></li>
+      <li><a href="#s8-the-trade-lifecycle"><span class="toc-num">08</span>The Trade Lifecycle</a></li>
+      <li><a href="#s9-trade-capture"><span class="toc-num">09</span>Trade Capture</a></li>
+      <li><a href="#s10-daily-valuation-mark-to-market"><span class="toc-num">10</span>Daily Valuation — Mark-to-Market</a></li>
+      <li><a href="#s11-why-this-isn-t-ownership"><span class="toc-num">11</span>Why This Isn't Ownership</a></li>
+      <li><a href="#s12-regulatory-reporting"><span class="toc-num">12</span>Regulatory Reporting</a></li>
+      <li><a href="#s13-cash-equity-vs-equity-trs-side-by-side"><span class="toc-num">13</span>Cash Equity vs Equity TRS — Side by Side</a></li>
+      <li><a href="#s14-the-three-most-important-equity-trs-concepts"><span class="toc-num">14</span>The Three Most Important Equity TRS Concepts</a></li>
+      <li><a href="#s15-mental-model-recap"><span class="toc-num">15</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-an-equity-trs">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is an Equity TRS?</h2>
+<p class="lede">A Total Return Swap is an OTC derivative where one party receives the <b>total return</b> of an underlying stock (price appreciation <b>plus</b> dividends), while paying a <b>financing rate</b> in exchange. It gives the "receiver" all the economics of owning the stock, <b>without ever actually owning it</b>.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Equity TRS ↔ Total stock return ↔ Financing rate (floating)</b></p></div>
+<p>The important point is:</p>
+<ul><li>No shares ever change hands — this is the derivative counterpart to the <a href="./Cash_Equity_Trade_Complete_Example.html">Cash Equity example</a>.</li><li>The TRS Receiver gets dividend-equivalent cash flows, but <b>no voting rights</b> — Bank Of Toronto (as payer, since it's economically short the stock and typically hedges by actually holding it) keeps the vote.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li><b>Maple Leaf Pension Fund</b> wants economic exposure to Apple Inc. shares, but for internal reasons prefers not to hold the stock directly (e.g. avoiding the operational overhead of custody, or wanting leverage).</li><li>It enters a TRS with <b>Bank Of Toronto</b>, which hedges itself by actually buying the shares.</li></ul>
+<h3>Swap terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Product</td><td>Equity Total Return Swap</td></tr><tr><td>Underlier</td><td>Apple Inc. common stock (AAPL)</td></tr><tr><td>Reference Notional</td><td>5,000 shares</td></tr><tr><td>Initial Reference Price</td><td>USD 227.15</td></tr><tr><td>Initial Notional Value</td><td>USD 1,135,750</td></tr><tr><td>TRS Receiver</td><td>Maple Leaf Pension Fund (receives total return)</td></tr><tr><td>TRS Payer</td><td>Bank Of Toronto (receives financing rate)</td></tr><tr><td>Financing Rate</td><td>SOFR + 0.40%</td></tr><tr><td>Reset Frequency</td><td>Quarterly</td></tr><tr><td>Trade Date</td><td>17-Aug-2026</td></tr><tr><td>Maturity</td><td>17-Aug-2027</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s3-why-bank-of-toronto-actually-buys-the-shares">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Why Bank Of Toronto Actually Buys the Shares</h2>
+<div class="ticket"><pre>Maple Leaf Pension Fund wants AAPL's total return economics
+        ↓
+Enters a TRS with Bank Of Toronto (Receiver of total return)
+        ↓
+Bank Of Toronto is now economically SHORT AAPL through the swap
+        ↓
+Bank Of Toronto HEDGES by actually buying 5,000 AAPL shares
+  (a real Cash Equity trade — see the Cash Equity example)
+        ↓
+Bank Of Toronto's cash position + short TRS position nets to flat
+  (it earns the spread between financing received and dividends paid)</pre></div>
+<p>This is the exact same "dealer hedges the offsetting cash position" pattern the <a href="./Commodity_Swap_Complete_Example.html">Commodity Swap example §3</a> shows for a commodity swap desk.</p>
+
+    </section>
+
+    <section class="mod" id="s4-the-two-legs">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Two Legs</h2>
+<div class="ticket"><pre>                    EQUITY TRS
+                         |
+              +----------+----------+
+              |                     |
+      Total Return Leg      Financing Leg
+              |                     |
+   Receiver gets:              Payer gets:
+   - Price appreciation        - SOFR + 0.40% on the
+   - Dividends                   Reference Notional Value</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-first-quarterly-reset-suppose-aapl-rises">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>First Quarterly Reset — Suppose AAPL Rises</h2>
+<p class="lede">Suppose after one quarter, AAPL's price has risen from USD 227.15 to <b>USD 241.60</b>, and Apple paid a dividend of <b>USD 0.26/share</b> during the period.</p>
+<div class="ticket"><pre>Price Return  = (241.60 − 227.15) × 5,000 shares
+              = 14.45 × 5,000
+              = USD 72,250
+
+Dividend Return = 0.26 × 5,000
+                = USD 1,300
+
+Total Return owed to Maple Leaf Pension Fund = 72,250 + 1,300 = USD 73,550</pre></div>
+<div class="ticket"><pre>Financing Leg (Bank Of Toronto receives):
+  Reference Notional Value × (SOFR + 0.40%) × (91/360)
+  = 1,135,750 × 5.30% × (91/360)
+  ≈ USD 15,225</pre></div>
+
+    </section>
+
+    <section class="mod" id="s6-net-settlement">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Net Settlement</h2>
+<div class="table-scroll"><table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody><tr><td>Total Return owed to Maple Leaf Pension Fund</td><td>USD 73,550</td></tr><tr><td>Financing owed to Bank Of Toronto</td><td>USD 15,225</td></tr><tr><td><b>Net payment to Maple Leaf Pension Fund</b></td><td><b>USD 58,325</b></td></tr></tbody></table></div>
+<p>Only this <b>net</b> amount actually moves — exactly the same netting principle as the IRS's fixed-vs-floating exchange (<a href="../docs/1-capital-markets/module-19-interest-rate-swap-deep-dive.html">Module 19 §8</a>), just with "price + dividend return" standing in for "fixed rate" as one of the two legs.</p>
+
+    </section>
+
+    <section class="mod" id="s7-what-if-aapl-falls-instead">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>What if AAPL Falls Instead?</h2>
+<p class="lede">Suppose AAPL instead falls to <b>USD 210.00</b> over the quarter (still assume the same USD 0.26 dividend):</p>
+<div class="ticket"><pre>Price Return   = (210.00 − 227.15) × 5,000 = −USD 85,750
+Dividend Return                            = +USD 1,300
+Total Return                               = −USD 84,450
+
+Financing owed to Bank Of Toronto           = +USD 15,225
+
+Net: Maple Leaf Pension Fund OWES Bank Of Toronto
+     84,450 + 15,225 = USD 99,675</pre></div>
+<p>This is the crucial risk to understand: a TRS Receiver bears the <b>full downside</b> of the stock, just like an actual owner would — but without ever holding the shares.</p>
+
+    </section>
+
+    <section class="mod" id="s8-the-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>The Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+  ↓
+Confirmation
+  ↓
+Enrichment (LEI, UTI, UPI)
+  ↓
+Bank Of Toronto's Hedge Trade (Cash Equity purchase)
+  ↓
+Daily Valuation (tracking AAPL's price)
+  ↓
+Quarterly Reset &amp; Net Settlement
+  ↓
+Collateral (CSA-driven IM/VM)
+  ↓
+Regulatory Reporting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s9-trade-capture">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>TRS-20260817-00061</td></tr><tr><td>Product</td><td>Equity Total Return Swap</td></tr><tr><td>Underlier</td><td>AAPL — Apple Inc. common stock</td></tr><tr><td>Reference Shares</td><td>5,000</td></tr><tr><td>Initial Reference Price</td><td>USD 227.15</td></tr><tr><td>Financing Rate</td><td>SOFR + 0.40%</td></tr><tr><td>Receiver</td><td>Maple Leaf Pension Fund</td></tr><tr><td>Payer</td><td>Bank Of Toronto</td></tr><tr><td>Trade Date</td><td>17-Aug-2026</td></tr><tr><td>Maturity</td><td>17-Aug-2027</td></tr><tr><td>UPI</td><td>(illustrative) "Equity / Swap / PriceReturn / Swap, AAPL"</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s10-daily-valuation-mark-to-market">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Daily Valuation — Mark-to-Market</h2>
+<p class="lede">Between quarterly resets, the TRS still has value every single day, tracking the underlying share price move since the last reset:</p>
+<div class="ticket"><pre>Current AAPL Price
+        ↓
+minus Last Reset Price
+        ↓
+× Reference Shares
+        ↓
+minus Accrued Financing Owed
+        ↓
+      MTM</pre></div>
+<p>Suppose one month into the quarter, AAPL has risen from 227.15 to 235.00:</p>
+<div class="ticket"><pre>Unrealized Price Return = (235.00 − 227.15) × 5,000 = USD 39,250
+Accrued Financing (1 month) ≈ 1,135,750 × 5.30% × 30/360 ≈ USD 5,017
+
+MTM to Maple Leaf Pension Fund ≈ 39,250 − 5,017 ≈ +USD 34,233</pre></div>
+
+    </section>
+
+    <section class="mod" id="s11-why-this-isn-t-ownership">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Why This Isn't Ownership</h2>
+<div class="table-scroll"><table><thead><tr><th>Aspect</th><th>Owning AAPL Directly</th><th>AAPL TRS (Receiver side)</th></tr></thead><tbody><tr><td>Voting rights</td><td>Yes</td><td><b>No</b></td></tr><tr><td>Legal ownership</td><td>Yes</td><td><b>No</b></td></tr><tr><td>Price exposure</td><td>Yes</td><td>Yes (synthetic)</td></tr><tr><td>Dividend economics</td><td>Yes</td><td>Yes (paid as a cash-flow leg)</td></tr><tr><td>Settles via</td><td>DvP, T+1</td><td>Net cash flow, quarterly</td></tr><tr><td>Identifier</td><td>ISIN</td><td>UPI + UTI</td></tr><tr><td>Leverage</td><td>Full cash outlay required</td><td>Only margin/collateral required</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s12-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual EMIR/Dodd-Frank record would contain:</p>
+<ul><li>UTI</li><li>UPI ("Equity / Swap / PriceReturn / Swap, AAPL")</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li>Asset Class: Equity</li><li>Underlier: AAPL (with its own ISIN referenced as the underlying instrument)</li><li>Reference Notional: 5,000 shares / USD 1,135,750</li><li>Valuation Amount (Section 10's MTM)</li><li>Trade Date / Maturity Date</li></ul>
+<p>Relevant only because this is an OTC equity derivative — a listed Equity Future or Option instead would get an exchange-specific contract code, not a UPI (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4 §6</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s13-cash-equity-vs-equity-trs-side-by-side">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Cash Equity vs Equity TRS — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Aspect</th><th>Cash Equity (own AAPL)</th><th>Equity TRS (synthetic)</th></tr></thead><tbody><tr><td><span class="side-tag sell">CASH</span></td><td>What settles</td><td>Shares + cash, once</td><td>Net cash flow, every reset</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Identifier</td><td>ISIN</td><td>UPI + UTI</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Ownership</td><td>Real</td><td>Synthetic</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Capital required</td><td>Full purchase price</td><td>Margin/collateral only</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Regulatory scope</td><td>MiFIR</td><td>EMIR/Dodd-Frank</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s14-the-three-most-important-equity-trs-concepts">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>The Three Most Important Equity TRS Concepts</h2>
+<h3>1. Synthetic ownership, real economics</h3>
+<p>Price appreciation and dividends flow through, but nothing is actually owned.</p>
+<h3>2. Two legs, same shape as an IRS</h3>
+<div class="ticket"><pre>Total Return Leg   ↕   Financing Leg</pre></div>
+<h3>3. The dealer usually hedges with the real stock</h3>
+<div class="ticket"><pre>TRS Receiver's exposure  =  Dealer's real Cash Equity hedge, offsetting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s15-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Desire for stock exposure without ownership → Equity TRS → Synthetic return, real financing cost</pre></div>
+<p>This is the equity-market analogue of everything this series has already shown: a derivative transforms one kind of risk (here, "I want stock exposure without buying stock") into a new shape — exactly like an IRS transforms floating-rate risk, or an FX Forward transforms FX timing risk.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

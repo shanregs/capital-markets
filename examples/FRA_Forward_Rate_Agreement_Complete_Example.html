@@ -1,0 +1,866 @@
+<!doctype html>
+<title>FRA — Forward Rate Agreement — Complete CAD Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>FRA — Forward Rate Agreement — Complete CAD Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-an-fra"><span class="toc-num">01</span>What Is an FRA?</a></li>
+      <li><a href="#s2-business-scenario"><span class="toc-num">02</span>Business Scenario</a></li>
+      <li><a href="#s3-the-participants"><span class="toc-num">03</span>The Participants</a></li>
+      <li><a href="#s4-why-does-abc-buy-the-fra"><span class="toc-num">04</span>Why Does ABC "Buy" the FRA?</a></li>
+      <li><a href="#s5-the-trade"><span class="toc-num">05</span>The Trade</a></li>
+      <li><a href="#s6-the-reference-rate-and-fixing"><span class="toc-num">06</span>The Reference Rate and Fixing</a></li>
+      <li><a href="#s7-settlement-amount-how-it-s-calculated"><span class="toc-num">07</span>Settlement Amount — How It's Calculated</a></li>
+      <li><a href="#s8-scenario-analysis"><span class="toc-num">08</span>Scenario Analysis</a></li>
+      <li><a href="#s9-valuation-and-mtm-before-fixing"><span class="toc-num">09</span>Valuation and MTM (Before Fixing)</a></li>
+      <li><a href="#s10-what-data-does-the-valuation-engine-need"><span class="toc-num">10</span>What Data Does the Valuation Engine Need?</a></li>
+      <li><a href="#s11-collateral"><span class="toc-num">11</span>Collateral</a></li>
+      <li><a href="#s12-the-fra-trade-lifecycle"><span class="toc-num">12</span>The FRA Trade Lifecycle</a></li>
+      <li><a href="#s13-trade-capture"><span class="toc-num">13</span>Trade Capture</a></li>
+      <li><a href="#s14-confirmation"><span class="toc-num">14</span>Confirmation</a></li>
+      <li><a href="#s15-regulatory-reporting"><span class="toc-num">15</span>Regulatory Reporting</a></li>
+      <li><a href="#s16-fra-vs-irs-where-the-distinction-becomes-clear"><span class="toc-num">16</span>FRA vs IRS — Where the Distinction Becomes Clear</a></li>
+      <li><a href="#s17-next-lesson-cap-interest-rate-cap"><span class="toc-num">—</span>Next Lesson: Cap — Interest Rate Cap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+<p class="lede"><i>Continuing the same institutional style used in the IRS and FX Option lessons: real institutions (RBC, TD, BMO, CIBC, Scotiabank, JPMorgan, Goldman Sachs, etc.) are referenced for context, while <b>Canada Bank of Toronto (CBT)</b> remains the fictional primary dealer used to build the worked example. CORRA — administered and published by the Bank of Canada — is used as the CAD reference rate.</i></p>
+
+
+    <section class="mod" id="s1-what-is-an-fra">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What Is an FRA?</h2>
+<p class="lede">A <b>Forward Rate Agreement (FRA)</b> is an OTC derivative in which two parties agree today on an interest rate that will apply to a <b>single future period</b>, on a notional amount that is <b>never exchanged</b>.</p>
+<div class="ticket"><pre>FRA
+ │
+ +-- Locks a rate
+ +-- For ONE future period
+ +-- Notional is NOT exchanged</pre></div>
+<p>Unlike an IRS (many periods), an FRA covers <b>exactly one</b> future interest period. It is the simplest building block of the interest-rate derivatives world — in fact, an IRS can be thought of as a <b>strip of FRAs</b>.</p>
+
+    </section>
+
+    <section class="mod" id="s2-business-scenario">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Business Scenario</h2>
+<p class="lede">Suppose:</p>
+<ul><li>ABC Mining Corporation knows it will need to <b>borrow CAD 50 million</b> for 3 months, starting in 3 months' time (to fund a capital project).</li><li>The loan will be priced at a floating rate tied to compounded <b>CORRA</b>.</li><li>ABC is worried that CORRA might <b>rise</b> between now and the borrowing date, making the eventual loan more expensive.</li><li>ABC does not want to enter a full floating-rate loan swap or wait — it wants to lock in the rate for that one specific period, in advance.</li></ul>
+<p>Therefore: <b>ABC buys a "3x6" CORRA-referenced FRA from CBT.</b></p>
+<p>A "3x6" FRA means:</p>
+<div class="ticket"><pre>3x6 FRA
+ │
+ +-- Period starts in 3 months
+ +-- Period ends in 6 months
+ +-- i.e. covers month 3 → month 6 (a 3-month period)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s3-the-participants">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>The Participants</h2>
+<div class="ticket"><pre>                    FRA
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+       ABC                       CBT
+ Canadian Corp.          Canada Bank of Toronto
+        │                         │
+        │   Buys FRA              │
+        │  (Pay Fixed /           │
+        │   Receive Floating)     │
+        └─────────────────────────┘</pre></div>
+<h3>Roles</h3>
+<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Role</th></tr></thead><tbody><tr><td>ABC Mining Corporation</td><td>FRA buyer (hedging a future borrowing)</td></tr><tr><td>Canada Bank of Toronto</td><td>FRA seller / dealer</td></tr><tr><td>CBT Rates Trading Desk</td><td>Prices and hedges the FRA</td></tr><tr><td>CBT Risk Management</td><td>Monitors market and counterparty risk</td></tr><tr><td>CBT Operations</td><td>Confirmation, fixing, and settlement</td></tr><tr><td>CBT Regulatory Reporting</td><td>Regulatory reporting</td></tr><tr><td>External market</td><td>Provides the CORRA fixing / forward curve</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s4-why-does-abc-buy-the-fra">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>Why Does ABC "Buy" the FRA?</h2>
+<p class="lede">By convention:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>FRA Buyer</b> = pays the <b>fixed</b> FRA rate, receives the <b>floating</b> reference rate → protects against <b>rising</b> rates (the borrower's position).</p><p style="margin:0 0 8px;"><b>FRA Seller</b> = pays floating, receives fixed → protects against <b>falling</b> rates (the lender's / investor's position).</p></div>
+<p>ABC is a future borrower, so ABC <b>buys</b> the FRA:</p>
+<div class="ticket"><pre>ABC's future loan
+        │
+        ▼
+   Pay CORRA (floating)
+        │
+ABC buys FRA
+        │
+        ▼
+   Pay Fixed / Receive CORRA
+        │
+        ▼
+  CORRA cancels
+        │
+        ▼
+  ABC effectively pays the FRA fixed rate
+  for that one period</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-the-trade">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>The Trade</h2>
+<h3>Trade Economics</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>FRA-20260905-00001</td></tr><tr><td>Product</td><td>FRA</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>Buyer</td><td>ABC Mining Corporation (pays fixed)</td></tr><tr><td>Seller</td><td>Canada Bank of Toronto (pays floating)</td></tr><tr><td>FRA Rate (fixed)</td><td>4.75%</td></tr><tr><td>Reference Rate</td><td>Compounded CORRA (3-month)</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>FRA Period ("3x6")</td><td>05-Dec-2026 → 05-Mar-2027</td></tr><tr><td>Fixing Date</td><td>05-Dec-2026</td></tr><tr><td>Settlement Date</td><td>07-Dec-2026</td></tr><tr><td>Period Length</td><td>90 days</td></tr><tr><td>Day Count</td><td>Act/365</td></tr><tr><td>Settlement</td><td>Cash, discounted upfront</td></tr></tbody></table></div>
+<p>The key economic statement is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>ABC has locked in a rate of 4.75% on a notional of CAD 50 million for the 3-month period beginning 05-Dec-2026 — regardless of where CORRA actually is on that date.</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s6-the-reference-rate-and-fixing">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>The Reference Rate and Fixing</h2>
+<p class="lede">On the <b>fixing date</b> (05-Dec-2026), the applicable compounded CORRA rate for the 3-month forward period is observed and published.</p>
+<div class="ticket"><pre>Fixing Date
+     │
+     ▼
+Observe compounded 3M CORRA
+     │
+     ▼
+"Reference Rate" is set
+     │
+     ▼
+Compare to FRA Rate (4.75%)
+     │
+     ▼
+Calculate Settlement Amount</pre></div>
+<p>This fixing is the single most important event in the life of an FRA — everything before it is pricing and risk management; everything after it is arithmetic and settlement.</p>
+
+    </section>
+
+    <section class="mod" id="s7-settlement-amount-how-it-s-calculated">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Settlement Amount — How It's Calculated</h2>
+<p class="lede">Unlike an IRS, an FRA settles <b>once</b>, <b>upfront</b>, at the start of the period (not at the end) — and because it is being paid early, the amount is <b>discounted</b>.</p>
+<p>Conceptually:</p>
+<div class="ticket"><pre>Settlement Amount
+=
+Notional × (Reference Rate − FRA Rate) × (Days/365)
+─────────────────────────────────────────────────────
+1 + (Reference Rate × Days/365)</pre></div>
+<p>The discounting reflects the fact that, economically, the interest differential would otherwise have been settled at the <i>end</i> of the period (like a loan), but FRAs conventionally settle at the <i>start</i>.</p>
+<h3>Worked Example</h3>
+<p>Suppose on the fixing date, compounded 3-month CORRA is observed at:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>5.25%</b></p></div>
+<p>Inputs:</p>
+<div class="table-scroll"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>FRA Rate</td><td>4.75%</td></tr><tr><td>Reference Rate</td><td>5.25%</td></tr><tr><td>Days</td><td>90</td></tr><tr><td>Day Count</td><td>365</td></tr></tbody></table></div>
+<p><b>Step 1 — Interest differential (undiscounted):</b></p>
+<div class="ticket"><pre>50,000,000 × (5.25% − 4.75%) × 90/365
+= 50,000,000 × 0.0050 × 0.2466
+≈ CAD 61,644</pre></div>
+<p><b>Step 2 — Discount factor:</b></p>
+<div class="ticket"><pre>1 / (1 + 5.25% × 90/365)
+= 1 / (1 + 0.01295)
+≈ 0.98722</pre></div>
+<p><b>Step 3 — Discounted settlement amount:</b></p>
+<div class="ticket"><pre>61,644 × 0.98722
+≈ CAD 60,856</pre></div>
+<p>Since the <b>Reference Rate (5.25%) &gt; FRA Rate (4.75%)</b>, and ABC is the FRA <b>buyer</b> (receives floating, pays fixed), CBT owes ABC the settlement amount.</p>
+<div class="ticket"><pre>Settlement Direction: CBT ───────► ABC
+                        CAD 60,856</pre></div>
+
+    </section>
+
+    <section class="mod" id="s8-scenario-analysis">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Scenario Analysis</h2>
+<h3>Scenario A — CORRA fixes higher than the FRA rate (as above: 5.25% vs 4.75%)</h3>
+<div class="ticket"><pre>Reference Rate &gt; FRA Rate
+        ↓
+CBT pays ABC ≈ CAD 60,856
+        ↓
+This settlement offsets ABC's higher borrowing cost</pre></div>
+<h3>Scenario B — CORRA fixes exactly at the FRA rate (4.75%)</h3>
+<div class="ticket"><pre>Reference Rate = FRA Rate
+        ↓
+Settlement Amount = 0
+        ↓
+No payment either way</pre></div>
+<h3>Scenario C — CORRA fixes lower than the FRA rate, e.g. 4.00%</h3>
+<div class="ticket"><pre>Reference Rate &lt; FRA Rate
+        ↓
+ABC pays CBT the (discounted) differential
+        ↓
+ABC's loan is cheaper, but the FRA payment offsets the saving</pre></div>
+<p><b>In every scenario, ABC's <i>combined</i> cost (loan + FRA) is fixed at approximately the FRA rate.</b> This is the same hedging trade-off principle seen with the IRS: certainty is gained, but the upside from favorable rate moves is given up.</p>
+
+    </section>
+
+    <section class="mod" id="s9-valuation-and-mtm-before-fixing">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Valuation and MTM (Before Fixing)</h2>
+<p class="lede">Before the fixing date, the FRA still has a fluctuating mark-to-market value, because the market's expectation of the future CORRA fixing changes daily.</p>
+<div class="ticket"><pre>Market-implied forward CORRA ↑
+              ↓
+FRA (pay fixed) becomes more valuable to ABC
+
+Market-implied forward CORRA ↓
+              ↓
+FRA (pay fixed) becomes less valuable to ABC</pre></div>
+<p>Conceptually, the valuation engine needs:</p>
+<div class="ticket"><pre>Forward Curve (to project the expected CORRA fixing)
+          +
+Discount Curve (to bring the expected settlement to present value)
+          ↓
+        MTM</pre></div>
+<p>Formulaically, before fixing:</p>
+<div class="ticket"><pre>MTM ≈ Notional × (Forward Rate − FRA Rate) × (Days/365) × Discount Factor</pre></div>
+<p>This mirrors the IRS valuation logic — forecast a cash flow, then discount it — except an FRA has <b>only one</b> cash flow to forecast, versus an IRS's many.</p>
+
+    </section>
+
+    <section class="mod" id="s10-what-data-does-the-valuation-engine-need">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>What Data Does the Valuation Engine Need?</h2>
+<ul><li>Trade ID</li><li>Notional</li><li>FRA Rate</li><li>Reference Index (CORRA)</li><li>Trade Date</li><li>FRA Period Start / End</li><li>Fixing Date</li><li>Settlement Date</li><li>Day Count Convention</li><li>Business Day Convention</li><li>Holiday Calendar</li><li>Forward Curve</li><li>Discount Curve</li></ul>
+<p>This is a strict subset of what an IRS valuation engine needs — one period instead of many, one fixing instead of a schedule of resets.</p>
+
+    </section>
+
+    <section class="mod" id="s11-collateral">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Collateral</h2>
+<p class="lede">Suppose, before fixing, the FRA has:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">MTM = +CAD 45,000 (from ABC's perspective)</p></div>
+<div class="ticket"><pre>MTM
+ ↓
+Exposure
+ ↓
+CSA terms
+ ↓
+Margin calculation
+ ↓
+Collateral call (if applicable)</pre></div>
+<p>Because FRAs are short-dated, single-period instruments, collateral amounts are typically much smaller than for a multi-year IRS on the same notional — but the mechanics are identical.</p>
+
+    </section>
+
+    <section class="mod" id="s12-the-fra-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>The FRA Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+      ↓
+Confirmation
+      ↓
+Enrichment
+      ↓
+Static Data
+      ↓
+Market Data (Forward Curve, Discount Curve)
+      ↓
+Valuation (pre-fixing)
+      ↓
+MTM
+      ↓
+Risk / Exposure
+      ↓
+Collateral
+      ↓
+Fixing (CORRA observed)
+      ↓
+Settlement Amount Calculation
+      ↓
+Settlement (single cash payment)
+      ↓
+Regulatory Reporting</pre></div>
+<p>Notice the lifecycle is almost identical to the IRS — but everything from "Fixing" onward collapses into a <b>single event</b>, instead of repeating every quarter.</p>
+
+    </section>
+
+    <section class="mod" id="s13-trade-capture">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>FRA-20260905-00001</td></tr><tr><td>Product</td><td>FRA</td></tr><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>FRA Rate</td><td>4.75%</td></tr><tr><td>Reference Index</td><td>CORRA</td></tr><tr><td>Direction</td><td>Buy FRA (Pay Fixed)</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Period Start</td><td>05-Dec-2026</td></tr><tr><td>Period End</td><td>05-Mar-2027</td></tr><tr><td>Fixing Date</td><td>05-Dec-2026</td></tr><tr><td>Settlement Date</td><td>07-Dec-2026</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s14-confirmation">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Confirmation</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Mining Corporation</td></tr><tr><td>Party B</td><td>Canada Bank of Toronto</td></tr><tr><td>Party A</td><td>Pay Fixed 4.75%</td></tr><tr><td>Party B</td><td>Pay Floating (Compounded CORRA)</td></tr><tr><td>Notional</td><td>CAD 50,000,000</td></tr><tr><td>Period</td><td>05-Dec-2026 → 05-Mar-2027</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual regulatory record could contain:</p>
+<ul><li>UTI</li><li>UPI</li><li>Reporting Counterparty LEI</li><li>Other Counterparty LEI</li><li>Asset Class (Interest Rate)</li><li>Product Type (FRA)</li><li>Notional</li><li>Notional Currency</li><li>FRA Rate</li><li>Floating Rate Index</li><li>Trade Date</li><li>Period Start / End Dates</li><li>Fixing Date</li><li>Settlement Date</li><li>Clearing Status</li><li>Collateralisation</li><li>Valuation Amount</li><li>Valuation Currency</li><li>Action Type</li><li>Event Type</li><li>Reporting Timestamp</li></ul>
+<p>As with the IRS, the exact fields depend on the applicable jurisdiction/regime.</p>
+
+    </section>
+
+    <section class="mod" id="s16-fra-vs-irs-where-the-distinction-becomes-clear">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>FRA vs IRS — Where the Distinction Becomes Clear</h2>
+<p class="lede">This is the comparison worth internalizing.</p>
+<div class="table-scroll"><table><thead><tr><th>Aspect</th><th>FRA</th><th>IRS</th></tr></thead><tbody><tr><td>Number of periods</td><td>One</td><td>Many (strip of periods)</td></tr><tr><td>Cash flow timing</td><td>Single, upfront (discounted)</td><td>Recurring, at end of each period</td></tr><tr><td>Purpose</td><td>Hedge one specific future interest period</td><td>Hedge/transform interest exposure over the life of a loan or asset</td></tr><tr><td>Complexity</td><td>Lower</td><td>Higher</td></tr><tr><td>Fixing events</td><td>One</td><td>One per reset period</td></tr><tr><td>Relationship</td><td><b>An IRS is economically a strip of FRAs, one per period</b></td><td>Composed of multiple FRA-like periods</td></tr></tbody></table></div>
+<div class="ticket"><pre>FRA
+ │
+ +-- 1 period
+ +-- 1 fixing
+ +-- 1 settlement (discounted, upfront)
+
+IRS
+ │
+ +-- N periods
+ +-- N fixings
+ +-- N settlements (at period end)
+      = a strip of N FRAs, chained together</pre></div>
+<h3>Mental Model</h3>
+<div class="ticket"><pre>Single future rate exposure
+        ↓
+       FRA
+        ↓
+Locked rate for one period
+
+Repeated future rate exposure
+        ↓
+       IRS
+        ↓
+Locked (or floating) rate across many periods</pre></div>
+<p>An FRA is the <b>atomic unit</b> of interest-rate hedging; an IRS is what you get when you chain many FRA-like periods together and let the notional persist across the whole schedule instead of settling and closing out after each one.</p>
+
+    </section>
+
+    <section class="mod" id="s17-next-lesson-cap-interest-rate-cap">
+      <p class="sec-eyebrow"><span class="n">—</span></p>
+      <h2>Next Lesson: Cap — Interest Rate Cap</h2>
+<p class="lede">The natural next step continues the same progression:</p>
+<div class="ticket"><pre>FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS</pre></div>
+<p>A Cap can be thought of as <b>a strip of FRA-like options</b> — one per period — where the buyer pays a premium for the <i>right</i> (not obligation) to receive a payment whenever the reference rate rises above a chosen level, protecting a floating-rate borrower without giving up the benefit of rates falling.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,700 @@
+<!doctype html>
+<title>FX Spot Trade — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>FX Spot Trade — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-fx-spot"><span class="toc-num">01</span>What is FX Spot?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-a-deliberate-wrinkle-usd-cad-is-t-1-not-t-2"><span class="toc-num">03</span>A Deliberate Wrinkle: USD/CAD Is T+1, Not T+2</a></li>
+      <li><a href="#s4-the-trade-lifecycle"><span class="toc-num">04</span>The Trade Lifecycle</a></li>
+      <li><a href="#s5-trade-capture"><span class="toc-num">05</span>Trade Capture</a></li>
+      <li><a href="#s6-settlement-pvp-via-cls"><span class="toc-num">06</span>Settlement — PvP via CLS</a></li>
+      <li><a href="#s7-position"><span class="toc-num">07</span>Position</a></li>
+      <li><a href="#s8-daily-revaluation"><span class="toc-num">08</span>Daily Revaluation</a></li>
+      <li><a href="#s9-why-fx-spot-falls-outside-derivative-reporting-regimes"><span class="toc-num">09</span>Why FX Spot Falls Outside Derivative Reporting Regimes</a></li>
+      <li><a href="#s10-identifiers-recap"><span class="toc-num">10</span>Identifiers Recap</a></li>
+      <li><a href="#s11-fx-spot-vs-fx-forward-side-by-side"><span class="toc-num">11</span>FX Spot vs FX Forward — Side by Side</a></li>
+      <li><a href="#s12-the-three-most-important-fx-spot-concepts"><span class="toc-num">12</span>The Three Most Important FX Spot Concepts</a></li>
+      <li><a href="#s13-mental-model-recap"><span class="toc-num">13</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-fx-spot">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is FX Spot?</h2>
+<p class="lede">FX Spot is an agreement to exchange two currencies almost immediately — the "cash" end of the FX product family. Unlike an FX Forward or FX Swap (see the <a href="./FX_Forward_Complete_Example.html">FX Forward example</a>), there's no locked-in future rate and no derivative economics — you agree on a rate today, and the currencies actually move within a day or two.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>FX Spot ↔ Immediate exchange of two real currency amounts</b></p></div>
+<p>The important point is:</p>
+<ul><li>FX Spot has <b>no ISIN</b> — currencies aren't securities.</li><li>FX Spot has <b>no UPI</b> either — it isn't a derivative.</li><li>Its only "identifier" is the currency pair itself (ISO 4217 codes).</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li><b>Bank Of Toronto</b> needs USD 10,000,000 for an upcoming payment obligation, but only holds CAD.</li><li>It buys USD against CAD in the spot market from <b>Goldman Sachs</b>.</li></ul>
+<h3>Trade terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Currency Pair</td><td>USD/CAD</td></tr><tr><td>Notional</td><td>USD 10,000,000</td></tr><tr><td>Spot Rate</td><td>1.3400</td></tr><tr><td>CAD Amount</td><td>CAD 13,400,000</td></tr><tr><td>Trade Date</td><td>17-Aug-2026 (Monday)</td></tr><tr><td>Value Date (Settlement)</td><td>19-Aug-2026 (T+2 for USD/CAD... but see Section 3)</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s3-a-deliberate-wrinkle-usd-cad-is-t-1-not-t-2">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>A Deliberate Wrinkle: USD/CAD Is T+1, Not T+2</h2>
+<p class="lede">Most currency pairs settle T+2, but <b>USD/CAD is a well-known exception, settling T+1</b> (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1 §6</a>). So the actual Value Date here is:</p>
+<div class="ticket"><pre>Trade Date (T)  : Monday,   17 August 2026
+Value Date (T+1): Tuesday,  18 August 2026</pre></div>
+<p>A reporting system that hard-codes "FX = T+2" will get this specific pair wrong — exactly the kind of assumption <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape §7</a> warns against.</p>
+
+    </section>
+
+    <section class="mod" id="s4-the-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Trade Lifecycle</h2>
+<div class="ticket"><pre>Order / Quote Request
+  ↓
+Execution
+  ↓
+Trade Capture
+  ↓
+Confirmation (SWIFT MT300-style)
+  ↓
+Settlement (PvP via CLS, T+1)
+  ↓
+Position
+  ↓
+Daily Revaluation
+  ↓
+Regulatory Reporting (out of scope for most derivative regimes — Section 9)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-trade-capture">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>FX-20260817-00512</td></tr><tr><td>Buyer</td><td>Bank Of Toronto</td></tr><tr><td>Seller</td><td>Goldman Sachs</td></tr><tr><td>Currency Pair</td><td>USD/CAD</td></tr><tr><td>Notional (USD)</td><td>10,000,000</td></tr><tr><td>Rate</td><td>1.3400</td></tr><tr><td>Notional (CAD)</td><td>13,400,000</td></tr><tr><td>Trade Date</td><td>17-Aug-2026</td></tr><tr><td>Value Date</td><td>18-Aug-2026</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s6-settlement-pvp-via-cls">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Settlement — PvP via CLS</h2>
+<p class="lede">Settling two different currencies simultaneously across two different countries' payment systems is genuinely hard — CLS (Continuous Linked Settlement) exists to solve exactly this:</p>
+<div class="ticket"><pre>Bank Of Toronto                                Goldman Sachs
+     |                                              |
+     |  pays CAD 13,400,000 into CLS                |
+     |                                              |  pays USD 10,000,000 into CLS
+     |                                              |
+              CLS releases BOTH legs simultaneously,
+              or releases NEITHER — Payment-versus-Payment (PvP)
+     |                                              |
+     |&lt;---------------- USD 10,000,000 -------------|
+     |----------------- CAD 13,400,000 ------------&gt;|</pre></div>
+<p>PvP for FX is the direct analogue of DvP for securities (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6 §5</a>) — it eliminates <b>settlement risk</b> (also called Herstatt risk), not counterparty <i>credit</i> risk in the CCP-novation sense.</p>
+
+    </section>
+
+    <section class="mod" id="s7-position">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Position</h2>
+<p class="lede">After settlement, Bank Of Toronto's books show:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>USD Cash Position</td><td>+10,000,000</td></tr><tr><td>CAD Cash Position</td><td>−13,400,000</td></tr><tr><td>Cost Basis (implied rate)</td><td>1.3400</td></tr></tbody></table></div>
+<p>Notice: unlike an IRS's notional, the <b>full USD 10,000,000 genuinely moved</b> — this is a cash instrument, not a reference amount.</p>
+
+    </section>
+
+    <section class="mod" id="s8-daily-revaluation">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Daily Revaluation</h2>
+<p class="lede">Suppose one week later, the USD/CAD spot rate has moved to <b>1.3450</b>.</p>
+<div class="ticket"><pre>Current CAD value of the USD 10,000,000 position:
+  = 10,000,000 × 1.3450
+  = CAD 13,450,000
+
+Original CAD cost:
+  = CAD 13,400,000
+
+Unrealized gain (on the USD leg, in CAD terms) = CAD 50,000</pre></div>
+<p><a href="../docs/1-capital-markets/module-10-valuation.html">Module 10 §2</a> classifies FX Spot as <b>Quote-Based</b> valuation — same simple family as a cash equity or bond, since the rate is directly observable in the market with no model needed.</p>
+
+    </section>
+
+    <section class="mod" id="s9-why-fx-spot-falls-outside-derivative-reporting-regimes">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Why FX Spot Falls Outside Derivative Reporting Regimes</h2>
+<div class="table-scroll"><table><thead><tr><th>Regulation</th><th>Applies to FX Spot?</th><th>Why</th></tr></thead><tbody><tr><td><b>EMIR</b></td><td><b>No</b></td><td>FX Spot is explicitly carved out — the Spot/Forward boundary is a settlement-date threshold, roughly the standard spot cycle for that pair (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6 §8</a>)</td></tr><tr><td><b>MiFID II / MiFIR</b></td><td>Mostly No</td><td>Physically-settled Spot used for genuine currency exchange sits outside MiFID's investment-product scope</td></tr><tr><td><b>SFTR</b></td><td>No</td><td>Not a financing transaction</td></tr></tbody></table></div>
+<p>Once the settlement date pushes beyond that standard spot window, the <i>same currency pair</i> becomes an <b>FX Forward</b> instead — and suddenly is in scope for EMIR, needs a UPI, and gets a UTI. This is why the Spot/Forward boundary matters so much operationally: it isn't about the product "feeling" different, it's a pure settlement-date threshold.</p>
+
+    </section>
+
+    <section class="mod" id="s10-identifiers-recap">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Identifiers Recap</h2>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Applies to FX Spot?</th></tr></thead><tbody><tr><td>ISIN / CUSIP / Ticker / FIGI</td><td>No — FX has no security to identify</td></tr><tr><td>Currency Pair (ISO 4217)</td><td><b>Yes</b> — the closest thing to an "instrument" identifier</td></tr><tr><td>UPI</td><td>No — not a derivative</td></tr><tr><td>UTI</td><td>No — not typically required for Spot</td></tr><tr><td>LEI</td><td>Yes — identifies Bank Of Toronto and Goldman Sachs as counterparties</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s11-fx-spot-vs-fx-forward-side-by-side">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>FX Spot vs FX Forward — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Aspect</th><th>FX Spot</th><th>FX Forward</th></tr></thead><tbody><tr><td><span class="side-tag sell">CASH</span></td><td>Settlement</td><td>T+1/T+2 (immediate)</td><td>Any future date agreed today</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Identifier</td><td>Currency pair only</td><td>Currency pair + UPI + UTI</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Regulatory scope</td><td>Outside EMIR</td><td>Inside EMIR</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>What settles</td><td>Both real currency amounts, immediately</td><td>Both real currency amounts, later</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Rate</td><td>Today's market rate</td><td>Spot ± Forward Points</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s12-the-three-most-important-fx-spot-concepts">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>The Three Most Important FX Spot Concepts</h2>
+<h3>1. Notional genuinely settles</h3>
+<p>Unlike an IRS, the full USD 10,000,000 physically moves.</p>
+<h3>2. PvP, not DvP</h3>
+<div class="ticket"><pre>Currency A  ────┐
+                ├──── simultaneous, via CLS
+Currency B  ────┘</pre></div>
+<h3>3. It's the boundary case for derivative regulation</h3>
+<div class="ticket"><pre>Settlement within the standard spot window  → FX Spot   → Out of EMIR scope
+Settlement beyond that window                → FX Forward → In EMIR scope</pre></div>
+
+    </section>
+
+    <section class="mod" id="s13-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Need for a foreign currency, right now → FX Spot → Immediate exchange, no forward risk, no derivative machinery</pre></div>
+<p>FX Spot is the simplest possible FX trade — everything more complex in the FX product family (Forward, Swap, Option — see <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>) is built by adding a future date, an option feature, or by combining two Spot/Forward legs together.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

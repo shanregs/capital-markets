@@ -1,0 +1,991 @@
+<!doctype html>
+<title>FX Option — Complete USD/CAD Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>FX Option — Complete USD/CAD Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-business-scenario"><span class="toc-num">01</span>Business Scenario</a></li>
+      <li><a href="#s2-the-participants"><span class="toc-num">02</span>The Participants</a></li>
+      <li><a href="#s3-the-trade"><span class="toc-num">03</span>The Trade</a></li>
+      <li><a href="#s4-what-does-1-3700-mean"><span class="toc-num">04</span>What Does 1.3700 Mean?</a></li>
+      <li><a href="#s5-why-is-it-a-usd-put"><span class="toc-num">05</span>Why Is It a USD Put?</a></li>
+      <li><a href="#s6-premium"><span class="toc-num">06</span>Premium</a></li>
+      <li><a href="#s7-what-happens-at-expiry"><span class="toc-num">07</span>What Happens at Expiry?</a></li>
+      <li><a href="#s8-compare-fx-forward-vs-fx-option"><span class="toc-num">08</span>Compare FX Forward vs FX Option</a></li>
+      <li><a href="#s9-now-look-inside-cbt"><span class="toc-num">09</span>Now Look Inside CBT</a></li>
+      <li><a href="#s10-what-determines-fx-option-price"><span class="toc-num">10</span>What Determines FX Option Price?</a></li>
+      <li><a href="#s11-why-volatility-matters"><span class="toc-num">11</span>Why Volatility Matters</a></li>
+      <li><a href="#s12-cbt-s-risk-doesn-t-disappear"><span class="toc-num">12</span>CBT's Risk Doesn't Disappear</a></li>
+      <li><a href="#s13-greeks"><span class="toc-num">13</span>Greeks</a></li>
+      <li><a href="#s14-daily-mtm"><span class="toc-num">14</span>Daily MTM</a></li>
+      <li><a href="#s15-complete-fx-option-lifecycle"><span class="toc-num">15</span>Complete FX Option Lifecycle</a></li>
+      <li><a href="#s16-the-most-important-difference-from-irs"><span class="toc-num">16</span>The Most Important Difference from IRS</a></li>
+      <li><a href="#s17-where-this-fits-in-the-capital-markets-architecture"><span class="toc-num">17</span>Where This Fits in the Capital Markets Architecture</a></li>
+      <li><a href="#s18-one-important-real-world-note"><span class="toc-num">18</span>One Important Real-World Note</a></li>
+      <li><a href="#s19-next-lesson-fra-forward-rate-agreement"><span class="toc-num">—</span>Next Lesson: FRA — Forward Rate Agreement</a></li>
+    </ol>
+  </nav>
+
+  <main>
+<p class="lede"><i>Note: recognizable real institutions (JPMorgan Chase, Goldman Sachs, Morgan Stanley, RBC, TD, BMO, CIBC, Scotiabank, HSBC, Citigroup, etc.) are referenced for context rather than invented investment-bank names. For Canadian rates, CORRA is used where appropriate — CORRA is administered and published by the Bank of Canada and is Canada's risk-free overnight rate.</i></p>
+<p>Let's build a realistic capital-markets transaction around <b>Canada Bank of Toronto (CBT)</b>.</p>
+
+
+    <section class="mod" id="s1-business-scenario">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>Business Scenario</h2>
+<p class="lede">Suppose:</p>
+<ul><li>ABC Mining Corporation, a Canadian company, expects to receive <b>USD 10 million</b> on <b>15-Dec-2026</b>.</li><li>ABC's functional currency is CAD.</li><li>ABC is worried that USD/CAD may fall.</li></ul>
+<p>For example:</p>
+<div class="table-scroll"><table><thead><tr><th></th><th>USD/CAD</th></tr></thead><tbody><tr><td>Today</td><td>1.3800</td></tr><tr><td>December (possible)</td><td>1.3200</td></tr></tbody></table></div>
+<p>If USD falls against CAD, ABC receives fewer Canadian dollars.</p>
+<p>So ABC wants downside protection, but it doesn't want to lock itself into a forward rate.</p>
+<p>Therefore: <b>ABC buys a USD Put / CAD Call option.</b></p>
+<p>Economically, this gives ABC the right to sell USD and receive CAD at a predetermined exchange rate.</p>
+
+    </section>
+
+    <section class="mod" id="s2-the-participants">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>The Participants</h2>
+<p class="lede">Our transaction:</p>
+<div class="ticket"><pre>                FX OPTION
+                    │
+       ┌────────────┴────────────┐
+       │                         │
+      ABC                       CBT
+ Canadian Corp.          Canada Bank of Toronto
+       │                         │
+       │  Buys USD Put           │
+       │  / CAD Call             │
+       └─────────────────────────┘</pre></div>
+<h3>Roles</h3>
+<div class="table-scroll"><table><thead><tr><th>Participant</th><th>Role</th></tr></thead><tbody><tr><td>ABC Mining Corporation</td><td>Option buyer</td></tr><tr><td>Canada Bank of Toronto</td><td>Option seller / dealer</td></tr><tr><td>CBT FX Trading Desk</td><td>Prices and hedges the option</td></tr><tr><td>CBT Risk Management</td><td>Monitors market and counterparty risk</td></tr><tr><td>CBT Operations</td><td>Confirmation/settlement</td></tr><tr><td>CBT Regulatory Reporting</td><td>Regulatory reporting</td></tr><tr><td>External market</td><td>Provides FX prices and liquidity</td></tr></tbody></table></div>
+<p>For comparison, in the real market a dealer could be a bank such as RBC, TD, BMO, CIBC, Scotiabank, JPMorgan or Goldman Sachs.</p>
+
+    </section>
+
+    <section class="mod" id="s3-the-trade">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>The Trade</h2>
+<p class="lede">Let's create the actual trade.</p>
+<h3>Trade Economics</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>FXO-20260905-00001</td></tr><tr><td>Product</td><td>FX Option</td></tr><tr><td>Currency Pair</td><td>USD/CAD</td></tr><tr><td>Buyer</td><td>ABC Mining Corporation</td></tr><tr><td>Seller</td><td>Canada Bank of Toronto</td></tr><tr><td>Option Type</td><td>USD Put / CAD Call</td></tr><tr><td>USD Notional</td><td>USD 10,000,000</td></tr><tr><td>Strike</td><td>1.3700 CAD/USD</td></tr><tr><td>Trade Date</td><td>05-Sep-2026</td></tr><tr><td>Expiry Date</td><td>15-Dec-2026</td></tr><tr><td>Exercise</td><td>European</td></tr><tr><td>Premium</td><td>CAD 350,000</td></tr><tr><td>Premium Payment</td><td>07-Sep-2026</td></tr><tr><td>Settlement</td><td>Cash</td></tr><tr><td>Buyer</td><td>ABC</td></tr><tr><td>Seller</td><td>CBT</td></tr></tbody></table></div>
+<p>The key economic statement is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>ABC has the right to sell USD 10 million and receive CAD at 1.3700 CAD per USD on expiry.</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s4-what-does-1-3700-mean">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>What Does 1.3700 Mean?</h2>
+<p class="lede">This is extremely important.</p>
+<div class="ticket"><pre>USD/CAD = 1.3700</pre></div>
+<p>means:</p>
+<div class="ticket"><pre>1 USD = 1.3700 CAD</pre></div>
+<p>Therefore:</p>
+<div class="ticket"><pre>USD 10,000,000 × 1.3700 = CAD 13,700,000</pre></div>
+<p>So ABC has effectively protected a minimum gross CAD value of <b>CAD 13.7 million</b>, before considering the premium.</p>
+
+    </section>
+
+    <section class="mod" id="s5-why-is-it-a-usd-put">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Why Is It a USD Put?</h2>
+<p class="lede">ABC owns USD and wants to sell USD.</p>
+<p>Therefore, ABC's right:</p>
+<div class="ticket"><pre>SELL USD
+   ↓
+RECEIVE CAD</pre></div>
+<p>So from ABC's perspective: <b>USD Put / CAD Call</b></p>
+<p>From CBT's perspective, the opposite position is: <b>USD Call / CAD Put</b></p>
+<p>This is a very useful mental model.</p>
+
+    </section>
+
+    <section class="mod" id="s6-premium">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Premium</h2>
+<p class="lede">Unlike an FX Forward, ABC must pay CBT an option premium.</p>
+<p>Suppose:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">Premium = CAD 350,000</p></div>
+<p>ABC pays on 07-Sep-2026:</p>
+<div class="ticket"><pre>ABC ───────────────► CBT
+
+       CAD 350,000</pre></div>
+<p>The premium is paid even if ABC eventually decides not to exercise the option. This is the price ABC pays for flexibility.</p>
+
+    </section>
+
+    <section class="mod" id="s7-what-happens-at-expiry">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>What Happens at Expiry?</h2>
+<p class="lede">This is where options become interesting. Let's examine three scenarios.</p>
+<h3>Scenario A — USD/CAD falls to 1.3000</h3>
+<p>ABC is protected.</p>
+<p>Market: <code>1 USD = 1.3000 CAD</code></p>
+<p>Without option:</p>
+<div class="ticket"><pre>USD 10M × 1.3000 = CAD 13.0M</pre></div>
+<p>But ABC has the right to sell at 1.3700:</p>
+<div class="ticket"><pre>USD 10M × 1.3700 = CAD 13.7M</pre></div>
+<p>ABC exercises.</p>
+<div class="table-scroll"><table><thead><tr><th></th><th>Amount</th></tr></thead><tbody><tr><td>Protected value</td><td>CAD 13.700M</td></tr><tr><td>Market value</td><td>CAD 13.000M</td></tr><tr><td><b>Option benefit</b></td><td><b>CAD 0.700M</b></td></tr></tbody></table></div>
+<p>But ABC paid Premium = CAD 0.350M.</p>
+<p>Therefore approximate net economic benefit:</p>
+<div class="ticket"><pre>CAD 0.700M - CAD 0.350M = CAD 0.350M</pre></div>
+<h3>Scenario B — USD/CAD = 1.3700</h3>
+<p>The market equals the strike.</p>
+<p>ABC can exercise at 1.3700 or transact in the market at 1.3700 — there is essentially no intrinsic value.</p>
+<p>ABC would generally not exercise economically.</p>
+<p>But Premium = CAD 350,000 has already been paid. Therefore the premium represents the cost of obtaining the protection.</p>
+<h3>Scenario C — USD/CAD rises to 1.4500</h3>
+<p>This is where the option is superior to a forward.</p>
+<p>Market: <code>1 USD = 1.4500 CAD</code></p>
+<p>ABC can sell USD in the market:</p>
+<div class="ticket"><pre>USD 10M × 1.4500 = CAD 14.5M</pre></div>
+<p>Why exercise at 1.3700? It wouldn't.</p>
+<p>So: <b>ABC does NOT exercise.</b></p>
+<div class="ticket"><pre>ABC sells USD in market
+        ↓
+receives CAD 14.5M</pre></div>
+<p>The only economic cost is the premium:</p>
+<div class="ticket"><pre>CAD 14.5M - CAD 0.35M = CAD 14.15M</pre></div>
+<p>This is the central advantage of an option.</p>
+
+    </section>
+
+    <section class="mod" id="s8-compare-fx-forward-vs-fx-option">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Compare FX Forward vs FX Option</h2>
+<div class="table-scroll"><table><thead><tr><th></th><th>FX Forward</th><th>FX Option</th></tr></thead><tbody><tr><td>Obligation</td><td>Yes</td><td>No</td></tr><tr><td>Right</td><td>No</td><td>Yes</td></tr><tr><td>Premium</td><td>Usually no upfront option premium</td><td>Yes</td></tr><tr><td>Protection</td><td>Yes</td><td>Yes</td></tr><tr><td>Benefit from favorable FX movement</td><td>No</td><td>Yes</td></tr><tr><td>Flexibility</td><td>Low</td><td>High</td></tr><tr><td>Complexity</td><td>Lower</td><td>Higher</td></tr></tbody></table></div>
+<p>Think of it this way:</p>
+<div class="ticket"><pre>FORWARD
+Lock the door
+─────────────
+You must use the agreed rate.
+
+OPTION
+Buy the key
+───────────
+You can use the agreed rate
+if it is beneficial.</pre></div>
+
+    </section>
+
+    <section class="mod" id="s9-now-look-inside-cbt">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Now Look Inside CBT</h2>
+<p class="lede">This is where the capital-markets architecture becomes interesting.</p>
+<p>ABC doesn't just interact with one generic "bank". Inside CBT:</p>
+<div class="ticket"><pre>                   ABC
+                    │
+                    ▼
+              ┌───────────┐
+              │ CBT Sales  │
+              └─────┬─────┘
+                    │
+                    ▼
+              ┌───────────┐
+              │ FX Trader │
+              └─────┬─────┘
+                    │
+         ┌──────────┼──────────┐
+         ▼          ▼          ▼
+      Pricing     Risk       Hedge
+         │          │          │
+         ▼          ▼          ▼
+      Volatility  Greeks    Interbank
+      FX Curve    Limits     Market</pre></div>
+<p>The trader doesn't simply say: <i>"Sure, I'll sell you the option."</i></p>
+<p>CBT must determine: <b>What is the option worth?</b></p>
+
+    </section>
+
+    <section class="mod" id="s10-what-determines-fx-option-price">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>What Determines FX Option Price?</h2>
+<p class="lede">The premium depends on several factors. The major ones are:</p>
+<div class="ticket"><pre>FX Spot
+   +
+Strike
+   +
+Time to Expiry
+   +
+USD Interest Rate
+   +
+CAD Interest Rate
+   +
+FX Volatility
+   +
+Market conventions
+   ↓
+Option Price</pre></div>
+<p>For example:</p>
+<div class="ticket"><pre>USD/CAD Spot       1.3800
+Strike             1.3700
+Expiry             15-Dec-2026
+USD rate            X%
+CAD rate            X%
+Volatility           X%
+       ↓
+Premium</pre></div>
+
+    </section>
+
+    <section class="mod" id="s11-why-volatility-matters">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Why Volatility Matters</h2>
+<p class="lede">Suppose two options have exactly the same spot, strike, expiry, and interest rates. But:</p>
+<ul><li><b>Option A</b> — expected FX volatility: 5%</li><li><b>Option B</b> — expected FX volatility: 15%</li></ul>
+<p>Option B will generally be more expensive.</p>
+<p>Why? Because larger expected movements increase the probability that the option finishes valuable.</p>
+<div class="ticket"><pre>Higher volatility
+       ↓
+Greater uncertainty
+       ↓
+Greater option value
+       ↓
+Higher premium</pre></div>
+
+    </section>
+
+    <section class="mod" id="s12-cbt-s-risk-doesn-t-disappear">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>CBT's Risk Doesn't Disappear</h2>
+<p class="lede">Suppose CBT sells the option to ABC. CBT is now exposed to FX movements.</p>
+<ul><li>ABC has: <b>Long USD Put</b></li><li>CBT has: <b>Short USD Put</b></li></ul>
+<p>CBT therefore may hedge the exposure.</p>
+<div class="ticket"><pre>ABC
+ │
+ │ USD Put
+ ▼
+CBT
+ │
+ │ Hedge
+ ▼
+FX Market</pre></div>
+<p>CBT may trade currencies, options or other instruments with market counterparties to manage its risk.</p>
+<p>This creates an important capital-markets concept:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Client trade → Dealer risk → Hedge trade</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s13-greeks">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Greeks</h2>
+<p class="lede">Now we introduce the next major concept. FX options are commonly managed using Greeks.</p>
+<p><b>Delta</b> — Measures sensitivity to the underlying FX rate.</p>
+<div class="ticket"><pre>USD/CAD changes
+       ↓
+Option value changes
+       ↓
+Delta measures sensitivity</pre></div>
+<p><b>Gamma</b> — Measures how Delta changes when USD/CAD changes.</p>
+<p><b>Vega</b> — Measures sensitivity to volatility. This is particularly important for FX options.</p>
+<div class="ticket"><pre>Volatility ↑
+     ↓
+Option value changes
+     ↓
+Vega</pre></div>
+<p><b>Theta</b> — Measures sensitivity to passage of time.</p>
+<div class="ticket"><pre>Time passes
+    ↓
+Option approaches expiry
+    ↓
+Option value changes</pre></div>
+<p><b>Rho</b> — Measures sensitivity to interest rates.</p>
+
+    </section>
+
+    <section class="mod" id="s14-daily-mtm">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Daily MTM</h2>
+<p class="lede">Suppose the next day USD/CAD moves from 1.3800 to 1.3500.</p>
+<p>ABC's USD put becomes more valuable. CBT's short option position becomes less valuable.</p>
+<div class="ticket"><pre>ABC
+Long option
+    ↓
+MTM increases
+
+CBT
+Short option
+    ↓
+MTM decreases</pre></div>
+<p>This is the same fundamental MTM concept learned with IRS.</p>
+
+    </section>
+
+    <section class="mod" id="s15-complete-fx-option-lifecycle">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Complete FX Option Lifecycle</h2>
+<p class="lede">Now connect everything learned so far.</p>
+<div class="ticket"><pre>                 CLIENT REQUEST
+                       │
+                       ▼
+                QUOTE / RFQ
+                       │
+                       ▼
+                 PRICING
+                       │
+                       ▼
+                TRADE CAPTURE
+                       │
+                       ▼
+                 CONFIRMATION
+                       │
+                       ▼
+                  ENRICHMENT
+                       │
+            ┌──────────┼──────────┐
+            ▼          ▼          ▼
+           LEI        UTI        UPI
+            │
+            ▼
+             VALUATION
+                │
+       ┌────────┼────────┐
+       ▼        ▼        ▼
+     Spot     Volatility Rates
+       │        │        │
+       └────────┼────────┘
+                ▼
+               MTM
+                │
+                ▼
+              GREEKS
+                │
+                ▼
+          RISK / EXPOSURE
+                │
+                ▼
+          COLLATERAL / CSA
+                │
+                ▼
+             EXPIRY
+                │
+          ┌─────┴─────┐
+          ▼           ▼
+       EXERCISE    EXPIRE
+          │
+          ▼
+        SETTLE
+          │
+          ▼
+     REGULATORY
+      REPORTING</pre></div>
+
+    </section>
+
+    <section class="mod" id="s16-the-most-important-difference-from-irs">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>The Most Important Difference from IRS</h2>
+<p class="lede">We previously learned:</p>
+<div class="ticket"><pre>IRS
+Fixed Rate
+    ↕
+Floating Rate</pre></div>
+<p>For FX Option:</p>
+<div class="ticket"><pre>FX Option
+Right to transact
+       ↓
+Strike Rate
+       ↓
+Market FX Rate
+       ↓
+Exercise decision</pre></div>
+<p>IRS has contractual cash flows throughout the life of the swap. An option has something different: <b>the buyer has a decision.</b> That decision is the defining feature of an option.</p>
+
+    </section>
+
+    <section class="mod" id="s17-where-this-fits-in-the-capital-markets-architecture">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>Where This Fits in the Capital Markets Architecture</h2>
+<p class="lede">For regulatory-reporting purposes, the data lineage looks like this:</p>
+<div class="ticket"><pre>                FRONT OFFICE
+                     │
+                     ▼
+              FX OPTION TRADE
+                     │
+                     ▼
+              TRADE CAPTURE
+                     │
+                     ▼
+              TRADE STORE
+                     │
+             ┌───────┴────────┐
+             ▼                ▼
+        ENRICHMENT         MARKET DATA
+             │                │
+       LEI / UTI / UPI    FX / Vol / Rates
+             │                │
+             └───────┬────────┘
+                     ▼
+                 VALUATION
+                     │
+                     ▼
+                   MTM
+                     │
+              ┌──────┴──────┐
+              ▼             ▼
+             RISK        COLLATERAL
+              │             │
+              └──────┬──────┘
+                     ▼
+                SETTLEMENT
+                     │
+                     ▼
+             REGULATORY RDP</pre></div>
+<p>This is very close to the architecture patterns encountered in regulatory-data work.</p>
+
+    </section>
+
+    <section class="mod" id="s18-one-important-real-world-note">
+      <p class="sec-eyebrow"><span class="n">18</span></p>
+      <h2>One Important Real-World Note</h2>
+<p class="lede">For these educational examples, a distinction is drawn between:</p>
+<ul><li><b>Fictional primary actor</b> — Canada Bank of Toronto (CBT)</li><li><b>Real market institutions</b>, which are named explicitly when useful.</li></ul>
+<p>Artificial names such as "Bank B" or "XYZ Investment Bank" are avoided unless deliberately creating a fictional counterparty.</p>
+<p>Also, when Canadian market data is used, illustrative trade numbers are distinguished from actual market data. For example, the Bank of Canada publishes actual USD/CAD reference rates and CORRA data; its USD/CAD rate on September 3, 2026 was <b>1.3789</b>.</p>
+
+    </section>
+
+    <section class="mod" id="s19-next-lesson-fra-forward-rate-agreement">
+      <p class="sec-eyebrow"><span class="n">—</span></p>
+      <h2>Next Lesson: FRA — Forward Rate Agreement</h2>
+<p class="lede">The natural next step is:</p>
+<div class="ticket"><pre>FX Option → FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS</pre></div>
+<p>For FRA, CBT will be used as the primary dealer to build a complete CAD FRA transaction with:</p>
+<div class="ticket"><pre>Trade → Reference Rate → Fixing → Settlement Amount → Valuation → MTM → Collateral → Regulatory Reporting</pre></div>
+<p>...and then compare FRA vs IRS, because that's where the distinction becomes very clear.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

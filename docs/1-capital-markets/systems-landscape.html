@@ -356,6 +356,18 @@
   .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
   .table-scroll table { min-width: 720px; margin: 0; }
 
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
   /* ---------- ticket / diagram cards ---------- */
 
   .ticket {
@@ -650,16 +662,16 @@ Execution Time            same day, T                ENFORCES T+n — it
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Market</th><th>Product</th><th>Settlement cycle (as of 2026)</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Market</th><th>Product</th><th>Settlement cycle (as of 2026)</th></tr></thead>
         <tbody>
-          <tr><td>Canada</td><td>Equities</td><td><b>T+1</b> (aligned with the US, since 27 May 2024)</td></tr>
-          <tr><td>Canada</td><td>Government / corporate bonds</td><td><b>T+1</b> or <b>T+2</b>, depending on the specific bond</td></tr>
-          <tr><td>United States</td><td>Equities</td><td><b>T+1</b> (since 28 May 2024)</td></tr>
-          <tr><td>United States</td><td>US Treasuries</td><td><b>T+1</b></td></tr>
-          <tr><td>United Kingdom</td><td>Gilts (government bonds)</td><td><b>T+1</b></td></tr>
-          <tr><td>United Kingdom</td><td>Equities</td><td><b>T+2</b> (T+1 targeted October 2027)</td></tr>
-          <tr><td>European Union</td><td>Equities &amp; bonds</td><td><b>T+2</b> (T+1 targeted October 2027, coordinated w/ UK &amp; Switzerland)</td></tr>
-          <tr><td>OTC derivatives (any market)</td><td>Interest Rate Swaps, CDS, etc.</td><td>No notional settlement — only margin/cash flows (<a href="./module-01-fundamentals.html">Module 1</a> §08, <a href="./module-03-trade-lifecycle.html">Module 3</a> §11)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Canada</td><td>Equities</td><td><b>T+1</b> (aligned with the US, since 27 May 2024)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Canada</td><td>Government / corporate bonds</td><td><b>T+1</b> or <b>T+2</b>, depending on the specific bond</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>United States</td><td>Equities</td><td><b>T+1</b> (since 28 May 2024)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>United States</td><td>US Treasuries</td><td><b>T+1</b></td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>United Kingdom</td><td>Gilts (government bonds)</td><td><b>T+1</b></td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>United Kingdom</td><td>Equities</td><td><b>T+2</b> (T+1 targeted October 2027)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>European Union</td><td>Equities &amp; bonds</td><td><b>T+2</b> (T+1 targeted October 2027, coordinated w/ UK &amp; Switzerland)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>OTC derivatives (any market)</td><td>Interest Rate Swaps, CDS, etc.</td><td>No notional settlement — only margin/cash flows (<a href="./module-01-fundamentals.html">Module 1</a> §08, <a href="./module-03-trade-lifecycle.html">Module 3</a> §11)</td></tr>
         </tbody>
       </table>
       </div>

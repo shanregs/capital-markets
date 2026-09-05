@@ -303,12 +303,12 @@ FIXED INCOME'S VERSION OF THE TWO-AXIS MODEL
                       dealer-to-client, no CCP        systems-landscape §05)
 ```
 
-| Product | Exchange or OTC? | Bilateral or Centrally Cleared? |
-|---|---|---|
-| Government Bond | OTC | Bilateral (the norm) |
-| Corporate Bond | OTC | Bilateral (the norm) |
-| Municipal Bond | OTC | Bilateral (the norm) |
-| Repo | OTC | **Either** — bilateral by default, but increasingly routed through CDCC/FICC for the largest, most standardized repo activity |
+| Cash / SFT | Product | Exchange or OTC? | Bilateral or Centrally Cleared? |
+|---|---|---|---|
+| CASH | Government Bond | OTC | Bilateral (the norm) |
+| CASH | Corporate Bond | OTC | Bilateral (the norm) |
+| CASH | Municipal Bond | OTC | Bilateral (the norm) |
+| SFT | Repo | OTC | **Either** — bilateral by default, but increasingly routed through CDCC/FICC for the largest, most standardized repo activity |
 
 **Takeaway:** this is the opposite default from [Module 4](./module-04-equity.md)'s Equity table, where bilateral-and-exchange-traded was "effectively never" and centrally-cleared was the norm. For Fixed Income, bilateral OTC is the norm and central clearing is the (growing) exception — which is exactly why bond market regulation (Section 8) leans so heavily on *transaction reporting* (MiFIR) rather than relying on a CCP's own records the way equity regulators partly can.
 

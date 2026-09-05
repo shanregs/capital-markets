@@ -1,0 +1,752 @@
+<!doctype html>
+<title>Commodity Swap — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Commodity Swap — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-commodity-swap"><span class="toc-num">01</span>What is a Commodity Swap?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-why-the-airline-wants-this-and-how-bank-of-toronto-passes-th"><span class="toc-num">03</span>Why the Airline Wants This, and How Bank Of Toronto Passes the Risk Along</a></li>
+      <li><a href="#s4-the-two-legs"><span class="toc-num">04</span>The Two Legs</a></li>
+      <li><a href="#s5-first-monthly-settlement-period"><span class="toc-num">05</span>First Monthly Settlement Period</a></li>
+      <li><a href="#s6-net-settlement"><span class="toc-num">06</span>Net Settlement</a></li>
+      <li><a href="#s7-what-if-brent-falls-instead"><span class="toc-num">07</span>What if Brent Falls Instead?</a></li>
+      <li><a href="#s8-the-trade-lifecycle"><span class="toc-num">08</span>The Trade Lifecycle</a></li>
+      <li><a href="#s9-trade-capture"><span class="toc-num">09</span>Trade Capture</a></li>
+      <li><a href="#s10-daily-valuation-mark-to-market"><span class="toc-num">10</span>Daily Valuation — Mark-to-Market</a></li>
+      <li><a href="#s11-collateral"><span class="toc-num">11</span>Collateral</a></li>
+      <li><a href="#s12-regulatory-reporting"><span class="toc-num">12</span>Regulatory Reporting</a></li>
+      <li><a href="#s13-identifiers-recap"><span class="toc-num">13</span>Identifiers Recap</a></li>
+      <li><a href="#s14-physical-commodity-vs-commodity-swap-side-by-side"><span class="toc-num">14</span>Physical Commodity vs Commodity Swap — Side by Side</a></li>
+      <li><a href="#s15-the-three-most-important-commodity-swap-concepts"><span class="toc-num">15</span>The Three Most Important Commodity Swap Concepts</a></li>
+      <li><a href="#s16-mental-model-recap"><span class="toc-num">16</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-a-commodity-swap">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is a Commodity Swap?</h2>
+<p class="lede">A Commodity Swap is an OTC derivative where two counterparties exchange cash flows over a period — one side pays a <b>fixed</b> price, the other pays a <b>floating</b> price referencing a published index. No physical barrels ever move — this is the derivative counterpart to the <a href="./Commodity_Physical_Complete_Example.html">Physical Commodity example</a>.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Commodity Swap ↔ Fixed price ↔ Floating price, referencing a commodity index</b></p></div>
+<p>The important point is:</p>
+<ul><li>The Notional (100,000 barrels) is a <b>reference quantity only</b> — it is never physically delivered.</li><li>Only the net cash difference between fixed and floating settles, exactly like an IRS.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li><b>Bank Of Toronto</b> has a client, an airline, that consumes jet fuel and wants to hedge against rising oil prices.</li><li>Bank Of Toronto in turn hedges its own resulting exposure with <b>Goldman Sachs</b> via a Brent Crude swap.</li></ul>
+<h3>Swap terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Product</td><td>Commodity Swap</td></tr><tr><td>Underlier</td><td>ICE Brent Crude</td></tr><tr><td>Notional Quantity</td><td>100,000 barrels</td></tr><tr><td>Term</td><td>1 year</td></tr><tr><td>Bank Of Toronto pays</td><td>Fixed USD 78.00/barrel</td></tr><tr><td>Bank Of Toronto receives</td><td>Floating (average monthly ICE Brent settlement price)</td></tr><tr><td>Payment Frequency</td><td>Monthly</td></tr><tr><td>Trade Date</td><td>01-Sep-2026</td></tr><tr><td>Effective Date</td><td>01-Oct-2026</td></tr><tr><td>Maturity Date</td><td>01-Oct-2027</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s3-why-the-airline-wants-this-and-how-bank-of-toronto-passes-th">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Why the Airline Wants This, and How Bank Of Toronto Passes the Risk Along</h2>
+<div class="ticket"><pre>Airline's jet fuel cost tracks Brent Crude
+        |
+        +-- Airline is worried Brent will rise
+        |
+        v
+Airline enters a swap with Bank Of Toronto:
+  Airline pays Fixed, receives Floating Brent
+        |
+        v
+Bank Of Toronto is now short the floating leg — it hedges by
+entering the OFFSETTING swap with Goldman Sachs:
+  Bank Of Toronto pays Fixed, receives Floating Brent
+        |
+        v
+Bank Of Toronto's two swaps net out (minus a small spread it earns as dealer)</pre></div>
+<p>This "back-to-back" pattern is exactly how a dealer bank runs a derivatives book — <a href="../docs/1-capital-markets/module-22-hedging-deep-dive.html">Module 22 (Hedging)</a> covers this in full.</p>
+
+    </section>
+
+    <section class="mod" id="s4-the-two-legs">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Two Legs</h2>
+<div class="ticket"><pre>             COMMODITY SWAP
+                    |
+            +-------+-------+
+            |               |
+        Fixed Leg      Floating Leg
+            |               |
+     Pay USD 78.00/bbl   Receive avg. ICE Brent settlement</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-first-monthly-settlement-period">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>First Monthly Settlement Period</h2>
+<p class="lede">Suppose for October 2026, the average ICE Brent settlement price comes in at <b>USD 82.50/barrel</b>.</p>
+<div class="ticket"><pre>Fixed-leg amount (Bank Of Toronto pays):
+  100,000 barrels × USD 78.00 = USD 7,800,000
+
+Floating-leg amount (Bank Of Toronto receives):
+  100,000 barrels × USD 82.50 = USD 8,250,000</pre></div>
+
+    </section>
+
+    <section class="mod" id="s6-net-settlement">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Net Settlement</h2>
+<div class="table-scroll"><table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody><tr><td>Fixed payment (Bank Of Toronto pays)</td><td>USD 7,800,000</td></tr><tr><td>Floating receipt (Bank Of Toronto receives)</td><td>USD 8,250,000</td></tr><tr><td><b>Net receipt to Bank Of Toronto</b></td><td><b>USD 450,000</b></td></tr></tbody></table></div>
+<p>Because Brent rose above the fixed strike, Bank Of Toronto is paid the difference — exactly offsetting the higher fuel cost the airline is now paying at the pump, which is the whole point of the hedge.</p>
+
+    </section>
+
+    <section class="mod" id="s7-what-if-brent-falls-instead">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>What if Brent Falls Instead?</h2>
+<p class="lede">Suppose in a later month, average Brent settles at <b>USD 72.00/barrel</b>:</p>
+<div class="ticket"><pre>Fixed-leg amount (Bank Of Toronto pays):    100,000 × 78.00 = USD 7,800,000
+Floating-leg amount (Bank Of Toronto receives): 100,000 × 72.00 = USD 7,200,000
+------------------------------------------------------------------------
+Net payment BY Bank Of Toronto                                = USD 600,000</pre></div>
+<p>Bank Of Toronto now pays the net difference — this is the trade-off inherent in any fixed-for-floating swap: certainty in one direction means giving up the benefit of favorable moves in the other, the identical lesson <a href="../docs/1-capital-markets/module-19-interest-rate-swap-deep-dive.html">Module 19 §12</a> draws for interest rate swaps.</p>
+
+    </section>
+
+    <section class="mod" id="s8-the-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>The Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+  ↓
+Confirmation
+  ↓
+Enrichment (LEI, UTI, UPI)
+  ↓
+Valuation (DCF against the forward Brent curve)
+  ↓
+MTM
+  ↓
+Collateral (CSA-driven IM/VM)
+  ↓
+Monthly Interest Calculation &amp; Settlement
+  ↓
+Regulatory Reporting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s9-trade-capture">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>CS-20260901-00042</td></tr><tr><td>Product</td><td>Commodity Swap</td></tr><tr><td>Underlier</td><td>ICE Brent Crude</td></tr><tr><td>Notional Quantity</td><td>100,000 barrels</td></tr><tr><td>Fixed Price</td><td>USD 78.00/bbl</td></tr><tr><td>Direction</td><td>Pay Fixed</td></tr><tr><td>Trade Date</td><td>01-Sep-2026</td></tr><tr><td>Effective Date</td><td>01-Oct-2026</td></tr><tr><td>Maturity Date</td><td>01-Oct-2027</td></tr><tr><td>UPI</td><td>(illustrative) "Brent Crude, Swap, Cash-Settled"</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s10-daily-valuation-mark-to-market">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Daily Valuation — Mark-to-Market</h2>
+<p class="lede">The valuation engine forecasts every remaining monthly floating cash flow using the <b>forward Brent curve</b> (not just today's spot price), nets it against the fixed leg, and discounts back to today:</p>
+<div class="ticket"><pre>Forecast Future Floating Cash Flows (off forward Brent curve)
+              +
+Forecast Future Fixed Cash Flows (known — 78.00/bbl every month)
+              |
+              v
+         Net Cash Flows
+              |
+              v
+        Discount to PV
+              |
+              v
+             MTM</pre></div>
+<p>Suppose the forward Brent curve implies an average future price of USD 80.00/bbl across the remaining 11 months, versus Bank Of Toronto's fixed rate of 78.00:</p>
+<div class="ticket"><pre>Undiscounted value ≈ 100,000 × (80.00 − 78.00) × 11 months ≈ USD 2,200,000
+Discounted MTM (illustrative, ~5% annualized rate) ≈ USD 2,150,000</pre></div>
+<p>Bank Of Toronto's swap has <b>positive value</b> (~USD 2,150,000) because the market now expects Brent to stay above its locked-in fixed rate.</p>
+
+    </section>
+
+    <section class="mod" id="s11-collateral">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Collateral</h2>
+<p class="lede">Suppose this swap sits under a CSA with Goldman Sachs and is <b>above</b> the UMR threshold (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11 §8</a>):</p>
+<div class="ticket"><pre>MTM (+USD 2,150,000)
+        ↓
+   Exposure
+        ↓
+   CSA terms + SIMM
+        ↓
+Variation Margin call: Goldman Sachs posts ≈ USD 2,150,000 to Bank Of Toronto</pre></div>
+
+    </section>
+
+    <section class="mod" id="s12-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual EMIR record would contain:</p>
+<ul><li>UTI</li><li>UPI ("Brent Crude, Swap, Cash-Settled")</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li>Asset Class: Commodity</li><li>Notional Quantity: 100,000 barrels</li><li>Fixed Price: USD 78.00/bbl</li><li>Trade Date / Effective Date / Maturity Date</li><li>Valuation Amount (Section 10's MTM)</li><li>Collateralisation flag: Yes</li></ul>
+
+    </section>
+
+    <section class="mod" id="s13-identifiers-recap">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Identifiers Recap</h2>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Applies to Commodity Swap?</th></tr></thead><tbody><tr><td>ISIN / CUSIP / SEDOL / Ticker / FIGI</td><td>No — not a security</td></tr><tr><td>Exchange Contract Code</td><td>No — this is OTC, not exchange-listed</td></tr><tr><td><b>UPI</b></td><td><b>Yes</b> — "Brent Crude, Swap, Cash-Settled," reused across every trade sharing this shape</td></tr><tr><td><b>UTI</b></td><td><b>Yes</b> — fresh per trade</td></tr><tr><td>LEI</td><td>Yes — Bank Of Toronto and Goldman Sachs</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s14-physical-commodity-vs-commodity-swap-side-by-side">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Physical Commodity vs Commodity Swap — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Aspect</th><th>Physical Gold</th><th>Commodity Swap</th></tr></thead><tbody><tr><td><span class="side-tag sell">CASH</span></td><td>Delivery</td><td>Real, physical</td><td>None — cash-settled</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Identifier</td><td>Commodity Code</td><td>UPI + UTI</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Valuation</td><td>Spot × Quantity</td><td>DCF off forward curve</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Regulatory scope</td><td>Mostly outside EMIR</td><td>Inside EMIR</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Purpose</td><td>Ownership, industrial use</td><td>Price hedging, speculation</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-the-three-most-important-commodity-swap-concepts">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>The Three Most Important Commodity Swap Concepts</h2>
+<h3>1. Notional never settles</h3>
+<p>The 100,000 barrels is purely a multiplier for the cash-flow calculation.</p>
+<h3>2. It's Model-Based, off a forward curve</h3>
+<div class="ticket"><pre>PV(Swap) = PV(Floating Leg) − PV(Fixed Leg)</pre></div>
+<h3>3. It's the derivative half of a Physical/Swap pair</h3>
+<div class="ticket"><pre>Physical Commodity  →  Cash instrument, real delivery
+Commodity Swap       →  Derivative, cash-settled only</pre></div>
+
+    </section>
+
+    <section class="mod" id="s16-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Commodity price risk (jet fuel, via Brent) → Commodity Swap → Fixed cost certainty for the airline, risk passed up the dealer chain</pre></div>
+<p>This mirrors the <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS example</a>'s risk-transformation model exactly — only the underlying reference (Brent Crude instead of CORRA) has changed.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

@@ -254,20 +254,20 @@ buyer) vs Goldman Sachs (protection seller) — One Year After Inception
 
 Every asset class and Listed Derivatives, side by side — the fully worked-out version of the "Compare valuation across trade types" table from this module's original curriculum outline.
 
-| Asset Class / Product | Valuation Family (Section 02) | Core Valuation Basis | Worked Example |
-|---|---|---|---|
-| **Equity** (Common/Preferred) | Quote-Based | Price × Quantity | [Module 4](./module-04-equity.md) §5 — Coca-Cola daily MTM |
-| **Fixed Income** (Bonds) | Quote-Based (Clean Price) + a PV concept underneath (YTM) | Clean Price × Face Value ÷ 100, plus Accrued Interest for Dirty Price | Section 03, this module |
-| **FX Spot/Forward/Swap** | Quote-Based (Spot) / Model-Based (Forward points derived from rate differential) | Notional × Rate; Forward = Spot + Forward Points ([Module 6](./module-06-fx.md) §1) | [Module 6](./module-06-fx.md) §5 — daily spot MTM |
-| **FX Option** | Model-Based | Option pricing model (same family as Section 04b) | [Module 6](./module-06-fx.md) §4d |
-| **Commodity Physical/Spot/Forward** | Quote-Based (Spot) / Model-Based (Forward, via storage/carry cost) | Spot × Quantity; Forward = Spot + Carry ([Module 7](./module-07-commodities.md) §1) | [Module 7](./module-07-commodities.md) §4a |
-| **Commodity Future** | Quote-Based | Exchange daily settlement price × contract size | [Module 7](./module-07-commodities.md) §5 — daily variation margin |
-| **Commodity Swap/Option** | Model-Based | DCF (Swap) / pricing model (Option) | [Module 7](./module-07-commodities.md) §4c, §4d |
-| **Interest Rate Swap / FRA / Cap-Floor / Swaption** | Model-Based | DCF/NPV off the CORRA curve; Cap/Floor and Swaption additionally need an option pricing model layered on top | Section 04a, this module |
-| **IR Forward Debt** | Model-Based (until/unless it delivers a real bond, then Quote-Based) | Forward bond price = Spot – Carry ([Module 8](./module-08-rates.md) §4e) | [Module 8](./module-08-rates.md) §4e |
-| **Credit Default Swap** | Model-Based | Credit spread curve × Risky Duration × Notional | Section 04c, this module |
-| **Futures (Listed Derivatives)** | Quote-Based | Exchange daily settlement price × contract size | [Module 15](./module-15-listed-derivatives.md) §4a-c |
-| **Listed Options** | Model-Based (despite being exchange-traded — Section 02's key exception) | Option pricing model, same family as Section 04b | [Module 15](./module-15-listed-derivatives.md) §4d |
+| Cash / Derivative | Asset Class / Product | Valuation Family (Section 02) | Core Valuation Basis | Worked Example |
+|---|---|---|---|---|
+| CASH | **Equity** (Common/Preferred) | Quote-Based | Price × Quantity | [Module 4](./module-04-equity.md) §5 — Coca-Cola daily MTM |
+| CASH | **Fixed Income** (Bonds) | Quote-Based (Clean Price) + a PV concept underneath (YTM) | Clean Price × Face Value ÷ 100, plus Accrued Interest for Dirty Price | Section 03, this module |
+| CASH + DERIVATIVE | **FX Spot/Forward/Swap** | Quote-Based (Spot) / Model-Based (Forward points derived from rate differential) | Notional × Rate; Forward = Spot + Forward Points ([Module 6](./module-06-fx.md) §1) | [Module 6](./module-06-fx.md) §5 — daily spot MTM |
+| DERIVATIVE | **FX Option** | Model-Based | Option pricing model (same family as Section 04b) | [Module 6](./module-06-fx.md) §4d |
+| CASH + DERIVATIVE | **Commodity Physical/Spot/Forward** | Quote-Based (Spot) / Model-Based (Forward, via storage/carry cost) | Spot × Quantity; Forward = Spot + Carry ([Module 7](./module-07-commodities.md) §1) | [Module 7](./module-07-commodities.md) §4a |
+| DERIVATIVE | **Commodity Future** | Quote-Based | Exchange daily settlement price × contract size | [Module 7](./module-07-commodities.md) §5 — daily variation margin |
+| DERIVATIVE | **Commodity Swap/Option** | Model-Based | DCF (Swap) / pricing model (Option) | [Module 7](./module-07-commodities.md) §4c, §4d |
+| DERIVATIVE | **Interest Rate Swap / FRA / Cap-Floor / Swaption** | Model-Based | DCF/NPV off the CORRA curve; Cap/Floor and Swaption additionally need an option pricing model layered on top | Section 04a, this module |
+| DERIVATIVE | **IR Forward Debt** | Model-Based (until/unless it delivers a real bond, then Quote-Based) | Forward bond price = Spot – Carry ([Module 8](./module-08-rates.md) §4e) | [Module 8](./module-08-rates.md) §4e |
+| DERIVATIVE | **Credit Default Swap** | Model-Based | Credit spread curve × Risky Duration × Notional | Section 04c, this module |
+| DERIVATIVE | **Futures (Listed Derivatives)** | Quote-Based | Exchange daily settlement price × contract size | [Module 15](./module-15-listed-derivatives.md) §4a-c |
+| DERIVATIVE | **Listed Options** | Model-Based (despite being exchange-traded — Section 02's key exception) | Option pricing model, same family as Section 04b | [Module 15](./module-15-listed-derivatives.md) §4d |
 
 **Takeaway:** the Valuation Family (Quote-Based vs Model-Based) predicts almost everything else about how hard a product is to value correctly — every Model-Based row needs a curve, a spread, or a pricing model as an *input*, which means every Model-Based valuation is only as good as those inputs, exactly the concern Section 6's Fair Value Hierarchy exists to formalize.
 

@@ -368,6 +368,18 @@
   .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
   .table-scroll table { min-width: 720px; margin: 0; }
 
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
   /* ---------- ticket / diagram cards ---------- */
 
   .ticket {
@@ -734,20 +746,20 @@ Unrealized Gain to Bank Of Toronto = 1,200,000 - 675,000 = USD 525,000
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Asset Class / Product</th><th>Valuation Family</th><th>Core Valuation Basis</th><th>Worked Example</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Asset Class / Product</th><th>Valuation Family</th><th>Core Valuation Basis</th><th>Worked Example</th></tr></thead>
         <tbody>
-          <tr><td><b>Equity</b> (Common/Preferred)</td><td>Quote-Based</td><td>Price × Quantity</td><td><a href="./module-04-equity.html">Module 4</a> §5 — Coca-Cola daily MTM</td></tr>
-          <tr><td><b>Fixed Income</b> (Bonds)</td><td>Quote-Based (Clean Price) + PV underneath (YTM)</td><td>Clean Price × Face Value ÷ 100, plus Accrued Interest for Dirty Price</td><td>Section 03, this module</td></tr>
-          <tr><td><b>FX Spot/Forward/Swap</b></td><td>Quote-Based (Spot) / Model-Based (Forward)</td><td>Notional × Rate; Forward = Spot + Forward Points</td><td><a href="./module-06-fx.html">Module 6</a> §5 — daily spot MTM</td></tr>
-          <tr><td><b>FX Option</b></td><td>Model-Based</td><td>Option pricing model (same family as Section 04b)</td><td><a href="./module-06-fx.html">Module 6</a> §4d</td></tr>
-          <tr><td><b>Commodity Physical/Spot/Forward</b></td><td>Quote-Based (Spot) / Model-Based (Forward)</td><td>Spot × Quantity; Forward = Spot + Carry</td><td><a href="./module-07-commodities.html">Module 7</a> §4a</td></tr>
-          <tr><td><b>Commodity Future</b></td><td>Quote-Based</td><td>Exchange daily settlement price × contract size</td><td><a href="./module-07-commodities.html">Module 7</a> §5 — daily variation margin</td></tr>
-          <tr><td><b>Commodity Swap/Option</b></td><td>Model-Based</td><td>DCF (Swap) / pricing model (Option)</td><td><a href="./module-07-commodities.html">Module 7</a> §4c, §4d</td></tr>
-          <tr><td><b>IRS / FRA / Cap-Floor / Swaption</b></td><td>Model-Based</td><td>DCF/NPV off the CORRA curve; Cap/Floor and Swaption layer an option model on top</td><td>Section 04a, this module</td></tr>
-          <tr><td><b>IR Forward Debt</b></td><td>Model-Based (Quote-Based if it delivers)</td><td>Forward bond price = Spot – Carry</td><td><a href="./module-08-rates.html">Module 8</a> §4e</td></tr>
-          <tr><td><b>Credit Default Swap</b></td><td>Model-Based</td><td>Credit spread curve × Risky Duration × Notional</td><td>Section 04c, this module</td></tr>
-          <tr><td><b>Futures</b> (Listed Derivatives)</td><td>Quote-Based</td><td>Exchange daily settlement price × contract size</td><td><a href="./module-15-listed-derivatives.html">Module 15</a> §4a-c</td></tr>
-          <tr><td><b>Listed Options</b></td><td>Model-Based (despite being exchange-traded)</td><td>Option pricing model, same family as Section 04b</td><td><a href="./module-15-listed-derivatives.html">Module 15</a> §4d</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Equity</b> (Common/Preferred)</td><td>Quote-Based</td><td>Price × Quantity</td><td><a href="./module-04-equity.html">Module 4</a> §5 — Coca-Cola daily MTM</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td><b>Fixed Income</b> (Bonds)</td><td>Quote-Based (Clean Price) + PV underneath (YTM)</td><td>Clean Price × Face Value ÷ 100, plus Accrued Interest for Dirty Price</td><td>Section 03, this module</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span> <span class="side-tag buy">DERIVATIVE</span></td><td><b>FX Spot/Forward/Swap</b></td><td>Quote-Based (Spot) / Model-Based (Forward)</td><td>Notional × Rate; Forward = Spot + Forward Points</td><td><a href="./module-06-fx.html">Module 6</a> §5 — daily spot MTM</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>FX Option</b></td><td>Model-Based</td><td>Option pricing model (same family as Section 04b)</td><td><a href="./module-06-fx.html">Module 6</a> §4d</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span> <span class="side-tag buy">DERIVATIVE</span></td><td><b>Commodity Physical/Spot/Forward</b></td><td>Quote-Based (Spot) / Model-Based (Forward)</td><td>Spot × Quantity; Forward = Spot + Carry</td><td><a href="./module-07-commodities.html">Module 7</a> §4a</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Commodity Future</b></td><td>Quote-Based</td><td>Exchange daily settlement price × contract size</td><td><a href="./module-07-commodities.html">Module 7</a> §5 — daily variation margin</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Commodity Swap/Option</b></td><td>Model-Based</td><td>DCF (Swap) / pricing model (Option)</td><td><a href="./module-07-commodities.html">Module 7</a> §4c, §4d</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>IRS / FRA / Cap-Floor / Swaption</b></td><td>Model-Based</td><td>DCF/NPV off the CORRA curve; Cap/Floor and Swaption layer an option model on top</td><td>Section 04a, this module</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>IR Forward Debt</b></td><td>Model-Based (Quote-Based if it delivers)</td><td>Forward bond price = Spot – Carry</td><td><a href="./module-08-rates.html">Module 8</a> §4e</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Credit Default Swap</b></td><td>Model-Based</td><td>Credit spread curve × Risky Duration × Notional</td><td>Section 04c, this module</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Futures</b> (Listed Derivatives)</td><td>Quote-Based</td><td>Exchange daily settlement price × contract size</td><td><a href="./module-15-listed-derivatives.html">Module 15</a> §4a-c</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td><b>Listed Options</b></td><td>Model-Based (despite being exchange-traded)</td><td>Option pricing model, same family as Section 04b</td><td><a href="./module-15-listed-derivatives.html">Module 15</a> §4d</td></tr>
         </tbody>
       </table>
       </div>

@@ -1,0 +1,701 @@
+<!doctype html>
+<title>Physical Commodity Trade — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Physical Commodity Trade — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-physical-commodity-trade"><span class="toc-num">01</span>What is a Physical Commodity Trade?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-why-physical-commodities-rarely-sit-on-a-bank-s-own-book"><span class="toc-num">03</span>Why Physical Commodities Rarely Sit on a Bank's Own Book</a></li>
+      <li><a href="#s4-the-trade-lifecycle"><span class="toc-num">04</span>The Trade Lifecycle</a></li>
+      <li><a href="#s5-trade-capture"><span class="toc-num">05</span>Trade Capture</a></li>
+      <li><a href="#s6-settlement-physical-delivery-not-dvp-via-a-csd"><span class="toc-num">06</span>Settlement — Physical Delivery, Not DvP via a CSD</a></li>
+      <li><a href="#s7-position"><span class="toc-num">07</span>Position</a></li>
+      <li><a href="#s8-daily-valuation"><span class="toc-num">08</span>Daily Valuation</a></li>
+      <li><a href="#s9-contango-and-backwardation-why-this-matters-even-for-a-spot-"><span class="toc-num">09</span>Contango and Backwardation — Why This Matters Even for a Spot Holding</a></li>
+      <li><a href="#s10-identifiers-recap"><span class="toc-num">10</span>Identifiers Recap</a></li>
+      <li><a href="#s11-regulatory-perspective"><span class="toc-num">11</span>Regulatory Perspective</a></li>
+      <li><a href="#s12-physical-commodity-vs-commodity-swap-side-by-side"><span class="toc-num">12</span>Physical Commodity vs Commodity Swap — Side by Side</a></li>
+      <li><a href="#s13-the-three-most-important-physical-commodity-concepts"><span class="toc-num">13</span>The Three Most Important Physical Commodity Concepts</a></li>
+      <li><a href="#s14-mental-model-recap"><span class="toc-num">14</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-a-physical-commodity-trade">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is a Physical Commodity Trade?</h2>
+<p class="lede">A physical commodity trade is the purchase or sale of the actual, tangible good — gold, crude oil, wheat — with real delivery, storage, and title transfer. Like a cash equity or bond, this is <b>not</b> a contract that derives its value from something else; the commodity itself IS the thing being traded.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Physical Commodity ↔ Real, deliverable tangible good</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li><b>Bank Of Toronto</b>'s commodities desk buys physical gold for its own inventory.</li><li>The counterparty is a bullion dealer, illustratively "Shell Trading" (reused from <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a>'s cast of actors).</li></ul>
+<h3>Trade terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Instrument</td><td>Physical Gold</td></tr><tr><td>Commodity Code</td><td>XAU</td></tr><tr><td>Quantity</td><td>100 oz (one standard gold bar)</td></tr><tr><td>Spot Price</td><td>USD 2,650.00 per oz</td></tr><tr><td>Total Consideration</td><td>USD 265,000</td></tr><tr><td>Trade Date</td><td>05-Oct-2026</td></tr><tr><td>Settlement Date</td><td>07-Oct-2026 (T+2, physical delivery + vaulting)</td></tr><tr><td>Delivery Location</td><td>Bank Of Toronto's designated vault</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s3-why-physical-commodities-rarely-sit-on-a-bank-s-own-book">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Why Physical Commodities Rarely Sit on a Bank's Own Book</h2>
+<div class="ticket"><pre>Physical Gold
+   |
+   +-- Storage cost (vaulting, insurance)
+   +-- Delivery logistics
+   +-- No coupon, no dividend — pure price exposure
+   +-- Illiquid to unwind quickly</pre></div>
+<p>This is exactly why <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7 §2</a> notes that physical commodities are "rare in a bank's own book — usually accessed via derivatives instead" (see the <a href="./Commodity_Swap_Complete_Example.html">Commodity Swap example</a>). A bank wanting <i>price exposure</i> to gold, without the storage headache, would use a Commodity Swap or Future instead.</p>
+
+    </section>
+
+    <section class="mod" id="s4-the-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Trade Lifecycle</h2>
+<div class="ticket"><pre>Order
+  ↓
+Execution
+  ↓
+Trade Capture
+  ↓
+Confirmation
+  ↓
+Physical Settlement (title transfer + vaulting)
+  ↓
+Position (inventory, marked at spot)
+  ↓
+Valuation / MTM
+  ↓
+Regulatory Reporting (minimal — mostly outside derivative regimes)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-trade-capture">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>CMD-20261005-00014</td></tr><tr><td>Buyer</td><td>Bank Of Toronto</td></tr><tr><td>Seller</td><td>Shell Trading (illustrative)</td></tr><tr><td>Instrument</td><td>Physical Gold</td></tr><tr><td>Quantity</td><td>100 oz</td></tr><tr><td>Price</td><td>USD 2,650.00/oz</td></tr><tr><td>Total</td><td>USD 265,000</td></tr><tr><td>Trade Date</td><td>05-Oct-2026</td></tr><tr><td>Settlement Date</td><td>07-Oct-2026</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s6-settlement-physical-delivery-not-dvp-via-a-csd">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Settlement — Physical Delivery, Not DvP via a CSD</h2>
+<p class="lede">Unlike a security, there is no CSD for a gold bar. Settlement instead means:</p>
+<div class="ticket"><pre>Seller's vault                             Buyer's vault
+     |                                          |
+     |  100 oz gold bar (physical transfer)     |
+     |-----------------------------------------&gt;|
+     |&lt;---------------------------- USD 265,000 |
+     |                                          |
+   Bilateral, dealer-to-dealer, verified by assay/serial number</pre></div>
+
+    </section>
+
+    <section class="mod" id="s7-position">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Position</h2>
+<p class="lede">After settlement, Bank Of Toronto's books show:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Holding</td><td>100 oz physical gold</td></tr><tr><td>Cost Basis</td><td>USD 265,000</td></tr><tr><td>Storage</td><td>Designated vault, insured</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s8-daily-valuation">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Daily Valuation</h2>
+<p class="lede">Suppose the gold spot price moves to <b>USD 2,710.00/oz</b> one month later:</p>
+<div class="ticket"><pre>Market Value = Quantity × Spot Price
+             = 100 × 2,710.00
+             = USD 271,000
+
+Unrealized P&amp;L = 271,000 − 265,000 = +USD 6,000</pre></div>
+<p><a href="../docs/1-capital-markets/module-10-valuation.html">Module 10 §2</a> classifies this as <b>Quote-Based</b> valuation — same simple family as a cash equity or bond.</p>
+
+    </section>
+
+    <section class="mod" id="s9-contango-and-backwardation-why-this-matters-even-for-a-spot-">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Contango and Backwardation — Why This Matters Even for a Spot Holding</h2>
+<p class="lede">If Bank Of Toronto wanted to know what a <b>future</b> delivery of gold should cost (relevant if it's weighing physical storage against a Commodity Future instead), it would compare today's spot price to the futures curve:</p>
+<div class="ticket"><pre>Futures Price = Spot Price + Storage Cost + Financing Cost − Convenience Yield</pre></div>
+<p>If the futures curve slopes upward (later delivery costs more), the market is in <b>Contango</b>; if it slopes downward, it's in <b>Backwardation</b> (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7 §1</a>). This concept doesn't affect the physical trade's settlement mechanics — it only matters when comparing physical ownership to a derivative alternative.</p>
+
+    </section>
+
+    <section class="mod" id="s10-identifiers-recap">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Identifiers Recap</h2>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Applies to Physical Commodity?</th></tr></thead><tbody><tr><td>ISIN / CUSIP / SEDOL / Ticker / FIGI</td><td><b>No</b> — these identify securities, and a gold bar is not one</td></tr><tr><td>Commodity Code</td><td><b>Yes</b> — XAU (ISO 4217-style commodity code)</td></tr><tr><td>UPI</td><td>No — not a derivative</td></tr><tr><td>LEI</td><td>Yes — identifies Bank Of Toronto and Shell Trading as counterparties</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s11-regulatory-perspective">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Regulatory Perspective</h2>
+<p class="lede">Physical commodity trades sit mostly <b>outside</b> derivative reporting regimes:</p>
+<div class="table-scroll"><table><thead><tr><th>Regulation</th><th>Applies?</th></tr></thead><tbody><tr><td>EMIR / Dodd-Frank</td><td>No — not a derivative</td></tr><tr><td>MiFID II / MiFIR</td><td>Generally no, for pure physically-settled spot commodity trades used commercially</td></tr><tr><td>SFTR</td><td>No — not a financing transaction</td></tr></tbody></table></div>
+<p>Compare this to the <a href="./Commodity_Swap_Complete_Example.html">Commodity Swap example</a>, which is squarely inside EMIR's scope.</p>
+
+    </section>
+
+    <section class="mod" id="s12-physical-commodity-vs-commodity-swap-side-by-side">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>Physical Commodity vs Commodity Swap — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Aspect</th><th>Physical Gold</th><th>Commodity Swap</th></tr></thead><tbody><tr><td><span class="side-tag sell">CASH</span></td><td>What settles</td><td>The actual physical good</td><td>Net cash flow differences only</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Identifier</td><td>Commodity Code</td><td>UPI + UTI</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Storage/logistics</td><td>Real cost, real risk</td><td>None — no physical good involved</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Valuation</td><td>Quote-Based (spot price)</td><td>Model-Based (DCF against a floating index)</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Regulatory scope</td><td>Mostly outside EMIR</td><td>Inside EMIR</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s13-the-three-most-important-physical-commodity-concepts">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>The Three Most Important Physical Commodity Concepts</h2>
+<h3>1. It's a real, deliverable good</h3>
+<p>Unlike a swap's notional, the 100 oz genuinely changes vaults.</p>
+<h3>2. Storage and logistics are real costs</h3>
+<div class="ticket"><pre>Total cost of ownership = Purchase Price + Storage + Insurance + Financing</pre></div>
+<h3>3. Valuation is just Quantity × Spot Price</h3>
+<div class="ticket"><pre>Market Value = Quantity × Spot Price</pre></div>
+
+    </section>
+
+    <section class="mod" id="s14-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Desire for real commodity ownership → Physical Trade → Real delivery, real storage, real price exposure</pre></div>
+<p>Physical Commodity sits at the "Cash" end of the commodity product family, exactly parallel to how Cash Equity sits at the "Cash" end of the equity product family — everything else in <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> (Future, Option, Swap) is a derivative built on top of this same underlying good.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

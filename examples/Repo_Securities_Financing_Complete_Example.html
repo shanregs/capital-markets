@@ -1,0 +1,694 @@
+<!doctype html>
+<title>Repo (Securities Financing Transaction) — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Repo (Securities Financing Transaction) — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-repo"><span class="toc-num">01</span>What is a Repo?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-why-the-haircut-exists"><span class="toc-num">03</span>Why the Haircut Exists</a></li>
+      <li><a href="#s4-computing-the-repurchase-price"><span class="toc-num">04</span>Computing the Repurchase Price</a></li>
+      <li><a href="#s5-the-trade-lifecycle"><span class="toc-num">05</span>The Trade Lifecycle</a></li>
+      <li><a href="#s6-why-this-is-neither-pure-cash-nor-a-derivative"><span class="toc-num">06</span>Why This Is Neither Pure Cash Nor a Derivative</a></li>
+      <li><a href="#s7-rehypothecation-reuse"><span class="toc-num">07</span>Rehypothecation / Reuse</a></li>
+      <li><a href="#s8-what-if-the-collateral-s-value-moves-overnight"><span class="toc-num">08</span>What if the Collateral's Value Moves Overnight?</a></li>
+      <li><a href="#s9-regulatory-reporting-sftr"><span class="toc-num">09</span>Regulatory Reporting — SFTR</a></li>
+      <li><a href="#s10-repo-vs-cash-bond-vs-otc-derivative-side-by-side"><span class="toc-num">10</span>Repo vs Cash Bond vs OTC Derivative — Side by Side</a></li>
+      <li><a href="#s11-the-three-most-important-repo-concepts"><span class="toc-num">11</span>The Three Most Important Repo Concepts</a></li>
+      <li><a href="#s12-mental-model-recap"><span class="toc-num">12</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-a-repo">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is a Repo?</h2>
+<p class="lede">A Repurchase Agreement ("repo") is neither a plain cash instrument nor an OTC derivative — it sits in its own category, a <b>Securities Financing Transaction (SFT)</b>. Economically, it's a collateralized cash loan structured as two linked trades: sell a security now, agree to buy it back later at a fixed price.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Repo ↔ Collateralized cash loan, wrapped in a sale-and-repurchase structure</b></p></div>
+<p>The important point is:</p>
+<ul><li>The security <b>does</b> change hands (like a cash trade).</li><li>But economically, nobody actually wants to buy or sell the bond — the whole point is <b>borrowing/lending cash</b>, with the bond as collateral.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li><b>Bank Of Toronto</b> needs overnight cash.</li><li><b>Goldman Sachs</b> has surplus cash to lend, and wants safe collateral.</li><li>Bank Of Toronto sells Goldman Sachs a government bond today, and agrees to buy it back tomorrow at a slightly higher price — the difference being the implicit interest (the "repo rate").</li></ul>
+<h3>Trade terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>SFT Type</td><td>Repurchase transaction (repo)</td></tr><tr><td>Collateral</td><td>Germany 3% Bund 2033</td></tr><tr><td>Collateral ISIN</td><td>DE0001102481 (illustrative)</td></tr><tr><td>Nominal Amount</td><td>EUR 10,000,000</td></tr><tr><td>Collateral Market Value</td><td>EUR 9,800,000</td></tr><tr><td>Haircut</td><td>2%</td></tr><tr><td>Cash Lent (Purchase Price)</td><td>EUR 9,604,000</td></tr><tr><td>Repo Rate</td><td>3.50%</td></tr><tr><td>Term</td><td>Overnight (1 day)</td></tr><tr><td>Trade Date</td><td>10-Sep-2026</td></tr><tr><td>Repurchase Date</td><td>11-Sep-2026</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s3-why-the-haircut-exists">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Why the Haircut Exists</h2>
+<div class="ticket"><pre>Collateral Market Value       EUR 9,800,000
+Haircut (2%)                  EUR   196,000
+------------------------------------------
+Cash Lent (Purchase Price)    EUR 9,604,000</pre></div>
+<p>The <b>Haircut</b> buffers Goldman Sachs (the cash lender) against the collateral losing value before it could be liquidated if Bank Of Toronto defaulted overnight. This is the exact same haircut mechanic used for posting collateral under a CSA (<a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12 §3</a>) — a repo is really just collateral management wearing a "sale and repurchase" costume.</p>
+
+    </section>
+
+    <section class="mod" id="s4-computing-the-repurchase-price">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>Computing the Repurchase Price</h2>
+<div class="ticket"><pre>Interest = Cash Lent × Repo Rate × (Days / 360)
+         = 9,604,000 × 3.50% × (1 / 360)
+        ≈ EUR 934
+
+Repurchase Price = Cash Lent + Interest
+                  = 9,604,000 + 934
+                  = EUR 9,604,934</pre></div>
+<p>On 11-Sep-2026, Bank Of Toronto pays Goldman Sachs <b>EUR 9,604,934</b> and gets its Bund back.</p>
+
+    </section>
+
+    <section class="mod" id="s5-the-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>The Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture (repo leg)
+  ↓
+Confirmation
+  ↓
+Collateral Selection &amp; Haircut Calculation
+  ↓
+Settlement Leg 1 (Bond out, cash in)
+  ↓
+Daily Valuation of Collateral
+  ↓
+(Margin Call if collateral value moves — Section 8)
+  ↓
+Settlement Leg 2 (Bond back, cash + interest out)
+  ↓
+Regulatory Reporting (SFTR)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s6-why-this-is-neither-pure-cash-nor-a-derivative">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>Why This Is Neither Pure Cash Nor a Derivative</h2>
+<div class="ticket"><pre>CASH BOND TRADE                REPO                          OTC DERIVATIVE (IRS)
+|                               |                             |
++-- Buy to own it              +-- "Sell" but don't want to   +-- No security ever moves
++-- No repurchase obligation   +-- own it — cash is the point +-- Notional is a pure reference
++-- ISIN, no haircut logic     +-- Haircut on the collateral  +-- UPI, no haircut logic</pre></div>
+<p><a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12 §6</a> makes this explicit: a repo doesn't need a separate Initial Margin/Variation Margin process the way a derivative does — the <b>haircut on the collateral itself already IS the risk mitigation</b>.</p>
+
+    </section>
+
+    <section class="mod" id="s7-rehypothecation-reuse">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Rehypothecation / Reuse</h2>
+<p class="lede">Goldman Sachs, having received the Bund as collateral, may itself re-pledge it in a separate transaction — this is called <b>Reuse</b> or <b>Rehypothecation</b>:</p>
+<div class="ticket"><pre>Bank Of Toronto  --Bund--&gt;  Goldman Sachs  --same Bund--&gt;  a third counterparty</pre></div>
+<p>SFTR specifically requires reporting <b>Collateral Reuse</b> by an EU counterparty, regardless of where the reused security itself physically sits (<a href="../docs/2-reporting/module-16-sftr-reporting.html">Module 16 §4</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s8-what-if-the-collateral-s-value-moves-overnight">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>What if the Collateral's Value Moves Overnight?</h2>
+<p class="lede">Suppose, hypothetically, this were a <b>term repo</b> (say, 30 days) instead of overnight, and the Bund's market value fell by EUR 200,000 mid-term. The <b>Collateral update</b> Action Type would be triggered:</p>
+<div class="ticket"><pre>Collateral Market Value falls
+        ↓
+Bank Of Toronto (borrower) must post additional collateral
+        ↓
+Margin call, sized to restore the haircut buffer</pre></div>
+<p>This is exactly the <b>Margin update / Collateral update</b> Action Types SFTR defines (<a href="../docs/2-reporting/module-16-sftr-reporting.html">Module 16 §7</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s9-regulatory-reporting-sftr">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Regulatory Reporting — SFTR</h2>
+<p class="lede">A conceptual SFTR record would contain:</p>
+<p><b>Loan data:</b></p>
+<ul><li>UTI</li><li>Counterparty LEIs (Bank Of Toronto, Goldman Sachs)</li><li>Trade Date / Value Date / Maturity Date</li><li>Principal Amount (EUR 9,604,000)</li><li>Rate (3.50%)</li><li>SFT Type Code: <b>REPO</b></li></ul>
+<p><b>Collateral data:</b></p>
+<ul><li>Collateral ISIN (DE0001102481)</li><li>Collateral Market Value (EUR 9,800,000)</li><li>Haircut (2%)</li><li>Collateral type: non-cash</li></ul>
+<p>Note the SFT Type Code <b>REPO</b> — SFTR uses this small, closed code set instead of the UPI/ISDA taxonomy a derivative would carry, because a repo isn't classified through the derivative product taxonomy at all (<a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">Module 18 §6</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s10-repo-vs-cash-bond-vs-otc-derivative-side-by-side">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Repo vs Cash Bond vs OTC Derivative — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative / SFT</th><th>Aspect</th><th>Cash Bond Trade</th><th>Repo</th><th>OTC Derivative (IRS)</th></tr></thead><tbody><tr><td><span class="side-tag sell">CASH</span></td><td>What settles</td><td>Face value + accrued interest, once</td><td>—</td><td>—</td></tr><tr><td><span class="side-tag infra">SFT</span></td><td>What settles</td><td>—</td><td>Security + cash, <b>twice</b> (out then back)</td><td>—</td></tr><tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>What settles</td><td>—</td><td>—</td><td>Net cash flow differences only</td></tr><tr><td><span class="side-tag infra">SFT</span></td><td>Risk mitigation</td><td>None needed</td><td>Haircut on collateral</td><td>IM/VM under a CSA</td></tr><tr><td><span class="side-tag infra">SFT</span></td><td>Regulatory regime</td><td>MiFIR</td><td><b>SFTR</b></td><td>EMIR/Dodd-Frank</td></tr><tr><td><span class="side-tag infra">SFT</span></td><td>Identifier</td><td>ISIN</td><td>ISIN (of the collateral) + UTI, <b>no UPI</b></td><td>UPI + UTI</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s11-the-three-most-important-repo-concepts">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>The Three Most Important Repo Concepts</h2>
+<h3>1. It's a financing transaction, not an investment</h3>
+<p>Nobody actually wants to own the Bund — the cash is the point.</p>
+<h3>2. The haircut IS the risk management</h3>
+<div class="ticket"><pre>Cash Lent = Collateral Value × (1 − Haircut %)</pre></div>
+<h3>3. It reports under SFTR, not EMIR</h3>
+<div class="ticket"><pre>Repo  → SFTR  → Type of SFT code REPO
+IRS   → EMIR  → UPI + ISDA Taxonomy</pre></div>
+<p>Confusing these two regimes is a classic beginner mistake — a repo is a financing contract, not a derivative, even though "swap" sometimes appears informally in securities-lending language (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6 §8</a>'s explicit warning about this exact mix-up).</p>
+
+    </section>
+
+    <section class="mod" id="s12-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Need for short-term cash → Repo → Cash borrowed, collateral posted, both legs reverse on the repurchase date</pre></div>
+<p>A repo is the bridge concept between Cash Instruments and Collateral &amp; Margin — it's built entirely out of a cash security, but its <i>purpose</i> is identical to posting collateral against a derivative exposure.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

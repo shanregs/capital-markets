@@ -1,0 +1,1014 @@
+<!doctype html>
+<title>Interest Rate Swap (IRS) — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Interest Rate Swap (IRS) — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-an-irs"><span class="toc-num">01</span>What is an IRS?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-why-does-abc-enter-the-swap"><span class="toc-num">03</span>Why does ABC enter the swap?</a></li>
+      <li><a href="#s4-the-two-legs"><span class="toc-num">04</span>The Two Legs</a></li>
+      <li><a href="#s5-what-is-notional"><span class="toc-num">05</span>What is Notional?</a></li>
+      <li><a href="#s6-first-quarterly-period"><span class="toc-num">06</span>First Quarterly Period</a></li>
+      <li><a href="#s7-floating-corra-leg"><span class="toc-num">07</span>Floating CORRA Leg</a></li>
+      <li><a href="#s8-net-settlement"><span class="toc-num">08</span>Net Settlement</a></li>
+      <li><a href="#s9-now-combine-it-with-the-loan"><span class="toc-num">09</span>Now Combine It With the Loan</a></li>
+      <li><a href="#s10-what-if-corra-rises"><span class="toc-num">10</span>What if CORRA Rises?</a></li>
+      <li><a href="#s11-what-if-corra-falls"><span class="toc-num">11</span>What if CORRA Falls?</a></li>
+      <li><a href="#s12-but-there-is-an-important-trade-off"><span class="toc-num">12</span>But There Is an Important Trade-Off</a></li>
+      <li><a href="#s13-what-happens-to-the-irs-every-day"><span class="toc-num">13</span>What Happens to the IRS Every Day?</a></li>
+      <li><a href="#s14-mtm"><span class="toc-num">14</span>MTM</a></li>
+      <li><a href="#s15-how-is-irs-mtm-calculated"><span class="toc-num">15</span>How is IRS MTM Calculated?</a></li>
+      <li><a href="#s16-what-data-does-the-valuation-engine-need"><span class="toc-num">16</span>What Data Does the Valuation Engine Need?</a></li>
+      <li><a href="#s17-the-irs-trade-lifecycle"><span class="toc-num">17</span>The IRS Trade Lifecycle</a></li>
+      <li><a href="#s18-trade-capture"><span class="toc-num">18</span>Trade Capture</a></li>
+      <li><a href="#s19-confirmation"><span class="toc-num">19</span>Confirmation</a></li>
+      <li><a href="#s20-enrichment"><span class="toc-num">20</span>Enrichment</a></li>
+      <li><a href="#s21-collateral"><span class="toc-num">21</span>Collateral</a></li>
+      <li><a href="#s22-settlement"><span class="toc-num">22</span>Settlement</a></li>
+      <li><a href="#s23-regulatory-reporting"><span class="toc-num">23</span>Regulatory Reporting</a></li>
+      <li><a href="#s24-why-irs-is-more-complicated-than-fx-forward"><span class="toc-num">24</span>Why IRS Is More Complicated Than FX Forward</a></li>
+      <li><a href="#s25-corra-makes-it-even-more-interesting"><span class="toc-num">25</span>CORRA Makes It Even More Interesting</a></li>
+      <li><a href="#s26-the-three-most-important-irs-concepts"><span class="toc-num">26</span>The Three Most Important IRS Concepts</a></li>
+      <li><a href="#s27-irs-vs-fra-vs-cap"><span class="toc-num">27</span>IRS vs FRA vs Cap</a></li>
+      <li><a href="#s28-a-very-important-capital-markets-mental-model"><span class="toc-num">28</span>A Very Important Capital Markets Mental Model</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-an-irs">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is an IRS?</h2>
+<p class="lede">An Interest Rate Swap is an OTC derivative where two parties agree to exchange interest cash flows based on a notional amount.</p>
+<p>The most common structure is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Fixed Interest ↔ Floating Interest</b></p></div>
+<p>The important point is:</p>
+<ul><li>The notional principal is normally <b>NOT</b> exchanged.</li><li>Only the interest cash flows are exchanged/netted.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li>ABC Corporation has a ₹100 crore floating-rate loan.</li><li>Its loan interest is: <b>CORRA + 1.00%</b></li><li>ABC is worried that CORRA might increase.</li><li>So ABC enters an IRS with Bank B.</li></ul>
+<h3>Swap terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Trade Date</td><td>30-Aug-2026</td></tr><tr><td>Effective Date</td><td>01-Sep-2026</td></tr><tr><td>Maturity</td><td>01-Sep-2029</td></tr><tr><td>ABC pays</td><td>Fixed 6.00%</td></tr><tr><td>ABC receives</td><td>Floating CORRA</td></tr><tr><td>Payment frequency</td><td>Quarterly</td></tr></tbody></table></div>
+<p>The IRS is OTC.</p>
+
+    </section>
+
+    <section class="mod" id="s3-why-does-abc-enter-the-swap">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Why does ABC enter the swap?</h2>
+<p class="lede">ABC has:</p>
+<div class="ticket"><pre>Loan
+  |
+  +-- Pay CORRA
+  +-- Pay 1%</pre></div>
+<p>ABC wants to eliminate the uncertainty associated with CORRA.</p>
+<p>So it enters:</p>
+<div class="ticket"><pre>IRS
+  |
+  +-- Pay 6% fixed
+  +-- Receive CORRA</pre></div>
+<p>Combine them:</p>
+<div class="ticket"><pre>LOAN
+Pay CORRA + 1%
+       +
+IRS
+Pay 6%
+Receive CORRA
+       ↓
+CORRA cancels
+       ↓
+Effective cost ≈ 6% + 1%
+       ↓
+≈ 7% fixed</pre></div>
+<p>This is the basic economic purpose of an IRS.</p>
+
+    </section>
+
+    <section class="mod" id="s4-the-two-legs">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Two Legs</h2>
+<p class="lede">Every standard IRS has two legs.</p>
+<p><b>Fixed Leg</b> — ABC pays: <code>6.00%</code></p>
+<p><b>Floating Leg</b> — ABC receives: <code>CORRA</code></p>
+<div class="ticket"><pre>             IRS
+              |
+       +------+------+
+       |             |
+   Fixed Leg     Floating Leg
+       |             |
+    Pay 6%        Receive CORRA</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-what-is-notional">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>What is Notional?</h2>
+<p class="lede">Suppose:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">Notional = ₹100 crore</p></div>
+<p>This does <b>not</b> normally mean ABC gives the bank ₹100 crore. It is a reference amount used to calculate interest.</p>
+<p>For example:</p>
+<div class="ticket"><pre>₹100 crore × 6% = ₹6 crore annual fixed interest</pre></div>
+<p>If payments are quarterly, the actual calculation depends on the accrual fraction.</p>
+
+    </section>
+
+    <section class="mod" id="s6-first-quarterly-period">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>First Quarterly Period</h2>
+<p class="lede">Suppose the first accrual period is:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">01-Sep-2026 → 01-Dec-2026</p></div>
+<p>Assume:</p>
+<div class="table-scroll"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Fixed rate</td><td>6%</td></tr><tr><td>Accrual factor</td><td>90/365</td></tr></tbody></table></div>
+<p><b>Fixed-leg interest:</b></p>
+<div class="ticket"><pre>₹100 crore × 6% × 90/365 ≈ ₹1.479 crore</pre></div>
+<p>So ABC owes approximately <b>₹1.479 crore</b> on the fixed leg.</p>
+
+    </section>
+
+    <section class="mod" id="s7-floating-corra-leg">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Floating CORRA Leg</h2>
+<p class="lede">Now suppose the applicable compounded CORRA rate for the period is: <b>5.20%</b></p>
+<p>Simplified calculation:</p>
+<div class="ticket"><pre>₹100 crore × 5.20% × 90/365 ≈ ₹1.282 crore</pre></div>
+<p>ABC receives approximately <b>₹1.282 crore</b>.</p>
+
+    </section>
+
+    <section class="mod" id="s8-net-settlement">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Net Settlement</h2>
+<p class="lede">Instead of physically exchanging both amounts, the parties commonly net the two payments.</p>
+<div class="table-scroll"><table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody><tr><td>Fixed payment</td><td>₹1.479 crore</td></tr><tr><td>Floating receipt</td><td>₹1.282 crore</td></tr><tr><td><b>Net payment</b></td><td><b>₹0.197 crore</b></td></tr></tbody></table></div>
+<p>Therefore ABC pays approximately <b>₹19.7 lakh</b> for this simplified period.</p>
+
+    </section>
+
+    <section class="mod" id="s9-now-combine-it-with-the-loan">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Now Combine It With the Loan</h2>
+<p class="lede">Remember ABC's loan:</p>
+<div class="ticket"><pre>Loan interest = CORRA + 1%</pre></div>
+<p>Suppose CORRA = 5.2%.</p>
+<p><b>Loan cost:</b></p>
+<div class="ticket"><pre>5.2% + 1% = 6.2%</pre></div>
+<p>ABC also has the swap:</p>
+<div class="ticket"><pre>Pay 6%
+Receive 5.2%</pre></div>
+<p><b>Economic combination:</b></p>
+<div class="ticket"><pre>Loan
+Pay      5.2% + 1%
+
+Swap
+Pay      6%
+Receive  5.2%
+
+--------------------
+5.2% cancels
+Effective ≈ 7%</pre></div>
+<p>So ABC has transformed its floating-rate exposure into approximately <b>7% fixed</b>, subject to the precise loan and swap conventions.</p>
+
+    </section>
+
+    <section class="mod" id="s10-what-if-corra-rises">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>What if CORRA Rises?</h2>
+<p class="lede">Suppose CORRA increases to <b>8%</b>.</p>
+<p><b>Loan:</b></p>
+<div class="ticket"><pre>Pay: 8% + 1% = 9%</pre></div>
+<p><b>IRS:</b></p>
+<div class="ticket"><pre>Pay fixed: 6%
+Receive floating: 8%</pre></div>
+<p><b>Net swap:</b></p>
+<div class="ticket"><pre>Receive 8%
+Pay 6%
+= +2%</pre></div>
+<p><b>Combined:</b></p>
+<div class="ticket"><pre>Loan       -9%
+IRS        +2%
+----------------
+Net        -7%</pre></div>
+<p>ABC is still approximately at <b>7%</b>.</p>
+
+    </section>
+
+    <section class="mod" id="s11-what-if-corra-falls">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>What if CORRA Falls?</h2>
+<p class="lede">Suppose CORRA falls to <b>4%</b>.</p>
+<p><b>Loan:</b></p>
+<div class="ticket"><pre>Pay: 4% + 1% = 5%</pre></div>
+<p><b>IRS:</b></p>
+<div class="ticket"><pre>Pay 6%
+Receive 4%</pre></div>
+<p><b>Net:</b></p>
+<div class="ticket"><pre>5% + 6% - 4% = 7%</pre></div>
+<p>Again: <b>approximately 7%</b>.</p>
+<p>This is why the swap is useful for hedging.</p>
+
+    </section>
+
+    <section class="mod" id="s12-but-there-is-an-important-trade-off">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>But There Is an Important Trade-Off</h2>
+<p class="lede">ABC has exchanged uncertainty for certainty.</p>
+<p><b>Without the swap:</b></p>
+<div class="table-scroll"><table><thead><tr><th>CORRA</th><th>Loan</th></tr></thead><tbody><tr><td>3%</td><td>4%</td></tr><tr><td>8%</td><td>9%</td></tr></tbody></table></div>
+<p><b>With the swap:</b> Approximately <b>7%</b></p>
+<p>So if CORRA falls dramatically, ABC doesn't get the full benefit.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>This is the fundamental trade-off:</b> Hedging reduces uncertainty, but it can also reduce the benefit of favorable market movements.</p></div>
+
+    </section>
+
+    <section class="mod" id="s13-what-happens-to-the-irs-every-day">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>What Happens to the IRS Every Day?</h2>
+<p class="lede">The trade doesn't remain worth zero. Every day the market changes.</p>
+<p>Suppose ABC entered:</p>
+<div class="ticket"><pre>Pay fixed = 6%
+Receive CORRA</pre></div>
+<p>Later, market participants would only enter a new IRS at <b>7%</b>.</p>
+<p>ABC's existing swap is attractive because ABC is paying only <b>6%</b>. Therefore ABC's swap has <b>positive value</b>.</p>
+<p>Conversely, if market swap rates fall to <b>5%</b>, ABC's existing obligation to pay 6% is unfavorable.</p>
+<p>Therefore:</p>
+<div class="ticket"><pre>Market rates ↑
+      ↓
+Pay-fixed IRS becomes more valuable
+
+Market rates ↓
+      ↓
+Pay-fixed IRS becomes less valuable</pre></div>
+
+    </section>
+
+    <section class="mod" id="s14-mtm">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>MTM</h2>
+<p class="lede">This brings us to <b>Mark-to-Market</b>.</p>
+<p>Suppose the valuation system determines:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">IRS Fair Value = <b>+₹4.5 crore</b> (from ABC's perspective)</p></div>
+<p>That means: if the position were valued/closed under the applicable valuation framework, it has approximately ₹4.5 crore of positive economic value to ABC.</p>
+<p>From Bank B's perspective:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">MTM = <b>-₹4.5 crore</b></p></div>
+<p><i>(Ignoring valuation adjustments and bilateral considerations for simplicity.)</i></p>
+
+    </section>
+
+    <section class="mod" id="s15-how-is-irs-mtm-calculated">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>How is IRS MTM Calculated?</h2>
+<p class="lede">This is where things become more interesting. The valuation engine forecasts future cash flows.</p>
+<div class="ticket"><pre>Future Fixed Cash Flows
+          +
+Future Floating Cash Flows
+          |
+          v
+       Net Cash Flows
+          |
+          v
+      Discount to PV
+          |
+          v
+          MTM</pre></div>
+<p>Conceptually:</p>
+<div class="ticket"><pre>PV = Σ Future Cash Flow × Discount Factor</pre></div>
+<p>For an IRS:</p>
+<div class="ticket"><pre>PV(IRS) = PV(Floating Leg) − PV(Fixed Leg)</pre></div>
+<p>The sign depends on whether we are looking from the payer or receiver perspective.</p>
+
+    </section>
+
+    <section class="mod" id="s16-what-data-does-the-valuation-engine-need">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>What Data Does the Valuation Engine Need?</h2>
+<p class="lede">For example:</p>
+<ul><li>Trade ID</li><li>Notional</li><li>Fixed Rate</li><li>Floating Index</li><li>Trade Date</li><li>Effective Date</li><li>Maturity Date</li><li>Payment Frequency</li><li>Reset Frequency</li><li>Day Count Convention</li><li>Business Day Convention</li><li>Holiday Calendar</li><li>Payment Dates</li><li>Reset Dates</li><li>Market Curve</li><li>Discount Curve</li><li>CORRA Forward Curve</li><li>Discount Factors</li></ul>
+<p>This is where trade data + market data come together.</p>
+
+    </section>
+
+    <section class="mod" id="s17-the-irs-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>The IRS Trade Lifecycle</h2>
+<p class="lede">Now connect this with the FX Forward lifecycle mentioned earlier.</p>
+<div class="ticket"><pre>Trade Capture
+      ↓
+Confirmation
+      ↓
+Enrichment
+      ↓
+Static Data
+      ↓
+Market Data
+      ↓
+Valuation
+      ↓
+MTM
+      ↓
+Risk / Exposure
+      ↓
+Collateral
+      ↓
+Interest Calculation
+      ↓
+Settlement
+      ↓
+Regulatory Reporting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s18-trade-capture">
+      <p class="sec-eyebrow"><span class="n">18</span></p>
+      <h2>Trade Capture</h2>
+<p class="lede">Example:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>IRS-20260830-00001</td></tr><tr><td>Product</td><td>IRS</td></tr><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Fixed Rate</td><td>6%</td></tr><tr><td>Floating Index</td><td>CORRA</td></tr><tr><td>Direction</td><td>Pay Fixed</td></tr><tr><td>Trade Date</td><td>30-Aug-2026</td></tr><tr><td>Effective Date</td><td>01-Sep-2026</td></tr><tr><td>Maturity Date</td><td>01-Sep-2029</td></tr><tr><td>Frequency</td><td>Quarterly</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s19-confirmation">
+      <p class="sec-eyebrow"><span class="n">19</span></p>
+      <h2>Confirmation</h2>
+<p class="lede">The confirmation establishes the contractual terms.</p>
+<p>For example:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Corporation</td></tr><tr><td>Party B</td><td>Bank B</td></tr><tr><td>Party A</td><td>Pay Fixed 6%</td></tr><tr><td>Party B</td><td>Pay Floating CORRA</td></tr><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Maturity</td><td>01-Sep-2029</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s20-enrichment">
+      <p class="sec-eyebrow"><span class="n">20</span></p>
+      <h2>Enrichment</h2>
+<p class="lede">Additional data can be added:</p>
+<ul><li>ABC LEI</li><li>Bank LEI</li><li>UTI</li><li>UPI</li><li>Legal Entity</li><li>Jurisdiction</li><li>Trading Desk</li><li>Book</li><li>Counterparty Classification</li><li>Collateral Agreement</li><li>Clearing Status</li><li>Reporting Obligation</li></ul>
+<p>This is where a regulatory data platform becomes important.</p>
+
+    </section>
+
+    <section class="mod" id="s21-collateral">
+      <p class="sec-eyebrow"><span class="n">21</span></p>
+      <h2>Collateral</h2>
+<p class="lede">Suppose the IRS has:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">MTM = +₹4.5 crore</p></div>
+<p>The CSA between the parties determines how much collateral is required.</p>
+<p>Conceptually:</p>
+<div class="ticket"><pre>MTM
+ ↓
+Exposure
+ ↓
+CSA terms
+ ↓
+Margin calculation
+ ↓
+Collateral call</pre></div>
+<p>Collateral may include:</p>
+<ul><li>Cash</li><li>Government securities</li><li>Other eligible assets</li></ul>
+<p>...depending on the agreement.</p>
+
+    </section>
+
+    <section class="mod" id="s22-settlement">
+      <p class="sec-eyebrow"><span class="n">22</span></p>
+      <h2>Settlement</h2>
+<p class="lede">Suppose for one quarter:</p>
+<div class="table-scroll"><table><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody><tr><td>Fixed amount</td><td>₹1.479 crore</td></tr><tr><td>Floating amount</td><td>₹1.282 crore</td></tr><tr><td><b>Net</b></td><td><b>₹19.7 lakh</b></td></tr></tbody></table></div>
+<p>The settlement system receives an instruction:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>IRS-20260830-00001</td></tr><tr><td>Payment Date</td><td>01-Dec-2026</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Net Amount</td><td>₹19.7 lakh</td></tr><tr><td>Direction</td><td>ABC → Bank B</td></tr><tr><td>Status</td><td>PENDING</td></tr></tbody></table></div>
+<p>After payment:</p>
+<div class="takeaway"><p style="margin:0 0 8px;">Settlement Status = <b>SETTLED</b></p></div>
+
+    </section>
+
+    <section class="mod" id="s23-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">23</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">The IRS may need to be reported under the applicable jurisdiction/regime.</p>
+<p>A conceptual regulatory record could contain:</p>
+<ul><li>UTI</li><li>UPI</li><li>Reporting Counterparty LEI</li><li>Other Counterparty LEI</li><li>Asset Class</li><li>Product Type</li><li>Notional</li><li>Notional Currency</li><li>Fixed Rate</li><li>Floating Rate Index</li><li>Trade Date</li><li>Effective Date</li><li>Maturity Date</li><li>Payment Frequency</li><li>Reset Frequency</li><li>Clearing Status</li><li>Collateralisation</li><li>Valuation Amount</li><li>Valuation Currency</li><li>Action Type</li><li>Event Type</li><li>Reporting Timestamp</li></ul>
+<p>The exact fields and values depend on the relevant reporting regime.</p>
+
+    </section>
+
+    <section class="mod" id="s24-why-irs-is-more-complicated-than-fx-forward">
+      <p class="sec-eyebrow"><span class="n">24</span></p>
+      <h2>Why IRS Is More Complicated Than FX Forward</h2>
+<p class="lede">Compare them.</p>
+<p><b>FX Forward</b> — One future exchange</p>
+<div class="ticket"><pre>USD ↔ INR</pre></div>
+<p><b>IRS</b> — Multiple future periods</p>
+<div class="ticket"><pre>Period 1: Fixed ↔ Floating
+Period 2: Fixed ↔ Floating
+Period 3: Fixed ↔ Floating
+...
+Period N: Fixed ↔ Floating</pre></div>
+<p>Therefore IRS introduces:</p>
+<ul><li>Reset dates</li><li>Payment dates</li><li>Accrual periods</li><li>Day-count conventions</li><li>Business-day adjustments</li><li>Reference-rate observations</li><li>Compounding</li><li>Forward curves</li><li>Discount curves</li><li>Multiple cash flows</li></ul>
+
+    </section>
+
+    <section class="mod" id="s25-corra-makes-it-even-more-interesting">
+      <p class="sec-eyebrow"><span class="n">25</span></p>
+      <h2>CORRA Makes It Even More Interesting</h2>
+<p class="lede">For a CORRA-based IRS, the floating rate may be determined using daily CORRA observations over an accrual period.</p>
+<p>Conceptually:</p>
+<div class="ticket"><pre>Day 1 → CORRA
+Day 2 → CORRA
+Day 3 → CORRA
+...
+Day 90 → CORRA
+          |
+          v
+   Compounded rate
+          |
+          v
+Floating-leg interest</pre></div>
+<p>So you should not simply average CORRA percentages unless the specific contract says so.</p>
+<p>A compounded-in-arrears structure typically compounds the daily rates using the applicable methodology.</p>
+
+    </section>
+
+    <section class="mod" id="s26-the-three-most-important-irs-concepts">
+      <p class="sec-eyebrow"><span class="n">26</span></p>
+      <h2>The Three Most Important IRS Concepts</h2>
+<p class="lede">If you remember only three things:</p>
+<h3>1. Notional</h3>
+<p>Used to calculate interest. ₹100 crore usually isn't exchanged.</p>
+<h3>2. Two legs</h3>
+<div class="ticket"><pre>Fixed Leg
+   ↕
+Floating Leg</pre></div>
+<h3>3. Cash flows</h3>
+<p>The valuation engine forecasts and discounts the future cash flows.</p>
+<div class="ticket"><pre>Future Cash Flows
+       ↓
+Discounting
+       ↓
+PV / MTM</pre></div>
+
+    </section>
+
+    <section class="mod" id="s27-irs-vs-fra-vs-cap">
+      <p class="sec-eyebrow"><span class="n">27</span></p>
+      <h2>IRS vs FRA vs Cap</h2>
+<p class="lede">This distinction is extremely important.</p>
+<div class="table-scroll"><table><thead><tr><th>Product</th><th>What it does</th></tr></thead><tbody><tr><td>FRA</td><td>Locks a future interest rate for one period</td></tr><tr><td>IRS</td><td>Exchanges fixed and floating rates over multiple periods</td></tr><tr><td>Cap</td><td>Protects against rates rising above a level</td></tr><tr><td>Floor</td><td>Protects against rates falling below a level</td></tr><tr><td>Collar</td><td>Combines cap and floor</td></tr><tr><td>Swaption</td><td>Option to enter an IRS</td></tr></tbody></table></div>
+<p>Think:</p>
+<div class="ticket"><pre>FRA      → One future rate period
+IRS      → Many future rate periods
+CAP      → Maximum rate protection
+SWAPTION → Option to enter IRS</pre></div>
+
+    </section>
+
+    <section class="mod" id="s28-a-very-important-capital-markets-mental-model">
+      <p class="sec-eyebrow"><span class="n">28</span></p>
+      <h2>A Very Important Capital Markets Mental Model</h2>
+<p class="lede">You can now start thinking about derivatives in terms of risk transformation.</p>
+<p><b>Forward</b></p>
+<div class="ticket"><pre>Uncertain future price → Forward → Locked price</pre></div>
+<p><b>Option</b></p>
+<div class="ticket"><pre>Uncertain future price → Option → Protection + flexibility</pre></div>
+<p><b>IRS</b></p>
+<div class="ticket"><pre>Floating interest risk → IRS → Fixed interest exposure</pre></div>
+<p><b>FX Forward</b></p>
+<div class="ticket"><pre>Future FX uncertainty → FX Forward → Locked FX rate</pre></div>
+<p><b>CDS</b></p>
+<div class="ticket"><pre>Credit/default risk → CDS → Credit protection</pre></div>
+<p>This is one of the most useful ways to understand the entire derivatives universe.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

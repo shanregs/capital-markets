@@ -368,6 +368,18 @@
   .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
   .table-scroll table { min-width: 720px; margin: 0; }
 
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
   /* ---------- ticket / diagram cards ---------- */
 
   .ticket {
@@ -648,15 +660,15 @@ Simplified CVA ≈ Net Exposure x Probability of Default x Loss
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Asset Class / Product</th><th>Counterparty Risk Sits With...</th><th>Why</th></tr></thead>
+        <thead><tr><th>Cash / Derivative</th><th>Asset Class / Product</th><th>Counterparty Risk Sits With...</th><th>Why</th></tr></thead>
         <tbody>
-          <tr><td>Cash Equity / Bonds (mostly)</td><td>CCP (NSCC, CDCC) for equities; bilateral for most bonds</td><td><a href="./module-04-equity.html">Module 4</a> §7, <a href="./module-05-fixed-income.html">Module 5</a> §7</td></tr>
-          <tr><td>FX Spot/Forward/Swap</td><td>Bilateral, mitigated by CLS's PvP (settlement risk, not counterparty risk)</td><td><a href="./module-06-fx.html">Module 6</a> §5, §7</td></tr>
-          <tr><td>Standardized IRS</td><td>CCP (LCH SwapClear) — Sections 03-04's netting/CVA math still applies, just with the CCP as counterparty</td><td><a href="./module-08-rates.html">Module 8</a> §7</td></tr>
-          <tr><td>FRA / Cap-Floor / Swaption / IR Forward Debt</td><td>Bilateral (mostly)</td><td><a href="./module-08-rates.html">Module 8</a> §7</td></tr>
-          <tr><td>CDS Index / liquid Single-Name CDS</td><td>CCP (ICE Clear Credit, LCH CDSClear)</td><td><a href="./module-09-credit.html">Module 9</a> §7</td></tr>
-          <tr><td>Bespoke Single-Name CDS</td><td>Bilateral — Section 04's CVA/wrong-way-risk math applies directly</td><td><a href="./module-09-credit.html">Module 9</a> §7</td></tr>
-          <tr><td>Futures / Listed Options</td><td><b>Always</b> CCP, from execution</td><td><a href="./module-15-listed-derivatives.html">Module 15</a> §7</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Cash Equity / Bonds (mostly)</td><td>CCP (NSCC, CDCC) for equities; bilateral for most bonds</td><td><a href="./module-04-equity.html">Module 4</a> §7, <a href="./module-05-fixed-income.html">Module 5</a> §7</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span> <span class="side-tag buy">DERIVATIVE</span></td><td>FX Spot/Forward/Swap</td><td>Bilateral, mitigated by CLS's PvP (settlement risk, not counterparty risk)</td><td><a href="./module-06-fx.html">Module 6</a> §5, §7</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Standardized IRS</td><td>CCP (LCH SwapClear) — Sections 03-04's netting/CVA math still applies, just with the CCP as counterparty</td><td><a href="./module-08-rates.html">Module 8</a> §7</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>FRA / Cap-Floor / Swaption / IR Forward Debt</td><td>Bilateral (mostly)</td><td><a href="./module-08-rates.html">Module 8</a> §7</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>CDS Index / liquid Single-Name CDS</td><td>CCP (ICE Clear Credit, LCH CDSClear)</td><td><a href="./module-09-credit.html">Module 9</a> §7</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Bespoke Single-Name CDS</td><td>Bilateral — Section 04's CVA/wrong-way-risk math applies directly</td><td><a href="./module-09-credit.html">Module 9</a> §7</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Futures / Listed Options</td><td><b>Always</b> CCP, from execution</td><td><a href="./module-15-listed-derivatives.html">Module 15</a> §7</td></tr>
         </tbody>
       </table>
       </div>

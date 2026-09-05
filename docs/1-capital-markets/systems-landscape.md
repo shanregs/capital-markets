@@ -96,16 +96,16 @@ WHO OWNS THE CLOCK, AT EACH STAGE
                                                           without completion
 ```
 
-| Market | Product | Settlement cycle (as of 2026) |
-|---|---|---|
-| Canada | Equities | **T+1** (aligned with the US, since 27 May 2024) |
-| Canada | Government / corporate bonds | **T+1** or **T+2**, depending on the specific bond |
-| United States | Equities | **T+1** (since 28 May 2024) |
-| United States | US Treasuries | **T+1** |
-| United Kingdom | Gilts (government bonds) | **T+1** (gilts have long settled faster than equities) |
-| United Kingdom | Equities | **T+2** (a move to T+1 is targeted for **October 2027**) |
-| European Union | Equities & bonds | **T+2** (a coordinated EU/UK/Switzerland move to **T+1 is targeted for October 2027**) |
-| OTC derivatives (any market) | Interest Rate Swaps, CDS, etc. | No notional settlement at all — only margin/cash flows ([Module 1](./module-01-fundamentals.md) §8, [Module 3](./module-03-trade-lifecycle.md) §11) |
+| Cash / Derivative | Market | Product | Settlement cycle (as of 2026) |
+|---|---|---|---|
+| CASH | Canada | Equities | **T+1** (aligned with the US, since 27 May 2024) |
+| CASH | Canada | Government / corporate bonds | **T+1** or **T+2**, depending on the specific bond |
+| CASH | United States | Equities | **T+1** (since 28 May 2024) |
+| CASH | United States | US Treasuries | **T+1** |
+| CASH | United Kingdom | Gilts (government bonds) | **T+1** (gilts have long settled faster than equities) |
+| CASH | United Kingdom | Equities | **T+2** (a move to T+1 is targeted for **October 2027**) |
+| CASH | European Union | Equities & bonds | **T+2** (a coordinated EU/UK/Switzerland move to **T+1 is targeted for October 2027**) |
+| DERIVATIVE | OTC derivatives (any market) | Interest Rate Swaps, CDS, etc. | No notional settlement at all — only margin/cash flows ([Module 1](./module-01-fundamentals.md) §8, [Module 3](./module-03-trade-lifecycle.md) §11) |
 
 **Takeaway:** "T+2" is not a global default with occasional exceptions — as of 2026 it's already the *minority* case for equities (Canada and the US both moved to T+1 in 2024), and the UK/EU are actively converging toward T+1 for 2027. A reporting system hard-coding "settlement = trade date + 2" will already be wrong for a large share of real trades.
 

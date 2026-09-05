@@ -1,0 +1,760 @@
+<!doctype html>
+<title>Credit Default Swap (CDS) — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Credit Default Swap (CDS) — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-is-a-cds"><span class="toc-num">01</span>What is a CDS?</a></li>
+      <li><a href="#s2-simple-example"><span class="toc-num">02</span>Simple Example</a></li>
+      <li><a href="#s3-why-there-s-both-a-coupon-and-an-upfront-payment"><span class="toc-num">03</span>Why There's Both a Coupon AND an Upfront Payment</a></li>
+      <li><a href="#s4-the-two-legs-of-a-cds"><span class="toc-num">04</span>The Two "Legs" of a CDS</a></li>
+      <li><a href="#s5-quarterly-running-coupon-payment"><span class="toc-num">05</span>Quarterly Running Coupon Payment</a></li>
+      <li><a href="#s6-the-trade-lifecycle"><span class="toc-num">06</span>The Trade Lifecycle</a></li>
+      <li><a href="#s7-trade-capture"><span class="toc-num">07</span>Trade Capture</a></li>
+      <li><a href="#s8-enrichment-a-cds-specific-twist-on-lei"><span class="toc-num">08</span>Enrichment — A CDS-Specific Twist on LEI</a></li>
+      <li><a href="#s9-daily-valuation-mark-to-market"><span class="toc-num">09</span>Daily Valuation — Mark-to-Market</a></li>
+      <li><a href="#s10-collateral"><span class="toc-num">10</span>Collateral</a></li>
+      <li><a href="#s11-credit-event-northstar-resources-inc-defaults"><span class="toc-num">11</span>Credit Event — Northstar Resources Inc. Defaults</a></li>
+      <li><a href="#s12-who-decides-a-credit-event-occurred"><span class="toc-num">12</span>Who Decides a Credit Event Occurred?</a></li>
+      <li><a href="#s13-regulatory-reporting"><span class="toc-num">13</span>Regulatory Reporting</a></li>
+      <li><a href="#s14-identifiers-recap"><span class="toc-num">14</span>Identifiers Recap</a></li>
+      <li><a href="#s15-cash-bond-vs-cds-side-by-side"><span class="toc-num">15</span>Cash Bond vs CDS — Side by Side</a></li>
+      <li><a href="#s16-the-three-most-important-cds-concepts"><span class="toc-num">16</span>The Three Most Important CDS Concepts</a></li>
+      <li><a href="#s17-mental-model-recap"><span class="toc-num">17</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-is-a-cds">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What is a CDS?</h2>
+<p class="lede">A Credit Default Swap is an OTC derivative that behaves like <b>insurance against a company defaulting</b>. One party (the protection buyer) pays a periodic premium; the other (the protection seller) pays out a large amount, but only if a defined Credit Event actually happens.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>CDS ↔ Protection Buyer pays premium ↔ Protection Seller pays out on default</b></p></div>
+<p>The important point is:</p>
+<ul><li>Unlike an IRS or FX Forward, a CDS's cash flows are <b>contingent</b> — the big payout may never happen at all.</li><li>A CDS doesn't reference the Reference Entity's stock — it references its <b>default risk</b>.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-simple-example">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Simple Example</h2>
+<p class="lede">Suppose:</p>
+<ul><li><b>Bank Of Toronto</b> holds credit exposure to <b>Northstar Resources Inc.</b> (a fictional corporate) and wants to hedge it.</li><li>It buys protection from <b>Goldman Sachs</b>.</li></ul>
+<h3>Trade terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Product</td><td>Single-Name CDS</td></tr><tr><td>Reference Entity</td><td>Northstar Resources Inc.</td></tr><tr><td>Reference Obligation</td><td>Northstar Resources Inc. 6% Bond 2031</td></tr><tr><td>Notional</td><td>USD 10,000,000</td></tr><tr><td>Term</td><td>5 years</td></tr><tr><td>Standardized Running Coupon</td><td>100bps (1.00%), paid quarterly</td></tr><tr><td>Market-Quoted Credit Spread (today)</td><td>250bps (2.50%)</td></tr><tr><td>Protection Buyer</td><td>Bank Of Toronto</td></tr><tr><td>Protection Seller</td><td>Goldman Sachs</td></tr><tr><td>Trade Date</td><td>17-Aug-2026</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s3-why-there-s-both-a-coupon-and-an-upfront-payment">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Why There's Both a Coupon AND an Upfront Payment</h2>
+<p class="lede">Since 2009's ISDA "Big Bang" Protocol, CDS Running Coupons are standardized to fixed levels (100bps or 500bps) rather than freely quoted, so the market instead reconciles the gap between the <i>actual</i> market spread and the standardized coupon with a one-time <b>Upfront Payment</b>:</p>
+<div class="ticket"><pre>Approx. Upfront = (Market Spread − Running Coupon) × Risky Duration × Notional
+                = (2.50% − 1.00%) × 4.5 (illustrative Risky Duration) × 10,000,000
+                ≈ USD 675,000</pre></div>
+<p>Because the market spread (250bps) is <b>higher</b> than the standardized coupon (100bps), Bank Of Toronto (the protection buyer) pays this <b>USD 675,000 upfront</b> to Goldman Sachs, on top of the ongoing quarterly coupon.</p>
+
+    </section>
+
+    <section class="mod" id="s4-the-two-legs-of-a-cds">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>The Two "Legs" of a CDS</h2>
+<div class="ticket"><pre>                    CDS
+                     |
+            +--------+--------+
+            |                 |
+      Premium Leg       Protection Leg
+            |                 |
+   Buyer pays Running    Seller pays out
+   Coupon quarterly,     ONLY if a Credit
+   + Upfront today       Event occurs</pre></div>
+
+    </section>
+
+    <section class="mod" id="s5-quarterly-running-coupon-payment">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>Quarterly Running Coupon Payment</h2>
+<div class="ticket"><pre>Quarterly Coupon = Notional × Running Coupon × (days / 360)
+                  = 10,000,000 × 1.00% × (90 / 360)
+                  = USD 25,000</pre></div>
+<p>Bank Of Toronto pays Goldman Sachs <b>USD 25,000 every quarter</b>, for as long as no Credit Event occurs and the contract hasn't matured.</p>
+
+    </section>
+
+    <section class="mod" id="s6-the-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>The Trade Lifecycle</h2>
+<div class="ticket"><pre>Trade Capture
+  ↓
+Confirmation (via MarkitWire / ICE Link)
+  ↓
+Enrichment (LEI — including Reference Entity LEI, UTI, UPI)
+  ↓
+Upfront Payment Settlement
+  ↓
+Quarterly Coupon Payments
+  ↓
+Daily Valuation (credit spread curve)
+  ↓
+Collateral (CSA-driven IM/VM)
+  ↓
+[Either: Maturity, unchanged]
+[Or: Credit Event → Auction → Payout]
+  ↓
+Regulatory Reporting</pre></div>
+
+    </section>
+
+    <section class="mod" id="s7-trade-capture">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Trade Capture</h2>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>CDS-20260817-00033</td></tr><tr><td>Product</td><td>Single-Name CDS</td></tr><tr><td>Reference Entity</td><td>Northstar Resources Inc.</td></tr><tr><td>Reference Obligation</td><td>Northstar Resources Inc. 6% Bond 2031</td></tr><tr><td>Notional</td><td>USD 10,000,000</td></tr><tr><td>Running Coupon</td><td>100bps</td></tr><tr><td>Market Spread at Execution</td><td>250bps</td></tr><tr><td>Upfront</td><td>USD 675,000 (paid by Bank Of Toronto)</td></tr><tr><td>Direction</td><td>Bank Of Toronto — Protection Buyer</td></tr><tr><td>Maturity</td><td>20-Jun-2031 (standardized IMM date, illustrative)</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s8-enrichment-a-cds-specific-twist-on-lei">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Enrichment — A CDS-Specific Twist on LEI</h2>
+<p class="lede">Unlike every prior product in this series, a CDS carries <b>two separate kinds of LEI</b>:</p>
+<div class="ticket"><pre>Counterparty LEIs        : identify Bank Of Toronto and Goldman Sachs (WHO is trading)
+Reference Entity LEI      : identifies Northstar Resources Inc. (WHAT is being referenced)</pre></div>
+<p>Northstar Resources Inc. is <b>not a counterparty at all</b> — it never agrees to anything, never signs anything, and may not even know the trade exists. It's simply the subject of the contract (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9 §6</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s9-daily-valuation-mark-to-market">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Daily Valuation — Mark-to-Market</h2>
+<p class="lede">Suppose one month later, Northstar Resources Inc.'s credit spread widens to <b>320bps</b> (the market now sees Northstar as riskier).</p>
+<div class="ticket"><pre>PV(CDS) ≈ (New Spread − Contract Spread) × Risky Duration × Notional
+         = (3.20% − 2.50%) × 4.4 (illustrative, duration shortens slightly) × 10,000,000
+        ≈ USD 308,000</pre></div>
+<p>Since Bank Of Toronto is the protection <b>buyer</b>, a wider spread (Northstar looking riskier) makes its position <b>more valuable</b> — its protection is now worth more than what it's paying for it:</p>
+<div class="ticket"><pre>Credit spread widens (Northstar riskier)
+        ↓
+Protection Buyer's CDS becomes MORE valuable
+        ↓
+MTM to Bank Of Toronto: +USD 308,000 (approx.)</pre></div>
+<p><a href="../docs/1-capital-markets/module-10-valuation.html">Module 10 §2</a> classifies this as <b>Model-Based</b> valuation: Credit spread curve × Risky Duration × Notional.</p>
+
+    </section>
+
+    <section class="mod" id="s10-collateral">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Collateral</h2>
+<p class="lede">If this CDS sits under a CSA and is above UMR thresholds:</p>
+<div class="ticket"><pre>MTM (+USD 308,000 to Bank Of Toronto)
+        ↓
+   Exposure
+        ↓
+   CSA + SIMM
+        ↓
+Goldman Sachs posts Variation Margin ≈ USD 308,000</pre></div>
+
+    </section>
+
+    <section class="mod" id="s11-credit-event-northstar-resources-inc-defaults">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Credit Event — Northstar Resources Inc. Defaults</h2>
+<p class="lede">Eighteen months later, suppose Northstar Resources Inc. <b>misses a bond coupon payment</b> — a defined Credit Event under the ISDA Master Agreement.</p>
+<div class="ticket"><pre>Trigger: Northstar Resources Inc. misses a bond coupon payment
+        ↓
+ISDA Determinations Committee rules a Credit Event has occurred
+        ↓
+Auction (or physical settlement) determines the Recovery Rate
+        ↓
+Payout = Notional × (100% − Recovery Rate)</pre></div>
+<p>Suppose the auction determines a <b>Recovery Rate of 40%</b>:</p>
+<div class="ticket"><pre>Payout = 10,000,000 × (100% − 40%)
+       = 10,000,000 × 60%
+       = USD 6,000,000</pre></div>
+<p>Goldman Sachs (the protection seller) pays Bank Of Toronto <b>USD 6,000,000</b>. In exchange, Bank Of Toronto may need to deliver the Reference Obligation (or a cash-settlement equivalent based on the auction price) — the mechanic depends on whether the contract is physically or cash-settled.</p>
+<div class="ticket"><pre>Bank Of Toronto (protection buyer)
+        received a large payout on a bond it may never
+        have even held — this is the entire economic
+        purpose of buying credit protection</pre></div>
+
+    </section>
+
+    <section class="mod" id="s12-who-decides-a-credit-event-occurred">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>Who Decides a Credit Event Occurred?</h2>
+<p class="lede">Not a government regulator — the <b>ISDA Determinations Committee</b>, an industry self-governance body, rules on whether a Credit Event has genuinely occurred. This is the single most consequential decision in a CDS's entire lifecycle, and doesn't fit the usual "acronym + jurisdiction" regulatory pattern every other product in this series follows (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9 §8</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s13-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">A conceptual EMIR/Dodd-Frank record would contain:</p>
+<ul><li>UTI</li><li>UPI ("5Y USD Single-Name CDS, Northstar Resources Inc.")</li><li>Reporting Counterparty LEI / Other Counterparty LEI</li><li><b>Reference Entity LEI</b> (Northstar Resources Inc. — a field unique to Credit products)</li><li>Notional: USD 10,000,000</li><li>Running Coupon: 100bps</li><li>Upfront Payment: USD 675,000</li><li>Valuation Amount (Section 9's MTM)</li><li>Action Type: <b>Credit Event</b> (once triggered, Section 11)</li></ul>
+<p>Note the US jurisdictional split: broad-based CDS Indices are regulated by the <b>CFTC</b> as "swaps," while single-name CDS like this one are "security-based swaps," regulated instead by the <b>SEC</b> (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9 §8</a>) — the first genuine US regulator fork in this curriculum.</p>
+
+    </section>
+
+    <section class="mod" id="s14-identifiers-recap">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>Identifiers Recap</h2>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Applies to CDS?</th></tr></thead><tbody><tr><td>ISIN (of the CDS itself)</td><td><b>No</b></td></tr><tr><td>ISIN (of the Reference Obligation)</td><td><b>Yes</b> — the Northstar Resources Inc. 6% Bond 2031 has its own real ISIN</td></tr><tr><td><b>UPI</b></td><td><b>Yes</b> — "5Y USD Single-Name CDS, Northstar Resources Inc."</td></tr><tr><td><b>UTI</b></td><td><b>Yes</b> — fresh per trade</td></tr><tr><td>LEI (Counterparty)</td><td>Yes — Bank Of Toronto, Goldman Sachs</td></tr><tr><td><b>LEI (Reference Entity)</b></td><td>Yes — Northstar Resources Inc., a genuinely new LEI role</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s15-cash-bond-vs-cds-side-by-side">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>Cash Bond vs CDS — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Aspect</th><th>Northstar Bond (cash)</th><th>CDS on Northstar (derivative)</th></tr></thead><tbody><tr><td><span class="side-tag sell">CASH</span></td><td>What you own</td><td>A real claim on Northstar's cash flows</td><td>Nothing — just protection against its default</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Downside</td><td>Lose principal if Northstar defaults</td><td>Lose only the premiums paid, if no default</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Upside on default</td><td>You lose money</td><td>You receive a large payout</td></tr><tr><td><span class="side-tag sell">CASH</span></td><td>Identifier</td><td>ISIN</td><td>UPI + UTI + Reference Entity LEI</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s16-the-three-most-important-cds-concepts">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>The Three Most Important CDS Concepts</h2>
+<h3>1. It's contingent, not certain</h3>
+<p>Unlike an IRS or FX Forward, the big cash flow (the payout) may <b>never</b> happen.</p>
+<h3>2. Two legs, asymmetric in nature</h3>
+<div class="ticket"><pre>Premium Leg   : small, certain, periodic
+Protection Leg: large, uncertain, contingent</pre></div>
+<h3>3. Widening spreads help the protection buyer</h3>
+<div class="ticket"><pre>Reference Entity looks riskier → CDS becomes more valuable to the protection BUYER</pre></div>
+
+    </section>
+
+    <section class="mod" id="s17-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Credit/default risk → CDS → Credit protection, insurance-like risk transfer</pre></div>
+<p>Just as an IRS transforms floating interest rate risk into fixed, and an FX Forward transforms future FX uncertainty into a locked rate, a CDS transforms default risk into a fixed, budgetable insurance premium.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

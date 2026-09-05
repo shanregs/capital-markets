@@ -368,6 +368,18 @@
   .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
   .table-scroll table { min-width: 720px; margin: 0; }
 
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
   /* ---------- ticket / diagram cards ---------- */
 
   .ticket {
@@ -794,12 +806,12 @@ REPORTING — trade reported to the relevant Trade Repository/
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
+        <thead><tr><th>Cash / SFT</th><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead>
         <tbody>
-          <tr><td>Government Bond</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
-          <tr><td>Corporate Bond</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
-          <tr><td>Municipal Bond</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
-          <tr><td>Repo</td><td>OTC</td><td><b>Either</b> — bilateral by default, increasingly routed through CDCC/FICC for the largest, most standardized activity</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Government Bond</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Corporate Bond</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Municipal Bond</td><td>OTC</td><td>Bilateral (the norm)</td></tr>
+          <tr><td><span class="side-tag infra">SFT</span></td><td>Repo</td><td>OTC</td><td><b>Either</b> — bilateral by default, increasingly routed through CDCC/FICC for the largest, most standardized activity</td></tr>
         </tbody>
       </table>
       </div>

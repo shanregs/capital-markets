@@ -202,14 +202,14 @@ WHY CAD 200,000 OF EXPOSURE REMAINS UNCOLLATERALIZED
 
 **Definition:** whether a position even generates an IM/VM requirement at all depends entirely on how it clears ([Module 11](./module-11-risk-exposure.md) §5's bilateral-vs-CCP split), reused here for the margin question specifically.
 
-| Product Category | IM Required? | VM Required? | Basis |
-|---|---|---|---|
-| Cash Equity / Bonds (settled DvP) | No | No | Settles outright via DvP ([Module 1](./module-01-fundamentals.md) §7) — no ongoing position risk to margin against |
-| Exchange-traded Futures / Listed Options | Yes (CCP's own model) | Yes, **daily** | CCP's own initial and variation margin methodology ([Module 15](./module-15-listed-derivatives.md) §5) |
-| Centrally-cleared standardized IRS / CDS Index | Yes (CCP's own model) | Yes, **daily** | Same CCP-driven mechanic as Futures ([Module 8](./module-08-rates.md) §5, [Module 9](./module-09-credit.md) §7) |
-| Bilateral OTC derivatives **above** UMR thresholds ([Module 11](./module-11-risk-exposure.md) §8) | Yes, via **SIMM** (Section 02, [Module 11](./module-11-risk-exposure.md) §7) | Yes | Bilaterally agreed CSA ([Module 2](./module-02-hierarchy.md) §7), reused throughout this module |
-| Bilateral OTC derivatives **below** UMR thresholds | No | Yes (VM-only CSA is common even below the IM threshold) | CSA terms, but IM specifically not mandated |
-| Repo / Securities Lending | N/A (uses **haircuts on the collateral itself**, Section 03's mechanic, rather than separate IM/VM) | N/A | The security/cash exchanged IS the collateral ([Module 5](./module-05-fixed-income.md) §3) |
+| Cash / Derivative / SFT | Product Category | IM Required? | VM Required? | Basis |
+|---|---|---|---|---|
+| CASH | Cash Equity / Bonds (settled DvP) | No | No | Settles outright via DvP ([Module 1](./module-01-fundamentals.md) §7) — no ongoing position risk to margin against |
+| DERIVATIVE | Exchange-traded Futures / Listed Options | Yes (CCP's own model) | Yes, **daily** | CCP's own initial and variation margin methodology ([Module 15](./module-15-listed-derivatives.md) §5) |
+| DERIVATIVE | Centrally-cleared standardized IRS / CDS Index | Yes (CCP's own model) | Yes, **daily** | Same CCP-driven mechanic as Futures ([Module 8](./module-08-rates.md) §5, [Module 9](./module-09-credit.md) §7) |
+| DERIVATIVE | Bilateral OTC derivatives **above** UMR thresholds ([Module 11](./module-11-risk-exposure.md) §8) | Yes, via **SIMM** (Section 02, [Module 11](./module-11-risk-exposure.md) §7) | Yes | Bilaterally agreed CSA ([Module 2](./module-02-hierarchy.md) §7), reused throughout this module |
+| DERIVATIVE | Bilateral OTC derivatives **below** UMR thresholds | No | Yes (VM-only CSA is common even below the IM threshold) | CSA terms, but IM specifically not mandated |
+| SFT | Repo / Securities Lending | N/A (uses **haircuts on the collateral itself**, Section 03's mechanic, rather than separate IM/VM) | N/A | The security/cash exchanged IS the collateral ([Module 5](./module-05-fixed-income.md) §3) |
 
 **Takeaway:** notice repo doesn't fit the IM/VM framework at all — [Module 5](./module-05-fixed-income.md) §3 already established repo as a secured loan where the security itself IS the collateral, so Section 3's haircut concept applies directly to the loan structure rather than as a separate margin process layered on top of a derivative.
 

@@ -156,15 +156,15 @@ CVA — ILLUSTRATIVE CALCULATION
 
 **Definition:** Section 7 in every asset-class module (Modules 4–9, 15) already established which products are bilateral and which are centrally cleared. That same split determines WHO bears the counterparty risk this module has been calculating.
 
-| Asset Class / Product | Counterparty Risk Sits With... | Why |
-|---|---|---|
-| Cash Equity / Bonds (mostly) | CCP (NSCC, CDCC) for equities; bilateral for most bonds | [Module 4](./module-04-equity.md) §7, [Module 5](./module-05-fixed-income.md) §7 |
-| FX Spot/Forward/Swap | Bilateral, mitigated by CLS's PvP (settlement risk, not counterparty risk — [Module 6](./module-06-fx.md) §5) | [Module 6](./module-06-fx.md) §7 |
-| Standardized IRS | CCP (LCH SwapClear) — Section 3-4's netting/CVA math still applies, just with the CCP as counterparty instead of Goldman Sachs | [Module 8](./module-08-rates.md) §7 |
-| FRA / Cap-Floor / Swaption / IR Forward Debt | Bilateral (mostly) | [Module 8](./module-08-rates.md) §7 |
-| CDS Index / liquid Single-Name CDS | CCP (ICE Clear Credit, LCH CDSClear) | [Module 9](./module-09-credit.md) §7 |
-| Bespoke Single-Name CDS | Bilateral — Section 4's CVA/wrong-way-risk math applies directly | [Module 9](./module-09-credit.md) §7 |
-| Futures / Listed Options | **Always** CCP, from execution ([Module 15](./module-15-listed-derivatives.md) §7) | [Module 15](./module-15-listed-derivatives.md) §7 |
+| Cash / Derivative | Asset Class / Product | Counterparty Risk Sits With... | Why |
+|---|---|---|---|
+| CASH | Cash Equity / Bonds (mostly) | CCP (NSCC, CDCC) for equities; bilateral for most bonds | [Module 4](./module-04-equity.md) §7, [Module 5](./module-05-fixed-income.md) §7 |
+| CASH + DERIVATIVE | FX Spot/Forward/Swap | Bilateral, mitigated by CLS's PvP (settlement risk, not counterparty risk — [Module 6](./module-06-fx.md) §5) | [Module 6](./module-06-fx.md) §7 |
+| DERIVATIVE | Standardized IRS | CCP (LCH SwapClear) — Section 3-4's netting/CVA math still applies, just with the CCP as counterparty instead of Goldman Sachs | [Module 8](./module-08-rates.md) §7 |
+| DERIVATIVE | FRA / Cap-Floor / Swaption / IR Forward Debt | Bilateral (mostly) | [Module 8](./module-08-rates.md) §7 |
+| DERIVATIVE | CDS Index / liquid Single-Name CDS | CCP (ICE Clear Credit, LCH CDSClear) | [Module 9](./module-09-credit.md) §7 |
+| DERIVATIVE | Bespoke Single-Name CDS | Bilateral — Section 4's CVA/wrong-way-risk math applies directly | [Module 9](./module-09-credit.md) §7 |
+| DERIVATIVE | Futures / Listed Options | **Always** CCP, from execution ([Module 15](./module-15-listed-derivatives.md) §7) | [Module 15](./module-15-listed-derivatives.md) §7 |
 
 ```text
 CCP EXPOSURE ISN'T ZERO -- IT'S REDIRECTED

@@ -368,6 +368,18 @@
   .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
   .table-scroll table { min-width: 720px; margin: 0; }
 
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
   /* ---------- ticket / diagram cards ---------- */
 
   .ticket {
@@ -696,14 +708,14 @@ Remaining (uncollateralized) Exposure = Net Exposure - Collateral Held
 
       <div class="table-scroll">
       <table>
-        <thead><tr><th>Product Category</th><th>IM Required?</th><th>VM Required?</th><th>Basis</th></tr></thead>
+        <thead><tr><th>Cash / Derivative / SFT</th><th>Product Category</th><th>IM Required?</th><th>VM Required?</th><th>Basis</th></tr></thead>
         <tbody>
-          <tr><td>Cash Equity / Bonds (settled DvP)</td><td>No</td><td>No</td><td>Settles outright via DvP (<a href="./module-01-fundamentals.html">Module 1</a> §7)</td></tr>
-          <tr><td>Exchange-traded Futures / Listed Options</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td><td>CCP's own IM/VM methodology (<a href="./module-15-listed-derivatives.html">Module 15</a> §5)</td></tr>
-          <tr><td>Centrally-cleared standardized IRS / CDS Index</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td><td>Same CCP-driven mechanic as Futures (<a href="./module-08-rates.html">Module 8</a> §5, <a href="./module-09-credit.html">Module 9</a> §7)</td></tr>
-          <tr><td>Bilateral OTC derivatives <b>above</b> UMR thresholds</td><td>Yes, via <b>SIMM</b> (Section 02, <a href="./module-11-risk-exposure.html">Module 11</a> §7)</td><td>Yes</td><td>Bilaterally agreed CSA (<a href="./module-02-hierarchy.html">Module 2</a> §7)</td></tr>
-          <tr><td>Bilateral OTC derivatives <b>below</b> UMR thresholds</td><td>No</td><td>Yes (VM-only CSA is common)</td><td>CSA terms, but IM not mandated</td></tr>
-          <tr><td>Repo / Securities Lending</td><td>N/A (uses collateral haircuts directly, Section 03)</td><td>N/A</td><td>The security/cash exchanged IS the collateral (<a href="./module-05-fixed-income.html">Module 5</a> §3)</td></tr>
+          <tr><td><span class="side-tag sell">CASH</span></td><td>Cash Equity / Bonds (settled DvP)</td><td>No</td><td>No</td><td>Settles outright via DvP (<a href="./module-01-fundamentals.html">Module 1</a> §7)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Exchange-traded Futures / Listed Options</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td><td>CCP's own IM/VM methodology (<a href="./module-15-listed-derivatives.html">Module 15</a> §5)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Centrally-cleared standardized IRS / CDS Index</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td><td>Same CCP-driven mechanic as Futures (<a href="./module-08-rates.html">Module 8</a> §5, <a href="./module-09-credit.html">Module 9</a> §7)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Bilateral OTC derivatives <b>above</b> UMR thresholds</td><td>Yes, via <b>SIMM</b> (Section 02, <a href="./module-11-risk-exposure.html">Module 11</a> §7)</td><td>Yes</td><td>Bilaterally agreed CSA (<a href="./module-02-hierarchy.html">Module 2</a> §7)</td></tr>
+          <tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Bilateral OTC derivatives <b>below</b> UMR thresholds</td><td>No</td><td>Yes (VM-only CSA is common)</td><td>CSA terms, but IM not mandated</td></tr>
+          <tr><td><span class="side-tag infra">SFT</span></td><td>Repo / Securities Lending</td><td>N/A (uses collateral haircuts directly, Section 03)</td><td>N/A</td><td>The security/cash exchanged IS the collateral (<a href="./module-05-fixed-income.html">Module 5</a> §3)</td></tr>
         </tbody>
       </table>
       </div>

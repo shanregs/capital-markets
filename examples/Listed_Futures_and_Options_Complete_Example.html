@@ -1,0 +1,727 @@
+<!doctype html>
+<title>Listed Futures &amp; Listed Options — Complete Example</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.4rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.55rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 66ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  .quote-model {
+    margin: 18px 0 4px;
+    padding: 14px 16px;
+    background: var(--paper-sunken);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .quote-model b { color: var(--ink); font-style: normal; }
+
+  /* ---------- actor table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Complete Worked Example</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Listed Futures &amp; Listed Options — Complete Example</h1>
+    <p class="dek">A complete, worked, numbers-based example — trade capture through settlement and regulatory reporting.</p>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#s1-what-are-listed-derivatives"><span class="toc-num">01</span>What Are Listed Derivatives?</a></li>
+      <li><a href="#s2-worked-example-1-interest-rate-future-hedging-not-speculatin"><span class="toc-num">02</span>Worked Example 1 — Interest Rate Future (Hedging, Not Speculating)</a></li>
+      <li><a href="#s3-worked-example-2-listed-equity-option"><span class="toc-num">03</span>Worked Example 2 — Listed Equity Option</a></li>
+      <li><a href="#s4-why-both-examples-follow-the-same-mechanic"><span class="toc-num">04</span>Why Both Examples Follow the Same Mechanic</a></li>
+      <li><a href="#s5-the-trade-lifecycle-instantaneous-clearing"><span class="toc-num">05</span>The Trade Lifecycle — Instantaneous Clearing</a></li>
+      <li><a href="#s6-what-actually-delivers-at-expiry-three-different-answers"><span class="toc-num">06</span>What Actually Delivers at Expiry — Three Different Answers</a></li>
+      <li><a href="#s7-clearing-always-no-exceptions"><span class="toc-num">07</span>Clearing — Always, No Exceptions</a></li>
+      <li><a href="#s8-collateral-ccp-margin-not-a-bilateral-csa"><span class="toc-num">08</span>Collateral — CCP Margin, Not a Bilateral CSA</a></li>
+      <li><a href="#s9-identifiers-the-reverse-diagnostic"><span class="toc-num">09</span>Identifiers — The Reverse Diagnostic</a></li>
+      <li><a href="#s10-regulatory-reporting"><span class="toc-num">10</span>Regulatory Reporting</a></li>
+      <li><a href="#s11-listed-vs-otc-derivative-side-by-side"><span class="toc-num">11</span>Listed vs OTC Derivative — Side by Side</a></li>
+      <li><a href="#s12-the-three-most-important-listed-derivatives-concepts"><span class="toc-num">12</span>The Three Most Important Listed Derivatives Concepts</a></li>
+      <li><a href="#s13-mental-model-recap"><span class="toc-num">13</span>Mental Model Recap</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+
+    <section class="mod" id="s1-what-are-listed-derivatives">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>What Are Listed Derivatives?</h2>
+<p class="lede">A Listed Derivative is a Future or Option that trades on a regulated <b>exchange</b>, with <b>standardized</b> contract terms, and clears through that exchange's own CCP <b>from the instant of execution</b>. Unlike every OTC derivative in this series (<a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS</a>, <a href="./FX_Forward_Complete_Example.html">FX Forward</a>, <a href="./Credit_Default_Swap_CDS_Complete_Example.html">CDS</a>), nothing here is bilaterally negotiated — two traders executing the same contract an hour apart get identical terms, down to the tick.</p>
+<div class="takeaway"><p style="margin:0 0 8px;"><b>Listed Derivative ↔ Standardized contract, exchange-traded, always centrally cleared</b></p></div>
+<p>The important point is:</p>
+<ul><li>There is <b>no UPI and no UTI</b> — a Listed Derivative's fungibility makes per-trade bilateral identifiers meaningless. The exchange's own contract code and trade/clearing IDs serve that role instead.</li><li>Clearing isn't a separate lifecycle stage that happens later — it happens <b>at execution</b>, automatically, every single time.</li></ul>
+
+    </section>
+
+    <section class="mod" id="s2-worked-example-1-interest-rate-future-hedging-not-speculatin">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>Worked Example 1 — Interest Rate Future (Hedging, Not Speculating)</h2>
+<p class="lede">Suppose <b>Bank Of Toronto</b> owns a large book of long-dated Canadian government bonds (<a href="./Fixed_Income_Bond_Complete_Example.html">Fixed Income example</a>) and wants to hedge against rates rising (bond prices falling).</p>
+<h3>Trade terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Product</td><td>CME 10-Year Treasury Note Future ("ZN")</td></tr><tr><td>Contract Size</td><td>USD 100,000 notional 6% coupon 10-Year T-Note (a standardized fiction)</td></tr><tr><td>Action</td><td><b>SELL</b> 100 contracts</td></tr><tr><td>Price</td><td>112'16 (112 + 16/32 = 112.500)</td></tr><tr><td>Notional</td><td>100 × 100,000 × 112.500/100 = <b>USD 11,250,000</b></td></tr><tr><td>Trade Date</td><td>05-Oct-2026</td></tr><tr><td>Seller</td><td>Bank Of Toronto</td></tr><tr><td>Buyer</td><td>Anonymous counterparty on the CME order book</td></tr></tbody></table></div>
+<div class="ticket"><pre>Bank Of Toronto SELLS Futures
+        ↓
+This is a HEDGE, not speculation — it already owns the underlying
+bonds and wants to offset a potential price fall (rates rising)</pre></div>
+<h3>Next business day — rates rise, bond prices fall</h3>
+<div class="ticket"><pre>Price falls from 112.500 to 111.750 (111'24)
+
+Variation Margin = (112.500 − 111.750)/100 × 100,000 × 100 contracts
+                  = 0.0075 × 100,000 × 100
+                  = USD 75,000</pre></div>
+<p>Because Bank Of Toronto is <b>SHORT</b> the future, a price <b>fall</b> is a <b>gain</b> — USD 75,000 is credited to its margin account, directly offsetting the loss on the actual bond portfolio the future is hedging.</p>
+<div class="ticket"><pre>Bond portfolio value  ↓  (loses money as rates rise)
+Short Future position ↑  (gains money as rates rise)
+------------------------------------------------
+              Net P&amp;L ≈ flat — the hedge is working</pre></div>
+
+    </section>
+
+    <section class="mod" id="s3-worked-example-2-listed-equity-option">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>Worked Example 2 — Listed Equity Option</h2>
+<p class="lede">Suppose <b>Maple Leaf Pension Fund</b> wants upside exposure to Apple Inc. shares, with strictly limited downside.</p>
+<h3>Trade terms</h3>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>Value</th></tr></thead><tbody><tr><td>Product</td><td>Listed Equity Call Option</td></tr><tr><td>Underlier</td><td>AAPL — Apple Inc. common stock</td></tr><tr><td>Expiry</td><td>15-Jan-2027</td></tr><tr><td>Strike</td><td>USD 250.00</td></tr><tr><td>Contracts</td><td>100 (each covering 100 shares = 10,000 shares total)</td></tr><tr><td>Premium</td><td>USD 185,000 (paid upfront)</td></tr><tr><td>Buyer</td><td>Maple Leaf Pension Fund</td></tr></tbody></table></div>
+<h3>Scenario A — AAPL rallies to USD 280 by expiry</h3>
+<div class="ticket"><pre>Intrinsic Value = (280.00 − 250.00) × 10,000 shares
+                = 30.00 × 10,000
+                = USD 300,000
+
+Net gain = 300,000 − 185,000 (premium paid) = USD 115,000</pre></div>
+<h3>Scenario B — AAPL falls to USD 230 by expiry</h3>
+<div class="ticket"><pre>Option expires WORTHLESS (strike above market price)
+Maple Leaf Pension Fund loses the full USD 185,000 premium — and
+nothing more. This is the defining feature of being long an option:
+the maximum loss is fixed and known upfront; the maximum gain is
+theoretically unlimited.</pre></div>
+<div class="ticket"><pre>Buyer's P&amp;L
+    +  |                         /
+       |                       /
+       |                     /
+  -----+-------------------+------------------  Market Price at expiry
+       |. . . . . . . . . /  Strike Price (250)
+    -  |________________/
+       (flat — capped at the USD 185,000 premium, no matter how
+        far the market moves against the position)</pre></div>
+
+    </section>
+
+    <section class="mod" id="s4-why-both-examples-follow-the-same-mechanic">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>Why Both Examples Follow the Same Mechanic</h2>
+<div class="ticket"><pre>Equity Index Future    -&gt; E-mini S&amp;P 500 Future
+Commodity Future       -&gt; CME WTI Crude Future
+Interest Rate Future   -&gt; CME 10-Year T-Note Future  (Section 2, above)
+FX Future              -&gt; CME EUR/USD Future
+Listed Option          -&gt; AAPL Call                  (Section 3, above)</pre></div>
+<p>Five different underlyings, but only <b>two</b> contract mechanics across all of them — this is why Listed Derivatives gets pulled out as its own cross-cutting node rather than being described six separate times inside each asset class module (<a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15 §2</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s5-the-trade-lifecycle-instantaneous-clearing">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>The Trade Lifecycle — Instantaneous Clearing</h2>
+<div class="ticket"><pre>Order
+  ↓
+Execution  ═══════▶  Novation to CCP happens IMMEDIATELY, same instant
+  ↓
+Trade Capture
+  ↓
+Daily Variation Margin (every day, for the life of the position)
+  ↓
+[Expiry: cash settlement, physical delivery, or exercise]
+  ↓
+Regulatory Reporting (Position Reporting, not EMIR/Dodd-Frank trade reporting)</pre></div>
+<p>Compare this to a bilateral OTC derivative's Clearing stage (Section 6 of the <a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS example</a>), which happens as a discrete, later step, sometimes optionally — here, it isn't optional and it isn't later.</p>
+
+    </section>
+
+    <section class="mod" id="s6-what-actually-delivers-at-expiry-three-different-answers">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>What Actually Delivers at Expiry — Three Different Answers</h2>
+<div class="ticket"><pre>E-mini S&amp;P 500 Future at expiry:
+  → CASH-SETTLED. No shares ever move; only the final price
+    difference is paid.
+
+WTI Crude Future at expiry:
+  → PHYSICAL DELIVERY of one specific thing (barrels of WTI at
+    Cushing, Oklahoma), if not closed out or rolled first.
+
+10-Year T-Note Future at expiry:
+  → PHYSICAL DELIVERY, but the SHORT chooses which eligible bond,
+    from a defined basket, to deliver — a genuinely different
+    "physical settlement" than either of the above.</pre></div>
+<p>"Physically settled" doesn't mean the same thing across every Future — a reporting or settlement system that assumes it always means "one predetermined instrument moves" will handle a bond future's delivery notice incorrectly (<a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15 §5</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s7-clearing-always-no-exceptions">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>Clearing — Always, No Exceptions</h2>
+<div class="table-scroll"><table><thead><tr><th>Product</th><th>Exchange or OTC?</th><th>Bilateral or Centrally Cleared?</th></tr></thead><tbody><tr><td>Futures (any underlying)</td><td><b>Always exchange-traded</b></td><td><b>Always centrally cleared</b>, from execution</td></tr><tr><td>Listed Options (any underlying)</td><td><b>Always exchange-traded</b></td><td><b>Always centrally cleared</b> (OCC for US equity options, CME Clearing for futures options)</td></tr></tbody></table></div>
+<p>Every prior product in this series had a genuine two-axis question ("is it OTC or exchange, bilateral or cleared?") with a real answer that varied by product. Listed Derivatives is the one node where the answer is <b>always the same cell</b> — by definition (<a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15 §7</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s8-collateral-ccp-margin-not-a-bilateral-csa">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>Collateral — CCP Margin, Not a Bilateral CSA</h2>
+<div class="table-scroll"><table><thead><tr><th>Product Category</th><th>IM Required?</th><th>VM Required?</th></tr></thead><tbody><tr><td>Exchange-traded Futures / Listed Options</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td></tr></tbody></table></div>
+<p>There is no CSA to negotiate here — the CCP (CME Clearing for the T-Note future, OCC for the AAPL option) simply sets its own Initial Margin and calls Variation Margin daily, mechanically, the same way for every participant.</p>
+
+    </section>
+
+    <section class="mod" id="s9-identifiers-the-reverse-diagnostic">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>Identifiers — The Reverse Diagnostic</h2>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Applies to Listed Derivatives?</th></tr></thead><tbody><tr><td>ISIN / CUSIP / Ticker</td><td><b>No</b> — not securities</td></tr><tr><td><b>Exchange Contract Code</b></td><td><b>Yes</b> — e.g. <code>ZNZ26</code> for the T-Note future, an OCC option symbol for the AAPL call</td></tr><tr><td><b>UPI / UTI</b></td><td><b>No</b> — these identify bilaterally negotiated OTC derivatives; fungibility makes per-trade bilateral identifiers meaningless here</td></tr><tr><td>LEI</td><td>Yes — identifies Bank Of Toronto and Maple Leaf Pension Fund as counterparties</td></tr></tbody></table></div>
+<p>A Listed Derivative trade record with an exchange contract code but <b>no</b> UPI/UTI is exactly correct — the reverse of the diagnostic OTC records carry. Seeing a UPI/UTI populated on an otherwise clearly listed Futures/Options record would itself be the anomaly (<a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15 §6</a>).</p>
+
+    </section>
+
+    <section class="mod" id="s10-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>Regulatory Reporting</h2>
+<p class="lede">Listed Derivatives fall under <b>Position Reporting</b> regimes (exchange/regulator-driven, concentration-risk focused) rather than the EMIR/Dodd-Frank Trade Repository reporting every OTC product in this series requires:</p>
+<div class="table-scroll"><table><thead><tr><th>Regulation</th><th>Applies?</th></tr></thead><tbody><tr><td>EMIR / Dodd-Frank (Trade Repository reporting)</td><td>No — not an OTC derivative</td></tr><tr><td>Position Reporting (exchange/regulator)</td><td><b>Yes</b> — e.g. large-position reporting thresholds</td></tr><tr><td>MiFID II / MiFIR</td><td>Transaction reporting still applies, since execution happened on a regulated venue</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s11-listed-vs-otc-derivative-side-by-side">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>Listed vs OTC Derivative — Side by Side</h2>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Aspect</th><th>Listed (T-Note Future)</th><th>OTC (IRS)</th></tr></thead><tbody><tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Terms</td><td>Standardized by the exchange</td><td>Bilaterally negotiated</td></tr><tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Clearing</td><td>Instant, mandatory, always</td><td>A separate, sometimes-optional stage</td></tr><tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Identifier</td><td>Exchange contract code</td><td>UPI + UTI</td></tr><tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Margin</td><td>CCP's own model, daily</td><td>CSA-driven SIMM, if above UMR thresholds</td></tr><tr><td><span class="side-tag buy">DERIVATIVE</span></td><td>Counterparty</td><td>Anonymous (CCP-novated)</td><td>Known (Goldman Sachs, etc.)</td></tr></tbody></table></div>
+
+    </section>
+
+    <section class="mod" id="s12-the-three-most-important-listed-derivatives-concepts">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>The Three Most Important Listed Derivatives Concepts</h2>
+<h3>1. Standardization is a venue property, not an asset-class property</h3>
+<p>The same Future/Option mechanic repeats identically across equity, commodity, rates, and FX underliers.</p>
+<h3>2. Clearing happens at execution, not later</h3>
+<div class="ticket"><pre>OTC:    Trade → (sometimes) → Clearing, as a separate stage
+Listed: Trade = Clearing, the same instant</pre></div>
+<h3>3. "Physical settlement" means different things for different Futures</h3>
+<p>An index future never delivers anything; a commodity future delivers one specific thing; a bond future delivers the short's choice from a menu.</p>
+
+    </section>
+
+    <section class="mod" id="s13-mental-model-recap">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>Mental Model Recap</h2>
+<div class="ticket"><pre>Need for standardized, fungible, exchange-cleared exposure → Listed Derivative → Instant novation, daily margin, no bilateral negotiation</pre></div>
+<p>Where every OTC example in this series (<a href="./Interest_Rate_Swap_IRS_Complete_Example.html">IRS</a>, <a href="./FX_Forward_Complete_Example.html">FX Forward</a>, <a href="./Commodity_Swap_Complete_Example.html">Commodity Swap</a>, <a href="./Credit_Default_Swap_CDS_Complete_Example.html">CDS</a>, <a href="./Equity_Total_Return_Swap_Complete_Example.html">Equity TRS</a>) is built around two counterparties negotiating bespoke terms, a Listed Derivative trades the ability to customize terms for the ability to transact instantly, anonymously, and with the CCP's credit standing behind every trade from the very first second.</p>
+
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Complete Worked Examples &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
