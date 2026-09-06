@@ -1,5 +1,7 @@
 # Interest Rate Swap (IRS) — Complete Example
 
+*Continuing the same institutional style used in the FRA, Cap, Floor, Collar, Swaption, and Cross-Currency Swap lessons: real institutions (RBC, TD, BMO, CIBC, Scotiabank, JPMorgan, Goldman Sachs, etc.) are referenced for context, while **Canada Bank of Toronto (CBT)** remains the fictional dealer and **ABC Mining Corporation** the fictional corporate client used to build the worked example. CORRA — administered and published by the Bank of Canada — is used as the CAD reference rate.*
+
 ## 1. What is an IRS?
 
 An Interest Rate Swap is an OTC derivative where two parties agree to exchange interest cash flows based on a notional amount.
@@ -12,76 +14,80 @@ The important point is:
 
 - The notional principal is normally **NOT** exchanged.
 - Only the interest cash flows are exchanged/netted.
+- An IRS is not a loan and creates no new borrowing — it only swaps one interest characteristic for another on a notional reference amount.
 
-## 2. Simple Example
+## 2. Simple Example — and the Debt Already Existed
 
 Suppose:
 
-- ABC Corporation has a ₹100 crore floating-rate loan.
-- Its loan interest is: **CORRA + 1.00%**
-- ABC is worried that CORRA might increase.
-- So ABC enters an IRS with Bank B.
+- **ABC Mining Corporation already has an existing CAD 50,000,000 floating-rate term loan** — drawn down on 01-Sep-2023, a 6-year facility maturing 01-Sep-2029, borrowed from its lending syndicate to fund a mine expansion.
+- The loan's interest is: **CORRA + 1.00%**, reset and paid quarterly.
+- **This debt exists before, and independently of, any swap.** By the time this example starts, ABC has already been paying floating interest on the loan for three years.
+- By 30-Aug-2026 — with three years still left on the loan — ABC is worried CORRA will keep rising and push its borrowing cost up for the remainder of the loan's life.
+- So ABC enters a **separate transaction**: an IRS with **Canada Bank of Toronto (CBT)**, to hedge the interest-rate risk on the loan's *remaining* three years.
+
+> **Timeline check, answering the obvious question directly: yes, ABC is already in debt before the swap exists.** The loan is the debt — drawn down in 2023, three years before this swap is even discussed. The IRS entered in 2026 creates **no new principal, no new borrowing**. It is a second, independent contract layered on top of an already-existing loan, whose only job is to exchange the *interest* cash flows on a matching notional — floating for fixed — for the loan's remaining term.
 
 ### Swap terms
 
 | Term | Value |
 |---|---|
-| Notional | ₹100 crore |
+| Notional | CAD 50,000,000 |
 | Trade Date | 30-Aug-2026 |
 | Effective Date | 01-Sep-2026 |
-| Maturity | 01-Sep-2029 |
-| ABC pays | Fixed 6.00% |
+| Maturity | 01-Sep-2029 (matches the loan's remaining term exactly) |
+| ABC pays | Fixed 4.00% |
 | ABC receives | Floating CORRA |
 | Payment frequency | Quarterly |
 
-The IRS is OTC.
+The IRS is OTC, and the notional CAD 50,000,000 is chosen to match the loan's outstanding principal — but the two contracts (loan and swap) remain legally separate.
 
 ## 3. Why does ABC enter the swap?
 
-ABC has:
+ABC already has, from 2023:
 
 ```
-Loan
+LOAN (already exists, drawn down 01-Sep-2023)
   |
   +-- Pay CORRA
   +-- Pay 1%
 ```
 
-ABC wants to eliminate the uncertainty associated with CORRA.
+ABC wants to eliminate the uncertainty associated with CORRA for the loan's remaining three years.
 
-So it enters:
+So, separately, in 2026 it enters:
 
 ```
-IRS
+IRS (new contract, Trade Date 30-Aug-2026)
   |
-  +-- Pay 6% fixed
+  +-- Pay 4% fixed
   +-- Receive CORRA
 ```
 
 Combine them:
 
 ```
-LOAN
+LOAN (pre-existing debt)
 Pay CORRA + 1%
        +
-IRS
-Pay 6%
+IRS (new hedge, no new debt)
+Pay 4%
 Receive CORRA
        ↓
 CORRA cancels
        ↓
-Effective cost ≈ 6% + 1%
+Effective cost = 4% (fixed) + 1% (loan margin)
        ↓
-≈ 7% fixed
+= 5% fixed, for as long as both contracts run
 ```
 
-This is the basic economic purpose of an IRS.
+This is the basic economic purpose of an IRS: it doesn't touch the loan itself, but it converts the *interest rate character* of an already-existing debt from floating to fixed.
 
 ## 4. The Two Legs
 
 Every standard IRS has two legs.
 
-**Fixed Leg** — ABC pays: `6.00%`
+**Fixed Leg** — ABC pays: `4.00%`
 
 **Floating Leg** — ABC receives: `CORRA`
 
@@ -92,21 +98,21 @@ Every standard IRS has two legs.
        |             |
    Fixed Leg     Floating Leg
        |             |
-    Pay 6%        Receive CORRA
+    Pay 4%        Receive CORRA
 ```
 
 ## 5. What is Notional?
 
 Suppose:
 
-> Notional = ₹100 crore
+> Notional = CAD 50,000,000
 
-This does **not** normally mean ABC gives the bank ₹100 crore. It is a reference amount used to calculate interest.
+This does **not** mean ABC gives CBT CAD 50,000,000 — that principal already sits with ABC's original lending syndicate, from the 2023 loan draw-down. The swap's notional is purely a reference amount used to calculate interest.
 
 For example:
 
 ```
-₹100 crore × 6% = ₹6 crore annual fixed interest
+CAD 50,000,000 × 4.00% = CAD 2,000,000 annual fixed interest
 ```
 
 If payments are quarterly, the actual calculation depends on the accrual fraction.
@@ -115,35 +121,33 @@ If payments are quarterly, the actual calculation depends on the accrual fractio
 
 Suppose the first accrual period is:
 
-> 01-Sep-2026 → 01-Dec-2026
+> 01-Sep-2026 → 01-Dec-2026 (91 days)
 
 Assume:
 
 | Parameter | Value |
 |---|---|
-| Notional | ₹100 crore |
-| Fixed rate | 6% |
-| Accrual factor | 90/365 |
+| Notional | CAD 50,000,000 |
+| Fixed rate | 4.00% |
+| Accrual factor | 91/365 (actual/365) |
 
 **Fixed-leg interest:**
 
 ```
-₹100 crore × 6% × 90/365 ≈ ₹1.479 crore
+CAD 50,000,000 × 4.00% × 91/365 = CAD 498,630.14
 ```
 
-So ABC owes approximately **₹1.479 crore** on the fixed leg.
+So ABC owes **CAD 498,630.14** on the fixed leg.
 
 ## 7. Floating CORRA Leg
 
-Now suppose the applicable compounded CORRA rate for the period is: **5.20%**
-
-Simplified calculation:
+Now suppose the applicable compounded CORRA rate for the period is: **3.20%**
 
 ```
-₹100 crore × 5.20% × 90/365 ≈ ₹1.282 crore
+CAD 50,000,000 × 3.20% × 91/365 = CAD 398,904.11
 ```
 
-ABC receives approximately **₹1.282 crore**.
+ABC receives **CAD 398,904.11**.
 
 ## 8. Net Settlement
 
@@ -151,141 +155,136 @@ Instead of physically exchanging both amounts, the parties commonly net the two 
 
 | Item | Amount |
 |---|---|
-| Fixed payment | ₹1.479 crore |
-| Floating receipt | ₹1.282 crore |
-| **Net payment** | **₹0.197 crore** |
+| Fixed payment | CAD 498,630.14 |
+| Floating receipt | CAD 398,904.11 |
+| **Net payment** | **CAD 99,726.03** |
 
-Therefore ABC pays approximately **₹19.7 lakh** for this simplified period.
+Therefore ABC pays **CAD 99,726.03** to CBT for this quarter.
 
 ## 9. Now Combine It With the Loan
 
-Remember ABC's loan:
+Remember ABC's (pre-existing) loan:
 
 ```
 Loan interest = CORRA + 1%
 ```
 
-Suppose CORRA = 5.2%.
+Suppose CORRA = 3.20% for this quarter, same as Section 7.
 
-**Loan cost:**
-```
-5.2% + 1% = 6.2%
-```
-
-ABC also has the swap:
+**Loan cost (paid to the lending syndicate, not CBT):**
 
 ```
-Pay 6%
-Receive 5.2%
+CAD 50,000,000 × (3.20% + 1.00%) × 91/365 = CAD 523,561.64
 ```
 
-**Economic combination:**
+ABC also has the swap with CBT (Section 8):
 
 ```
-Loan
-Pay      5.2% + 1%
-
-Swap
-Pay      6%
-Receive  5.2%
-
---------------------
-5.2% cancels
-Effective ≈ 7%
+Pay 4.00% fixed   = CAD 498,630.14
+Receive floating  = CAD 398,904.11
+Net paid to CBT   = CAD 99,726.03
 ```
 
-So ABC has transformed its floating-rate exposure into approximately **7% fixed**, subject to the precise loan and swap conventions.
+**Economic combination for the quarter:**
+
+```
+Loan (to syndicate)     -523,561.64
+Swap net (to CBT)        -99,726.03
+--------------------------------------
+Total outflow            -623,287.67
+
+CAD 623,287.67 / (CAD 50,000,000 x 91/365) = 5.00% annualized
+```
+
+So ABC has transformed its floating-rate exposure into exactly **5.00% fixed** (its 4.00% swap rate + the loan's 1.00% margin) for as long as the loan and swap both run — CORRA cancels out completely, regardless of where it actually settles.
 
 ## 10. What if CORRA Rises?
 
-Suppose CORRA increases to **8%**.
+Suppose CORRA rises to **6.00%** in a later quarter.
 
-**Loan:**
+**Loan (to syndicate):**
 ```
-Pay: 8% + 1% = 9%
-```
-
-**IRS:**
-```
-Pay fixed: 6%
-Receive floating: 8%
+CAD 50,000,000 × (6.00% + 1.00%) × 91/365 = CAD 872,602.74
 ```
 
-**Net swap:**
+**IRS (with CBT):**
 ```
-Receive 8%
-Pay 6%
-= +2%
+Pay fixed 4.00%       = CAD 498,630.14
+Receive floating 6.00% = CAD 747,945.21
+Net received from CBT  = CAD 249,315.07
 ```
 
 **Combined:**
 
 ```
-Loan       -9%
-IRS        +2%
-----------------
-Net        -7%
+Loan            -872,602.74
+Swap net        +249,315.07
+----------------------------
+Net             -623,287.67   (= 5.00% annualized, same as before)
 ```
 
-ABC is still approximately at **7%**.
+ABC is still exactly at **5.00%**, even though CORRA moved from 3.20% to 6.00%.
 
 ## 11. What if CORRA Falls?
 
-Suppose CORRA falls to **4%**.
+Suppose CORRA falls to **1.50%** in a later quarter.
 
-**Loan:**
+**Loan (to syndicate):**
 ```
-Pay: 4% + 1% = 5%
-```
-
-**IRS:**
-```
-Pay 6%
-Receive 4%
+CAD 50,000,000 × (1.50% + 1.00%) × 91/365 = CAD 311,643.84
 ```
 
-**Net:**
+**IRS (with CBT):**
 ```
-5% + 6% - 4% = 7%
+Pay fixed 4.00%        = CAD 498,630.14
+Receive floating 1.50%  = CAD 186,986.30
+Net paid to CBT         = CAD 311,643.84
 ```
 
-Again: **approximately 7%**.
+**Combined:**
 
-This is why the swap is useful for hedging.
+```
+Loan            -311,643.84
+Swap net        -311,643.84
+----------------------------
+Net             -623,287.67   (= 5.00% annualized, again)
+```
+
+Again: **exactly 5.00%**. This is why the swap is useful for hedging — the all-in cost stops moving with CORRA entirely.
 
 ## 12. But There Is an Important Trade-Off
 
 ABC has exchanged uncertainty for certainty.
 
-**Without the swap:**
+**Without the swap** (loan-only, floating):
 
-| CORRA | Loan |
+| CORRA | Loan cost (annualized) |
 |---|---|
-| 3% | 4% |
-| 8% | 9% |
+| 1.50% | 2.50% |
+| 6.00% | 7.00% |
 
-**With the swap:** Approximately **7%**
+**With the swap:** always **5.00%**, regardless of where CORRA lands.
 
-So if CORRA falls dramatically, ABC doesn't get the full benefit.
+So if CORRA falls dramatically (say, to 1.50%, where the loan-only cost would have been just 2.50%), ABC doesn't get the benefit — it's still locked into 5.00%.
 
-> **This is the fundamental trade-off:** Hedging reduces uncertainty, but it can also reduce the benefit of favorable market movements.
+> **This is the fundamental trade-off:** hedging reduces uncertainty, but it can also reduce the benefit of favorable market movements.
 
 ## 13. What Happens to the IRS Every Day?
 
 The trade doesn't remain worth zero. Every day the market changes.
 
-Suppose ABC entered:
+Recall ABC entered:
 
 ```
-Pay fixed = 6%
+Pay fixed = 4.00%
 Receive CORRA
 ```
 
-Later, market participants would only enter a new IRS at **7%**.
+Suppose that, a year later, market participants would only enter a new swap of similar remaining tenor at **4.75%** fixed.
 
-ABC's existing swap is attractive because ABC is paying only **6%**. Therefore ABC's swap has **positive value**.
+ABC's existing swap is attractive because ABC is locked in paying only **4.00%**. Therefore ABC's swap has **positive value**.
 
-Conversely, if market swap rates fall to **5%**, ABC's existing obligation to pay 6% is unfavorable.
+Conversely, if market swap rates for that tenor fell to **3.50%**, ABC's existing obligation to pay 4.00% would be unfavorable.
 
 Therefore:
 
@@ -303,15 +302,15 @@ Pay-fixed IRS becomes less valuable
 
 This brings us to **Mark-to-Market**.
 
-Suppose the valuation system determines:
+Suppose, one year in (30-Aug-2027, with about two years of the swap remaining), the valuation system determines:
 
-> IRS Fair Value = **+₹4.5 crore** (from ABC's perspective)
+> IRS Fair Value = **+CAD 900,000** (from ABC's perspective)
 
-That means: if the position were valued/closed under the applicable valuation framework, it has approximately ₹4.5 crore of positive economic value to ABC.
+That means: if the position were valued/closed under the applicable valuation framework, it has approximately CAD 900,000 of positive economic value to ABC — a direct consequence of ABC's locked-in 4.00% being cheaper than the 4.75% market rate from Section 13.
 
-From Bank B's perspective:
+From CBT's perspective:
 
-> MTM = **-₹4.5 crore**
+> MTM = **-CAD 900,000**
 
 *(Ignoring valuation adjustments and bilateral considerations for simplicity.)*
 
@@ -411,9 +410,9 @@ Example:
 |---|---|
 | Trade ID | IRS-20260830-00001 |
 | Product | IRS |
-| Notional | ₹100 crore |
+| Notional | CAD 50,000,000 |
 | Currency | CAD |
-| Fixed Rate | 6% |
+| Fixed Rate | 4.00% |
 | Floating Index | CORRA |
 | Direction | Pay Fixed |
 | Trade Date | 30-Aug-2026 |
@@ -429,19 +428,19 @@ For example:
 
 | Field | Value |
 |---|---|
-| Party A | ABC Corporation |
-| Party B | Bank B |
-| Party A | Pay Fixed 6% |
+| Party A | ABC Mining Corporation |
+| Party B | Canada Bank of Toronto (CBT) |
+| Party A | Pay Fixed 4.00% |
 | Party B | Pay Floating CORRA |
-| Notional | ₹100 crore |
+| Notional | CAD 50,000,000 |
 | Maturity | 01-Sep-2029 |
 
 ## 20. Enrichment
 
 Additional data can be added:
 
-- ABC LEI
-- Bank LEI
+- ABC Mining Corporation LEI
+- CBT LEI
 - UTI
 - UPI
 - Legal Entity
@@ -459,7 +458,7 @@ This is where a regulatory data platform becomes important.
 
 Suppose the IRS has:
 
-> MTM = +₹4.5 crore
+> MTM = +CAD 900,000
 
 The CSA between the parties determines how much collateral is required.
 
@@ -487,13 +486,13 @@ Collateral may include:
 
 ## 22. Settlement
 
-Suppose for one quarter:
+Suppose for the first quarter (Section 8's numbers):
 
 | Item | Amount |
 |---|---|
-| Fixed amount | ₹1.479 crore |
-| Floating amount | ₹1.282 crore |
-| **Net** | **₹19.7 lakh** |
+| Fixed amount | CAD 498,630.14 |
+| Floating amount | CAD 398,904.11 |
+| **Net** | **CAD 99,726.03** |
 
 The settlement system receives an instruction:
 
@@ -502,13 +501,15 @@ The settlement system receives an instruction:
 | Trade ID | IRS-20260830-00001 |
 | Payment Date | 01-Dec-2026 |
 | Currency | CAD |
-| Net Amount | ₹19.7 lakh |
-| Direction | ABC → Bank B |
+| Net Amount | CAD 99,726.03 |
+| Direction | ABC → CBT |
 | Status | PENDING |
 
 After payment:
 
 > Settlement Status = **SETTLED**
+
+Note that this net CAD 99,726.03 flow is entirely separate from ABC's quarterly loan payment to its lending syndicate (Section 9) — two independent cash flows, on two independent contracts, that only add up to a stable 5.00% all-in cost when looked at together.
 
 ## 23. Regulatory Reporting
 
@@ -548,7 +549,7 @@ Compare them.
 **FX Forward** — One future exchange
 
 ```
-USD ↔ INR
+USD ↔ CAD
 ```
 
 **IRS** — Multiple future periods
@@ -585,7 +586,7 @@ Day 1 → CORRA
 Day 2 → CORRA
 Day 3 → CORRA
 ...
-Day 90 → CORRA
+Day 91 → CORRA
           |
           v
    Compounded rate
@@ -604,7 +605,7 @@ If you remember only three things:
 
 ### 1. Notional
 
-Used to calculate interest. ₹100 crore usually isn't exchanged.
+Used to calculate interest. CAD 50,000,000 usually isn't exchanged.
 
 ### 2. Two legs
 
