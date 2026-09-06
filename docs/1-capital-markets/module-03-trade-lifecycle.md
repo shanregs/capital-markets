@@ -457,7 +457,64 @@ bond trade never has.
 
 ## 12. Trade Status State Machine — Reference Table
 
-Every stage in Sections 1–9 leaves behind a status value. This is the reference table to check whenever a trade record's `status` field doesn't make sense at first glance.
+Every stage in Sections 1–9 leaves behind a status value. This is the reference table to check whenever a trade record's `status` field doesn't make sense at first glance — the diagram below shows the same information as a flow, the table beneath it as a lookup.
+
+```text
+TRADE STATUS STATE MACHINE
+========================================================================
+
+  NEW                                                  [Trade Capture · Sec 3]
+   |
+   v
+  CONFIRMED ------------------------+                   [Confirmation · Sec 4]
+   |                                |
+   v                                v
+  AFFIRMED                      DISPUTED
+   |                                |
+   |                    (term corrected, re-sent)
+   |                                |
+   |                                +--> back to CONFIRMED
+   v
+  MATCHED <---------------------------+                      [Matching · Sec 5]
+   |                                  |
+   |                     (mismatch corrected)
+   |                                  |
+   |                               BROKEN <-- mismatch found
+   |
+   |-- cash product, no clearing --------------------+
+   |                                                  |
+   v  derivative / cleared product                    |
+  PENDING CLEARING                                    |       [Clearing · Sec 6]
+   |                                                   |
+   v                                                   |
+  CLEARED                                              |
+   |                                                   |
+   v                                                   v
+  SETTLED <----------------------------------------------           [Settlement · Sec 7]
+   |            ^     (CLEARED -> SETTLED is the rare "cleared cash"
+   |            |      case; most cleared derivatives instead stay in
+   |         FAILED    an ongoing CLEARED state with recurring margin
+   |            |       activity, never reaching a discrete SETTLED)
+   |    (re-attempted, resolved -- Sec 13)
+   |            ^
+   |            +-- Settlement Date passes, no completion
+   v
+  RECONCILED <----------------------------+               [Reconciliation · Sec 8]
+   |                                      |
+   |                     (investigated & resolved)
+   |                                      |
+   |                              BREAK (RECON) <-- books disagree
+   v
+  terminal (happy path)
+
+
+  Off this spine, set independently once trade economics exist:
+    REPORTED    filed to Trade Repository / regulator, terminal   [Reg. Reporting · Sec 9]
+
+  From ANY status above:
+    ---> CANCELLED   trade voided before Settlement is reached, terminal
+    ---> AMENDED     a field is corrected; status reverts to whatever it held before
+```
 
 | Status | Meaning | Set at which stage | Typical next status |
 |---|---|---|---|
