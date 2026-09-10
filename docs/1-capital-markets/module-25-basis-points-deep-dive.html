@@ -1,0 +1,938 @@
+<!doctype html>
+<title>Module 25 — Basis Points Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 25</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Basis Points Deep Dive</h1>
+    <p class="dek">Theory, worked examples, and impact on Valuation, MTM &amp; YTM — what a basis point is, how it shows up (or deliberately doesn't) in Fixed Income, Rates, Credit, Equity and FX, how often it actually changes, and the DV01-family mechanism that turns a bps move into a dollar impact.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to the <a href="./module-22-hedging-deep-dive.html">Hedging Deep Dive</a> and the <a href="./module-19-interest-rate-swap-deep-dive.md">IRS Deep Dive</a>. Pulls together basis-point usage scattered across Modules 5, 8, 9 &amp; 10, and adds Equity and FX worked examples to complete the six-asset-class set.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is a Basis Point?</a></li>
+      <li><a href="#across-classes"><span class="toc-num">02</span>Across Asset Classes</a></li>
+      <li><a href="#fixed-income"><span class="toc-num">03</span>Fixed Income: DV01</a></li>
+      <li><a href="#rates"><span class="toc-num">04</span>Rates: Swap DV01 &amp; MTM</a></li>
+      <li><a href="#credit"><span class="toc-num">05</span>Credit: CDS Spread &amp; CS01</a></li>
+      <li><a href="#equity"><span class="toc-num">06</span>Equity: Fees &amp; Spreads</a></li>
+      <li><a href="#fx"><span class="toc-num">07</span>FX: Bps vs. Pips</a></li>
+      <li><a href="#frequency"><span class="toc-num">08</span>How Often It Changes</a></li>
+      <li><a href="#impact"><span class="toc-num">09</span>Valuation, MTM &amp; YTM</a></li>
+      <li><a href="#regulatory"><span class="toc-num">10</span>Regulatory &amp; Reporting</a></li>
+      <li><a href="#links"><span class="toc-num">11</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · The unit itself</p>
+      <h2>What Is a Basis Point? — Definition &amp; Why Percent Isn't Precise Enough</h2>
+      <p class="lede">A basis point (bp, plural bps) is one hundredth of one percent — 0.01%, or 0.0001 in decimal form. It's the standard unit capital markets uses whenever a percentage move is too small, or too consequential, to describe usefully in whole percentage points.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">The Conversion Every Other Section Assumes</span></div>
+        <pre>1 basis point (1 bp)   = 0.01%   = 0.0001
+10 basis points         = 0.10%   = 0.0010
+25 basis points         = 0.25%   = 0.0025
+100 basis points        = 1.00%   = 0.0100
+250 basis points        = 2.50%   = 0.0250
+
+-&gt; "bps" is always ADDITIVE on a percentage/rate scale, never
+   MULTIPLICATIVE -- a rate moving from 4.00% to 4.25% moved
+   "up 25bps," not "up 6.25%" (the PERCENTAGE CHANGE of 4.00
+   relative to itself -- a different, less useful number here).</pre>
+      </div>
+
+      <p><b>Why not just say "0.25%"?</b> Two reasons this curriculum's other modules already lean on:</p>
+      <p><b>Precision without clutter.</b> A rate move from 4.00% to 4.03% is "0.03%" in percent — awkward, easy to misread as 3%. "3 basis points" is unambiguous at a glance.</p>
+      <p><b>A common unit across wildly different base numbers.</b> A 25bp move means the same thing — 0.0025 added to a rate — whether the starting rate is 0.50% or 12.00%. Bps are an absolute, not relative, unit of rate change.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Every worked example in this module — Fixed Income, Rates, Credit, Equity, FX — reduces to the same arithmetic fact: <b>bps &times; 0.0001 &times; exposure = dollar impact</b>, just with a different "exposure" plugged in each time (DV01, Spread DV01, notional, fee base). Section 2 maps exactly where each asset class plugs bps in.</div>
+    </section>
+
+    <section class="mod" id="across-classes">
+      <p class="sec-eyebrow"><span class="n">02</span> · Six asset classes, different uses</p>
+      <h2>Basis Points Across Asset Classes — Where They Show Up</h2>
+      <p class="lede">Every asset class in this curriculum's roadmap uses bps somewhere, but for genuinely different purposes. Confusing which use is in play is a common source of reporting-system errors.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Asset class</th><th>Where bps show up</th><th>What moves per bp</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Fixed Income</b></td><td>Bond yield (YTM) &amp; price sensitivity</td><td>Price, via DV01</td><td>Section 3</td></tr>
+          <tr><td><b>Rates</b></td><td>The floating/fixed rate itself, swap valuation</td><td>Swap MTM, via Swap DV01</td><td>Section 4</td></tr>
+          <tr><td><b>Credit</b></td><td>CDS spread, bond credit spread</td><td>Protection value, via Spread DV01</td><td>Section 5</td></tr>
+          <tr><td><b>Equity</b></td><td>Management/advisory fees, bid-ask spreads</td><td>Fee cost, execution cost</td><td>Section 6</td></tr>
+          <tr><td><b>FX</b></td><td>Rarely used directly — quoted in pips instead</td><td>Exchange rate, in pip terms</td><td>Section 7</td></tr>
+          <tr><td><b>Commodities</b></td><td>Less common directly; tick sizes usually in price units</td><td>—</td><td>See Module 7</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> The single unifying thread: bps measure a rate, yield, spread, or fee — never a raw price. FX mostly opts out in favor of pips (Section 7); Equity's use is narrower (fees, trading costs, not the stock price itself, Section 6). A system that tags a raw equity price move "up 150bps" is almost certainly using the term loosely, not precisely.</div>
+    </section>
+
+    <section class="mod" id="fixed-income">
+      <p class="sec-eyebrow"><span class="n">03</span> · The cleanest bps-to-dollars translation</p>
+      <h2>Worked Example — Fixed Income: DV01 &amp; Price Impact From a Yield Move</h2>
+      <p class="lede">Reusing Module 5 §4a's Canada 5% Bond 2035 position and Module 10 §3's DV01 math — a bond's price and yield move in lockstep, one basis point at a time.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">DV01 — Canada 5% Bond 2035</span><span class="t-id">Module 5 §4a / Module 10 §3</span></div>
+        <pre>Modified Duration: 7.2 | Market Value: CAD 9,850,000
+
+DV01 = Modified Duration x Market Value x 0.0001
+     = 7.2 x 9,850,000 x 0.0001
+     = CAD 7,092 per basis point
+
+SCENARIO A -- yields RISE 25 basis points:
+  Approx. Price Impact = -DV01 x Basis Points Moved
+                        = -7,092 x 25
+                        = -CAD 177,300  (bond LOSES value)
+
+SCENARIO B -- yields FALL 40 basis points:
+  Approx. Price Impact = +7,092 x 40 = +CAD 283,680 (bond GAINS value)
+
+-&gt; Bond prices and yields move INVERSELY (Module 1 §1) -- DV01
+   is symmetric in size but the SIGN flips depending on direction.</pre>
+      </div>
+
+      <p><b>Why YTM itself is quoted to the basis point.</b> A bond's Yield to Maturity (Module 5 §1, Module 10 §3) is conventionally quoted to two decimal places as a percentage — this bond's own YTM, 5.21% (Module 10 §3), is exactly "521 basis points" said differently. Every DV01 calculation measures the price impact of that YTM ticking by single bps, which is why DV01 is defined "per basis point" rather than "per percent."</p>
+
+      <div class="takeaway"><b>Takeaway.</b> DV01 (Dollar Value of 01) is Fixed Income's core bps-to-dollars converter, plugging directly into <b>valuation</b> (what is this bond worth right now) and <b>MTM</b> (how much did that worth change, expressed as bps moved &times; DV01). Section 9 generalizes this exact mechanic across every other asset class.</div>
+    </section>
+
+    <section class="mod" id="rates">
+      <p class="sec-eyebrow"><span class="n">04</span> · Same mechanic, a swap's cash flows</p>
+      <h2>Worked Example — Rates: Swap DV01 &amp; MTM on an Interest Rate Swap</h2>
+      <p class="lede">Reusing Module 8 §4a's 5Y CAD IRS and Module 10 §4a's MTM math — the same DV01 concept as Section 3, computed off a swap's cash flow schedule instead of a bond's.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Swap DV01 &amp; MTM — 5Y CAD IRS</span><span class="t-id">Module 8 §4a / Module 10 §4a</span></div>
+        <pre>Trade ID BOT-IRS-2026-034410
+Bank Of Toronto: pays FIXED 4.00%, receives FLOATING (CORRA)
+Notional (reference only, never exchanged): CAD 100,000,000
+
+Swap DV01 (approx., 4.5Y remaining): ~CAD 41,000 per basis point
+
+RATE MOVES from 4.00% to 4.30% (a 30bp RISE in the swap curve):
+  Approx. MTM Gain to Bank Of Toronto = 41,000 x 30
+                                       = CAD 1,230,000
+
+-&gt; Bank Of Toronto pays a FIXED rate now BELOW the market rate for
+   an equivalent new swap -- its position is worth MORE. The
+   fixed-rate PAYER gains when rates RISE; the RECEIVER loses the
+   same CAD 1,230,000.</pre>
+      </div>
+
+      <p><b>Why the same DV01 concept, a different number.</b> Section 3's bond DV01 (CAD 7,092/bp) and this swap's DV01 (CAD 41,000/bp) aren't comparable in isolation — the swap's Notional is roughly 10x the bond's Market Value, but its DV01 is roughly 5.8x, because a swap's DV01 also depends on the shape of its remaining cash flow schedule, not Notional alone. DV01 is never inferred from Notional by a rule of thumb — it's the output of a full revaluation.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A swap's MTM is, in practice, almost always reported as "bps moved &times; Swap DV01" between full revaluations — the same arithmetic shape as Section 3's bond, confirming Section 1's central formula, just with Swap DV01 standing in for bond DV01.</div>
+    </section>
+
+    <section class="mod" id="credit">
+      <p class="sec-eyebrow"><span class="n">05</span> · Bps quote the risk premium itself</p>
+      <h2>Worked Example — Credit: CDS Spread in Basis Points &amp; Spread DV01</h2>
+      <p class="lede">Reusing Module 9 §4a-b's 5Y CDS and Module 10 §4c's spread-driven MTM math — the asset class where basis points quote the risk premium itself, not a benchmark rate.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">CDS Spread in Bps</span><span class="t-id">Module 9 §4a-b / Module 10 §4c</span></div>
+        <pre>AT INCEPTION:
+  Notional: USD 10,000,000
+  Running Coupon: 100 bps (fixed, contractual, quarterly)
+  Market Spread at inception: 250 bps (market-judged credit risk)
+
+  Because coupon (100bps) is below market spread (250bps) at trade
+  date, Bank Of Toronto pays an upfront:
+    Upfront ~ (2.50% - 1.00%) x ~4.5 (Risky Duration) x 10,000,000
+            = USD 675,000
+
+ONE YEAR LATER -- market spread WIDENS to 400 bps, Risky Duration ~4.0:
+  Current Approx. Value = (Market Spread - Running Coupon)
+                            x Risky Duration x Notional
+                         = (4.00% - 1.00%) x 4.0 x 10,000,000
+                         = USD 1,200,000
+
+  Unrealized Gain to Bank Of Toronto (protection buyer)
+    = 1,200,000 - 675,000 = USD 525,000
+
+-&gt; "Spread DV01" (CS01) is the DV01 concept applied to a 1bp move
+   in the CREDIT SPREAD instead of a benchmark rate.</pre>
+      </div>
+
+      <p><b>Why credit spreads move faster/wider than rates.</b> A benchmark rate typically moves in 25bp increments at scheduled central bank meetings (Section 8). A credit spread has no such schedule — it can widen or narrow by dozens or hundreds of bps within days on company-specific news, because it prices a single entity's default risk, not a shared policy rate.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A CDS's Running Coupon is fixed at inception; its market value changes because the market spread — quoted in bps, moving continuously — diverges from that fixed coupon. Same "locked in vs. what the market offers today" mechanic as Sections 3–4, with Spread DV01 replacing bond/swap DV01.</div>
+    </section>
+
+    <section class="mod" id="equity">
+      <p class="sec-eyebrow"><span class="n">06</span> · Cost, not price</p>
+      <h2>Worked Example — Equity: Basis Points in Fees &amp; Trading Costs</h2>
+      <p class="lede">Equity is the clearest illustration that bps don't automatically apply to a raw price. Where they genuinely show up is cost — management fees and bid-ask spreads, built on Module 4's Maple Leaf Pension Fund positions.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Management Fee in Bps</span><span class="t-id">Illustrative, Module 4 positions</span></div>
+        <pre>Maple Leaf Pension Fund equity allocation: CAD 500,000,000
+(aggregate, including the 10,000-share KO holding, Module 4 §4a)
+
+Annual Management Fee: 45 basis points (0.45%) of AUM -- an "MER"
+in fund-industry terms
+
+Annual Fee Cost = 500,000,000 x 0.0045 = CAD 2,250,000
+
+-&gt; Same "bps x 0.0001 x exposure" formula -- here "exposure" is
+   Assets Under Management, and the bps figure is a FEE RATE, not
+   a market-observed yield or spread.</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Bid-Ask Spread in Bps — AAPL</span></div>
+        <pre>AAPL Bid: USD 259.98 | Ask: USD 260.02
+Absolute Spread = 260.02 - 259.98 = USD 0.04
+
+Spread in bps = (Absolute Spread / Mid Price) x 10,000
+              = (0.04 / 260.00) x 10,000
+              = 1.5 bps
+
+-&gt; Quoting in bps lets a desk compare execution cost ACROSS stocks
+   with different price levels on a common scale.</pre>
+      </div>
+
+      <p><b>Why the stock price itself usually isn't quoted in bps.</b> AAPL moving from USD 260.00 to USD 262.60 is a 1.00% move — called "up a percent" or "up 260 points" far more often than "up 100bps," even though the arithmetic is identical. A bond yield, swap rate, or CDS spread is already percentage-shaped before any move happens; a stock price is a dollar figure, so bps there are a deliberate choice, not the default.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Equity draws the sharpest line in this module between "bps describes a rate/yield/spread/fee" and "bps does NOT automatically describe a raw price" — a distinction a reporting system needs to get right to avoid confusion with the yield- and spread-based sensitivities every other asset class here uses bps for.</div>
+    </section>
+
+    <section class="mod" id="fx">
+      <p class="sec-eyebrow"><span class="n">07</span> · A deliberately different unit</p>
+      <h2>Worked Example — FX: Basis Points vs. Pips</h2>
+      <p class="lede">Reusing Module 6 §4a's USD/CAD Spot trade to introduce pips — the unit FX actually quotes moves in, related to bps but not the same thing.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Pips vs. Basis Points — USD/CAD</span><span class="t-id">Module 6 §4a</span></div>
+        <pre>USD/CAD Spot Rate: 1.3500 (quoted to 4 decimal places)
+1 PIP = smallest standard quoted move = 0.0001 -- the LAST decimal
+        place of the quoted rate
+
+Rate moves from 1.3500 to 1.3520 -- a move of 0.0020 = 20 PIPS
+
+IS THIS "20 BASIS POINTS"? -- Only by coincidence, and approximately:
+  20 pips / 1.3500 x 10,000 = 14.8 bps of the RATE ITSELF
+
+-&gt; A pip is a FIXED decimal increment; a basis point is 0.01% of
+   whatever number it's attached to. For USD/JPY (2 decimals),
+   1 pip = 0.01 -- a much bigger fraction of a ~150.00 rate.</pre>
+      </div>
+
+      <p><b>Why FX doesn't just use bps.</b> Unlike a bond yield or swap rate, an FX spot rate isn't inherently a percentage — it's a ratio of two currencies, with a decimal convention that varies by pair. Pips give a fixed, pair-specific tick size, independent of the percentage that tick happens to represent. Where FX genuinely does use bps directly is FX Forward points and cross-currency basis — both rate-shaped numbers, not spot-rate ticks.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Treating pips and bps as interchangeable is a common, usually-harmless-for-USD/CAD simplification that breaks visibly for other pairs — a well-designed FX system should track pips natively for spot/forward moves, and compute a "bps of rate" figure only when that's genuinely what's being asked for.</div>
+    </section>
+
+    <section class="mod" id="frequency">
+      <p class="sec-eyebrow"><span class="n">08</span> · Two different clocks</p>
+      <h2>How Often Do Basis Points Actually Change? — Scheduled Policy vs. Continuous Pricing</h2>
+      <p class="lede">"Basis points" describes a unit, not a frequency — but the things measured in bps change on very different clocks depending on which one it is.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>What moves</th><th>Typical frequency</th><th>Typical size per move</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Central bank policy rate</b></td><td>Scheduled meetings, ~8/year</td><td>25bp norm; 50/75bp in fast cycles; 0bp holds common</td><td>Section 4's curve moves</td></tr>
+          <tr><td><b>Bond yields / YTM</b></td><td>Continuously, every session</td><td>Single-digit bps quiet; tens of bps volatile</td><td>Section 3</td></tr>
+          <tr><td><b>Swap rates</b></td><td>Continuously</td><td>Similar to bond yields</td><td>Section 4</td></tr>
+          <tr><td><b>Credit spreads</b></td><td>Continuously, sharp company-specific jumps</td><td>100+ bps in a day on news</td><td>Section 5</td></tr>
+          <tr><td><b>Management fees</b></td><td>Rarely — contractual, annual reviews</td><td>N/A — not market-driven</td><td>Section 6</td></tr>
+          <tr><td><b>Bid-ask spreads</b></td><td>Continuously, with liquidity</td><td>Can double/triple in stress</td><td>Section 6</td></tr>
+          <tr><td><b>Collateral/margin haircuts</b></td><td>Periodic reviews, not continuous</td><td>Often expressed in bps</td><td>Module 16 — SFTR</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Two Genuinely Different "How Often" Questions</span></div>
+        <pre>"How often does the POLICY RATE change?"
+  -&gt; ~8 scheduled opportunities a year per major central bank, and
+     it can simply NOT move. A DECISION, not a continuously
+     observed price.
+
+"How often does a bond's YIELD / a swap's RATE / a CDS's SPREAD
+change?"
+  -&gt; Continuously, every trade -- OBSERVED MARKET PRICES reacting
+     to everything, including but not limited to expectations
+     about the next policy decision.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A policy rate changing 25bps eight times a year and a bond's YTM ticking by fractions of a bp every few seconds are both "basis point moves," but answer entirely different questions — one a scheduled decision, the other continuous market price discovery. A "how stale is this rate" check needs to know which kind it's holding.</div>
+    </section>
+
+    <section class="mod" id="impact">
+      <p class="sec-eyebrow"><span class="n">09</span> · The mechanism, tied together</p>
+      <h2>Basis Points' Impact on Valuation, MTM &amp; YTM</h2>
+      <p class="lede">Does a bps move actually change what a position is worth, what its MTM shows, and what its YTM reads? Yes — directly and mechanically, via a "per-basis-point sensitivity" that's structurally identical across asset classes.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Concept</th><th>What it answers</th><th>The bps mechanism</th></tr></thead>
+        <tbody>
+          <tr><td><b>Valuation</b></td><td>What is this position worth right now?</td><td>Current Value = f(current YTM/swap rate/spread) — full revaluation, to the basis point</td></tr>
+          <tr><td><b>MTM</b></td><td>How much did that worth change?</td><td>MTM Change &asymp; Basis Points Moved &times; [DV01/Swap DV01/Spread DV01]</td></tr>
+          <tr><td><b>YTM</b></td><td>What am I earning if held to maturity?</td><td>Quoted to the basis point (Section 3's bond: 5.21% = 521bps); a change in market YTM drives the price impact DV01 measures</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">The Same Shape, Three Times Over</span></div>
+        <pre>FIXED INCOME:  Price Impact  = -DV01        x Basis Points Moved
+RATES (SWAP):  MTM Change    =  Swap DV01   x Basis Points Moved
+CREDIT (CDS):  Value Change  =  Spread DV01 x Basis Points Moved
+
+-&gt; Every one of these is "exposure's per-basis-point sensitivity,
+   times how many basis points actually moved." Only the sign
+   convention and which sensitivity measure applies differ -- the
+   arithmetic shape is identical.</pre>
+      </div>
+
+      <p><b>One important nuance.</b> A bond's Coupon Rate is fixed at issuance; YTM moves purely because market Price moves relative to that fixed coupon. A 25bp YTM increase reflects the market re-pricing the same fixed coupon stream at a less generous price — YTM is a derived, market-driven number recomputed continuously off Price, never a contractual term set the way a Coupon Rate is.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> Basis points aren't a side detail attached to valuation, MTM, and YTM — they're the unit these three concepts are measured and moved in, and the DV01-family sensitivities are the mechanical bridge between "the market moved by this many bps" and "my position's dollar value changed by this many dollars."</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">10</span> · A genuine data-quality control point</p>
+      <h2>Basis Points in Regulatory, Collateral &amp; Reporting Context</h2>
+      <p class="lede">Several fields this curriculum's reporting modules already require are, at their core, bps figures — and getting the unit wrong in a reported field is a real, recurring operational error.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Context</th><th>Where bps appears</th><th>Coverage</th></tr></thead>
+        <tbody>
+          <tr><td><b>CDS spread reporting</b></td><td>The "Spread" field on an OTC derivative trade report (EMIR/Dodd-Frank), quoted in bps</td><td>Module 9, Module 2 §9</td></tr>
+          <tr><td><b>Rate benchmark resets</b></td><td>CORRA/SOFR/&euro;STR/SONIA fixings, spread-over-benchmark legs</td><td>Module 8 §1</td></tr>
+          <tr><td><b>Collateral/margin haircuts</b></td><td>Haircut percentages, often adjusted in bps</td><td>Module 12, Module 16 — SFTR</td></tr>
+          <tr><td><b>Repo rates</b></td><td>The repo rate and "repo spread" over a benchmark, in bps</td><td>Repo/SFT worked example</td></tr>
+          <tr><td><b>MiFID II / MiFIR fields</b></td><td>Reported price/yield fields carry bps-level precision requirements</td><td>Module 20</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout"><b>Callout — a genuine operational failure mode.</b> A field that should hold "523" meaning 523 basis points (5.23%) being mistakenly populated with "5.23" (read downstream as 5.23 basis points, 0.0523%) is a two-order-of-magnitude error — the kind of unit-of-measure bug Modules 14 and 20 flag as a recurring real-world data-quality issue. A field's documentation should always state explicitly whether it's "in basis points," "in percent," or "in decimal" — never leave it implied.</div>
+
+      <div class="takeaway"><b>Takeaway.</b> Basis points show up as literal reported fields, not just desk shorthand — the unit-conversion discipline from Section 1 is a genuine data-quality control point in any trade capture or reporting system touching rate-, spread-, or yield-denominated fields.</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">11</span> · Primary sources</p>
+      <h2>Official Sources &amp; Links</h2>
+      <p class="lede">As with this curriculum's other reference modules, pointing to primary sources rather than restating technical rules that get revised periodically.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>Bank of Canada</b></td><td>CORRA and Canadian policy rate decisions</td><td><a href="https://www.bankofcanada.ca" target="_blank" rel="noopener">bankofcanada.ca</a></td></tr>
+          <tr><td><b>Federal Reserve (FOMC)</b></td><td>US policy rate decisions and SOFR</td><td><a href="https://www.federalreserve.gov" target="_blank" rel="noopener">federalreserve.gov</a></td></tr>
+          <tr><td><b>ECB</b></td><td>Eurozone policy rate decisions and &euro;STR</td><td><a href="https://www.ecb.europa.eu" target="_blank" rel="noopener">ecb.europa.eu</a></td></tr>
+          <tr><td><b>Bank of England</b></td><td>UK policy rate decisions and SONIA</td><td><a href="https://www.bankofengland.co.uk" target="_blank" rel="noopener">bankofengland.co.uk</a></td></tr>
+          <tr><td><b>ISDA</b></td><td>Standard CDS documentation, coupon/spread conventions</td><td><a href="https://www.isda.org" target="_blank" rel="noopener">isda.org</a></td></tr>
+          <tr><td><b>ESMA</b></td><td>MiFID II/MiFIR reporting field precision requirements</td><td><a href="https://www.esma.europa.eu" target="_blank" rel="noopener">esma.europa.eu</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Treat each central bank as the source of truth for scheduled policy-rate moves; ISDA for how a credit spread and running coupon are papered; ESMA/MiFID for exactly what precision a reported price/yield/spread field must carry.</div>
+    </section>
+
+    <section class="mod" id="cast">
+      <p class="sec-eyebrow">Reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td><b>Bank Of Toronto</b></td><td>Holds the Canada 5% Bond 2035 (§3); pays fixed on the 5Y CAD IRS (§4); buys CDS protection (§5); executes the USD/CAD spot trade (§7)</td></tr>
+          <tr><td><b>Goldman Sachs</b></td><td>CDS protection seller (§5); FX spot counterparty (§7)</td></tr>
+          <tr><td><b>Maple Leaf Pension Fund</b></td><td>Holds the equity allocation subject to the management fee, and the KO/AAPL positions used in the bid-ask spread illustration (§6)</td></tr>
+          <tr><td><b>Central banks (BoC/Fed/ECB/BoE)</b></td><td>Set scheduled policy rates anchoring CORRA/SOFR/&euro;STR/SONIA and, indirectly, every benchmark rate this module's Rates examples reference (§8)</td></tr>
+          <tr><td><b>ISDA / ESMA</b></td><td>Documentation and reporting-precision standard-setters (§§10–11)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+      <div class="quiz">
+        <ol>
+          <li>Using Section 1, why is "25 basis points" a more precise, less ambiguous way to describe a rate move than "0.25%," even though they mean the same thing?</li>
+          <li>Using Section 2, name one asset class where basis points do not typically describe the instrument's own price, and explain what they measure instead there.</li>
+          <li>Using Section 3, why does the sign of a DV01-based price impact flip depending on whether yields rise or fall, even though the DV01 dollar figure itself stays the same?</li>
+          <li>Using Section 4, why can't a swap's DV01 be reliably estimated as a simple fraction of its Notional?</li>
+          <li>Using Section 5, why do credit spreads typically move faster and by larger amounts than benchmark interest rates?</li>
+          <li>Using Section 6, what is the key difference between how bps apply to AAPL's bid-ask spread versus AAPL's raw share price move?</li>
+          <li>Using Section 7, why isn't "20 pips" on USD/CAD exactly the same thing as "20 basis points" of the USD/CAD rate?</li>
+          <li>Using Section 8, what's the difference between "how often does the policy rate change" and "how often does a bond's YTM change"?</li>
+          <li>Using Section 9, what single formula shape connects DV01, Swap DV01, and Spread DV01 across Fixed Income, Rates, and Credit?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — "0.25%" is easy to misread as "25%" or confused with a percentage-of-original-value change; "25 basis points" is an absolute, additive unit read identically regardless of the starting rate</h5>
+        <p>Section 1's conversion table — bps are additive, not multiplicative, and unambiguous across different base rates.</p>
+
+        <h5>Q2 — Equity: bps measure management/advisory fees (as % of AUM) or bid-ask trading spreads, not the stock's own price level</h5>
+        <p>Section 6's fee and bid-ask examples, contrasted explicitly with Sections 3–5's rate/yield/spread-based uses.</p>
+
+        <h5>Q3 — Bond prices and yields move inversely; DV01 measures the magnitude of impact per bp (same regardless of direction), but whether it's a gain or loss depends on which way yields moved</h5>
+        <p>Section 3's Scenario A (rise, loses CAD 177,300) vs. Scenario B (fall, gains CAD 283,680) — same CAD 7,092/bp DV01, opposite signs.</p>
+
+        <h5>Q4 — A swap's DV01 depends on the shape and remaining term of its full cash flow schedule, not just Notional</h5>
+        <p>Section 4: the swap's Notional is ~10x the bond's Market Value but its DV01 is only ~5.8x — DV01 is always the output of a revaluation, never a fixed ratio of Notional.</p>
+
+        <h5>Q5 — A credit spread prices a single entity's default risk, driven by company-specific news with no fixed schedule; a benchmark rate is anchored to a policy rate moving only at ~8 scheduled meetings a year</h5>
+        <p>Section 5's discussion, and Section 8's table contrasting scheduled policy moves against continuous, sometimes sharp, credit-spread moves.</p>
+
+        <h5>Q6 — The bid-ask spread is a deliberate bps figure used to compare trading costs across stocks; the raw share price move is conventionally described in percent or dollars, not bps</h5>
+        <p>Section 6's bid-ask worked example and its "why the stock price itself usually isn't quoted in bps" discussion.</p>
+
+        <h5>Q7 — A pip is a fixed decimal increment (0.0001 for most pairs); a basis point is always 0.01% of whatever number it's attached to — they diverge for pairs at different rate levels or decimal conventions</h5>
+        <p>Section 7 computes both explicitly (20 pips vs. 14.8bps of rate for the same USD/CAD move).</p>
+
+        <h5>Q8 — A policy rate changes only at scheduled meetings (~8/year) and can simply not move; a bond's YTM is a continuously observed market price, recomputed every trade</h5>
+        <p>Section 8's two-question breakdown distinguishing "decision" clocks from "continuous market pricing" clocks.</p>
+
+        <h5>Q9 — "Exposure's per-basis-point sensitivity, times how many basis points actually moved" — DV01 &times; bps moved, Swap DV01 &times; bps moved, Spread DV01 &times; bps moved</h5>
+        <div class="takeaway">Section 9's "same shape, three times over" diagram states this formula explicitly for all three asset classes side by side.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

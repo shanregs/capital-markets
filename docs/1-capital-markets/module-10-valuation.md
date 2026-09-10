@@ -138,6 +138,8 @@ DV01 (Dollar Value of 1 Basis Point) — Canada 5% Bond 2035
 
 **Takeaway:** YTM answers "what am I actually earning if I hold to maturity"; Duration/DV01 answers "how much does this position's *value* move if yields shift." Both are derived entirely from the same three inputs (Price, Coupon, Maturity) that [Module 5](./module-05-fixed-income.md) §1 already established as the bond's core fields — nothing new is needed, just the math those fields were always building toward.
 
+> **Deep dive available.** For the basis point unit itself — why capital markets uses bps instead of percent, how the same DV01 mechanism reapplies to Rates (Swap DV01) and Credit (Spread DV01), how bps show up (or don't) in Equity and FX, and how often each kind of bps figure actually changes — see the standalone [Basis Points Deep Dive](./module-25-basis-points-deep-dive.md).
+
 ---
 
 ## 4. Derivative Valuation Deep Dive — DCF, Option Pricing &amp; Credit Spreads

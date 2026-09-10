@@ -54,7 +54,7 @@ CLEAN PRICE vs DIRTY PRICE — worked example
 
 ### Duration — a one-line preview
 
-**Definition:** **Duration** (specifically *Modified Duration*) approximates how much a bond's price moves for a 1% change in yield. A bond with a Modified Duration of 8 will see its price fall roughly 8% if yields rise 1%, and rise roughly 8% if yields fall 1%. The full math (and its close relative, DV01) belongs to [Module 10](./module-10-valuation.md) (Valuation) — for now, just the intuition: **longer maturity and lower coupon generally mean higher duration, meaning more price sensitivity to rate moves.**
+**Definition:** **Duration** (specifically *Modified Duration*) approximates how much a bond's price moves for a 1% change in yield. A bond with a Modified Duration of 8 will see its price fall roughly 8% if yields rise 1%, and rise roughly 8% if yields fall 1%. The full math (and its close relative, DV01) belongs to [Module 10](./module-10-valuation.md) (Valuation) — for now, just the intuition: **longer maturity and lower coupon generally mean higher duration, meaning more price sensitivity to rate moves.** For the basis point unit itself — why the bond market measures yield/price sensitivity "per basis point" rather than "per percent," and how the same DV01 mechanism reapplies across Rates, Credit, Equity and FX — see the standalone [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md).
 
 **Takeaway:** Fixed Income terminology all serves one goal — separating what's *fixed at issuance* (Face Value, Coupon Rate, Maturity) from what's *market-driven and changes daily* (Price, Yield, Accrued Interest, and therefore Dirty Price). Getting this split right is the single most useful mental model for any bond-related reporting field.
 

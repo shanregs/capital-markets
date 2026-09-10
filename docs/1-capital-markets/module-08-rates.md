@@ -19,7 +19,7 @@
 | Floating Leg | The side paying a rate that resets periodically against a published reference rate |
 | Reference Rate | The published benchmark a floating leg resets against — e.g. **CORRA** (Canada), **SOFR** (US), **€STR** (EU), **SONIA** (UK) |
 | Payment Dates | The scheduled dates cash flows are calculated and exchanged — quarterly is the most common convention |
-| DV01 | "Dollar Value of 01" — how much a Rates position's value changes for a 1 basis point (0.01%) move in rates; the Rates-specific cousin of [Module 5](./module-05-fixed-income.md) §1's bond Duration, covered fully in [Module 10](./module-10-valuation.md) (Valuation) |
+| DV01 | "Dollar Value of 01" — how much a Rates position's value changes for a 1 basis point (0.01%) move in rates; the Rates-specific cousin of [Module 5](./module-05-fixed-income.md) §1's bond Duration, covered fully in [Module 10](./module-10-valuation.md) (Valuation). For the basis point unit itself, across every asset class, see [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md). |
 
 ### The LIBOR-to-RFR transition — why "CORRA" and not "CDOR" or "LIBOR"
 

@@ -19,8 +19,11 @@
 | Spot Rate | Today's exchange rate, for near-immediate settlement ([Module 1](./module-01-fundamentals.md) §6) |
 | Forward Points | The adjustment added to (or subtracted from) the spot rate to get a forward rate, driven by the interest rate differential between the two currencies ([Module 2](./module-02-hierarchy.md) §10) |
 | Notional | The currency amount referenced by the contract — in FX, this genuinely does settle for Spot/Forward (unlike an IRS's notional, [Module 1](./module-01-fundamentals.md) §8) |
+| Pip | The smallest standard quoted move in an exchange rate (0.0001 for most pairs, 0.01 for JPY crosses) — FX's own unit for quoting rate moves, related to but **not the same thing as** a basis point |
 
 **Takeaway:** FX sits in an unusual spot in the Asset Class Roadmap — it has no "security" the way Equity (a share) or Fixed Income (a bond) does. Every single FX product, from the simplest same-day trade to the most complex option, is a contractual agreement between two parties. Section 3 makes this explicit.
+
+> **Deep dive available.** FX is the one asset class in this curriculum that mostly opts out of basis points in favor of pips — see [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md) §7 for a worked USD/CAD example showing exactly why "20 pips" isn't the same thing as "20 basis points."
 
 ---
 

@@ -22,6 +22,8 @@
 | Upfront Payment | A one-time payment, in either direction, that reconciles the gap between the market's actual credit spread and the standardized Running Coupon (Section 4) |
 | Recovery Rate | The fraction of face value creditors are expected to recover after a default — directly determines how much a CDS pays out |
 
+> **Deep dive available.** Running Coupon and market spread are both quoted in basis points — for the basis point unit itself, and "Spread DV01" (the credit-market sensitivity measure that converts a bps spread move into a dollar value change, Section 4's own valuation mechanic), see [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md) §5.
+
 ```text
 CDS AS INSURANCE — the core mental model
 ========================================================================
