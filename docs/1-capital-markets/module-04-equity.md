@@ -32,7 +32,7 @@
 
 **Takeaway:** every other section in this module — products, trade lifecycle, identifiers, regulation — traces back to this one fact: a share is a piece of the company itself, not a promise from it. That's the opposite of a bond, and it's why equity valuation ([Module 10](./module-10-valuation.md)) looks completely different from bond valuation.
 
-> **Deep dive available.** Equity doesn't use basis points to describe a share's own price move the way Fixed Income and Rates do for yields — but bps genuinely show up here for **management/advisory fees** and **bid-ask trading spreads**. See [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md) §6 for both worked examples.
+> **Deep dive available.** Equity doesn't use basis points to describe a share's own price move the way Fixed Income and Rates do for yields — but bps genuinely show up here for **management/advisory fees** and **bid-ask trading spreads**. See [Module 24 — Basis Points Deep Dive](./module-24-basis-points-deep-dive.md) §6 for both worked examples.
 
 ---
 
@@ -241,7 +241,7 @@ COCA-COLA COMMON STOCK  —  FULL LIFECYCLE
             requirements in some jurisdictions (Module 14)
 ```
 
-> **Deep dive available.** For the full theory of what a Position is, how it's built across every asset class, and how often it actually changes: [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §3.
+> **Deep dive available.** For the full theory of what a Position is, how it's built across every asset class, and how often it actually changes: [Module 25 — Position Deep Dive](./module-25-position-deep-dive.md) §3.
 
 ### How Clearing differs for the derivative products
 

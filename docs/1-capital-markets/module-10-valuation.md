@@ -42,7 +42,7 @@ WHY THESE SIX AREN'T SYNONYMS — one trade record, six different numbers
                      against WHOM -- covered fully in Module 11
 ```
 
-> **Deep dive available.** "Price × Quantity" hides a second variable this table doesn't spell out: **Quantity is the Position** — the same market Price applied to twice the position produces exactly twice the Market Value. For the full theory of what a Position is, how it's built per asset class, and why Position size is the multiplier that turns every one of these valuation numbers into a dollar figure, see [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md).
+> **Deep dive available.** "Price × Quantity" hides a second variable this table doesn't spell out: **Quantity is the Position** — the same market Price applied to twice the position produces exactly twice the Market Value. For the full theory of what a Position is, how it's built per asset class, and why Position size is the multiplier that turns every one of these valuation numbers into a dollar figure, see [Module 25 — Position Deep Dive](./module-25-position-deep-dive.md).
 
 **Takeaway:** every worked example across Modules 4–9 and 15 already used at least two or three of these six terms without formally separating them. This module's whole job is to make that separation explicit, then show the actual math — YTM/Duration for Fixed Income (Section 3), DCF/NPV and option pricing for derivatives (Section 4) — that every prior module deferred to "[Module 10](./module-10-valuation.md)."
 
@@ -140,7 +140,7 @@ DV01 (Dollar Value of 1 Basis Point) — Canada 5% Bond 2035
 
 **Takeaway:** YTM answers "what am I actually earning if I hold to maturity"; Duration/DV01 answers "how much does this position's *value* move if yields shift." Both are derived entirely from the same three inputs (Price, Coupon, Maturity) that [Module 5](./module-05-fixed-income.md) §1 already established as the bond's core fields — nothing new is needed, just the math those fields were always building toward.
 
-> **Deep dive available.** For the basis point unit itself — why capital markets uses bps instead of percent, how the same DV01 mechanism reapplies to Rates (Swap DV01) and Credit (Spread DV01), how bps show up (or don't) in Equity and FX, and how often each kind of bps figure actually changes — see the standalone [Basis Points Deep Dive](./module-25-basis-points-deep-dive.md).
+> **Deep dive available.** For the basis point unit itself — why capital markets uses bps instead of percent, how the same DV01 mechanism reapplies to Rates (Swap DV01) and Credit (Spread DV01), how bps show up (or don't) in Equity and FX, and how often each kind of bps figure actually changes — see the standalone [Basis Points Deep Dive](./module-24-basis-points-deep-dive.md).
 
 ---
 

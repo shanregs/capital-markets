@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Module 26 — Position Deep Dive</title>
+<title>Module 25 — Position Deep Dive</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
@@ -472,7 +472,7 @@
   <div class="masthead">
     <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
     <div class="masthead-top">
-      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 26</div>
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 25</div>
       <div class="theme-switch" role="group" aria-label="Theme">
         <button type="button" data-mode="system" aria-pressed="true">System</button>
         <button type="button" data-mode="light" aria-pressed="false">Light</button>
@@ -482,7 +482,7 @@
     <h1>Position Deep Dive</h1>
     <p class="dek">Theory, worked examples, and impact on Valuation, MTM, YTM &amp; daily regulatory reporting — what a Position actually is, how it differs from a Trade, how it's built in Equity, Fixed Income, FX, Rates, Credit and Commodities, how often it changes, and how EMIR/SFTR turn its daily revaluation into a standing regulatory obligation.</p>
     <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
-    <div class="roadmap-note"><b>Reference module.</b> Companion to the <a href="./module-25-basis-points-deep-dive.html">Basis Points Deep Dive</a> and the <a href="./module-22-hedging-deep-dive.html">Hedging Deep Dive</a>. Pulls together the POSITION lifecycle stage already shown in Modules 4–9, and ties it to Module 10's Valuation/MTM, Module 11's VaR, and Module 14's regulatory reporting obligations.</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to the <a href="./module-24-basis-points-deep-dive.html">Basis Points Deep Dive</a> and the <a href="./module-22-hedging-deep-dive.html">Hedging Deep Dive</a>. Pulls together the POSITION lifecycle stage already shown in Modules 4–9, and ties it to Module 10's Valuation/MTM, Module 11's VaR, and Module 14's regulatory reporting obligations.</div>
   </div>
 
   <nav class="toc" aria-label="On this page">
@@ -608,7 +608,7 @@ VALUATION / P&amp;L -- marked daily to Clean Price, PLUS accrual:
     Accrual P&amp;L = 106,164 - 82,418                = +CAD 23,746</pre>
       </div>
 
-      <p><b>Why position SIZE turns a basis-point move into a dollar figure.</b> Module 25 §3's DV01 (CAD 7,092/bp) is computed directly off this position's Market Value (CAD 9,850,000). Doubling the face value to CAD 20,000,000 would double DV01 to ~CAD 14,184/bp, for the identical 25bp yield move. Position size is the multiplier that turns a per-unit sensitivity into an actual dollar P&amp;L.</p>
+      <p><b>Why position SIZE turns a basis-point move into a dollar figure.</b> Module 24 §3's DV01 (CAD 7,092/bp) is computed directly off this position's Market Value (CAD 9,850,000). Doubling the face value to CAD 20,000,000 would double DV01 to ~CAD 14,184/bp, for the identical 25bp yield move. Position size is the multiplier that turns a per-unit sensitivity into an actual dollar P&amp;L.</p>
 
       <div class="takeaway"><b>Takeaway.</b> A position's valuation depends on both a per-unit market observation (Clean Price/YTM, set by the whole market) and the position's own size (which only changes when Bank Of Toronto itself trades) — two inputs that change on entirely different logic.</div>
     </section>

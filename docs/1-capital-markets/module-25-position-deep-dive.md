@@ -1,10 +1,10 @@
-# Module 26 — Position Deep Dive — Theory, Worked Examples &amp; Impact on Valuation, MTM, YTM &amp; Daily Regulatory Reporting
+# Module 25 — Position Deep Dive — Theory, Worked Examples &amp; Impact on Valuation, MTM, YTM &amp; Daily Regulatory Reporting
 
 [← Back to Index](../../index.md)
 
 > Audience note: written for a software architect (Java background) new to Finance/Capital Markets.
 > Example bank used throughout: **Bank Of Toronto** (fictional, for illustration only).
-> **Reference module**, in the same family as the [Basis Points Deep Dive](./module-25-basis-points-deep-dive.md) and the [Hedging Deep Dive](./module-22-hedging-deep-dive.md). "Position" already appears as its own lifecycle stage in every asset class module ([Module 4](./module-04-equity.md) §5, [Module 5](./module-05-fixed-income.md) §5, [Module 6](./module-06-fx.md) §5, [Module 7](./module-07-commodities.md) §5, [Module 8](./module-08-rates.md) §5) and drives [Module 10](./module-10-valuation.md)'s Valuation/MTM math and [Module 11](./module-11-risk-exposure.md)'s VaR — this module pulls every one of those together under a single theory, and adds the "how does a Position actually reach a regulator, and how often" answer this curriculum keeps returning to.
+> **Reference module**, in the same family as the [Basis Points Deep Dive](./module-24-basis-points-deep-dive.md) and the [Hedging Deep Dive](./module-22-hedging-deep-dive.md). "Position" already appears as its own lifecycle stage in every asset class module ([Module 4](./module-04-equity.md) §5, [Module 5](./module-05-fixed-income.md) §5, [Module 6](./module-06-fx.md) §5, [Module 7](./module-07-commodities.md) §5, [Module 8](./module-08-rates.md) §5) and drives [Module 10](./module-10-valuation.md)'s Valuation/MTM math and [Module 11](./module-11-risk-exposure.md)'s VaR — this module pulls every one of those together under a single theory, and adds the "how does a Position actually reach a regulator, and how often" answer this curriculum keeps returning to.
 
 ---
 
@@ -127,7 +127,7 @@ FIXED INCOME POSITION — BANK OF TORONTO, CANADA 5% BOND 2035
      accrual of Coupon Rate x days elapsed (Module 5 §1).
 ```
 
-**Why position SIZE is what turns a basis-point move into a dollar figure.** [Module 25](./module-25-basis-points-deep-dive.md) §3's DV01 (CAD 7,092 per basis point) is computed directly off this exact position's Market Value (CAD 9,850,000) — DV01 = Modified Duration × **Market Value** × 0.0001. If Bank Of Toronto instead held CAD 20,000,000 face value of the identical bond, DV01 would double to roughly CAD 14,184/bp, for the exact same 25bp yield move. **Position size is the multiplier that turns a per-unit sensitivity into an actual dollar P&amp;L** — the yield itself (and the bond's Modified Duration, a property of its cash flow schedule) doesn't depend on how much of it any one firm holds, but the total DV01 in dollars absolutely does.
+**Why position SIZE is what turns a basis-point move into a dollar figure.** [Module 24](./module-24-basis-points-deep-dive.md) §3's DV01 (CAD 7,092 per basis point) is computed directly off this exact position's Market Value (CAD 9,850,000) — DV01 = Modified Duration × **Market Value** × 0.0001. If Bank Of Toronto instead held CAD 20,000,000 face value of the identical bond, DV01 would double to roughly CAD 14,184/bp, for the exact same 25bp yield move. **Position size is the multiplier that turns a per-unit sensitivity into an actual dollar P&amp;L** — the yield itself (and the bond's Modified Duration, a property of its cash flow schedule) doesn't depend on how much of it any one firm holds, but the total DV01 in dollars absolutely does.
 
 **Takeaway:** Fixed Income makes explicit something Section 3's equity example only implied — a position's valuation depends on both a per-unit market observation (Clean Price, or YTM) and the position's own size, and those two inputs change on entirely different logic: price/yield is set by the whole market; size only changes when Bank Of Toronto itself trades.
 
@@ -188,7 +188,7 @@ RATES POSITION — BANK OF TORONTO, 5Y CAD IRS  (Module 8 §5)
   current CORRA curve (Module 10 §4a):
     Rate moves 4.00% -&gt; 4.30% (30bp rise)
     Approx. MTM Gain = Swap DV01 x bps moved = 41,000 x 30
-                      = CAD 1,230,000 (Module 25 §4)
+                      = CAD 1,230,000 (Module 24 §4)
 ```
 
 ```text
@@ -204,7 +204,7 @@ CREDIT POSITION — BANK OF TORONTO, CDS ON NORTHSTAR RESOURCES INC.
   referenced inside a live contract, not a quantity physically held
 
   VALUATION / P&amp;L -- marked-to-market as the market spread moves
-  away from the fixed Running Coupon (Module 25 §5):
+  away from the fixed Running Coupon (Module 24 §5):
     Market spread widens 250bps -&gt; 400bps over one year
     Unrealized Gain = USD 525,000 to Bank Of Toronto (protection
                        buyer benefits as credit worsens)
@@ -212,7 +212,7 @@ CREDIT POSITION — BANK OF TORONTO, CDS ON NORTHSTAR RESOURCES INC.
 
 **Why this matters for a position-keeping system's data model.** A Rates or Credit "position" table cannot reuse an Equity/Fixed Income position table's assumption that Quantity is a simple running total of buys minus sells of an identical, fungible unit (a share, a bond). An IRS or CDS position is instead **one row per live contract**, carrying that contract's own notional, rate/spread terms, and remaining schedule — closing out the position means terminating or offsetting the specific contract, not "selling some quantity" the way a share position works.
 
-**Takeaway:** Sections 3–5 (Equity, Fixed Income, FX) and this section (Rates, Credit) represent the two fundamentally different position shapes this curriculum's six asset classes produce — **quantity-held positions** (fungible units accumulate) versus **contract-referencing positions** (one row per live derivative, valued off its own notional and terms) — and [Module 25](./module-25-basis-points-deep-dive.md) §4–5's Swap DV01 / Spread DV01 are exactly the tools that convert the second kind into a dollar MTM figure the same way DV01 does for the first kind.
+**Takeaway:** Sections 3–5 (Equity, Fixed Income, FX) and this section (Rates, Credit) represent the two fundamentally different position shapes this curriculum's six asset classes produce — **quantity-held positions** (fungible units accumulate) versus **contract-referencing positions** (one row per live derivative, valued off its own notional and terms) — and [Module 24](./module-24-basis-points-deep-dive.md) §4–5's Swap DV01 / Spread DV01 are exactly the tools that convert the second kind into a dollar MTM figure the same way DV01 does for the first kind.
 
 ---
 
@@ -278,7 +278,7 @@ AS MODULE 25 §8's BPS-FREQUENCY DISTINCTION
        regulatory reporting, Section 9).
 ```
 
-**Intraday (real-time) position vs. End-of-Day (official) position.** A trading desk's front-office system typically shows a **real-time** running position throughout the day, updating with every fill. But the position that feeds risk, P&amp;L sign-off, and regulatory reporting is almost always the **End-of-Day (EOD) snapshot** — a single, reconciled, official number captured once per business day ([Module 3](./module-03-trade-lifecycle.md) §8's reconciliation is exactly the control that certifies this snapshot is correct). The two can legitimately disagree mid-day without either being "wrong" — they're answering different questions, the same way [Module 25](./module-25-basis-points-deep-dive.md) §8 distinguished a scheduled policy rate from a continuously observed market yield.
+**Intraday (real-time) position vs. End-of-Day (official) position.** A trading desk's front-office system typically shows a **real-time** running position throughout the day, updating with every fill. But the position that feeds risk, P&amp;L sign-off, and regulatory reporting is almost always the **End-of-Day (EOD) snapshot** — a single, reconciled, official number captured once per business day ([Module 3](./module-03-trade-lifecycle.md) §8's reconciliation is exactly the control that certifies this snapshot is correct). The two can legitimately disagree mid-day without either being "wrong" — they're answering different questions, the same way [Module 24](./module-24-basis-points-deep-dive.md) §8 distinguished a scheduled policy rate from a continuously observed market yield.
 
 **Takeaway:** a position's *quantity* changes only on trade events; its *valuation* changes continuously but is officially captured once a day; and *corporate/contractual events* change it on their own, event-specific schedule unrelated to trading activity at all. A system's "as-of" timestamp on any position figure needs to say which of these three clocks it's reporting against.
 
@@ -291,7 +291,7 @@ AS MODULE 25 §8's BPS-FREQUENCY DISTINCTION
 | Concept | What it answers | How Position drives it |
 |---|---|---|
 | **Valuation** | What is this holding worth right now? | Valuation = Position Quantity/Notional × current market Price/Rate/Spread — Sections 3–7 all compute exactly this |
-| **MTM** | How much did that worth change since the last valuation? | MTM Change = Position size × (bps moved × per-unit sensitivity) — [Module 25](./module-25-basis-points-deep-dive.md) §9's DV01/Swap DV01/Spread DV01 formulas, scaled by Section 4's position-size multiplier |
+| **MTM** | How much did that worth change since the last valuation? | MTM Change = Position size × (bps moved × per-unit sensitivity) — [Module 24](./module-24-basis-points-deep-dive.md) §9's DV01/Swap DV01/Spread DV01 formulas, scaled by Section 4's position-size multiplier |
 | **YTM** | What am I earning if I hold this bond to maturity? | YTM is a **per-unit** figure — it does not change with position size at all; only the *total dollar* P&amp;L impact of a YTM move scales with how much face value is held |
 
 ```text
@@ -330,7 +330,7 @@ BUT THE DOLLAR IMPACT OF A YTM MOVE DOES
 ========================================================================
 
   Position: CAD 10,000,000 face value (Section 4 here)
-  DV01: CAD 7,092 per basis point (position-sized, Module 25 §3)
+  DV01: CAD 7,092 per basis point (position-sized, Module 24 §3)
   Assumed daily yield volatility: 8 basis points
   99% confidence multiplier: ~2.33
 

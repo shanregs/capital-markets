@@ -31,9 +31,9 @@ Open **[`index.md`](./index.md)** (or **[`index.html`](./index.html)** for the s
     │   ├── module-19-interest-rate-swap-deep-dive.md         # Reference: IRS deep dive (no .html yet)
     │   ├── module-22-hedging-deep-dive.{md,html}             # Reference: Hedging deep dive
     │   ├── module-23-otc-forward-swap-option-deep-dive.{md,html}  # Reference: Forward/Swap/Option deep dive
-    │   ├── module-24-otc-derivative-usd-cad-forward-complete-lifecycle.{md,html}  # Module 24: full lifecycle walkthrough
-    │   ├── module-25-basis-points-deep-dive.{md,html}        # Reference: Basis Points deep dive
-    │   ├── module-26-position-deep-dive.{md,html}            # Reference: Position deep dive
+    │   ├── module-24-basis-points-deep-dive.{md,html}        # Reference: Basis Points deep dive
+    │   ├── module-25-position-deep-dive.{md,html}            # Reference: Position deep dive
+    │   ├── module-26-otc-derivative-usd-cad-forward-complete-lifecycle.{md,html}  # Module 26: full lifecycle walkthrough
     │   ├── abbreviations.{md,html}           # Acronym glossary
     │   ├── systems-landscape.{md,html}       # Front/Middle/Back Office systems by region
     │   └── Capital-Markets.docx               # Supplementary Word document

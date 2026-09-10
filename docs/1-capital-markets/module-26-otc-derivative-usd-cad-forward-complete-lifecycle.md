@@ -1,4 +1,4 @@
-# Module 24 — Complete OTC Derivative Lifecycle — USD/CAD FX Forward
+# Module 26 — Complete OTC Derivative Lifecycle — USD/CAD FX Forward
 
 [← Back to Index](../../index.md)
 

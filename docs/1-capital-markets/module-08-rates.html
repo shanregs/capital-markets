@@ -517,7 +517,7 @@
           <tr><td>Floating Leg</td><td>The side paying a rate that resets periodically against a published reference rate</td></tr>
           <tr><td>Reference Rate</td><td>The published benchmark a floating leg resets against — e.g. CORRA (Canada), SOFR (US), €STR (EU), SONIA (UK)</td></tr>
           <tr><td>Payment Dates</td><td>The scheduled dates cash flows are calculated and exchanged — quarterly is the most common convention</td></tr>
-          <tr><td>DV01</td><td>"Dollar Value of 01" — how much a Rates position's value changes for a 1bp move in rates; the Rates cousin of <a href="./module-05-fixed-income.html">Module 5</a> §1's Duration, covered fully in <a href="./module-10-valuation.html">Module 10</a> (Valuation). For the basis point unit itself, across every asset class, see <a href="./module-25-basis-points-deep-dive.html">Module 25 — Basis Points Deep Dive</a>.</td></tr>
+          <tr><td>DV01</td><td>"Dollar Value of 01" — how much a Rates position's value changes for a 1bp move in rates; the Rates cousin of <a href="./module-05-fixed-income.html">Module 5</a> §1's Duration, covered fully in <a href="./module-10-valuation.html">Module 10</a> (Valuation). For the basis point unit itself, across every asset class, see <a href="./module-24-basis-points-deep-dive.html">Module 24 — Basis Points Deep Dive</a>.</td></tr>
         </tbody>
       </table>
       </div>
@@ -773,7 +773,7 @@ REPORTING — reported to a Trade Repository (DTCC GTR / REGIS-TR)
 
       <div class="takeaway"><b>Takeaway.</b> A single trade generates 20 separate quarterly settlement events over its life, each needing its own net cash flow calculation off a then-current CORRA reset — nothing else in this roadmap has a lifecycle that repeats its own Settlement stage that many times from one Trade Capture event.</div>
 
-      <div class="callout"><b>Deep dive available.</b> An IRS position is pure notional referenced inside a live contract, not a held quantity — one row per contract, valued off its own terms. For the full theory (and the same pattern for CDS), see <a href="./module-26-position-deep-dive.html">Module 26 — Position Deep Dive</a> §6.</div>
+      <div class="callout"><b>Deep dive available.</b> An IRS position is pure notional referenced inside a live contract, not a held quantity — one row per contract, valued off its own terms. For the full theory (and the same pattern for CDS), see <a href="./module-25-position-deep-dive.html">Module 25 — Position Deep Dive</a> §6.</div>
     </section>
 
     <section class="mod" id="identifiers">

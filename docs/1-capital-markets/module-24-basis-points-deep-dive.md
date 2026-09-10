@@ -1,4 +1,4 @@
-# Module 25 — Basis Points Deep Dive — Theory, Worked Examples &amp; Impact on Valuation, MTM &amp; YTM
+# Module 24 — Basis Points Deep Dive — Theory, Worked Examples &amp; Impact on Valuation, MTM &amp; YTM
 
 [← Back to Index](../../index.md)
 

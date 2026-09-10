@@ -23,7 +23,7 @@
 
 **Takeaway:** FX sits in an unusual spot in the Asset Class Roadmap — it has no "security" the way Equity (a share) or Fixed Income (a bond) does. Every single FX product, from the simplest same-day trade to the most complex option, is a contractual agreement between two parties. Section 3 makes this explicit.
 
-> **Deep dive available.** FX is the one asset class in this curriculum that mostly opts out of basis points in favor of pips — see [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md) §7 for a worked USD/CAD example showing exactly why "20 pips" isn't the same thing as "20 basis points."
+> **Deep dive available.** FX is the one asset class in this curriculum that mostly opts out of basis points in favor of pips — see [Module 24 — Basis Points Deep Dive](./module-24-basis-points-deep-dive.md) §7 for a worked USD/CAD example showing exactly why "20 pips" isn't the same thing as "20 basis points."
 
 ---
 
@@ -215,7 +215,7 @@ USD/CAD SPOT  —  FULL LIFECYCLE
             as a derivative at all under EMIR/CFTC rules
 ```
 
-> **Deep dive available.** An FX position is genuinely two linked currency balances, not one number — for the full theory: [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §5.
+> **Deep dive available.** An FX position is genuinely two linked currency balances, not one number — for the full theory: [Module 25 — Position Deep Dive](./module-25-position-deep-dive.md) §5.
 
 ### CLS — FX's answer to DvP
 

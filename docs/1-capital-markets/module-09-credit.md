@@ -22,7 +22,7 @@
 | Upfront Payment | A one-time payment, in either direction, that reconciles the gap between the market's actual credit spread and the standardized Running Coupon (Section 4) |
 | Recovery Rate | The fraction of face value creditors are expected to recover after a default — directly determines how much a CDS pays out |
 
-> **Deep dive available.** Running Coupon and market spread are both quoted in basis points — for the basis point unit itself, and "Spread DV01" (the credit-market sensitivity measure that converts a bps spread move into a dollar value change, Section 4's own valuation mechanic), see [Module 25 — Basis Points Deep Dive](./module-25-basis-points-deep-dive.md) §5.
+> **Deep dive available.** Running Coupon and market spread are both quoted in basis points — for the basis point unit itself, and "Spread DV01" (the credit-market sensitivity measure that converts a bps spread move into a dollar value change, Section 4's own valuation mechanic), see [Module 24 — Basis Points Deep Dive](./module-24-basis-points-deep-dive.md) §5.
 
 ```text
 CDS AS INSURANCE — the core mental model
@@ -229,7 +229,7 @@ Applying **Order → Execution → Trade Capture → Confirmation → Clearing �
 
 **Takeaway:** every other product in this roadmap either runs to its stated maturity or is closed out/rolled voluntarily ([Module 7](./module-07-commodities.md) §4b's futures roll). A CDS is the first product where an *external event outside either counterparty's control* can end the trade early — the Reference Entity's own solvency, not a market price move, is what terminates it.
 
-> **Deep dive available.** A CDS position is pure notional of protection bought/sold, valued off the gap between its fixed Running Coupon and the current market spread — for the full theory, see [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §6.
+> **Deep dive available.** A CDS position is pure notional of protection bought/sold, valued off the gap between its fixed Running Coupon and the current market spread — for the full theory, see [Module 25 — Position Deep Dive](./module-25-position-deep-dive.md) §6.
 
 ---
 
