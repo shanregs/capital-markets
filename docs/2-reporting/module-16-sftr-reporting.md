@@ -341,6 +341,8 @@ VALUATION UPDATE REPORT — DAY 2
 
 **Why it gets reported:** daily valuation is what lets a regulator (or the counterparties themselves) see whether collateral coverage is still adequate as prices move — without it, a repo's reported terms would freeze at Day 1's numbers even as the real economic exposure drifted, exactly the kind of stale-data risk [Module 10](../1-capital-markets/module-10-valuation.md) §1 flags for any Mark-to-Market process.
 
+> **Deep dive available.** This Day 1 → Day 2 valuation update is a **position**-level report, not a trade-level one — no new trade happened, only the standing repo position's market value moved. For the full theory of how SFTR's daily obligation compares to EMIR's and MiFID's very different position-reporting cadences, see [Module 26 — Position Deep Dive](../1-capital-markets/module-26-position-deep-dive.md) §11.
+
 ### 6c. Margin data, worked — when the collateral call actually triggers
 
 **Repo margin call.** Continuing 6b: the required collateral value (set on Day 1) stays GBP 20,250,000 (cash lent ÷ (1 − haircut) = 19,845,000 / 0.98). Day 2's actual collateral value has fallen to GBP 20,148,750.

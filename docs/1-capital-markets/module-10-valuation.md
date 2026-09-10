@@ -42,6 +42,8 @@ WHY THESE SIX AREN'T SYNONYMS — one trade record, six different numbers
                      against WHOM -- covered fully in Module 11
 ```
 
+> **Deep dive available.** "Price × Quantity" hides a second variable this table doesn't spell out: **Quantity is the Position** — the same market Price applied to twice the position produces exactly twice the Market Value. For the full theory of what a Position is, how it's built per asset class, and why Position size is the multiplier that turns every one of these valuation numbers into a dollar figure, see [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md).
+
 **Takeaway:** every worked example across Modules 4–9 and 15 already used at least two or three of these six terms without formally separating them. This module's whole job is to make that separation explicit, then show the actual math — YTM/Duration for Fixed Income (Section 3), DCF/NPV and option pricing for derivatives (Section 4) — that every prior module deferred to "[Module 10](./module-10-valuation.md)."
 
 ---

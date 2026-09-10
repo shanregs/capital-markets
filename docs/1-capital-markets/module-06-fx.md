@@ -215,6 +215,8 @@ USD/CAD SPOT  —  FULL LIFECYCLE
             as a derivative at all under EMIR/CFTC rules
 ```
 
+> **Deep dive available.** An FX position is genuinely two linked currency balances, not one number — for the full theory: [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §5.
+
 ### CLS — FX's answer to DvP
 
 **Definition:** [Module 1](./module-01-fundamentals.md) §7 established DvP (Delivery versus Payment) as the mechanism that ties a security's two settlement legs together so neither side is ever left exposed. FX has no security to deliver — instead, **CLS (Continuous Linked Settlement)**, owned and used by the major global banks (including, illustratively, Bank Of Toronto and Goldman Sachs), performs the FX equivalent: **PvP (Payment versus Payment)**.

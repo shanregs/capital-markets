@@ -772,6 +772,8 @@ REPORTING — reported to a Trade Repository (DTCC GTR / REGIS-TR)
       <div class="callout"><b>Counterparty after clearing.</b> Once novated, Section 04a's CAD 186,986.30 net quarterly flow doesn't move directly between Bank Of Toronto and Goldman Sachs — it moves Bank Of Toronto ↔ LCH SwapClear and, on a separate leg, LCH SwapClear ↔ Goldman Sachs. Section 04a's diagram is still economically correct about the amount and direction; it's just describing the trade's original bilateral terms, before the CLEARING stage above redirects who that amount is actually owed to.</div>
 
       <div class="takeaway"><b>Takeaway.</b> A single trade generates 20 separate quarterly settlement events over its life, each needing its own net cash flow calculation off a then-current CORRA reset — nothing else in this roadmap has a lifecycle that repeats its own Settlement stage that many times from one Trade Capture event.</div>
+
+      <div class="callout"><b>Deep dive available.</b> An IRS position is pure notional referenced inside a live contract, not a held quantity — one row per contract, valued off its own terms. For the full theory (and the same pattern for CDS), see <a href="./module-26-position-deep-dive.html">Module 26 — Position Deep Dive</a> §6.</div>
     </section>
 
     <section class="mod" id="identifiers">

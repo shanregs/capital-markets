@@ -266,6 +266,8 @@ CANADA 5% BOND 2035  —  FULL LIFECYCLE
 
 **Takeaway:** the single biggest lifecycle difference from [Module 4](./module-04-equity.md)'s Equity walkthrough is that Fixed Income's Valuation/P&amp;L stage splits into **two** components every single day — price movement and interest accrual — while an equity position only has one (price movement; dividends are episodic, not continuously accruing). A bond P&amp;L report that only shows price movement is silently dropping the accrual leg.
 
+> **Deep dive available.** For the full theory of what a Position is, and why position SIZE is the multiplier that turns a per-unit yield/price move into an actual dollar figure: [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §4.
+
 ---
 
 ## 6. Identifiers — Applied to Bonds

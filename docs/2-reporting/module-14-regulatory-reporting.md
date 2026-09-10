@@ -51,6 +51,8 @@ WHY ONE TRADE CAN TRIGGER MULTIPLE, GENUINELY DIFFERENT REPORTS
 
 **Takeaway:** "is this trade reportable?" is never a single yes/no question — it's five separate yes/no questions against five separate regimes, and a trade can legitimately be reportable under some and exempt under others simultaneously. [Module 13](../1-capital-markets/module-13-parties-leis.md) §6 already showed this same multiplicity for WHO reports; this section shows it for WHAT gets reported at all.
 
+> **Deep dive available.** Position Reporting and Derivatives/SFT Reporting run on genuinely different clocks — one periodic and concentration-focused, the others a **daily** valuation-update obligation for as long as a position stays open. For the full breakdown of how often each regime actually reports, with worked EMIR and SFTR daily-valuation examples, see [Module 26 — Position Deep Dive](../1-capital-markets/module-26-position-deep-dive.md) §11.
+
 ---
 
 ## 2. What Data, and Why — Completing the Curriculum's Own Question

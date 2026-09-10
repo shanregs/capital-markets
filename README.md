@@ -1,6 +1,6 @@
 # Capital Markets — Self-Paced Learning Path
 
-A self-paced study plan for learning Capital Markets from an IT/reporting perspective — one recurring mental model, worked through 15 core modules plus 10 numbered deep-dive/reference modules (16–25) and standalone reference material:
+A self-paced study plan for learning Capital Markets from an IT/reporting perspective — one recurring mental model, worked through 15 core modules plus 11 numbered deep-dive/reference modules (16–26) and standalone reference material:
 
 ```
 Asset Class → Product → Instrument/Security → Trade → Valuation → Exposure/Risk → Collateral/Margin → Clearing & Settlement → Regulatory Reporting
@@ -33,6 +33,7 @@ Open **[`index.md`](./index.md)** (or **[`index.html`](./index.html)** for the s
     │   ├── module-23-otc-forward-swap-option-deep-dive.{md,html}  # Reference: Forward/Swap/Option deep dive
     │   ├── module-24-otc-derivative-usd-cad-forward-complete-lifecycle.{md,html}  # Module 24: full lifecycle walkthrough
     │   ├── module-25-basis-points-deep-dive.{md,html}        # Reference: Basis Points deep dive
+    │   ├── module-26-position-deep-dive.{md,html}            # Reference: Position deep dive
     │   ├── abbreviations.{md,html}           # Acronym glossary
     │   ├── systems-landscape.{md,html}       # Front/Middle/Back Office systems by region
     │   └── Capital-Markets.docx               # Supplementary Word document
@@ -46,7 +47,7 @@ Open **[`index.md`](./index.md)** (or **[`index.html`](./index.html)** for the s
         └── SFTR architecture.docx, SFTR-Haircut.docx   # Supplementary Word documents
 ```
 
-Modules 16–25 are deep-dive/reference modules — each expands one topic the first 15 modules already touched into a full write-up. See `index.md`'s Modules table for the current numbered list.
+Modules 16–26 are deep-dive/reference modules — each expands one topic the first 15 modules already touched into a full write-up. See `index.md`'s Modules table for the current numbered list.
 
 `examples/` holds standalone **Complete Worked Example** files, one product per file — each walks a single trade end-to-end (Business Scenario → Trade Economics → worked numeric scenarios → Valuation/MTM → Trade Lifecycle → Trade Capture → Confirmation → Regulatory Reporting → a comparison table). They sit alongside the modules rather than replacing them: modules link out to their matching example(s), and examples link back. See `index.md`'s "Complete Worked Examples" section for the current grouped list (Cash Instruments; Securities Financing/SFT; a connected OTC Derivatives Rates chain — IRS → FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS; OTC Derivatives for other asset classes; Listed Derivatives).
 

@@ -61,6 +61,8 @@ The systems sitting behind those three offices are **not** the same system for e
 
 **Takeaway:** if you're ever handed an unfamiliar field in a trade record and asked "where does this come from?", the fastest diagnostic is to place it on this nine-stage timeline — the stage tells you which office produced it and which upstream system owns the source of truth. Layer the systems table on top of that, and the same diagnostic extends one step further: the *asset class* tells you which specific platform that office was actually looking at when the field was created.
 
+> **Deep dive available.** Each asset class module (4–9) expands this timeline's Reconciliation/Settlement stage into an explicit **Position** stage feeding **Valuation/P&amp;L** — what a Position actually is, how it differs from a Trade, and how it drives MTM, YTM, VaR, and daily regulatory reporting: [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md).
+
 ---
 
 ## 2. Order vs Execution — where "the trade" actually begins

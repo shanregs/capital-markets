@@ -1,0 +1,946 @@
+<!doctype html>
+<title>Module 26 — Position Deep Dive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Self-Paced Path · Module 26</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Position Deep Dive</h1>
+    <p class="dek">Theory, worked examples, and impact on Valuation, MTM, YTM &amp; daily regulatory reporting — what a Position actually is, how it differs from a Trade, how it's built in Equity, Fixed Income, FX, Rates, Credit and Commodities, how often it changes, and how EMIR/SFTR turn its daily revaluation into a standing regulatory obligation.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+    <div class="roadmap-note"><b>Reference module.</b> Companion to the <a href="./module-25-basis-points-deep-dive.html">Basis Points Deep Dive</a> and the <a href="./module-22-hedging-deep-dive.html">Hedging Deep Dive</a>. Pulls together the POSITION lifecycle stage already shown in Modules 4–9, and ties it to Module 10's Valuation/MTM, Module 11's VaR, and Module 14's regulatory reporting obligations.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#what-is-it"><span class="toc-num">01</span>What Is a Position?</a></li>
+      <li><a href="#across-classes"><span class="toc-num">02</span>Across Asset Classes</a></li>
+      <li><a href="#equity"><span class="toc-num">03</span>Equity Position</a></li>
+      <li><a href="#fixed-income"><span class="toc-num">04</span>Fixed Income Position</a></li>
+      <li><a href="#fx"><span class="toc-num">05</span>FX Position</a></li>
+      <li><a href="#rates-credit"><span class="toc-num">06</span>Rates &amp; Credit Position</a></li>
+      <li><a href="#commodities"><span class="toc-num">07</span>Commodities Position</a></li>
+      <li><a href="#frequency"><span class="toc-num">08</span>How Often It Changes</a></li>
+      <li><a href="#impact"><span class="toc-num">09</span>Valuation, MTM &amp; YTM</a></li>
+      <li><a href="#risk"><span class="toc-num">10</span>Position in Risk Systems</a></li>
+      <li><a href="#regulatory"><span class="toc-num">11</span>Regulatory Reporting</a></li>
+      <li><a href="#links"><span class="toc-num">12</span>Official Sources &amp; Links</a></li>
+      <li><a href="#quiz"><span class="toc-num">?</span>Recap Quiz</a></li>
+      <li><a href="#answers"><span class="toc-num">✓</span>Quiz Answers</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="what-is-it">
+      <p class="sec-eyebrow"><span class="n">01</span> · A state, not an event</p>
+      <h2>What Is a Position? — Definition &amp; the Three Things Every Position Has</h2>
+      <p class="lede">A Position is the net, cumulative holding in an instrument at a point in time, built from every trade executed so far. A Trade is an event — it happens once. A Position is a state — it persists and revalues daily even with no new trade.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Trade (an Event) vs. Position (a State)</span></div>
+        <pre>TRADE:     "Bank Of Toronto bought 10,000,000 face value of the
+           Canada 5% Bond 2035 on 15-Jan-2026" -- happened once, at
+           one price, never changes after Confirmation
+
+POSITION:  "Bank Of Toronto HOLDS 10,000,000 face value of the
+           Canada 5% Bond 2035" -- true every day for as long as
+           held, REVALUED daily even though no new trade occurs,
+           and only changes when a NEW trade actually happens
+
+-&gt; A system that treats "position" as just "the most recent
+   trade" breaks the moment a SECOND trade in the same instrument
+   occurs.</pre>
+      </div>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Fact</th><th>Question it answers</th><th>Example (Module 5 §4a)</th></tr></thead>
+        <tbody>
+          <tr><td><b>Quantity / Notional</b></td><td>How much do we hold?</td><td>CAD 10,000,000 face value</td></tr>
+          <tr><td><b>Direction</b></td><td>Are we long or short?</td><td>Long (we hold the bond)</td></tr>
+          <tr><td><b>Cost Basis</b></td><td>What did we pay, on average?</td><td>Clean Price 98.50 (CAD 9,850,000)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every worked example in this module is a position built from exactly these three facts, just with a different unit for "Quantity" — shares, face value, currency amount, swap notional, protection notional, or contract lots. Section 2 maps exactly where each asset class's position fact lives.</div>
+    </section>
+
+    <section class="mod" id="across-classes">
+      <p class="sec-eyebrow"><span class="n">02</span> · Two fundamentally different shapes</p>
+      <h2>Position Across Asset Classes — Where the "Quantity" Lives</h2>
+      <p class="lede">Every asset class already showed its own POSITION stage in Module 3's nine-stage lifecycle. This section collects them side by side.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Asset class</th><th>What "Quantity" means</th><th>Long vs. Short</th></tr></thead>
+        <tbody>
+          <tr><td><b>Equity</b></td><td>Number of shares held</td><td>Long = own shares; Short = borrowed and sold</td></tr>
+          <tr><td><b>Fixed Income</b></td><td>Face Value of bonds held</td><td>Long = hold the bond (creditor)</td></tr>
+          <tr><td><b>FX</b></td><td>A currency BALANCE — both sides of the pair</td><td>Long base / short quote, or vice versa</td></tr>
+          <tr><td><b>Rates (IRS)</b></td><td>Notional referenced by the swap</td><td>"Pay fixed" vs "receive fixed"</td></tr>
+          <tr><td><b>Credit (CDS)</b></td><td>Notional of protection bought/sold</td><td>Long protection vs. short protection</td></tr>
+          <tr><td><b>Commodities</b></td><td>Number of futures/forward contracts (lots)</td><td>Long = bought; Short = sold</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> A reporting system's Position table needs an asset-class-aware schema — Equity/Fixed Income/Commodities positions are genuinely held quantities of something, Rates/Credit positions are notional references to a contract's terms, and FX positions are two linked currency balances, not one number.</div>
+    </section>
+
+    <section class="mod" id="equity">
+      <p class="sec-eyebrow"><span class="n">03</span> · The simplest position</p>
+      <h2>Worked Example — Equity: A Share Position, Marked Daily</h2>
+      <p class="lede">Reusing Module 4 §5's full lifecycle for Maple Leaf Pension Fund's KO trade — a share position is just a running count, revalued daily.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Equity Position — Maple Leaf Pension Fund, KO</span><span class="t-id">Module 4 §5</span></div>
+        <pre>TRADE: buy 10,000 shares KO @ USD 68.40
+
+POSITION (after Settlement, T+1): holding increases by 10,000
+shares in the position-keeping system
+
+VALUATION / P&amp;L -- marked to the current market price EVERY DAY:
+  Day of purchase:  10,000 x 68.40 = USD 684,000 (cost basis)
+  One week later:   10,000 x 71.10 = USD 711,000 (market value)
+  Unrealized P&amp;L =  711,000 - 684,000 = +USD 27,000
+
+-&gt; The position itself didn't change all week (still 10,000
+   shares) -- only its VALUATION changed. A partial sale would
+   drop the position from that day forward.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> An equity position is the cleanest illustration of the Trade-vs-Position distinction — the Trade happened once; the Position persists and gets revalued every trading day until a further trade changes the quantity.</div>
+    </section>
+
+    <section class="mod" id="fixed-income">
+      <p class="sec-eyebrow"><span class="n">04</span> · Two moving valuation parts</p>
+      <h2>Worked Example — Fixed Income: A Bond Position, Marked Daily With Accrual</h2>
+      <p class="lede">Reusing Module 5 §5's Canada 5% Bond 2035 position — one layer more complex than Equity, because a bond position accrues interest daily on top of price moves.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Fixed Income Position — Canada 5% Bond 2035</span><span class="t-id">Module 5 §5</span></div>
+        <pre>TRADE: buy CAD 10,000,000 face value @ Clean Price 98.50
+
+POSITION (after Settlement, T+2): book increases by CAD
+10,000,000 face value of this bond
+
+VALUATION / P&amp;L -- marked daily to Clean Price, PLUS accrual:
+  Settlement day:  Clean 98.50, Accrued 82,418
+  One week later:  Clean 98.65, Accrued 106,164
+    Price P&amp;L   = (98.65 - 98.50)/100 x 10,000,000 = +CAD 15,000
+    Accrual P&amp;L = 106,164 - 82,418                = +CAD 23,746</pre>
+      </div>
+
+      <p><b>Why position SIZE turns a basis-point move into a dollar figure.</b> Module 25 §3's DV01 (CAD 7,092/bp) is computed directly off this position's Market Value (CAD 9,850,000). Doubling the face value to CAD 20,000,000 would double DV01 to ~CAD 14,184/bp, for the identical 25bp yield move. Position size is the multiplier that turns a per-unit sensitivity into an actual dollar P&amp;L.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A position's valuation depends on both a per-unit market observation (Clean Price/YTM, set by the whole market) and the position's own size (which only changes when Bank Of Toronto itself trades) — two inputs that change on entirely different logic.</div>
+    </section>
+
+    <section class="mod" id="fx">
+      <p class="sec-eyebrow"><span class="n">05</span> · Not a single number</p>
+      <h2>Worked Example — FX: A Position Is Two Linked Currency Balances</h2>
+      <p class="lede">Reusing Module 6 §5's USD/CAD Spot trade — the asset class where "position" genuinely isn't a single number.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">FX Position — USD/CAD</span><span class="t-id">Module 6 §5</span></div>
+        <pre>TRADE: buy USD 10,000,000 @ Spot Rate 1.3500 (pay CAD 13,500,000)
+
+POSITION (after Settlement, T+1): USD position INCREASES by
+USD 10,000,000; CAD position DECREASES by CAD 13,500,000 -- ONE
+trade, TWO position changes, in two currencies
+
+VALUATION / P&amp;L -- marked to the current spot rate daily:
+  Trade day:       USD 10,000,000 @ 1.3500 = CAD 13,500,000
+  One week later:  USD 10,000,000 @ 1.3550 = CAD 13,550,000
+  Unrealized P&amp;L = 13,550,000 - 13,500,000 = +CAD 50,000</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every FX position is really a currency pair's worth of two simultaneous, opposite-signed balances — a system showing FX positions per-currency, in isolation, loses the fact that they're economically one trade's two halves.</div>
+    </section>
+
+    <section class="mod" id="rates-credit">
+      <p class="sec-eyebrow"><span class="n">06</span> · Notional, not a held quantity</p>
+      <h2>Worked Example — Rates &amp; Credit: A Position That's Pure Notional</h2>
+      <p class="lede">Reusing Module 8 §5's 5Y CAD IRS and Module 9 §5's CDS — the two asset classes where a position isn't a quantity of something owned, just a notional reference inside a live contract.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Rates Position — 5Y CAD IRS</span><span class="t-id">Module 8 §5</span></div>
+        <pre>TRADE: pay FIXED 4.00%, receive FLOATING (CORRA),
+       Notional CAD 100,000,000
+
+POSITION: ONE 5Y IRS, CAD 100,000,000 notional -- the position
+IS the contract's remaining terms, not a "quantity of swaps"
+
+VALUATION / P&amp;L -- DCF off the current CORRA curve:
+  Rate moves 4.00% -&gt; 4.30% (30bp rise)
+  Approx. MTM Gain = Swap DV01 x bps moved = 41,000 x 30
+                    = CAD 1,230,000</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Credit Position — CDS on Northstar Resources Inc.</span><span class="t-id">Module 9 §5</span></div>
+        <pre>TRADE: BUY 5Y protection, USD 10,000,000 notional,
+       Running Coupon 100bps, vs Goldman Sachs
+
+POSITION: ONE CDS, USD 10,000,000 notional of protection BOUGHT
+
+VALUATION / P&amp;L -- market spread widens 250bps -&gt; 400bps over
+one year:
+  Unrealized Gain = USD 525,000 to Bank Of Toronto</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> An IRS or CDS position is one row per live contract, carrying that contract's own notional and remaining schedule — closing it means terminating or offsetting the specific contract, not "selling some quantity" the way a share position works.</div>
+    </section>
+
+    <section class="mod" id="commodities">
+      <p class="sec-eyebrow"><span class="n">07</span> · Cash-settled every day</p>
+      <h2>Worked Example — Commodities: A Position Cash-Settled Every Single Day</h2>
+      <p class="lede">Reusing Module 7 §5's CME WTI Crude Future — the sharpest illustration of a position whose valuation change is realized in cash daily, not just tracked on paper.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">Commodity Futures Position — 50 WTI Contracts</span><span class="t-id">Module 7 §5</span></div>
+        <pre>TRADE: buy 50 front-month WTI contracts @ USD 75.50/bbl,
+       novated to CME Clearing immediately at execution
+
+POSITION: 50 WTI contracts, front-month, until rolled or closed
+
+DAILY VARIATION MARGIN -- marked to daily settlement price, CASH
+moves every day:
+  Day 1 settle USD 76.00: Bank Of Toronto RECEIVES
+    50 x 1,000 x (76.00 - 75.50) = USD 25,000
+  Day 2 settle USD 75.20: Bank Of Toronto PAYS
+    50 x 1,000 x (76.00 - 75.20) = USD 40,000</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Exchange-traded futures collapse the distinction between "the position's valuation changed" and "cash actually moved" into a single daily event — a genuinely different operational pattern from every other worked example in this module.</div>
+    </section>
+
+    <section class="mod" id="frequency">
+      <p class="sec-eyebrow"><span class="n">08</span> · Three different clocks</p>
+      <h2>How Often Does a Position Actually Change? — Three Different Clocks</h2>
+      <p class="lede">"Position" changes on three genuinely different clocks, and conflating them is a common source of confusion for a system trying to answer "is this position's data stale?"</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>What changes</th><th>Trigger</th><th>Frequency</th></tr></thead>
+        <tbody>
+          <tr><td><b>Position quantity/notional</b></td><td>A new trade</td><td>Only when a trade happens</td></tr>
+          <tr><td><b>Position valuation (MTM)</b></td><td>The market moving</td><td>Continuously; formally snapshotted at End of Day</td></tr>
+          <tr><td><b>Corporate/contractual events</b></td><td>Issuer/contract terms, not a trade</td><td>Irregular, event-driven (split, coupon, reset, roll)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p><b>Intraday (real-time) vs. End-of-Day (official) position.</b> A front-office system typically shows a real-time running position, updating with every fill. But the position that feeds risk, P&amp;L sign-off, and regulatory reporting is almost always the End-of-Day (EOD) snapshot — a single, reconciled, official number captured once per business day (Module 3 §8's reconciliation certifies it). The two can legitimately disagree mid-day without either being "wrong."</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A position's quantity changes only on trade events; its valuation changes continuously but is officially captured once a day; corporate/contractual events change it on their own schedule, unrelated to trading activity. A system's "as-of" timestamp needs to say which clock it's reporting against.</div>
+    </section>
+
+    <section class="mod" id="impact">
+      <p class="sec-eyebrow"><span class="n">09</span> · The multiplier that produces MTM</p>
+      <h2>Position's Impact on Valuation, MTM &amp; YTM</h2>
+      <p class="lede">Position is one of the two direct multiplicative inputs — alongside a market-observed price/yield/rate/spread — that produces Valuation and MTM, and it interacts with YTM in a specific, easy-to-get-backwards way.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Concept</th><th>What it answers</th><th>How Position drives it</th></tr></thead>
+        <tbody>
+          <tr><td><b>Valuation</b></td><td>What is this holding worth now?</td><td>Position Quantity/Notional &times; current market Price/Rate/Spread</td></tr>
+          <tr><td><b>MTM</b></td><td>How much did that worth change?</td><td>Position size &times; (bps moved &times; per-unit sensitivity)</td></tr>
+          <tr><td><b>YTM</b></td><td>What am I earning if held to maturity?</td><td>A per-unit figure — does NOT change with position size at all</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">YTM Doesn't Care About Size — the Dollar Impact Does</span></div>
+        <pre>Bank Of Toronto: CAD 10,000,000 face, YTM 5.21%
+Another desk:     CAD 100,000,000 face, SAME bond, YTM 5.21%
+(identical YTM -- a property of the bond, not the holder)
+
+A 25bp YTM rise costs:
+  Bank Of Toronto's position:  -CAD 177,300
+  The other desk's position:   -CAD 1,773,000  (10x size, 10x $)
+
+-&gt; YTM is a RATE (unaffected by size); DV01 in dollars is a
+   POSITION-SIZED figure (directly proportional to size).</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Every valuation and MTM figure reduces to "position size &times; a market-observed rate or price" — getting position size wrong (a missed trade, an unapplied partial close) produces a valuation error that scales linearly with the mistake, exactly why Module 3 §8's reconciliation is a hard control, not optional.</div>
+    </section>
+
+    <section class="mod" id="risk">
+      <p class="sec-eyebrow"><span class="n">10</span> · A shared, position-sized input</p>
+      <h2>Position in Risk Systems — VaR, Exposure &amp; the Reconciliation Control</h2>
+      <p class="lede">Module 11 §6 already computes VaR directly off a position — this section makes explicit that VaR, like MTM, is fundamentally a position-sized calculation.</p>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">1-Day 99% VaR — Canada 5% Bond 2035 Position</span><span class="t-id">Module 11 §6</span></div>
+        <pre>Position: CAD 10,000,000 face value
+DV01: CAD 7,092 per basis point (position-sized)
+Daily yield volatility: 8 basis points | 99% multiplier: ~2.33
+
+1-Day 99% VaR = 7,092 x 2.33 x 8 = CAD 132,235
+
+-&gt; Double the position, double the DV01, double the VaR, for
+   the identical bond and volatility assumption.</pre>
+      </div>
+
+      <p><b>Why position reconciliation is a risk control.</b> If the position feeding this VaR were wrong — say, understated by a missed trade — every downstream number (VaR, MTM, regulatory reporting) would be wrong in the same proportion, silently. Module 3 §8's three-way reconciliation exists specifically to catch this before it propagates.</p>
+
+      <div class="takeaway"><b>Takeaway.</b> A position isn't just a database row — it's the shared input every downstream valuation, MTM, VaR, and regulatory calculation depends on, which is why getting it reconciled and correct is a first-class control.</div>
+    </section>
+
+    <section class="mod" id="regulatory">
+      <p class="sec-eyebrow"><span class="n">11</span> · Two genuinely different clocks, formalized</p>
+      <h2>Position Reporting to Regulators — Daily, Periodic &amp; Real-Time</h2>
+      <p class="lede">Module 14 §1 establishes five reporting obligations, not one. This section focuses on the ones that report a Position (a standing state) rather than a Trade (a one-time event), and how often each runs.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Regime</th><th>What gets reported</th><th>Frequency</th></tr></thead>
+        <tbody>
+          <tr><td><b>EMIR / Dodd-Frank</b></td><td>Daily valuation updates for every open OTC derivative position</td><td><b>Daily</b>, for the life of the position</td></tr>
+          <tr><td><b>SFTR</b></td><td>Daily valuation/collateral updates for every open repo/SL position</td><td><b>Daily</b>, for the life of the position</td></tr>
+          <tr><td><b>MiFID II Position Reporting</b></td><td>Standing positions in position-limit-subject commodity derivatives</td><td><b>Periodic</b> (weekly to venue)</td></tr>
+          <tr><td><b>CFTC Large Trader Reporting</b></td><td>Large concentrated futures/options positions above threshold</td><td><b>Daily</b>, once threshold crossed</td></tr>
+          <tr><td><b>Exchange futures margining</b></td><td>Daily settlement-price revaluation, driving VM</td><td><b>Daily</b>, automatically</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head"><span class="t-label">SFTR's Daily Valuation Update — Day 1 &rarr; Day 2</span><span class="t-id">Module 16 §6b</span></div>
+        <pre>Day 1: Collateral market value = GBP 20,250,000
+Overnight: Gilt price falls 0.5%
+Day 2: Collateral market value = 20,250,000 x 0.995
+                                = GBP 20,148,750 (down GBP 101,250)
+
+-&gt; A NEW valuation-update report is submitted for THIS SAME
+   POSITION on Day 2, even though NO NEW TRADE happened -- SFTR
+   requires that moved value reported, daily, for as long as the
+   position stays open.</pre>
+      </div>
+
+      <div class="ticket gold">
+        <div class="ticket-head"><span class="t-label">Trade-Level vs. Position-Level Reporting</span><span class="t-id">Module 14 §1</span></div>
+        <pre>Bank Of Toronto's 5Y CAD IRS with Goldman Sachs:
+
+TRADE-LEVEL (EMIR/Dodd-Frank): ONE initial report at execution,
+  THEN a fresh valuation-update report EVERY DAY the position
+  stays open.
+
+POSITION-LEVEL (MiFID Position Reporting): NOT triggered for a
+  plain IRS -- only relevant if a CUMULATIVE position in a
+  position-limit-subject commodity derivative crosses a
+  threshold.</pre>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> EMIR/SFTR require a daily valuation report for as long as a derivative or SFT position stays open, turning the continuous MTM clock into a formal daily obligation; MiFID's Position Reporting is a periodic, concentration-focused check on a completely different cadence and question. A rules engine needs both clocks wired in separately.</div>
+    </section>
+
+    <section class="mod" id="links">
+      <p class="sec-eyebrow"><span class="n">12</span> · Primary sources</p>
+      <h2>Official Sources &amp; Links</h2>
+      <p class="lede">As with this curriculum's other reference modules, pointing to primary sources rather than restating technical rules that get revised periodically.</p>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td><b>ESMA</b></td><td>EMIR daily valuation reporting; MiFID II Art. 57/58 commodity position limits and position reporting</td><td><a href="https://www.esma.europa.eu" target="_blank" rel="noopener">esma.europa.eu</a></td></tr>
+          <tr><td><b>CFTC</b></td><td>Dodd-Frank swap data reporting (daily valuation updates); Large Trader Reporting</td><td><a href="https://www.cftc.gov" target="_blank" rel="noopener">cftc.gov</a></td></tr>
+          <tr><td><b>DTCC</b></td><td>Trade Repository infrastructure (GTR) accepting daily position-valuation updates</td><td><a href="https://www.dtcc.com" target="_blank" rel="noopener">dtcc.com</a></td></tr>
+          <tr><td><b>ISDA</b></td><td>Standard derivative documentation underlying Rates/Credit positions</td><td><a href="https://www.isda.org" target="_blank" rel="noopener">isda.org</a></td></tr>
+          <tr><td><b>ICE / CME</b></td><td>Exchange clearing-house rulebooks governing daily futures position marking and VM</td><td><a href="https://www.theice.com" target="_blank" rel="noopener">theice.com</a> / <a href="https://www.cmegroup.com" target="_blank" rel="noopener">cmegroup.com</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="takeaway"><b>Takeaway.</b> Treat ESMA and the CFTC as the source of truth for which positions must be reported, how often, and under which regime; DTCC/ICE/CME as the source of truth for the actual infrastructure a position-valuation report or VM call physically flows through.</div>
+    </section>
+
+    <section class="mod" id="cast">
+      <p class="sec-eyebrow">Reference</p>
+      <h2>Actors — Full Cast Reference</h2>
+
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Actor</th><th>Role in this module</th></tr></thead>
+        <tbody>
+          <tr><td><b>Bank Of Toronto</b></td><td>Holds the bond, IRS, CDS, WTI futures, and USD/CAD FX positions used throughout (§§4–7, 10–11)</td></tr>
+          <tr><td><b>Maple Leaf Pension Fund</b></td><td>Holds the KO equity position (§3)</td></tr>
+          <tr><td><b>Goldman Sachs</b></td><td>FX/IRS/CDS counterparty across several worked examples (§§5–6)</td></tr>
+          <tr><td><b>Northstar Resources Inc.</b></td><td>Reference entity for the CDS position (§6)</td></tr>
+          <tr><td><b>CME Clearing</b></td><td>Marks the WTI futures position daily and moves Variation Margin cash (§7)</td></tr>
+          <tr><td><b>ESMA / CFTC</b></td><td>Set the daily (EMIR/SFTR/Dodd-Frank) and periodic (MiFID position limits) regulatory position-reporting clocks (§11)</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="mod" id="quiz">
+      <p class="sec-eyebrow">Self-check</p>
+      <h2>Recap Quiz</h2>
+      <div class="quiz">
+        <ol>
+          <li>Using Section 1, what is the fundamental difference between a Trade and a Position, and why does treating "position" as just "the latest trade" break the moment a second trade occurs?</li>
+          <li>Using Section 2, why can't a Rates or Credit position table reuse the same "Quantity = running total of buys minus sells" logic that works for Equity or Fixed Income?</li>
+          <li>Using Section 4, why does doubling a bond position's face value double its DV01, even though YTM and Modified Duration stay exactly the same?</li>
+          <li>Using Section 5, why is an FX position described as "two linked currency balances" rather than a single number?</li>
+          <li>Using Section 7, what makes an exchange-traded futures position's daily P&amp;L and daily cash flow the same number, unlike a bond or OTC swap position?</li>
+          <li>Using Section 8, what are the three different "clocks" a position changes on, and which one does a stock split fall under?</li>
+          <li>Using Section 9, why can two desks holding the same bond in different quantities have an identical YTM but very different dollar P&amp;L from the same yield move?</li>
+          <li>Using Section 11, why does a single 5Y IRS trigger EMIR daily valuation reporting but not MiFID Position Reporting?</li>
+        </ol>
+        <p class="quiz-cta">Answer whenever ready — then continue with the answers below, or return to <a href="../../index.html">the module index</a>.</p>
+      </div>
+    </section>
+
+    <section class="mod" id="answers" style="border-bottom: none;">
+      <p class="sec-eyebrow">Self-check · Solutions</p>
+      <h2>Recap Quiz — Answers &amp; Explanations</h2>
+      <p class="lede">Check your work against these.</p>
+
+      <div class="explainer">
+        <h5>Q1 — A Trade is a one-time event, never changing once confirmed; a Position persists and gets revalued continuously even without a new trade</h5>
+        <p>A system treating "position" as "the latest trade" loses the cumulative running total the moment a second trade needs to be added or netted.</p>
+
+        <h5>Q2 — A Rates or Credit position is one row per live contract, valued off its own notional and terms, not a running total of a fungible identical unit</h5>
+        <p>Section 6's data-model discussion contrasts quantity-held positions with contract-referencing positions.</p>
+
+        <h5>Q3 — DV01 = Modified Duration &times; Market Value &times; 0.0001; Duration and YTM are properties of the bond itself, but Market Value (and DV01 in dollars) scales directly with position size</h5>
+        <p>Section 4's worked CAD 10,000,000 vs. CAD 20,000,000 comparison.</p>
+
+        <h5>Q4 — A single FX trade always changes two currency balances simultaneously and oppositely (buying USD means selling CAD)</h5>
+        <p>Section 5's worked example: buying USD 10,000,000 increases USD and decreases CAD by CAD 13,500,000, from one trade.</p>
+
+        <h5>Q5 — The position is novated to a CCP that marks it to the daily settlement price and moves Variation Margin cash every day, so paper valuation and actual cash flow are identical</h5>
+        <p>Section 7's WTI futures example, contrasted with Sections 4 and 6's paper-only P&amp;L between cash events.</p>
+
+        <h5>Q6 — Position quantity/notional (trade-driven), position valuation/MTM (continuous, EOD-snapshotted), and corporate/contractual events (irregular, event-driven); a stock split falls under the third</h5>
+        <p>Section 8's three-clock table names corporate actions explicitly as the third category.</p>
+
+        <h5>Q7 — YTM is a per-unit rate, identical regardless of size; the dollar impact is Position Size &times; DV01-per-unit, which scales with how much face value is held</h5>
+        <div class="takeaway">Section 9's CAD 10,000,000 vs. CAD 100,000,000 comparison states this as "the key nuance."</div>
+
+        <h5>Q8 — EMIR's Derivatives Reporting applies to essentially every OTC derivative, requiring daily valuation for as long as it's open; MiFID Position Reporting only applies to position-limit-subject commodity derivatives once a cumulative position crosses a threshold — a plain IRS is never in scope there</h5>
+        <p>Section 11's trade-level vs. position-level diagram, reusing Module 14 §1's own IRS example.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Capital Markets — Self-Paced Learning Path · Reference Module &middot; <a href="../../index.html" style="color:var(--ink-faint);">&larr; Back to Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

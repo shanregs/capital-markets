@@ -241,6 +241,8 @@ COCA-COLA COMMON STOCK  —  FULL LIFECYCLE
             requirements in some jurisdictions (Module 14)
 ```
 
+> **Deep dive available.** For the full theory of what a Position is, how it's built across every asset class, and how often it actually changes: [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §3.
+
 ### How Clearing differs for the derivative products
 
 | Cash / Derivative | Product | CCP | What "Clearing" adds |

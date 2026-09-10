@@ -256,6 +256,8 @@ CME WTI CRUDE FUTURE  —  FULL LIFECYCLE
 
 **Takeaway:** the biggest lifecycle difference from every prior module is *when* clearing happens. Equity ([Module 4](./module-04-equity.md)) and Fixed Income ([Module 5](./module-05-fixed-income.md)) clear via a CCP but usually a step after execution; FX ([Module 6](./module-06-fx.md)) mostly never clears via a CCP at all. An exchange-traded Commodity Future is novated to the CCP essentially instantaneously, and that CCP relationship is what drives daily variation margin — a cash-flow pattern this module is the first to show in full.
 
+> **Deep dive available.** A futures position is the sharpest example in this curriculum of a position whose valuation change is realized in CASH every single day, not just tracked on paper — see [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §7.
+
 ---
 
 ## 6. Identifiers — Commodity Codes, Exchange Contracts, UPI &amp; UTI

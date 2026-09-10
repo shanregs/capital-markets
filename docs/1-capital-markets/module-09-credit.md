@@ -229,6 +229,8 @@ Applying **Order → Execution → Trade Capture → Confirmation → Clearing �
 
 **Takeaway:** every other product in this roadmap either runs to its stated maturity or is closed out/rolled voluntarily ([Module 7](./module-07-commodities.md) §4b's futures roll). A CDS is the first product where an *external event outside either counterparty's control* can end the trade early — the Reference Entity's own solvency, not a market price move, is what terminates it.
 
+> **Deep dive available.** A CDS position is pure notional of protection bought/sold, valued off the gap between its fixed Running Coupon and the current market spread — for the full theory, see [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §6.
+
 ---
 
 ## 6. Identifiers — UPI, UTI, LEI (for TWO different roles), and a Reference Obligation ISIN

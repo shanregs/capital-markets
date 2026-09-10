@@ -289,6 +289,8 @@ Applying **Order → Execution → Trade Capture → Confirmation → Clearing �
 
 **Takeaway:** the biggest lifecycle difference from every prior module is that a single trade generates **20 separate quarterly settlement events** over its life, each needing its own net cash flow calculation off a then-current CORRA reset — nothing else in this roadmap has a lifecycle that repeats its own Settlement stage that many times from one Trade Capture event.
 
+> **Deep dive available.** An IRS position is pure notional referenced inside a live contract, not a held quantity — one row per contract, valued off its own terms. For the full theory (and the same pattern for CDS), see [Module 26 — Position Deep Dive](./module-26-position-deep-dive.md) §6.
+
 ---
 
 ## 6. Identifiers — UPI, UTI, LEI &amp; the IR Forward Debt Exception
