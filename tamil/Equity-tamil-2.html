@@ -1,0 +1,1097 @@
+<!doctype html>
+<title>Equity — தமிழில் முழுமையான விளக்கம்</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Equity — தமிழில் முழுமையான விளக்கம்</h1>
+    <p class="dek">A complete Tamil walkthrough of Equity — terms, common vs preferred stock, futures, options, trade lifecycle, identifiers, and regulation.</p>
+    
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-equity-என்றால்-என்ன"><span class="toc-num">01</span>1. Equity என்றால் என்ன?</a></li>
+      <li><a href="#2-equity-யில்-முக்கியமான-terms"><span class="toc-num">02</span>2. Equity-யில் முக்கியமான Terms</a></li>
+      <li><a href="#3-equity-vs-fixed-income-bond"><span class="toc-num">03</span>3. Equity vs Fixed Income / Bond</a></li>
+      <li><a href="#4-equity-products"><span class="toc-num">04</span>4. Equity Products</a></li>
+      <li><a href="#5-common-stock"><span class="toc-num">05</span>5. Common Stock</a></li>
+      <li><a href="#6-preferred-stock"><span class="toc-num">06</span>6. Preferred Stock</a></li>
+      <li><a href="#7-security-vs-contract"><span class="toc-num">07</span>7. Security vs Contract</a></li>
+      <li><a href="#8-equity-future"><span class="toc-num">08</span>8. Equity Future</a></li>
+      <li><a href="#9-future-profit-loss-example"><span class="toc-num">09</span>9. Future — Profit/Loss Example</a></li>
+      <li><a href="#10-equity-option"><span class="toc-num">10</span>10. Equity Option</a></li>
+      <li><a href="#11-aapl-call-complete-example"><span class="toc-num">11</span>11. AAPL Call — Complete Example</a></li>
+      <li><a href="#12-option-scenario-a-aapl-usd-270"><span class="toc-num">12</span>12. Option Scenario A — AAPL = USD 270</a></li>
+      <li><a href="#13-option-scenario-b-aapl-usd-240"><span class="toc-num">13</span>13. Option Scenario B — AAPL = USD 240</a></li>
+      <li><a href="#14-equity-trade-lifecycle"><span class="toc-num">14</span>14. Equity Trade Lifecycle</a></li>
+      <li><a href="#15-complete-cash-equity-trade-example"><span class="toc-num">15</span>15. Complete Cash Equity Trade Example</a></li>
+      <li><a href="#16-equity-identifiers"><span class="toc-num">16</span>16. Equity Identifiers</a></li>
+      <li><a href="#17-coca-cola-trade-identifiers-example"><span class="toc-num">17</span>17. Coca-Cola Trade — Identifiers Example</a></li>
+      <li><a href="#18-exchange-vs-otc"><span class="toc-num">18</span>18. Exchange vs OTC</a></li>
+      <li><a href="#19-centrally-cleared-என்றால்"><span class="toc-num">19</span>19. Centrally Cleared என்றால்?</a></li>
+      <li><a href="#20-otc-equity-derivative"><span class="toc-num">20</span>20. OTC Equity Derivative</a></li>
+      <li><a href="#21-equity-க்கு-regulations-எப்படி-relate-ஆகின்றன"><span class="toc-num">21</span>21. Equity-க்கு Regulations எப்படி relate ஆகின்றன?</a></li>
+      <li><a href="#22-very-important-example-same-equity-different-transaction"><span class="toc-num">22</span>22. Very Important Example — Same Equity, Different Transaction</a></li>
+      <li><a href="#23-canada-equity-trade-flow"><span class="toc-num">23</span>23. Canada — Equity Trade Flow</a></li>
+      <li><a href="#24-middle-office"><span class="toc-num">24</span>24. Middle Office</a></li>
+      <li><a href="#25-back-office-settlement"><span class="toc-num">25</span>25. Back Office / Settlement</a></li>
+      <li><a href="#26-java-architect-perspective"><span class="toc-num">26</span>26. Java Architect Perspective</a></li>
+      <li><a href="#27-equity-யை-ஒரு-single-picture-ஆக-நினைத்துக்கொள்ளுங்கள்"><span class="toc-num">27</span>27. Equity-யை ஒரு Single Picture-ஆக நினைத்துக்கொள்ளுங்கள்</a></li>
+      <li><a href="#28-மிக-முக்கியமான-10-points"><span class="toc-num">28</span>28. மிக முக்கியமான 10 Points</a></li>
+      <li><a href="#29-one-final-real-world-example"><span class="toc-num">29</span>29. One Final Real-World Example</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-equity-என்றால்-என்ன">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Equity என்றால் என்ன?</h2>
+      <p><b>Equity = ஒரு நிறுவனத்தில் Ownership (உரிமை).</b></p><p>ஒரு company-க்கு மொத்தம் <b>1 கோடி shares</b> இருக்கிறது என்று வைத்துக்கொள்வோம்.</p><p>நீங்கள் <b>1 லட்சம் shares</b> வைத்திருந்தால்:</p><div class="ticket"><pre>Your Shares       = 100,000
+Total Shares      = 10,000,000
+
+Ownership
+= 100,000 / 10,000,000
+= 1%</pre></div><p>அதாவது அந்த company-யில் உங்களுக்கு <b>1% ownership</b> உள்ளது.</p><h3>Equity-யின் முக்கியமான characteristics</h3><p>Equity-க்கு பொதுவாக:</p><ul><li>Fixed maturity date இல்லை</li><li>Fixed coupon இல்லை</li><li>Principal repayment guarantee இல்லை</li><li>Return என்பது share price increase மற்றும் dividend மூலம் வரும்</li><li>Dividend guaranteed அல்ல</li><li>Company-யின் performance மற்றும் market price அடிப்படையில் value மாறும்</li></ul><p>அதனால்:</p><div class="callout"><b>Equity = Ownership claim</b></div><div class="callout"><b>Bond = Creditor / Lending claim</b></div>
+    </section>
+    <section class="mod" id="2-equity-யில்-முக்கியமான-terms">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Equity-யில் முக்கியமான Terms</h2>
+      <div class="table-scroll"><table><thead><tr><th>Term</th><th>எளிய விளக்கம்</th></tr></thead><tbody><tr><td><b>Share</b></td><td>Company ownership-ன் ஒரு unit</td></tr><tr><td><b>Outstanding Shares</b></td><td>Shareholders கையில் தற்போது இருக்கும் மொத்த shares</td></tr><tr><td><b>Share Price</b></td><td>ஒரு share-ன் தற்போதைய market price</td></tr><tr><td><b>Market Capitalization</b></td><td>Share Price × Outstanding Shares</td></tr><tr><td><b>Dividend</b></td><td>Shareholders-க்கு company வழங்கும் cash/stock payment</td></tr><tr><td><b>Voting Rights</b></td><td>Company decisions-ல் shareholder-ன் voting உரிமை</td></tr><tr><td><b>Corporate Action</b></td><td>Stock split, buyback, rights issue போன்ற company event</td></tr></tbody></table></div><h3>Market Capitalization Example</h3><p>Company:</p><div class="ticket"><pre>Outstanding Shares = 10,000,000
+Share Price        = CAD 50</pre></div><p>அப்போது:</p><div class="ticket"><pre>Market Capitalization
+= 10,000,000 × CAD 50
+= CAD 500,000,000</pre></div><p>அதாவது market அந்த company-யின் equity value-ஐ சுமார் <b>CAD 500 million</b> என்று மதிப்பிடுகிறது.</p>
+    </section>
+    <section class="mod" id="3-equity-vs-fixed-income-bond">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Equity vs Fixed Income / Bond</h2>
+      <p>இது Capital Markets-ல் மிகவும் முக்கியமான distinction.</p><h3>Equity வாங்கினால்</h3><p>நீங்கள்:</p><div class="callout">"இந்த company-யில் ஒரு ownership வாங்குகிறேன்."</div><p>என்று பொருள்.</p><h3>Bond வாங்கினால்</h3><p>நீங்கள்:</p><div class="callout">"இந்த company-க்கு நான் பணம் கடன் கொடுக்கிறேன்."</div><p>என்று பொருள்.</p><h3>Example</h3><p>Bank Of Toronto:</p><h3>Equity</h3><p>நீங்கள்:</p><div class="ticket"><pre>Buy shares = CAD 10,000</pre></div><p>Company நல்ல performance செய்தால்:</p><div class="ticket"><pre>Share Price ↑
+        +
+Possible Dividend
+        ↓
+Investor Return</pre></div><p>Company மோசமாக perform செய்தால்:</p><div class="ticket"><pre>Share Price ↓
+        ↓
+Investor Loss</pre></div><h3>Bond</h3><p>நீங்கள் company-க்கு:</p><div class="ticket"><pre>Loan = CAD 10,000</pre></div><p>கொடுக்கிறீர்கள்.</p><p>Company:</p><div class="ticket"><pre>Coupon
+   +
+Principal at maturity</pre></div><p>கொடுக்க வேண்டும்.</p><h3>Main Difference</h3><div class="ticket"><pre>EQUITY
+  ↓
+Ownership
+
+BOND
+  ↓
+Creditor / Loan</pre></div><p>Company bankruptcy ஆனால் bondholder-க்கு equity shareholder-ஐ விட முன்னுரிமை இருக்கும்.</p>
+    </section>
+    <section class="mod" id="4-equity-products">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Equity Products</h2>
+      <p>Equity இரண்டு பெரிய buckets-ஆக பார்க்கலாம்:</p><div class="ticket"><pre>EQUITY
+│
+├── Cash Equity
+│   ├── Common Stock
+│   └── Preferred Stock
+│
+└── Equity Derivatives
+    ├── Equity Futures
+    └── Equity Options</pre></div><p>மிக முக்கியமான concept:</p><div class="ticket"><pre>Cash Equity
+    ↓
+Actual Security
+
+Equity Derivative
+    ↓
+Contract whose value derives
+from the equity/security</pre></div>
+    </section>
+    <section class="mod" id="5-common-stock">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Common Stock</h2>
+      <p><b>Common Stock = சாதாரண company shares.</b></p><p>நாம் பொதுவாக "company shares வாங்கினேன்" என்று சொல்வது இதுதான்.</p><h3>Example</h3><p>Coca-Cola:</p><div class="ticket"><pre>Buyer  = Maple Leaf Pension Fund
+Seller = Goldman Sachs
+
+Quantity = 10,000 shares
+Price    = USD 68.40</pre></div><p>Trade Value:</p><div class="ticket"><pre>10,000 × USD 68.40
+= USD 684,000</pre></div><p>இங்கே buyer உண்மையான <b>10,000 shares</b> வாங்குகிறார்.</p><p>அதனால்:</p><div class="ticket"><pre>Common Stock
+      ↓
+Actual Security
+      ↓
+Cash Equity</pre></div>
+    </section>
+    <section class="mod" id="6-preferred-stock">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Preferred Stock</h2>
+      <p>Preferred Stock-ம் ஒரு actual equity security.</p><p>ஆனால் common stock-ஐ விட சில preferential economic rights இருக்கலாம்.</p><h3>Example</h3><p>Bank Of Toronto Preferred Shares:</p><div class="ticket"><pre>Shares issued = 2,000,000
+Par Value     = CAD 25
+Dividend Rate = 4.50%</pre></div><h3>Annual Dividend per Share</h3><div class="ticket"><pre>CAD 25 × 4.50%
+= CAD 1.125</pre></div><h3>Total Annual Dividend</h3><div class="ticket"><pre>2,000,000 × CAD 1.125
+= CAD 2,250,000</pre></div><h3>Quarterly Dividend</h3><div class="ticket"><pre>CAD 2,250,000 / 4
+= CAD 562,500</pre></div><h3>Non-Cumulative Preferred Stock</h3><p><b>Non-cumulative</b> என்றால் skipped dividend later automatically கிடைக்காது.</p><p>Example:</p><div class="ticket"><pre>Q1 = CAD 562,500
+Q2 = CAD 562,500
+Q3 = CAD 562,500</pre></div><p>Q1 மற்றும் Q2 dividend skip செய்தால்:</p><div class="ticket"><pre>Q1 skipped → Gone
+Q2 skipped → Gone
+
+Q3 → CAD 562,500</pre></div><p>அதாவது skipped amount later catch-up ஆகாது.</p><p>Cumulative preferred என்றால் unpaid amounts accumulate ஆகும்.</p>
+    </section>
+    <section class="mod" id="7-security-vs-contract">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Security vs Contract</h2>
+      <p>இந்த concept-ஐ மிகவும் தெளிவாகப் புரிந்துகொள்ள வேண்டும்.</p><h3>Common Stock</h3><p>Common Stock என்பது:</p><div class="callout"><b>Actual Security</b></div><p>உதாரணம்:</p><div class="ticket"><pre>Coca-Cola shares
+        ↓
+10,000 actual shares
+        ↓
+Ownership</pre></div><p>ஒரு investor மற்ற investor-க்கு shares transfer செய்கிறார்.</p><h3>Equity Option</h3><p>Option என்பது:</p><div class="callout"><b>Contract</b></div><p>உதாரணம்:</p><div class="ticket"><pre>AAPL Call
+Strike       = USD 250
+Expiry       = 15-Jan-2027</pre></div><p>இது AAPL share அல்ல.</p><p>இது:</p><div class="callout">AAPL share price-ஐ அடிப்படையாகக் கொண்ட contract.</div><p>அதனால்:</p><div class="ticket"><pre>Common Stock
+     ↓
+Security
+
+Equity Option
+     ↓
+Contract</pre></div>
+    </section>
+    <section class="mod" id="8-equity-future">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Equity Future</h2>
+      <p>Equity Future-ம் ஒரு derivative contract.</p><p>Example:</p><div class="ticket"><pre>Product     = E-mini S&amp;P 500 Future
+Contracts   = 20
+Index       = 5,920
+Multiplier  = USD 50</pre></div><h3>Notional</h3><div class="ticket"><pre>20 × 5,920 × 50
+= USD 5,920,000</pre></div><p>இதன் அர்த்தம்:</p><div class="callout">USD 5.92 million cash கொடுத்து shares வாங்கினோம் என்று அர்த்தம் இல்லை.</div><p>இது ஒரு <b>derivative contract size / notional</b>.</p>
+    </section>
+    <section class="mod" id="9-future-profit-loss-example">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Future — Profit/Loss Example</h2>
+      <p>Day 1:</p><div class="ticket"><pre>Index = 5,920</pre></div><p>Day 2:</p><div class="ticket"><pre>Index = 5,935</pre></div><p>Increase:</p><div class="ticket"><pre>5,935 - 5,920
+= 15 points</pre></div><p>Profit:</p><div class="ticket"><pre>15 × USD 50 × 20
+= USD 15,000</pre></div><p>இந்த gain daily <b>Variation Margin</b> mechanism மூலம் settle செய்யப்படுகிறது.</p><div class="ticket"><pre>Index ↑
+   ↓
+Long Future gains
+   ↓
+Variation Margin credited</pre></div>
+    </section>
+    <section class="mod" id="10-equity-option">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. Equity Option</h2>
+      <p>Option என்பது:</p><div class="callout">Buyer-க்கு ஒரு <b>right</b> கொடுக்கும் contract; ஆனால் obligation இல்லை.</div><p>இரண்டு முக்கிய வகைகள்:</p><div class="ticket"><pre>Call
+  ↓
+Right to BUY
+
+Put
+  ↓
+Right to SELL</pre></div>
+    </section>
+    <section class="mod" id="11-aapl-call-complete-example">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>11. AAPL Call — Complete Example</h2>
+      <p>Example:</p><div class="ticket"><pre>Underlying = AAPL
+Type       = Call
+Strike     = USD 250
+Expiry     = 15-Jan-2027
+
+Contracts  = 100
+Shares per contract = 100
+
+Premium = USD 18.50 / share</pre></div><p>Total underlying shares:</p><div class="ticket"><pre>100 contracts × 100 shares
+= 10,000 shares</pre></div><p>Total premium:</p><div class="ticket"><pre>10,000 × USD 18.50
+= USD 185,000</pre></div><p>Buyer USD 185,000 premium செலுத்துகிறார்.</p>
+    </section>
+    <section class="mod" id="12-option-scenario-a-aapl-usd-270">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>12. Option Scenario A — AAPL = USD 270</h2>
+      <p>Strike:</p><div class="ticket"><pre>USD 250</pre></div><p>Market Price:</p><div class="ticket"><pre>USD 270</pre></div><p>Option intrinsic value:</p><div class="ticket"><pre>270 - 250
+= USD 20 / share</pre></div><p>10,000 shares:</p><div class="ticket"><pre>USD 20 × 10,000
+= USD 200,000</pre></div><p>Premium:</p><div class="ticket"><pre>USD 185,000</pre></div><p>Net Profit:</p><div class="ticket"><pre>USD 200,000 - USD 185,000
+= USD 15,000</pre></div><h3>Flow</h3><div class="ticket"><pre>AAPL = 270
+    ↓
+Strike = 250
+    ↓
+Option is valuable
+    ↓
+Exercise
+    ↓
+Value = USD 200,000
+    ↓
+Less Premium = USD 185,000
+    ↓
+Net Profit = USD 15,000</pre></div>
+    </section>
+    <section class="mod" id="13-option-scenario-b-aapl-usd-240">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>13. Option Scenario B — AAPL = USD 240</h2>
+      <p>Strike:</p><div class="ticket"><pre>USD 250</pre></div><p>Market:</p><div class="ticket"><pre>USD 240</pre></div><p>Market-ல் USD 240-க்கு வாங்க முடியும்.</p><p>அதனால் USD 250 strike-ல் வாங்கும் option-ஐ exercise செய்ய வேண்டிய அவசியம் இல்லை.</p><p>Option:</p><div class="ticket"><pre>Expires Worthless</pre></div><p>Loss:</p><div class="ticket"><pre>Premium paid
+= USD 185,000</pre></div><p>அதனால் long option buyer-க்கு maximum loss:</p><div class="callout"><b>Premium paid</b></div>
+    </section>
+    <section class="mod" id="14-equity-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>14. Equity Trade Lifecycle</h2>
+      <p>Equity trade-ன் lifecycle:</p><div class="ticket"><pre>1. ORDER
+      ↓
+2. EXECUTION
+      ↓
+3. TRADE CAPTURE
+      ↓
+4. CONFIRMATION / MATCHING
+      ↓
+5. CLEARING
+      ↓
+6. SETTLEMENT
+      ↓
+7. POSITION
+      ↓
+8. VALUATION / P&amp;L
+      ↓
+9. REPORTING</pre></div><p>இது உங்கள் Java backend / RDP perspective-ல் மிகவும் முக்கியமான flow.</p>
+    </section>
+    <section class="mod" id="15-complete-cash-equity-trade-example">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>15. Complete Cash Equity Trade Example</h2>
+      <p>Maple Leaf Pension Fund:</p><div class="ticket"><pre>BUY 10,000 Coca-Cola shares</pre></div><h3>Step 1 — Order</h3><div class="ticket"><pre>BUY
+Instrument = Coca-Cola
+Quantity   = 10,000</pre></div><h3>Step 2 — Execution</h3><p>NYSE:</p><div class="ticket"><pre>Execution Price = USD 68.40</pre></div><h3>Step 3 — Trade Capture</h3><div class="ticket"><pre>Trade ID
+= BOT-EQ-2026-011203</pre></div><h3>Step 4 — Confirmation</h3><p>Trade matching:</p><div class="ticket"><pre>MATCHED</pre></div><h3>Step 5 — Clearing</h3><p>Trade goes through the applicable clearing process.</p><p>US cash equity example:</p><div class="ticket"><pre>NSCC</pre></div><h3>Step 6 — Settlement</h3><p>Settlement:</p><div class="ticket"><pre>T+1</pre></div><p>DvP:</p><div class="ticket"><pre>Shares → Buyer
+Cash   → Seller</pre></div><h3>Step 7 — Position</h3><p>Before:</p><div class="ticket"><pre>KO Position = 0</pre></div><p>After settlement:</p><div class="ticket"><pre>KO Position = +10,000 shares</pre></div><h3>Step 8 — Valuation</h3><p>Purchase:</p><div class="ticket"><pre>10,000 × USD 68.40
+= USD 684,000</pre></div><p>One week later:</p><div class="ticket"><pre>Market Price = USD 71.10
+
+10,000 × USD 71.10
+= USD 711,000</pre></div><p>Unrealized P&amp;L:</p><div class="ticket"><pre>711,000 - 684,000
+= +USD 27,000</pre></div><h3>Step 9 — Reporting</h3><p>Applicable regulatory/reporting and market infrastructure processes receive the relevant trade data.</p>
+    </section>
+    <section class="mod" id="16-equity-identifiers">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>16. Equity Identifiers</h2>
+      <p>ஒரு Equity trade record-ல் பல identifiers இருக்கலாம்.</p><div class="ticket"><pre>ISIN
+CUSIP
+Ticker
+SEDOL
+FIGI
+LEI</pre></div><p>ஆனால் இவை எல்லாம் ஒரே விஷயத்தை identify செய்யாது.</p><h3>Instrument Identifiers</h3><div class="ticket"><pre>ISIN
+CUSIP
+Ticker
+SEDOL
+FIGI</pre></div><p>இவை:</p><div class="callout"><b>WHAT is being traded?</b></div><p>என்பதை identify செய்கின்றன.</p><h3>Entity Identifier</h3><div class="ticket"><pre>LEI</pre></div><p>இது:</p><div class="callout"><b>WHO is trading?</b></div><p>என்பதை identify செய்கிறது.</p>
+    </section>
+    <section class="mod" id="17-coca-cola-trade-identifiers-example">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>17. Coca-Cola Trade — Identifiers Example</h2>
+      <p>ஒரு trade:</p><div class="ticket"><pre>Instrument:
+    ISIN   = US1912161007
+    CUSIP  = 191216100
+    Ticker = KO
+
+Buyer:
+    Maple Leaf Pension Fund
+    ↓
+    Buyer LEI
+
+Seller:
+    Goldman Sachs
+    ↓
+    Seller LEI
+
+Dealer:
+    Bank Of Toronto
+    ↓
+    Dealer LEI</pre></div><p>அதாவது ஒரே trade record-ல்:</p><div class="ticket"><pre>Instrument identifiers
+        +
+Party identifiers</pre></div><p>இரண்டும் இருக்கும்.</p><h3>நினைவில் வைக்க:</h3><div class="ticket"><pre>ISIN / CUSIP / Ticker
+          ↓
+        WHAT?
+
+LEI
+          ↓
+         WHO?</pre></div>
+    </section>
+    <section class="mod" id="18-exchange-vs-otc">
+      <p class="sec-eyebrow"><span class="n">18</span></p>
+      <h2>18. Exchange vs OTC</h2>
+      <p>இரண்டு separate questions:</p><h3>Question 1</h3><p>Trade எங்கே negotiate/execute செய்யப்பட்டது?</p><div class="ticket"><pre>Exchange
+   OR
+OTC</pre></div><h3>Question 2</h3><p>Execution-க்குப் பிறகு counterparty relationship எப்படி உள்ளது?</p><div class="ticket"><pre>Bilateral
+   OR
+Centrally Cleared</pre></div><p>இவை இரண்டு வேறு concepts.</p>
+    </section>
+    <section class="mod" id="19-centrally-cleared-என்றால்">
+      <p class="sec-eyebrow"><span class="n">19</span></p>
+      <h2>19. Centrally Cleared என்றால்?</h2>
+      <p>Example:</p><div class="ticket"><pre>Buyer
+  ↓
+Exchange
+  ↓
+CCP
+  ↑
+Exchange
+  ↑
+Seller</pre></div><p>CCP = <b>Central Counterparty</b></p><p>Clearing ஆன பிறகு buyer மற்றும் seller நேரடியாக ஒருவருக்கொருவர் counterparty ஆக இருப்பதற்குப் பதிலாக CCP-ஐ face செய்கிறார்கள்.</p><h3>Equity Future</h3><div class="ticket"><pre>Exchange
+   ↓
+CME Clearing</pre></div><h3>Listed Equity Option</h3><div class="ticket"><pre>Exchange
+   ↓
+OCC</pre></div><h3>US Cash Equity</h3><div class="ticket"><pre>NSCC</pre></div>
+    </section>
+    <section class="mod" id="20-otc-equity-derivative">
+      <p class="sec-eyebrow"><span class="n">20</span></p>
+      <h2>20. OTC Equity Derivative</h2>
+      <p>உதாரணம்:</p><div class="ticket"><pre>Bank A
+   ↕
+Equity Total Return Swap
+   ↕
+Bank B</pre></div><p>இது initially:</p><div class="ticket"><pre>OTC</pre></div><p>என்று இருக்கும்.</p><p>பின்னர் CCP-க்கு submit செய்தால்:</p><div class="ticket"><pre>OTC + Centrally Cleared</pre></div><p>ஆகலாம்.</p><p>அது:</p><div class="ticket"><pre>Exchange-Traded</pre></div><p>ஆகிவிடாது.</p><h3>முக்கியமான rule</h3><div class="ticket"><pre>Exchange / OTC
+       ↓
+Where was it negotiated?
+
+Bilateral / CCP
+       ↓
+Who is the counterparty after clearing?</pre></div>
+    </section>
+    <section class="mod" id="21-equity-க்கு-regulations-எப்படி-relate-ஆகின்றன">
+      <p class="sec-eyebrow"><span class="n">21</span></p>
+      <h2>21. Equity-க்கு Regulations எப்படி relate ஆகின்றன?</h2>
+      <p>"Equity" என்ற ஒரே பெயருக்குள் எல்லா regulations-மும் apply ஆகாது.</p><p>Product / transaction type பார்த்துதான் relevant regime தீர்மானிக்க வேண்டும்.</p><div class="table-scroll"><table><thead><tr><th>Situation</th><th>Relevant Regulation / Body</th></tr></thead><tbody><tr><td>EU Equity Trading</td><td>MiFID II / MiFIR</td></tr><tr><td>OTC Equity Derivative</td><td>EMIR</td></tr><tr><td>Securities Lending</td><td>SFTR</td></tr><tr><td>UK Equity Conduct</td><td>FCA</td></tr><tr><td>Canadian Equity Dealer/Trading Oversight</td><td>CIRO</td></tr><tr><td>US Cash Equity Infrastructure</td><td>DTCC / NSCC / DTC</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="22-very-important-example-same-equity-different-transaction">
+      <p class="sec-eyebrow"><span class="n">22</span></p>
+      <h2>22. Very Important Example — Same Equity, Different Transaction</h2>
+      <p>Suppose Bank Of Toronto has Coca-Cola shares.</p><h3>Case 1 — Sell the shares</h3><div class="ticket"><pre>Coca-Cola Shares
+       ↓
+Cash Equity Trade</pre></div><h3>Case 2 — Lend the shares</h3><div class="ticket"><pre>Coca-Cola Shares
+       ↓
+Securities Lending
+       ↓
+SFTR-related scope</pre></div><h3>Case 3 — Enter into Total Return Swap</h3><div class="ticket"><pre>Coca-Cola
+   ↓
+Equity TRS
+   ↓
+OTC Derivative
+   ↓
+EMIR-related scope where applicable</pre></div><p>அதனால்:</p><div class="callout">Underlying company ஒன்று தான்.</div><p>ஆனால் <b>transaction/product வேறுபடுவதால் regulatory treatment வேறுபடும்.</b></p>
+    </section>
+    <section class="mod" id="23-canada-equity-trade-flow">
+      <p class="sec-eyebrow"><span class="n">23</span></p>
+      <h2>23. Canada — Equity Trade Flow</h2>
+      <p>உங்கள் Canada capital-markets learning-க்கு இது மிகவும் useful.</p><p>Example:</p><div class="ticket"><pre>Maple Leaf Pension Fund
+          ↓
+BUY 50,000 Loblaw shares
+          ↓
+Bank Of Toronto</pre></div><p>Price:</p><div class="ticket"><pre>CAD 178.40</pre></div><p>Trade Value:</p><div class="ticket"><pre>50,000 × CAD 178.40
+= CAD 8,920,000</pre></div><h3>Front Office</h3><div class="ticket"><pre>OMS / EMS
+    ↓
+Order Capture
+    ↓
+FIX
+    ↓
+Smart Order Router</pre></div><p>Illustrative systems in the source:</p><div class="ticket"><pre>Bloomberg AIM
+FlexTrade
+Eze OMS
+Charles River IMS</pre></div><p>இவை illustrative vendor examples; Bank Of Toronto-வின் actual internal systems என்று source claim செய்யவில்லை.</p><h3>Trading Venue</h3><p>Canada-ல் example venues:</p><div class="ticket"><pre>TSX
+TSX Venture Exchange
+Nasdaq CXC/CX2
+Cboe Canada
+Omega ATS</pre></div><p>Trade:</p><div class="ticket"><pre>Loblaw
+   ↓
+TSX
+   ↓
+CAD 178.40</pre></div>
+    </section>
+    <section class="mod" id="24-middle-office">
+      <p class="sec-eyebrow"><span class="n">24</span></p>
+      <h2>24. Middle Office</h2>
+      <p>Trade capture:</p><div class="ticket"><pre>Trade ID
+= BOT-CA-2026-004471</pre></div><p>பிறகு:</p><div class="ticket"><pre>Confirmation
+      ↓
+Matching
+      ↓
+Surveillance / Reporting feeds</pre></div><p>Canadian equity example-ல் source:</p><div class="ticket"><pre>CIRO
+UMIR
+Consolidated Tape</pre></div><p>போன்ற mechanisms-ஐ குறிப்பிடுகிறது.</p>
+    </section>
+    <section class="mod" id="25-back-office-settlement">
+      <p class="sec-eyebrow"><span class="n">25</span></p>
+      <h2>25. Back Office / Settlement</h2>
+      <p>Canada example:</p><div class="ticket"><pre>CDS
+ ↓
+CDSX
+ ↓
+CNS
+ ↓
+T+1</pre></div><p>Settlement:</p><div class="ticket"><pre>Shares
+  ↓
+CDSX
+
+CAD Cash
+  ↓
+Lynx</pre></div><p>DvP:</p><div class="callout">Delivery versus Payment</div><p>அதாவது shares delivery மற்றும் cash payment ஆகியவை settlement mechanism-ல் இணைக்கப்பட்டுள்ளன.</p>
+    </section>
+    <section class="mod" id="26-java-architect-perspective">
+      <p class="sec-eyebrow"><span class="n">26</span></p>
+      <h2>26. Java Architect Perspective</h2>
+      <p>உங்கள் backend systems-ல் Equity-ஐ conceptual domain model-ஆக இப்படி பார்க்கலாம்:</p><div class="ticket"><pre>                    EquityTrade
+                         |
+        +----------------+----------------+
+        |                |                |
+    Instrument        Parties         Economics
+        |                |                |
+   +----+----+       +---+---+        +---+---+
+   |    |    |       |       |        |       |
+ ISIN CUSIP Ticker  Buyer  Seller   Qty     Price
+                      |       |
+                     LEI     LEI</pre></div><p>மேலும்:</p><div class="ticket"><pre>EquityTrade
+    |
+    +-- TradeId
+    +-- InstrumentId
+    +-- ProductType
+    +-- Buyer
+    +-- Seller
+    +-- Quantity
+    +-- Price
+    +-- Currency
+    +-- TradeDate
+    +-- SettlementDate
+    +-- Venue</pre></div><p>Derivative என்றால் கூடுதல் fields:</p><div class="ticket"><pre>EquityOption
+    |
+    +-- Underlying
+    +-- Strike
+    +-- Expiry
+    +-- CallPut
+    +-- Premium
+    +-- ContractSize</pre></div><p>Future என்றால்:</p><div class="ticket"><pre>EquityFuture
+    |
+    +-- Underlying Index
+    +-- Contract Size
+    +-- Expiry
+    +-- Price
+    +-- Initial Margin
+    +-- Variation Margin</pre></div>
+    </section>
+    <section class="mod" id="27-equity-யை-ஒரு-single-picture-ஆக-நினைத்துக்கொள்ளுங்கள்">
+      <p class="sec-eyebrow"><span class="n">27</span></p>
+      <h2>27. Equity-யை ஒரு Single Picture-ஆக நினைத்துக்கொள்ளுங்கள்</h2>
+      <div class="ticket"><pre>                         EQUITY
+                            |
+             +--------------+--------------+
+             |                             |
+        CASH EQUITY                  EQUITY DERIVATIVE
+             |                             |
+       +-----+-----+                 +-----+-----+
+       |           |                 |           |
+   Common       Preferred          Future      Option
+   Stock         Stock
+       |           |                 |           |
+       +-----------+                 +-----------+
+             |                             |
+       ACTUAL SECURITY                 CONTRACT
+             |                             |
+             +-------------+-------------+
+                           |
+                         TRADE
+                           |
+        +------------------+------------------+
+        |                  |                  |
+      Order            Execution          Capture
+                                               |
+                                         Confirmation
+                                               |
+                                           Clearing
+                                               |
+                                          Settlement
+                                               |
+                                           Position
+                                               |
+                                      Valuation / P&amp;L
+                                               |
+                                           Reporting</pre></div>
+    </section>
+    <section class="mod" id="28-மிக-முக்கியமான-10-points">
+      <p class="sec-eyebrow"><span class="n">28</span></p>
+      <h2>28. மிக முக்கியமான 10 Points</h2>
+      <h3>1. Equity</h3><div class="ticket"><pre>Ownership</pre></div><h3>2. Common Stock</h3><div class="ticket"><pre>Actual ownership security</pre></div><h3>3. Preferred Stock</h3><div class="ticket"><pre>Equity security
++
+Preferential economic rights</pre></div><h3>4. Future</h3><div class="ticket"><pre>Derivative contract</pre></div><h3>5. Option</h3><div class="ticket"><pre>Right, not obligation</pre></div><h3>6. ISIN / CUSIP / Ticker</h3><div class="ticket"><pre>WHAT is being traded?</pre></div><h3>7. LEI</h3><div class="ticket"><pre>WHO is trading?</pre></div><h3>8. Cash Equity</h3><div class="ticket"><pre>Actual shares</pre></div><h3>9. Equity Derivative</h3><div class="ticket"><pre>Contract referencing equity</pre></div><h3>10. Lifecycle</h3><div class="ticket"><pre>Order
+ ↓
+Execution
+ ↓
+Capture
+ ↓
+Confirmation
+ ↓
+Clearing
+ ↓
+Settlement
+ ↓
+Position
+ ↓
+Valuation / P&amp;L
+ ↓
+Reporting</pre></div>
+    </section>
+    <section class="mod" id="29-one-final-real-world-example">
+      <p class="sec-eyebrow"><span class="n">29</span></p>
+      <h2>29. One Final Real-World Example</h2>
+      <p>ஒரே company-ஐ வைத்து முழுவதையும் பார்ப்போம்.</p><p>Suppose:</p><div class="ticket"><pre>Company = Coca-Cola
+Share Price = USD 68.40</pre></div><h3>A. Share வாங்கினால்</h3><div class="ticket"><pre>BUY 10,000 shares</pre></div><p>நீங்கள்:</p><div class="callout">Coca-Cola-வின் actual shares-ஐ own செய்கிறீர்கள்.</div><p><b>Cash Equity</b></p><h3>B. Coca-Cola மீது Future வாங்கினால்</h3><div class="ticket"><pre>BUY Equity Future</pre></div><p>நீங்கள்:</p><div class="callout">Future contract-ஐ own செய்கிறீர்கள்.</div><p><b>Equity Derivative</b></p><h3>C. Coca-Cola Call Option வாங்கினால்</h3><div class="ticket"><pre>BUY AAPL/Equity Call
+Strike = USD 250</pre></div><p>நீங்கள்:</p><div class="callout">Underlying share-ஐ வாங்கும் right-ஐ வாங்குகிறீர்கள்.</div><p><b>Equity Derivative</b></p><h3>D. Coca-Cola shares-ஐ lend செய்தால்</h3><div class="ticket"><pre>Lend Coca-Cola shares</pre></div><p>இது:</p><div class="callout">Securities Financing / Securities Lending</div><p><b>SFTR-related transaction scope</b>.</p><h3>E. Coca-Cola Total Return Swap செய்தால்</h3><div class="ticket"><pre>Bank A
+   ↕
+TRS referencing Coca-Cola
+   ↕
+Bank B</pre></div><p>இது:</p><div class="callout">OTC Equity Derivative</div><h3>Final Mental Model</h3><p>இந்த ஒரு sentence-ஐ நினைவில் வைத்துக்கொள்ளுங்கள்:</p><div class="callout"><b>"Equity என்பது company-யில் ownership; Cash Equity-ல் actual shares trade ஆகின்றன; Equity Derivatives-ல் அந்த shares/indices-ன் value-ஐ அடிப்படையாகக் கொண்ட contracts trade ஆகின்றன."</b></div><p>பிறகு ஒவ்வொரு Equity trade-க்கும்:</p><div class="ticket"><pre>WHAT?
+   ↓
+Instrument → ISIN / CUSIP / Ticker
+
+WHO?
+   ↓
+Party → LEI
+
+HOW MUCH?
+   ↓
+Quantity / Notional
+
+AT WHAT PRICE?
+   ↓
+Price
+
+WHERE?
+   ↓
+Exchange / OTC
+
+HOW CLEARED?
+   ↓
+Bilateral / CCP
+
+HOW SETTLED?
+   ↓
+Settlement / DvP
+
+WHAT IS MY POSITION?
+   ↓
+Position
+
+WHAT IS IT WORTH?
+   ↓
+Valuation / P&amp;L
+
+WHAT MUST BE REPORTED?
+   ↓
+Regulatory Reporting</pre></div><p>இந்த mental model தான் <b>Equity → Trade → Lifecycle → Position → Valuation → Regulatory Reporting</b> அனைத்தையும் ஒன்றாக இணைக்கிறது.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Equity — தமிழில் முழுமையான விளக்கம்</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

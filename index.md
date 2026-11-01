@@ -61,8 +61,9 @@ Priority column reflects the weighting in the "Priority for My Current Work" tab
 |---|---|---|
 | Abbreviations Glossary — identifiers, market structure, products, rates, valuation, settlement, risk, regulation | [abbreviations.md](./docs/1-capital-markets/abbreviations.md) | [abbreviations.html](./docs/1-capital-markets/abbreviations.html) |
 | Systems Landscape — Front/Middle/Back Office systems, data flows &amp; settlement cycles in Canada, US, UK &amp; EU, plus regulators | [systems-landscape.md](./docs/1-capital-markets/systems-landscape.md) | [systems-landscape.html](./docs/1-capital-markets/systems-landscape.html) |
+| Tamil Notes — standalone Tamil-language study notes (Equity, Interest Rate Swap), not part of the numbered curriculum | [tamil/index.md](./tamil/index.md) | [tamil/index.html](./tamil/index.html) |
 
-These two stay outside the module numbering by design — both are cross-cutting lookup material meant to be consulted alongside *any* module, not a topic deep dive in their own right (see Modules 16–24 above for those).
+These stay outside the module numbering by design — the first two are cross-cutting lookup material meant to be consulted alongside *any* module (see Modules 16–24 above for those); the Tamil notes are a separate, Tamil-language pass over the same concepts.
 
 ---
 

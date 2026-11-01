@@ -1,0 +1,808 @@
+<!doctype html>
+<title>Module 15 — Listed Derivatives (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 15 — Listed Derivatives (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Futures and listed options on any underlying, standardization and fungibility, T-note futures delivery basket, exchange contract codes and the Canadian MX/CDCC stack — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>ஆறு-asset-class roadmap-ஓட பகுதி இல்ல</b> (Equity → Fixed Income → FX → Commodities → Rates → Credit). Listed Derivatives cross-cutting: ஒரு Future அல்லது Listed Option அந்த ஆறுல எதோட underlying-ஐயும் <i>reference</i> பண்ணலாம். <b>Work data model:</b> இந்த module taxonomy-ஓட <b>"7. Listed Derivatives"</b> node-க்கு map ஆகுது — asset class-ஏ இல்லாத ஒரே node; அவை எல்லாத்தையும் கடக்கற <i>venue/clearing வகை</i>. <b>மூலம்:</b> English Module 15-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-listed-derivative-ன்னா-என்ன-theory-terminology"><span class="toc-num">01</span>1. Listed Derivative-ன்னா என்ன? — Theory &amp; Terminology</a></li>
+      <li><a href="#2-products-என்னென்ன-எதன்-மேலயும்-futures-listed-options"><span class="toc-num">02</span>2. Products என்னென்ன? — எதன் மேலயும் Futures, Listed Options</a></li>
+      <li><a href="#3-உண்மையில-எது-trade-ஆகுது-fungibility-க்காக-standardize-பண்ணப்பட்ட-எதையும்-reference-பண்ணும்-contract"><span class="toc-num">03</span>3. உண்மையில எது Trade ஆகுது? — Fungibility-க்காக Standardize பண்ணப்பட்ட, எதையும் Reference பண்ணும் Contract</a></li>
+      <li><a href="#4-நிஜ-உலக-trade-உதாரணங்கள்-buyer-seller-trade"><span class="toc-num">04</span>4. நிஜ உலக Trade உதாரணங்கள் — Buyer → Seller → Trade</a></li>
+      <li><a href="#5-trade-lifecycle-உண்மையிலயே-புதுசு-basket-வழியா-physical-delivery"><span class="toc-num">05</span>5. Trade Lifecycle — உண்மையிலயே புதுசு: Basket வழியா Physical Delivery</a></li>
+      <li><a href="#6-identifiers-exchange-contract-codes-bilateral-uti-இல்ல"><span class="toc-num">06</span>6. Identifiers — Exchange Contract Codes, bilateral UTI இல்ல</a></li>
+      <li><a href="#7-exchange-vs-otc-vs-bilateral-vs-centrally-cleared"><span class="toc-num">07</span>7. Exchange vs OTC vs Bilateral vs Centrally Cleared</a></li>
+      <li><a href="#8-regulatory-perspective-mifid-emir-sftr-fca-ciro-hkma-dtcc-dmo"><span class="toc-num">08</span>8. Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</a></li>
+      <li><a href="#9-canadian-systems-landscape-front-middle-back-office-ல-இருந்து-regulatory-reporting-வரை"><span class="toc-num">09</span>9. Canadian Systems Landscape — Front, Middle &amp; Back Office-ல இருந்து Regulatory Reporting வரை</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-listed-derivative-ன்னா-என்ன-theory-terminology">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Listed Derivative-ன்னா என்ன? — Theory &amp; Terminology</h2>
+      <p><b>Definition:</b> Listed Derivative = ஒரு regulate பண்ணப்பட்ட <b>exchange</b>-ல trade ஆகற Future அல்லது Option; <b>standardized</b> contract terms (size, expiry தேதிகள், tick size) கொண்டது; execution-ஓட தருணத்துல இருந்தே அந்த exchange-ஓட சொந்த CCP வழியா clear ஆகுது. இந்த module roadmap முழுக்க ஏற்கனவே துண்டு துண்டா தோன்றியிருக்கு — <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c-ஓட E-mini S&amp;P 500 future, <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4d-ஓட AAPL listed call, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4b-ஓட WTI crude future — ஒவ்வொண்ணும் அப்போ "உண்மையில Commodity- அல்லது Equity-குறிப்பான schema இல்ல, Listed Derivatives schema"ன்னு குறிக்கப்பட்டது. அந்த தொடர்ச்சியா வந்த cross-reference கடைசியா இங்க தன் சொந்த சிகிச்சையைப் பெறுது.</p>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td>Contract Specification</td><td>ஒரு contract-ஓட exchange வரையறுத்த, standardized terms — size, quality/grade (physical underlyings-க்கு), expiry cycle, tick size — OTC trade-ஓட சுதந்திரமா பேசப்பட்ட terms போல இல்லாம, அந்த contract-ல ஒவ்வொரு trade-க்கும் ஒரே மாதிரி</td></tr><tr><td>Tick Size / Tick Value</td><td>அனுமதிக்கப்பட்ட மிகச்சிறிய விலை அதிகரிப்பு, ஒரு tick-ஓட cash மதிப்பு — உதா., <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c-ஓட E-mini S&amp;P 500 0.25-point ticks-ல நகருது, ஒவ்வொண்ணும் USD 12.50 (0.25 x USD 50 multiplier)</td></tr><tr><td>Contract Month Code</td><td>Delivery/expiry மாதத்தை identify பண்ற ஒற்றை-எழுத்து code (F=Jan, G=Feb, H=Mar, J=Apr, K=May, M=Jun, N=Jul, Q=Aug, U=Sep, V=Oct, X=Nov, Z=Dec) — நேரடியா exchange contract code-க்குள்ள பதிக்கப்பட்டது (Section 6)</td></tr><tr><td>Open Interest</td><td>ஒரு குறிப்பிட்ட contract-க்கு தற்போது நிலுவையில உள்ள contracts-ஓட மொத்த எண்ணிக்கை — liquidity/நடவடிக்கை அளவீடு, OTC-க்கு சமமில்லாதது, ஏன்னா OTC trades இப்படி மைய கணக்கு வைக்கப்படறதில்ல</td></tr><tr><td>Novation at Execution</td><td>CCP, trade execute ஆகற <b>நொடியிலேயே</b> ஒவ்வொரு seller-க்கும் buyer-ஆ, ஒவ்வொரு buyer-க்கும் seller-ஆ ஆகுது (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §5) — வேற சில centrally-cleared products-க்கு நடக்கற மாதிரி அப்புறம் நடக்கற படி இல்ல</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ஒரு Listed Derivative-ஓட ஒவ்வொரு வரையறுக்கும் அம்சமும் — standardized terms, சுதந்திரமா quote பண்ணப்படற விலைக்குப் பதிலா tick size, contract month code, உடனடி novation — சரியா ஒரே காரணத்துக்காக இருக்கு: contract-ஐ <b>fungible</b>-ஆ ஆக்க, அப்போதான் எந்த buyer-ஓட position-உம் exchange-ஓட books-ல எந்த seller-ஓட position-க்கு எதிராகவும் net ஆக முடியும், ஒரு OTC-ல பேசப்பட்ட bespoke contract-ஆல ஒருபோதும் செய்ய முடியாதது.</p>
+    </section>
+    <section class="mod" id="2-products-என்னென்ன-எதன்-மேலயும்-futures-listed-options">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Products என்னென்ன? — எதன் மேலயும் Futures, Listed Options</h2>
+      <div class="ticket"><pre>LISTED DERIVATIVES
+│
+├── Futures          (standardized obligation to buy/sell at a future date, any underlying)
+└── Listed Options    (standardized right, not obligation — on a future OR on the cash instrument)</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Product</th><th>அது என்ன</th></tr></thead><tbody><tr><td><b>Futures</b></td><td><i>ஏதோ ஒண்ணின்</i> நிலையான அளவை, நிலையான விலைல, நிலையான தேதில வாங்க/விற்க standardized, exchange-traded கடமை — அந்த "ஏதோ ஒண்ணு" ஒரு equity index (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c), ஒரு commodity (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4b), ஒரு bond (கீழ Section 4c), ஒரு currency pair, அல்லது ஒரு interest rate ஆக இருக்கலாம்</td></tr><tr><td><b>Listed Options</b></td><td>நிலையான strike-ல வாங்க (call) அல்லது விற்க (put) standardized, exchange-traded உரிமை (கடமை இல்ல) — cash instrument மேல நேரடியா (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4d-ஓட AAPL shares) அல்லது ஒரு Future மேலயே (T-Note future மேல option, Section 4d)</td></tr></tbody></table></div>
+<div class="ticket"><pre>ONE PRODUCT PAIR, EVERY UNDERLYING
+========================================================================
+
+  Equity Index      -&gt;  E-mini S&amp;P 500 Future        (Module 4 §4c)
+  Single Stock       -&gt;  AAPL Listed Call              (Module 4 §4d)
+  Commodity          -&gt;  CME WTI Crude Future           (Module 7 §4b)
+  Interest Rate       -&gt;  CME 10-Year T-Note Future     (Section 4c, new)
+  FX                  -&gt;  CME EUR/USD Future             (not worked here,
+                                                            but exists on the
+                                                            same model)
+
+  -&gt; Five different asset classes, ONE Futures product mechanic and
+     ONE Listed Options product mechanic, each time. This is the
+     concrete meaning of "cross-cutting" from this module's masthead.</pre></div>
+<p><b>Takeaway:</b> இந்த roadmap-ஓட இந்த நிலைக்குள்ள, ஐந்து வேறு underlyings ஒவ்வொண்ணும் ஒரு Future அல்லது Listed Option உதாரணத்தை ஏற்கனவே தந்திருக்கு, எல்லாமே அதே mechanics-ஐ பயன்படுத்துச்சு — standardized contract, execution-ல CCP novation, தினசரி variation margin. ஆறு modules முழுக்க அந்த திரும்பத் திரும்ப வருதல்தான், Future/Listed Option mechanic-ஐ ஆறு தடவை நகல் எடுக்காம, இந்த taxonomy Listed Derivatives-ஐ தனி node-ஆ பிரிக்க முழுக் காரணம்.</p>
+    </section>
+    <section class="mod" id="3-உண்மையில-எது-trade-ஆகுது-fungibility-க்காக-standardize-பண்ணப்பட்ட-எதையும்-reference-பண்ணும்-contract">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. உண்மையில எது Trade ஆகுது? — Fungibility-க்காக Standardize பண்ணப்பட்ட, எதையும் Reference பண்ணும் Contract</h2>
+      <p><b>Definition:</b> இந்த roadmap-ல ஒவ்வொரு derivative போலவே, ஒரு Future அல்லது Listed Option ஒரு contract, security இல்ல — ஆனா ஒரு OTC contract-ஐ போல இல்லாம (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §3-ஓட FX, <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §3-ஓட Rates), ஒரு Listed Derivative-ஓட terms <b>exchange-ஆல நிர்ணயிக்கப்படுது</b>, ரெண்டு counterparties இடையில பேசப்படறதில்ல. ஒரு மணி நேர இடைவெளில அதே contract-ஐ execute பண்ற ரெண்டு traders, tick வரை <i>ஒரே மாதிரி</i> terms-ஐ பெறுவாங்க.</p>
+<div class="ticket"><pre>OTC CONTRACT (NEGOTIATED)  vs  LISTED CONTRACT (STANDARDIZED)
+========================================================================
+
+  OTC FRA (Module 8 §4b):
+    Bank Of Toronto and Goldman Sachs negotiate a bespoke Notional
+    (CAD 20,000,000), a bespoke FRA Rate (4.85%), a bespoke period
+    (3x6) -- no two FRAs need look alike.
+
+  Listed Future (this module):
+    Every E-mini S&amp;P 500 future traded on CME today has the SAME
+    multiplier (USD 50/point), the SAME tick size (0.25 points),
+    and expires on ONE of a small set of standardized quarterly
+    dates -- the only thing that varies trade-to-trade is price
+    and quantity.
+
+  -&gt; This is WHY a Listed Derivative can be netted, closed out, or
+     rolled (Module 7 §4b) against ANY other market participant's
+     opposite position in the same contract -- an OTC trade can
+     only ever be unwound against the SAME original counterparty
+     (or novated via a separate compression exercise), because no
+     two OTC trades are guaranteed to share identical terms.</pre></div>
+<p><b>Takeaway:</b> "ஏன் இந்த taxonomy Futures, Listed Options-ஐ underlying இயல்பா உட்காருற இடத்துல விடாம Equity/Commodities/Rates/FX-ல இருந்து தனியா பிரிக்குது?"ங்கறதுக்கான உண்மையான பதில் இதுதான் — standardization ஒரு <i>venue</i> பண்பு, <i>asset class</i> பண்பு இல்ல; அதனால "இந்த contract எப்படி கட்டமைக்கப்பட்டு clear ஆகுது"ங்கறதை சுத்தி அமைக்கப்பட்ட schema-வுக்கு, "இதன் மதிப்பு எதைச் சார்ந்தது"ங்கறதை சுத்தி அமைக்கப்பட்ட schema-வை விட உண்மையிலயே வேறு அச்சு தேவை.</p>
+    </section>
+    <section class="mod" id="4-நிஜ-உலக-trade-உதாரணங்கள்-buyer-seller-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. நிஜ உலக Trade உதாரணங்கள் — Buyer → Seller → Trade</h2>
+      <div class="callout"><b>Complete worked example இருக்கு.</b> முழு CME 10-Year T-Note Future hedge-ஐயும் AAPL listed call option-ஐயும், ரெண்டும் முழு trade lifecycle வழியா, <a href="../examples/Listed_Futures_and_Options_Complete_Example.html">Listed Futures &amp; Listed Options — Complete Example</a>-ல பாருங்க.</div>
+<h3>4a. Equity Index Future — recap</h3>
+<p>முழு worked example <b><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c</b>-ல: Maple Leaf Pension Fund 20 E-mini S&amp;P 500 futures-ஐ 5,920.00-ல வாங்குது, notional USD 5,920,000, USD 50/point multiplier, CME Clearing-க்கு எதிரா தினசரி variation margin.</p>
+<h3>4b. Commodity Future — recap</h3>
+<p>முழு worked example <b><a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4b</b>-ல: Bank Of Toronto 50 CME WTI Crude Oil futures-ஐ USD 75.50/bbl-ல வாங்கி, ஒரு மாசம் கழிச்சு position-ஐ முன்னோக்கி roll பண்ணி, contango செலவை realize பண்ணுது.</p>
+<h3>4c. Interest Rate Future — புதிய worked example</h3>
+<div class="ticket"><pre>INTEREST RATE FUTURE  —  CME 10-Year Treasury Note Future (ZN)
+========================================================================
+
+  Seller: Bank Of Toronto (hedging duration risk on its Fixed
+          Income book — Module 5 §1's Duration preview, made
+          concrete here)
+  Buyer:  Counterparty on the CME order book (anonymous, novated
+          to CME Clearing at execution — Section 07)
+
+  Contract: USD 100,000 face value of a notional 6% coupon 10-Year
+            Treasury Note (the "notional" note is a standardized
+            fiction — Section 5 explains what ACTUALLY delivers)
+  Price Quotation: in points and 32nds -- 112'16 means 112 + 16/32
+                   = 112.500 (a bond-market convention, distinct
+                   from Module 4 §4c's decimal index points)
+
+  Trade: SELL 100 contracts @ 112'16 (112.500)
+  Notional = 100 x 100,000 x 112.500/100 = USD 11,250,000
+
+  NEXT BUSINESS DAY, price falls to 111'24 (111.750) — rates rose,
+  bond prices fell (Module 1 §1's price-vs-rates mechanic):
+    Variation Margin = (112.500 - 111.750)/100 x 100,000 x 100
+                      = 0.0075 x 100,000 x 100
+                      = USD 75,000
+    -&gt; Bank Of Toronto is SHORT, so a price FALL is a GAIN --
+       credited to Bank Of Toronto's margin account, offsetting
+       the loss on the actual bond portfolio the future is hedging</pre></div>
+<p><b>IT/reporting பார்வை:</b> Bank Of Toronto, ஊகிக்க இல்லாம, தான் <i>ஏற்கனவே வெச்சிருக்கற</i> position-ஐ (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>-ல இருந்து தன்னிடம் உள்ள bonds) hedge பண்ண futures-ஐ <i>விக்கறது</i>, ஒரு வங்கிக்குள்ள Interest Rate Future-ஓட மிகப் பொதுவான நிஜ உலக பயன்பாடு — futures-ஐ திசைசார்ந்த ஊக positions-ஆ மட்டும் model பண்ற reporting system, சரியா இந்த வகை hedge overlay-ஐ தவறா வகைப்படுத்தும்.</p>
+<h3>4d. Listed Option — recap</h3>
+<p>முழு worked example <b><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4d</b>-ல: Maple Leaf Pension Fund 100 AAPL 15-Jan-2027 250 Call contracts-ஐ வாங்குது, premium USD 185,000, OCC வழியா clear ஆகுது.</p>
+<p><b>Takeaway:</b> நாலு உதாரணங்கள், நாலு வேறு underlyings (ஒரு index, ஒரு commodity, ஒரு bond future, ஒரு single stock), ஆனா அத்தனையும் முழுக்க ரெண்டே contract வகைகள் (Futures, Listed Options) — Section 3-ஓட "standardization ஒரு venue பண்பு, asset-class பண்பு இல்ல" கண்டுபிடிப்புக்கு மிகக் கூர்மையான விளக்கம்.</p>
+<h3>கூடுதல் உதாரணம் — T-Note Futures hedge: bond இழப்பும் futures லாபமும் பக்கம் பக்கமா</h3>
+<p>Bank Of Toronto-க்கிட்ட USD 11.25 மில்லியன் மதிப்புள்ள Treasury bond portfolio இருக்குன்னு வெச்சுக்கோங்க; rates உயர்ந்தா அது இழக்கும். அதனால 100 ZN futures-ஐ short பண்ணுது.</p>
+<div class="table-scroll"><table><thead><tr><th>நாள்</th><th>நிகழ்வு</th><th>Bond portfolio P&amp;L (USD)</th><th>ZN short futures P&amp;L (USD)</th><th>Net</th></tr></thead><tbody><tr><td>Day 1</td><td>Rates உயர்வு, ZN 112.500 → 111.750</td><td>≈ -75,000 (தோராயம்)</td><td>+75,000</td><td>≈ 0</td></tr><tr><td>Day 2</td><td>Rates குறைவு, ZN 111.750 → 112.250</td><td>≈ +50,000</td><td>-50,000</td><td>≈ 0</td></tr></tbody></table></div>
+<p>Hedge perfect இல்ல (<a href="../docs/1-capital-markets/module-22-hedging-deep-dive.html">Module 22</a> basis risk, DV01 matching பத்தி விரிவா சொல்லும்), ஆனா நிகர விளைவு பெருசா இல்ல — அதுதான் hedge-ஓட நோக்கம்.</p>
+    </section>
+    <section class="mod" id="5-trade-lifecycle-உண்மையிலயே-புதுசு-basket-வழியா-physical-delivery">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Trade Lifecycle — உண்மையிலயே புதுசு: Basket வழியா Physical Delivery</h2>
+      <p><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> (§5), <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> (§5)-ல உள்ள Sections 5 ஏற்கனவே Futures lifecycle-ஐ முழுசா நடத்திக் காட்டிடுச்சு — உடனடி CCP novation, தினசரி variation margin, expiry-அல்லது-roll. இங்க உண்மையிலயே புதுசு, குறிப்பா ஒரு bond future-க்கு <b>expiry</b>-ல என்ன நடக்குதுங்கறது; இது இந்த roadmap-ல மற்ற ஒவ்வொரு Future உதாரணத்தை விடவும் வித்தியாசமா நடந்துக்குது.</p>
+<div class="ticket"><pre>CME 10-YEAR T-NOTE FUTURE  —  WHAT HAPPENS AT EXPIRY (if not rolled/closed)
+========================================================================
+
+  E-mini S&amp;P 500 Future (Module 4 §4c) at expiry:
+    CASH-SETTLED against the index level -- no security moves
+
+  WTI Crude Future (Module 7 §4b) at expiry:
+    PHYSICALLY SETTLED into ONE specific grade/location of crude
+    (if not rolled -- almost never allowed to reach this point)
+
+  10-Year T-Note Future (this section) at expiry:
+    PHYSICALLY SETTLED, but into ANY ELIGIBLE BOND from a defined
+    DELIVERY BASKET (a range of Treasury Notes with maturities in
+    a specified window) -- the SHORT (Bank Of Toronto, Section 4c)
+    CHOOSES which eligible bond to deliver, using a published
+    CONVERSION FACTOR to adjust for that bond's specific coupon
+    and maturity versus the contract's notional 6% coupon
+
+  -&gt; The bond the short chooses to deliver is called the CHEAPEST
+     TO DELIVER (CTD) -- the eligible bond that's most economical
+     for the short to source and deliver, a genuinely unique
+     mechanic that neither an index future (no delivery at all)
+     nor a commodity future (one fixed grade) has an equivalent of.</pre></div>
+<p><b>Takeaway:</b> "physically settled"ங்கறது இந்த module-ல ஒவ்வொரு Future-க்கும் ஒரே அர்த்தமில்ல — ஒரு index future எதையும் deliver பண்றதில்ல, ஒரு commodity future ஒரு குறிப்பிட்ட பொருளை deliver பண்ணுது, ஒரு bond future ஒரு வரையறுக்கப்பட்ட menu-ல இருந்து short-ஓட <i>தேர்வை</i> deliver பண்ணுது. "physical settlement" எப்பவும் "ஒரு முன்கூட்டியே தீர்மானிக்கப்பட்ட instrument நகருது"ன்னு கருதற reporting அல்லது settlement system, ஒரு bond future-ஓட delivery notice-ஐ தவறா கையாளும்.</p>
+    </section>
+    <section class="mod" id="6-identifiers-exchange-contract-codes-bilateral-uti-இல்ல">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Identifiers — Exchange Contract Codes, bilateral UTI இல்ல</h2>
+      <p>Listed Derivatives தான் இந்த roadmap-ல, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §12-ல இருந்து ஒவ்வொரு OTC module-லயும் தோன்றின <b>UPI/UTI ஜோடி பொருந்தவே பொருந்தாத</b> முதல் product குடும்பம் — ஏன்னா UPI/UTI regulatory reporting-க்கு <i>bilateral-ஆ பேசப்பட்ட</i> OTC derivative trades-ஐ identify பண்ணவே இருக்கு; ஒரு Listed Derivative முதல்லயே bilateral-ஆ பேசப்படலை.</p>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Listed Derivatives-க்கு பொருந்துமா?</th><th>Example</th></tr></thead><tbody><tr><td>ISIN / CUSIP / Ticker</td><td><b>இல்ல</b> — securities இல்ல (Section 03)</td><td>—</td></tr><tr><td><b>Exchange Contract Code</b></td><td>ஆமா — முதன்மை identifier; product + expiry month + year-ஐ encode பண்ணுது</td><td><code>ESZ26</code> (E-mini S&amp;P 500, Dec 2026); <code>CLZ26</code> (WTI Crude, Dec 2026 — <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §6); <code>ZNZ26</code> (10Y T-Note, Dec 2026)</td></tr><tr><td>Contract Month Code</td><td>Exchange contract code-க்குள்ள பதிக்கப்பட்டது (Section 1-ஓட F/G/H/.../Z table)</td><td>மேல உள்ள மூணு codes-லயும் <code>Z</code> = December</td></tr><tr><td><b>UPI / UTI</b></td><td><b>இல்ல</b> — இவை bilateral-ஆ பேசப்பட்ட OTC derivatives-ஐ identify பண்ணும் (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §12); ஒரு Listed Derivative-ஓட fungibility (Section 03) ஒவ்வொரு trade-க்கும் bilateral identifiers-ஐ அர்த்தமற்றதாக்குது — அந்தப் பாத்திரத்தை exchange-ஓட சொந்த trade/clearing IDs வகிக்குது</td><td>—</td></tr><tr><td><b>LEI</b></td><td>ஆமா — Bank Of Toronto, மற்ற எந்த counterparty-ஐயும் identify பண்ணும், முந்தைய ஒவ்வொரு module-லயும் அதே பாத்திரம்</td><td>Entity, instrument இல்ல (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §6)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Exchange contract code இருந்து UPI/UTI இல்லாத Listed Derivative trade record சரியா சரியானது — <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §6, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §6 OTC records-க்கு ஏற்கனவே நிறுவின diagnostic-ஓட தலைகீழ். இல்லன்னா வெளிப்படையா listed Futures/Options record போல இருக்கற ஒண்ணுல UPI/UTI நிரம்பியிருந்தா, அதுவே இங்க முரண்.</p>
+    </section>
+    <section class="mod" id="7-exchange-vs-otc-vs-bilateral-vs-centrally-cleared">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p><b>Definition:</b> இந்த roadmap-ல மற்ற ஒவ்வொரு module-உம் Section 7-ஐ ஒரு table முழுக்க பல பதில்களோட உண்மையான இரு-அச்சு கேள்வியா மாத்தியது. Listed Derivatives, அதுல உள்ள ஒவ்வொரு product-க்கும் அந்தக் கேள்விக்கு வரையறைப்படியே <b>ஒற்றை, நிபந்தனையற்ற பதில்</b> இருக்கற ஒரே node.</p>
+<div class="table-scroll"><table><thead><tr><th>Product</th><th>Exchange ஆ OTC ஆ?</th><th>Bilateral ஆ Centrally Cleared ஆ?</th></tr></thead><tbody><tr><td>Futures (எந்த underlying-உம்)</td><td><b>எப்பவும் exchange-traded</b></td><td><b>எப்பவும் centrally cleared</b>, execution-ஓட நொடியிலேயே (Section 01)</td></tr><tr><td>Listed Options (எந்த underlying-உம்)</td><td><b>எப்பவும் exchange-traded</b></td><td><b>எப்பவும் centrally cleared</b> (US equity options-க்கு OCC, futures options-க்கு CME Clearing)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> முந்தைய ஒவ்வொரு module-ஓட Section 7-உம், இந்த இரு-அச்சு grid-ல ஒரு குறிப்பிட்ட product எங்க உட்காருதுன்னு காட்ட இருந்தது, ஏன்னா பதில் product-க்கு product உண்மையிலயே வேறுபட்டது. இங்க, இரு-அச்சு grid ஒரே cell-ஆ ஒடுங்குது — இதுதான் இந்த module ஒரு தனி node-ஆ இருக்கறதுக்கான முழு காரணம்: "Listed Derivatives" என்பது அது எதை reference பண்ணுதுங்கறதால வரையறுக்கப்படலை, Section 2-ல இருந்து ஐந்து underlyings-ல எதன் மேல கட்டப்பட்டிருந்தாலும் *எப்பவும் exchange-traded, centrally-cleared cell-ல இறங்குறது*ங்கறதால வரையறுக்கப்படுது.</p>
+    </section>
+    <section class="mod" id="8-regulatory-perspective-mifid-emir-sftr-fca-ciro-hkma-dtcc-dmo">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <div class="table-scroll"><table><thead><tr><th>Regulation / Body</th><th>Listed Derivatives-ஐ குறிப்பா எப்படித் தொடுது</th></tr></thead><tbody><tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Listed derivatives trading venues-க்கு நேரடியா pre/post-trade transparency-ஐ வகுக்குது; சில listed commodity derivatives மேல <b>position limits்-ஐயும்</b> (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §08) — future எந்த underlying-ஐ reference பண்ணினாலும் mechanism அதே என்பதால இங்க மறுபயன்படுத்தப்பட்டது</td></tr><tr><td><b>EMIR</b></td><td>Exchange-traded, centrally-cleared Futures/Listed Options-க்கு OTC derivatives-க்கு பொருந்தற மாதிரி (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §07) பொதுவா <b>பொருந்தாது</b> — reporting கடமை தொழில்நுட்ப ரீதியா இன்னும் இருக்கு, ஆனா EMIR-ஓட <i>கட்டாய clearing</i> பாதி (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §08, <a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §08-ல தலைப்பு உண்மை) இங்க அர்த்தமற்றது, ஏன்னா இந்த products centrally cleared தவிர வேறெதுவா இருக்கவே போகலை</td></tr><tr><td><b>SFTR</b></td><td>பொருந்தாது — securities financing எதுவும் சம்பந்தப்படலை</td></tr><tr><td><b>FCA</b> (UK)</td><td>UK listed derivatives exchanges-ஐயும் அவற்றின் members-ஓட conduct-ஐயும் regulate பண்ணுது</td></tr><tr><td><b>CIRO</b> (Canada)</td><td>Montreal Exchange (Canada-ஓட சொந்த listed derivatives exchange)-உடன் சேர்ந்து, Canadian listed derivatives dealer conduct-ஐ மேற்பார்வை பண்ற SRO</td></tr><tr><td><b>HKMA / SFC</b> (Hong Kong)</td><td>HKEX-listed futures/options-க்கு குறிப்பா SFC (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §08-ல HKMA-வோட வேறுபாடு) பொருத்தமான அமைப்பு — HKMA தானே இங்க ஒரு படி தள்ளியே நிக்குது, FX (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §08), Fixed Income (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §08)-ல அதன் நேரடிப் பாத்திரங்களை விட Equity-ல (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §08) அதன் பாத்திரம் போல</td></tr><tr><td><b>CFTC / SEC</b> (US)</td><td>CFTC பெரும்பாலான listed futures-ஐ (commodity, rate, FX, பரந்த index) regulate பண்ணுது; SEC-யும் CFTC-யும் <b>கூட்டா</b> "Security Futures Products"-ஐ (ஒரு தனி stock அல்லது narrow-based index மேல futures) regulate பண்ணுது — <a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §08-ஓட Credit பிளவுக்கு பக்கத்துல ரெண்டாவது CFTC/SEC பிளவு, ஆனா வேறு காரணத்துக்காக: இங்க அது underlying ஒரு <i>single security</i>-ங்கறதைப் பத்தியது, swaps-vs-security-based-swaps வகைப்பாட்டைப் பத்தி இல்ல</td></tr><tr><td><b>DTCC / OCC</b></td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §5-ல அறிமுகப்படுத்தப்பட்ட <b>OCC (Options Clearing Corporation)</b>, எல்லா US-listed equity options-க்கும் இந்த module-ஓட அர்ப்பணிப்பு CCP — சில product அமைப்புகள்ல equity options மட்டுமில்லாம, எந்த listed option-க்கும் அதன் முழு scope சேர்ந்த module-ஆ இங்க மறுபடி சொல்லத் தகுந்தது</td></tr><tr><td><b>DMO</b> (UK Debt Management Office)</td><td>நேரடியா பொருத்தமில்ல — ஒரு UK Gilt future reference பண்ற cash Gilts-ஐ வெளியிடுது (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §08), ஆனா DMO தானே listed derivative சந்தையைத் தொடறதில்ல</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> இங்க regulatory கதை முந்தைய ஒவ்வொரு module-ஓடதுக்கும் கிட்டத்தட்ட தலைகீழ் — "இந்த regulation-ஓட mandate எந்த குறிப்பிட்ட products-க்குள்ள நீளுது"ன்னு கேட்காம, Section 8-ல இங்க பெரும்பாலான வரிகள் உண்மையில "இந்த regulation-ஓட OTC-மையம் கொண்ட இயந்திரம் சந்தையின் இந்த மூலைக்குள்ள நீள வேண்டிய அவசியம் இல்ல, ஏன்னா Section 7 ஏற்கனவே ஒரு mandate இல்லாமலே central clearing-ஐ உத்தரவாதப்படுத்துது"ன்னு சொல்லுது. CFTC/SEC Security Futures Product பிளவு ஒரே உண்மையான விதிவிலக்கு — ஒரு listed derivative-ஓட underlying ஒரு single security-ஆ இருக்கறதால regulatory கவனம் குறிப்பா அதிகரிக்கற இடம்.</p>
+    </section>
+    <section class="mod" id="9-canadian-systems-landscape-front-middle-back-office-ல-இருந்து-regulatory-reporting-வரை">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Canadian Systems Landscape — Front, Middle &amp; Back Office-ல இருந்து Regulatory Reporting வரை</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §2 Canada-க்கான <i>பொதுவான</i> Front/Middle/Back Office architecture-ஐ ஏற்கனவே பெயரிட்டிருக்கு. இந்த section அதை Listed Derivatives-க்கு மட்டும் சுருக்குது — இந்த module-ஓட சொந்தக் கருப்பொருள் ஒவ்வொரு underlying-உம் (Section 2) ஒரே mechanic வழியா போகுதுங்கறதால, Canada-ஓட listed-derivatives stack வரைய அசாதாரணமா எளிது: <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §2 cash equities-க்கு பட்டியலிடும் பல போட்டி venues போல இல்லாம, Canada-ல exchange-listed derivatives-க்கு உண்மையிலயே <b>ஒரே ஒரு</b> venue-உம் <b>ஒரே ஒரு</b> CCP-யும்தான்.</p>
+<div class="table-scroll"><table><thead><tr><th>Layer</th><th>System(s)</th><th>Role</th></tr></thead><tbody><tr><td><b>Front Office</b></td><td>Order/Execution Management (Bloomberg EMSX, FlexTrade, or a bank's own DMA gateway — illustrative, same vendor family <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §2 names) → <b>Montreal Exchange (MX)</b>, TMX Group's derivatives exchange, matched on its electronic trading engine, commonly referred to as <b>SOLA</b></td><td>Order entry, execution, price discovery</td></tr><tr><td><b>Middle Office</b></td><td>Give-up/allocation processing (routes an executing broker's trade to the correct clearing member); risk/valuation engines (Murex/Calypso — illustrative)</td><td>Confirms the trade, marks intraday risk, routes it to the right clearing member</td></tr><tr><td><b>Back Office / CCP</b></td><td><b>CDCC (Canadian Derivatives Clearing Corporation)</b>, also a TMX Group company</td><td>Novates every MX-listed trade the instant it executes (Section 1's Novation-at-Execution), collects Initial Margin, calculates daily Variation Margin (a SPAN-style methodology — illustrative)</td></tr><tr><td><b>Cash Settlement</b></td><td><b>LVTS (Large Value Transfer System)</b>, Canada's high-value payment rail (<a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §8's cash-settlement-rail table — the Canadian counterpart to Fedwire/CHAPS)</td><td>Moves the actual variation-margin and settlement cash between Bank Of Toronto's settlement bank and CDCC</td></tr><tr><td><b>Regulatory / Oversight</b></td><td><b>CIRO</b> (dealer conduct, trade/market surveillance); the <b>CSA</b> (recognizes MX as an exchange, CDCC as a clearing agency); the <b>Bank of Canada</b> (oversees CDCC as a systemically important Financial Market Infrastructure, alongside CDS/CDSX — <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §10)</td><td>Conduct oversight and systemic-risk monitoring — <b>not</b> a Trade Repository submission (see takeaway)</td></tr></tbody></table></div>
+<div class="ticket"><pre>CANADIAN LISTED DERIVATIVES — FRONT TO BACK, ONE TRADE
+========================================================================
+
+  FRONT OFFICE
+    Bank Of Toronto's derivatives desk enters the order via an
+    OMS/EMS (Bloomberg EMSX / FlexTrade / a bank DMA gateway --
+    illustrative) -&gt; routed to MONTREAL EXCHANGE (MX), matched on
+    its electronic trading engine, SOLA
+         |
+         v
+  MIDDLE OFFICE
+    Give-up/allocation processing routes the executed trade to the
+    correct clearing member; risk/valuation systems (Murex/Calypso
+    -- illustrative) mark the position and compute intraday risk
+         |
+         v
+  BACK OFFICE / CCP
+    CDCC (Canadian Derivatives Clearing Corporation) NOVATES the
+    trade the instant it executes (Section 1's Novation-at-
+    Execution) -- becomes buyer to the seller and seller to the
+    buyer, collects Initial Margin, and calculates daily Variation
+    Margin (a SPAN-style methodology -- illustrative)
+         |
+         v
+  CASH SETTLEMENT
+    Variation margin cash moves between Bank Of Toronto's
+    settlement bank and CDCC over LVTS, Canada's high-value
+    payment rail (systems-landscape §8 -- the Canadian counterpart
+    to Fedwire/CHAPS)
+         |
+         v
+  REGULATORY / OVERSIGHT -- NO TRADE REPOSITORY IN THIS PATH
+    CIRO oversees Bank Of Toronto's trading conduct on MX; the CSA
+    recognizes MX as an exchange and CDCC as a clearing agency; the
+    BANK OF CANADA oversees CDCC itself as a systemically important
+    Financial Market Infrastructure (FMI), given how much of
+    Canada's listed-derivatives risk concentrates through this one
+    CCP</pre></div>
+<p><b>Worked walkthrough — Bank Of Toronto, MX-ல S&amp;P/TSX 60 Index Futures (SXF)-ஐ வாங்குது:</b></p>
+<div class="ticket"><pre>S&amp;P/TSX 60 INDEX FUTURE (SXF)  —  MONTREAL EXCHANGE
+========================================================================
+
+  Buyer: Bank Of Toronto     Multiplier: CAD 200 / index point
+  Trade: BUY 15 contracts @ 1,285.00 (index points)
+  Notional = 15 x 200 x 1,285.00 = CAD 3,855,000
+
+  Next business day, index rises to 1,291.50:
+    Variation Margin = (1,291.50 - 1,285.00) x 200 x 15
+                      = 6.50 x 200 x 15
+                      = CAD 19,500
+    -&gt; credited to Bank Of Toronto (long position, index rose --
+       the SAME mechanic as Module 4 §4c's E-mini S&amp;P 500 example,
+       just a different index, multiplier, and currency)
+
+  SYSTEM PATH: OMS/EMS -&gt; MX/SOLA (execution) -&gt; clearing-member
+  risk engine (middle office) -&gt; CDCC (novation, margin) -&gt; LVTS
+  (cash) -&gt; CIRO/CSA/Bank of Canada (oversight, no TR submission)</pre></div>
+<div class="callout"><b>Callout — illustrative, பரிந்துரை இல்ல.</b> மேல உள்ள system/vendor பெயர்கள் (Bloomberg EMSX, FlexTrade, Murex, Calypso) Canadian வங்கி derivatives desks பொதுவா ஓட்டுறதன் பிரதிநிதிகள், Bank Of Toronto-ஓட உண்மையான internal technology stack பத்தின கூற்று இல்ல — <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §2 தன் சொந்த vendor பட்டியலை hedge பண்ற விதத்துக்கு ஒத்தது. MX, CDCC, CIRO, CSA, Bank of Canada, LVTS, இதற்கு மாறா, உண்மையான, குறிப்பிட்ட Canadian market infrastructure: MX-listed products-க்கு ஒரே ஒரு CCP, vendors தேர்வு இல்ல; மேல உள்ள front/middle-office layer போல இல்லாம.</div>
+<p><b>Takeaway:</b> Listed Derivatives-க்கு central clearing ஒருபோதும் விருப்பமில்லாததால EMIR-ஓட கட்டாய-clearing இயந்திரம் "அர்த்தமற்றது"ன்னு Section 8 ஏற்கனவே சுட்டிக்காட்டியது — அதே உண்மையின் Canadian-குறிப்பான விளைவை இந்த section காட்டுது: ஒவ்வொரு MX-listed trade-உம் execution-ல இருந்தே CDCC வழியா centrally cleared என்பதால, clear ஆகாத CAD IRS (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a>) அல்லது CDS (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a>) கோரும் மாதிரி CSA Multilateral Instrument 96-101 Trade Repository submission இல்ல. <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §1-ஓட "இந்த trade ஒரு regulator-ஆல பார்க்கப்பட்டதா?" கேள்விக்கு Canadian சந்தையின் இந்த மூலையில பதில் சொல்லும் மேற்பார்வை layer — Trade Repository இல்ல, CIRO-ஓட சொந்த market/trade surveillance.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>10-Year T-Note futures-ஓட seller, தன் Fixed Income book-ஓட duration-ஐ hedge பண்ணுது</td></tr><tr><td>Maple Leaf Pension Fund</td><td>E-mini S&amp;P 500 futures (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c), AAPL listed call (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4d)-ஓட buyer</td></tr><tr><td>CME / CME Clearing</td><td>E-mini, WTI, 10-Year T-Note futures-க்கான exchange, CCP</td></tr><tr><td>OCC (Options Clearing Corporation)</td><td>AAPL call உட்பட US-listed equity options-க்கான CCP</td></tr><tr><td>CFTC / SEC</td><td>Security Futures Products-ஓட (single stocks/narrow indices மேல futures) கூட்டு regulators</td></tr><tr><td>Montreal Exchange (MX) / CDCC</td><td>Canada-ஓட listed-derivatives exchange, அதன் அர்ப்பணிப்பு CCP — SXF trade-ஐ execute, clear பண்ணுது (Section 9)</td></tr><tr><td>CIRO / Bank of Canada</td><td>MX-ல Canadian dealer conduct-ஐ CIRO மேற்பார்வை பண்ணுது; Bank of Canada, CDCC-ஐ systemically important FMI-ஆ மேற்பார்வை பண்ணுது (Section 9)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Section 4c-ஓட 10-Year T-Note future-ல, விலை அடுத்த business day-ல 113'08 (113.250)-க்கு <i>உயர்ந்திருந்தா</i>, Variation Margin தொகை என்ன? Bank Of Toronto லாபம் அடையுமா, இழக்குமா (நினைவில வெச்சுக்கோங்க: Bank Of Toronto SHORT)?</li><li>ஒரு OTC FRA "அசல் அதே counterparty-க்கு எதிராக மட்டுமே unwind ஆகும்", ஆனா ஒரு Listed Future எந்த சந்தை பங்கேற்பாளருக்கு எதிராகவும் மூடப்படலாம்னு Section 3 ஏன் சொல்லுது?</li><li>ஒரு bond future roll ஆகாம அல்லது மூடப்படாம expiry-ஐ அடையுது. Section 5-ஐ பயன்படுத்தி, buyer ஒரு குறிப்பிட்ட, முன்கூட்டியே தீர்மானிக்கப்பட்ட bond-ஐ பெறுமா? இல்லன்னா, எது deliver ஆகணும்னு யார் முடிவு செய்யறாங்க?</li><li>Section 6-ஐ பயன்படுத்தி, ஒரு CME WTI Crude Future trade record-ல UTI field நிரம்பியிருக்கும்னு எதிர்பார்ப்பீங்களா? ஏன்/ஏன் இல்ல? அதே product-ஓட OTC இணையான Commodity Swap-ஓட (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §6) இது எப்படி மாறுபடுது?</li><li>இந்த module-ஓட Exchange-vs-OTC table "ஒரே cell-ஆ ஒடுங்குது"ன்னு Section 7 ஏன் விவரிக்குது? மற்ற ஒவ்வொரு module-ஓட அதே table-ஓட பதிப்பிலிருந்து இது எப்படி வேறுபடுது?</li><li>ஒரு Security Futures Product (Section 08) CFTC, SEC ரெண்டோட அதிகார எல்லைக்கும் குறிப்பா எதனால விழுது? அந்த காரணம் <a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §08 Credit-ஓட CFTC/SEC பிளவுக்கு கொடுத்த காரணத்திலிருந்து எப்படி வேறுபடுது?</li><li>இந்த module-ஓட masthead, Listed Derivatives-ஐ, உதா., <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> (Equity) அல்லது <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> (Commodities)-க்குள்ள மடிக்காம, ஆறு-asset-class roadmap-க்கு வெளியே உட்காருதுன்னு ஏன் விவரிக்குது?</li><li>Section 9-ஐ பயன்படுத்தி, CAD-denominated, CDCC-cleared SXF future CSA Multilateral Instrument 96-101 Trade Repository report-ஐ உருவாக்காம, clear ஆகாத CAD IRS (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a>) உருவாக்குவது ஏன்? Trade Repository இல்லன்னா, SXF trade-ஓட regulatory மேற்பார்வையை இன்னும் எந்த அமைப்பு வழங்குது?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — இது Asset Class Roadmap (Modules 4-9), அதன் cross-cutting துணை ரெண்டையும் முடிக்குது. Modules 10-14 இது எல்லாத்தின் மேலயும் கட்டுது: Valuation, Risk &amp; Exposure, Collateral &amp; Margin, Parties/LEIs, Regulatory Reporting.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Variation Margin = USD 75,000, Bank Of Toronto இழக்குது (கொடுக்குது), Section 4c-ஓட worked example-ஓட mirror image.</b></p>
+<div class="ticket"><pre>Variation Margin = (113.250 - 112.500)/100 x 100,000 x 100
+                  = 0.0075 x 100,000 x 100
+                  = USD 75,000</pre></div>
+<p>Bank Of Toronto SHORT (future-ஐ விற்றது) என்பதால, விலை உயர்வு position-க்கு எதிரா நகருது — Bank Of Toronto இப்போ variation margin-ல USD 75,000 கடன்பட்டிருக்கு; short லாபம் அடைஞ்ச Section 4c-ஓட விலை-வீழ்ச்சி scenario-வுக்கு எதிர்மறை. இதுதான் hedge நோக்கப்படி வேலை செய்யறது: rates உயருறதுக்குப் பதிலா குறைஞ்சிருந்தா, Bank Of Toronto-ஓட உண்மையான bond portfolio மதிப்பு <i>லாபம்</i> அடைஞ்சிருக்கும், இந்த futures இழப்பை ஈடுகட்டி — முதல்ல future-ஐ விற்றதற்கான முழுக் காரணம் அதுதான்.</p>
+<p><b>2. ஏன்னா ஒரு OTC FRA-ஓட terms (Notional, FRA Rate, period) Bank Of Toronto-க்கும் Goldman Sachs-க்கும் இடையிலான அந்த ஒரு பேச்சுவார்த்தைக்கு bespoke (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4b) — வேற எந்த சந்தை பங்கேற்பாளரோட FRA-வுக்கும் ஒரே மாதிரி terms உத்தரவாதம் இல்ல, அதனால அசல் counterparty-ஐத் தவிர net பண்ண fungible "எதிர் position" இல்ல. ஒரு Listed Future-ஓட terms அந்த contract-ல ஒவ்வொரு trade-க்கும் ஒரே மாதிரி (Section 3), அதனால எந்த buyer-ஓட long position-உம் exchange-ஓட books-ல எந்த seller-ஓட short position-க்கு எதிராகவும் net ஆகலாம்.</b></p>
+<p>Section 3-ஓட takeaway இதை standardization இருக்கறதற்கான மையக் காரணமா சொல்லுது: நீங்க முதல்ல trade பண்ணின counterparty-ல இருந்து முற்றிலும் வேறொரு counterparty-க்கு எதிரா மூடுவது அல்லது roll பண்ணுவது (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4b) சாத்தியமாக்குவது fungibility.</p>
+<p><b>3. இல்ல — buyer ஒரு முன்கூட்டியே தீர்மானிக்கப்பட்ட bond-ஐ பெறாது. SELLER (short) delivery basket-ல இருந்து எந்த தகுதியுள்ள bond-ஐ deliver பண்றதுன்னு தேர்ந்தெடுக்குது, அந்த bond-ஓட குறிப்பிட்ட coupon/maturity-ஐ contract-ஓட notional 6% coupon-ஓட ஒப்பிட்டு சரிசெய்ய வெளியிடப்பட்ட conversion factor-ஐ பயன்படுத்தி — "Cheapest to Deliver" (CTD) bond.</b></p>
+<p>Section 5 இதை நேரடியா சொல்லுது, E-mini future (delivery இல்ல, cash-settled), WTI future (ஒரு நிலையான grade/location) ரெண்டோடும் ஒப்பிட்டு — delivery செய்யும் தரப்புக்கு எதை deliver பண்றதுன்னு உண்மையான தேர்வு இருக்கற மூணுல ஒரே ஒண்ணு bond future.</p>
+<p><b>4. இல்ல — CME WTI Crude Future trade record-ல UTI இருக்கும்னு எதிர்பார்க்க மாட்டீங்க, ஏன்னா Section 6 UPI/UTI bilateral-ஆ பேசப்பட்ட OTC derivatives-க்கு மட்டுமேன்னு நிறுவுது; ஒரு Listed Future ஒருபோதும் bilateral-ஆ பேசப்படலை. இது OTC Commodity Swap-ஓட (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §6) நேரடியா மாறுபடுது; அது பேசப்படுறதால UPI/UTI-ஐ சுமக்குது — அதே underlying commodity (crude oil), எந்த venue/product வகை வழியா trade ஆகுதுங்கறதை மட்டும் பொறுத்து, கட்டமைப்பு ரீதியா வேறுபட்ட ரெண்டு identifier pattern-களை உருவாக்குது.</b></p>
+<p>Section 6-ஓட takeaway இதை இந்த module-ஓட diagnostic சோதனையா ஆக்குது: Listed Derivative-க்கு UPI/UTI இல்லாத exchange contract code சரி; அதற்குப் பதிலா UPI/UTI நிரம்பியிருந்தா அதுவே முரண் — <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §6, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §6 OTC products-க்கு நிறுவின சோதனைகளின் தலைகீழ்.</p>
+<p><b>5. ஏன்னா இந்த module-ல ஒவ்வொரு product-உம் வரையறைப்படியே ஒரே cell-ல (exchange-traded, centrally cleared) இறங்குது — Section 7-ஓட grid-ல ஒரே ஒரு cell மட்டும் நிரம்பியிருக்கு, மற்ற ஒவ்வொரு module-ஓட அதே table-க்கும் தேவைப்பட்ட பல cells-க்குப் பதிலா, ஏன்னா "Listed Derivatives" சரியா அந்தக் கேள்விக்கு ஒரு நிலையான பதில் இருக்கற products-ஆ வரையறுக்கப்பட்டிருக்கு, Equity, Fixed Income, FX, Commodities, Rates, Credit-ல அதே கேள்வி asset class-க்குள்ள குறிப்பிட்ட product-க்கு product உண்மையிலயே வேறுபட்டது.</b></p>
+<p>முந்தைய ஒவ்வொரு module-க்கும் Section 7 தேவைப்பட்டது, அந்த asset class-ஓட பல products-ல ஒவ்வொண்ணும் 2x2 (அல்லது பெரிய) grid-ல எங்க இறங்குதுன்னு காட்ட. இங்க வேறுபடுத்த எதுவும் இல்ல — சரியா இதுதான் Section 7-ஓட takeaway "Listed Derivatives" ஏன் asset-class-சுற்றி அமைந்த கருத்துக்குப் பதிலா தன் சொந்த module-ஐ சம்பாதிக்குதுன்னு சொல்றது.</p>
+<p><b>6. ஒரு Security Futures Product CFTC, SEC ரெண்டோட அதிகார எல்லைக்கும் குறிப்பா விழுது, ஏன்னா அதன் underlying ஒரு single security (அல்லது அதுக்கு நெருக்கமான narrow-based index) — நேரடி securities-law கொக்கி; <a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §08 single-name CDS-க்கு அடையாளம் காட்டிய அதே underlying-security trigger. Credit பிளவு (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §08), இருந்தும், Dodd-Frank-ஓட OTC derivatives கட்டமைப்புக்குள்ள swaps-vs-security-based-swaps வகைப்பாட்டைப் பத்தியது; இந்த module-ஓட பிளவு, ஒரு exchange-traded product மேல எந்த listed-derivatives regulator (futures/options-க்கு பொதுவா CFTC, security-தொடர்புடையவற்றுக்கு குறிப்பா SEC) அதிகார எல்லை கொண்டுள்ளதுங்கறதைப் பத்தியது — ஒரே மாதிரியான விளைவு (கூட்டு CFTC/SEC மேற்பார்வை), ரெண்டு வேறு சட்டக் கட்டமைப்புகள் வழியா (OTC swap வகைப்பாடு vs. listed product வகைப்பாடு).</b></p>
+<p>Section 8 இதை வெளிப்படையா "ரெண்டாவது CFTC/SEC பிளவு... வேறு காரணத்துக்காக"ன்னு குறிக்குது — ரெண்டு பிளவுகளும் அதே மூல காரணத்துக்குத் (ஒரு single security-ஓட ஈடுபாடு SEC ஆர்வத்தை தூண்டுறது) திரும்புது, ஆனா உண்மையிலயே வேறு product வகைகளுக்கு (OTC swaps vs. listed futures/options) பொருந்துது.</p>
+<p><b>7. ஏன்னா Section 3-ஓட கண்டுபிடிப்பு: standardization/central clearing ஒரு VENUE பண்பு, ASSET CLASS பண்பு இல்ல — ஒரு Future அல்லது Listed Option ஆறு asset classes-ஓட underlyings-ல எதையும் (Section 2-ஓட ஐந்து-உதாரண table) reference பண்ணலாம், அதனால அதை ஒரே ஒரு asset class module-ல (உதா., Equity) மடிக்கறது, வேறு underlying-ல கட்டப்பட்ட (ஒரு WTI future, ஒரு T-Note future) ஒவ்வொரு Future/Listed Option-ஐயும் எப்படியோ Equity-க்கு சொந்தம்னு தவறா சித்தரிக்கும்.</b></p>
+<p>Masthead-ஓட சட்டகமும் Section 1-3-ஓட வாதங்களும் இதுல ஒன்றிணையுது: work data model taxonomy-ஓட சொந்த அமைப்பு (Listed Derivatives taxonomy node "7"-ஆ, asset-class nodes "1" முதல் "6" வரையிலிருந்து தனியா) ஒரு தன்னிச்சையான schema-வடிவமைப்பு தேர்வு இல்ல, ஒரு உண்மையான ஒழுங்கமைக்கும் கொள்கையை பிரதிபலிக்குது — mechanic (Section 1, Section 3) எந்த asset class underlying-ஐ வழங்குதுங்கறதுக்கு உண்மையிலயே செங்குத்துங்கறதால இந்த module இருக்கு.</p>
+<p><b>8. ஏன்னா SXF future execution-ஓட நொடியிலேயே CDCC வழியா centrally cleared (Section 1-ஓட Novation-at-Execution, Section 9-ல Canada-க்கு மறுபடி சொல்லப்பட்டது) — MI 96-101-ஓட Trade Repository கடமை இல்லன்னா மறைவாவே இருக்கற OTC derivative risk-க்கு regulators-க்கு பார்வை தரவே இருக்கு; ஒரு CDCC-cleared listed future அந்த அர்த்தத்துல ஒருபோதும் மறைவானது இல்ல: ஒவ்வொரு position-ஓட முழுமையான, மையப்படுத்தப்பட்ட record-ஐ CDCC தானே ஏற்கனவே வெச்சிருக்கு. Clear ஆகாத CAD IRS-க்கு அப்படி ஒரு மைய record இல்ல, MI 96-101 மூட இருக்கற இடைவெளி சரியா அதுதான். SXF trade-க்கு Trade Repository-க்குப் பதிலா, CIRO-ஓட சொந்த market/trade surveillance செயல்பாடு regulatory மேற்பார்வையை வழங்குது.</b></p>
+<p>Section 9-ஓட takeaway இதை நேரடியா சொல்லுது, EMIR-ஓட கட்டாய-clearing இயந்திரம் இங்க "அர்த்தமற்றது"ங்கற Section 8-ஓட கவனிப்புக்குத் திரும்பி — Canada-ஓட சொந்த OTC trade-reporting regime-க்கும் அதே தர்க்கம் பொருந்துது: ஒரு தேசிய CCP (CDCC) வழியா central clearing ஒவ்வொரு MX-listed product-க்கும் ஏற்கனவே மூடிவிடற அதே பார்வை இடைவெளியைத்தான் அது இலக்கு வைக்குது.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 15 — Listed Derivatives (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

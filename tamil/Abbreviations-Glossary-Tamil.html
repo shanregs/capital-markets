@@ -1,0 +1,625 @@
+<!doctype html>
+<title>Abbreviations Glossary (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Abbreviations Glossary (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Capital Markets acronyms — ISIN முதல் HKTR வரை, பேச்சுத் தமிழ் விளக்கத்தோட</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. இது module files-க்கு துணையான reference — தனி module இல்ல. ஒரு reporting field-ல தெரியாத acronym வந்தா இங்க பாருங்க. Full Form English-லயே இருக்கு (அதுதான் இந்த industry-ல பேசற மொழி); "விளக்கம்" column பேச்சுத் தமிழ்ல. English மூலம்: <a href="../docs/1-capital-markets/abbreviations.html">Abbreviations Glossary</a></div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-instrument-trade-identifiers"><span class="toc-num">01</span>1. Instrument &amp; Trade Identifiers</a></li>
+      <li><a href="#2-market-structure-venues"><span class="toc-num">02</span>2. Market Structure &amp; Venues</a></li>
+      <li><a href="#3-products-derivatives"><span class="toc-num">03</span>3. Products &amp; Derivatives</a></li>
+      <li><a href="#4-rates-benchmarks"><span class="toc-num">04</span>4. Rates &amp; Benchmarks</a></li>
+      <li><a href="#5-pricing-valuation"><span class="toc-num">05</span>5. Pricing &amp; Valuation</a></li>
+      <li><a href="#6-settlement-clearing"><span class="toc-num">06</span>6. Settlement &amp; Clearing</a></li>
+      <li><a href="#7-risk-collateral-margin"><span class="toc-num">07</span>7. Risk, Collateral &amp; Margin</a></li>
+      <li><a href="#8-global-regulatory-industry-bodies"><span class="toc-num">08</span>8. Global Regulatory &amp; Industry Bodies</a></li>
+      <li><a href="#9-regional-reporting-regimes-regulators-us-uk-eu-canada-hong-kong"><span class="toc-num">09</span>9. Regional Reporting Regimes &amp; Regulators — US / UK / EU / Canada / Hong Kong</a></li>
+      <li><a href="#10-organizational-shorthand"><span class="toc-num">10</span>10. Organizational Shorthand</a></li>
+      <li><a href="#கூடுதல்-ஒரு-வாக்கியத்தில்-நினைவு-குறிப்புகள்"><span class="toc-num">★</span>கூடுதல் — &quot;ஒரு வாக்கியத்தில்&quot; நினைவு குறிப்புகள்</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-instrument-trade-identifiers">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Instrument &amp; Trade Identifiers</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>ISIN</b></td><td>International Securities Identification Number</td><td>ஒரு security-க்கான உலகளாவிய 12-எழுத்து identifier (2 எழுத்து country code + 9 எழுத்து body + check digit). <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §2 பாருங்க.</td></tr><tr><td><b>CUSIP</b></td><td>Committee on Uniform Securities Identification Procedures</td><td>US/Canada securities-க்கான 9-எழுத்து identifier; North American securities-க்கு ISIN-க்குள்ளேயே பதிஞ்சிருக்கும்.</td></tr><tr><td><b>SEDOL</b></td><td>Stock Exchange Daily Official List</td><td>UK-ல பிறந்த 7-எழுத்து identifier; சில London-listed securities-க்கு இன்னும் பயன்படுது.</td></tr><tr><td><b>UPI</b></td><td>Unique Product Identifier</td><td>OTC derivative <i>product</i>-க்கான (தனி trade-க்கு இல்ல) உலகளாவிய identifier — regulatory reporting-ல internal codes-ஐ மெல்ல மாத்துது. <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §11.</td></tr><tr><td><b>UTI</b></td><td>Unique Trade Identifier</td><td>ஒரு குறிப்பிட்ட derivative <i>transaction</i>-க்கான globally unique identifier; execution-ல உருவாகும் — derivatives உலகின் "Trade ID".</td></tr><tr><td><b>CFI Code</b></td><td>Classification of Financial Instruments (ISO 10962)</td><td>Security master-ல instrument வகையை (debt/equity, fixed/floating, voting rights) சொல்லும் 6-எழுத்து code. Derivatives-க்கு ISDA taxonomy மாதிரி, cash instruments-க்கு CFI. <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §6.</td></tr><tr><td><b>LEI</b></td><td>Legal Entity Identifier</td><td>ஒரு <i>legal entity</i>-க்கான (bank, fund, corporate) 20-எழுத்து global identifier — instrument-க்கு இல்ல. பெரும்பாலான regulatory trade reports-ல counterparties-ஐ அடையாளம் காட்ட கட்டாயம். <a href="../docs/1-capital-markets/module-13-parties-leis.html">Module 13</a>. CDS-ல LEI <i>Reference Entity</i>-யையும் அடையாளம் காட்டும் — இது counterparties-ஐ தாண்டின இரண்டாவது role (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §6).</td></tr><tr><td><b>MIC</b></td><td>Market Identifier Code (ISO 10383)</td><td>ஒரு குறிப்பிட்ட exchange / trading venue-ஐ அடையாளம் காட்டும் 4-எழுத்து code (எ.கா. NYSE-க்கு <code>XNYS</code>).</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="2-market-structure-venues">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Market Structure &amp; Venues</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>OTC</b></td><td>Over-the-Counter</td><td>மத்திய exchange இல்லாம, ரெண்டு தரப்பு நேரடியா பேசி முடிக்கற trade. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §5.</td></tr><tr><td><b>CCP</b></td><td>Central Counterparty</td><td>Trade ஆனப்புறம் ரெண்டு counterparties நடுவுல புகுந்து, ஒவ்வொரு seller-க்கும் buyer-ஆ, ஒவ்வொரு buyer-க்கும் seller-ஆ ஆகி counterparty risk-ஐ குறைக்கும் clearing house. Novation: <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6; Risk குறைப்பு: <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>. Listed derivative-ல novation execution-லயே உடனே நடக்கும் (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §5, <a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §1).</td></tr><tr><td><b>LCH / SwapClear</b></td><td>London Clearing House / SwapClear</td><td>LCH லண்டனை தலைமையிடமா கொண்ட CCP group (LSEG-ஓட பகுதி). <b>SwapClear</b> என்பது LCH-ஓட interest rate swaps clearing service — உலகின் centrally-cleared IRS volume-ல பெரும்பகுதியை novate பண்ணுது. "LCH" = legal entity/group, "SwapClear" = அதுக்குள்ள product line. இந்த roadmap-ல concrete CCP உதாரணமா பயன்படுது. <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6, <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §7-9, <a href="./Systems-Landscape-Tamil.html">Systems Landscape</a> §6, §11.</td></tr><tr><td><b>CSD</b></td><td>Central Securities Depository</td><td>ஒரு market-ல securities-ஓட இறுதி சட்டப்பூர்வ உரிமையை பதிவு செய்யற ஒரே மத்திய ledger (எ.கா. Canada-ல CDS, US-ல DTC). <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7.</td></tr><tr><td><b>ICSD</b></td><td>International Central Securities Depository</td><td>Cross-border / international securities-ஐ settle பண்ணும் CSD (Euroclear, Clearstream).</td></tr><tr><td><b>MTF</b></td><td>Multilateral Trading Facility</td><td>EU-ல regulate ஆன trading venue; முறையான "exchange" இல்ல, ஆனா பல buyers/sellers-ஐ பொது rules-ல match பண்ணும்.</td></tr><tr><td><b>SEF</b></td><td>Swap Execution Facility</td><td>சில standardized OTC swaps-ஐ trade பண்ண US-ல regulate ஆன electronic venue; 2008 crisis-க்கு பிறகு derivatives trading-ல வெளிப்படைத்தன்மை கொண்டுவர கட்டாயமாக்கப்பட்டது.</td></tr><tr><td><b>SI</b></td><td>Systematic Internalizer</td><td>Client orders-ஐ regulated exchange/MTF-க்கு வெளியே தன் சொந்த கணக்குல execute பண்ணும் firm (குறிப்பிட்ட volume அளவுக்கு மேல); EU/MiFID II concept.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="3-products-derivatives">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Products &amp; Derivatives</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>IRS</b></td><td>Interest Rate Swap</td><td>ரெண்டு தரப்பு ஒரு notional மேல fixed vs floating வட்டி cash flows-ஐ பரிமாறிக்கறாங்க. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §8.</td></tr><tr><td><b>FRA</b></td><td>Forward Rate Agreement</td><td>ஒரே ஒரு எதிர்கால காலத்துக்கான வட்டி விகிதத்தை முன்கூட்டியே பூட்டும் contract — அடிப்படையில் ஒரு-period IRS.</td></tr><tr><td><b>CDS</b></td><td>Credit Default Swap</td><td>ஒரு reference entity default ஆகாம பாதுகாப்பு; buyer premium கட்டுவார், credit event நடந்தா seller payout தருவார். <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9.</td></tr><tr><td><b>TRS</b></td><td>Total Return Swap</td><td>ஒரு தரப்பு ஒரு asset-ஓட மொத்த return-ஐ (விலை மாற்றம் + வருமானம்) கொடுக்குது; மறுதரப்பு funding-rate payment தருது.</td></tr><tr><td><b>NDF</b></td><td>Non-Deliverable Forward</td><td>Currency முழுசா convertible இல்லாதப்ப, ரெண்டு currencies-ஐ physically மாத்தாம, நிகர cash வித்தியாசம் மட்டும் settle ஆகும் FX Forward. <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §10.</td></tr><tr><td><b>ETD</b></td><td>Exchange-Traded Derivative</td><td>Regulated exchange-ல trade ஆகும் derivative (future, listed option); OTC-க்கு எதிர்ப்பதம்.</td></tr><tr><td><b>ETF</b></td><td>Exchange-Traded Fund</td><td>Units ஒரு share மாதிரி exchange-ல trade ஆகும் fund; பொதுவா ஒரு index-ஐ பின்தொடரும்.</td></tr><tr><td><b>MBS</b></td><td>Mortgage-Backed Security</td><td>வீட்டுக் கடன் pool-ஆல ஆதரிக்கப்படும் security; principal படிப்படியா amortize ஆகும். <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §6.</td></tr><tr><td><b>ABS</b></td><td>Asset-Backed Security</td><td>Mortgage அல்லாத assets (auto loans, credit card receivables) pool-ஆல ஆதரிக்கப்படும் security.</td></tr><tr><td><b>CLO</b></td><td>Collateralized Loan Obligation</td><td>Leveraged corporate loans pool-ஆல ஆதரிக்கப்படும் securitization.</td></tr><tr><td><b>CDO</b></td><td>Collateralized Debt Obligation</td><td>Debt instruments pool-ஆல ஆதரிக்கப்படும், risk/seniority படி tranche செய்யப்பட்ட பரந்த securitization structure.</td></tr><tr><td><b>ADR / GDR</b></td><td>American / Global Depositary Receipt</td><td>ஒரு வெளிநாட்டு company-ஓட shares-ஐ பிரதிநிதித்துவப்படுத்தும் certificate; உள்நாட்டு exchange-ல trade ஆகும் (எ.கா. ஒரு ஐரோப்பிய company-ஓட shares US-ல ADR-ஆ).</td></tr><tr><td><b>CTD</b></td><td>Cheapest to Deliver</td><td>Physically-settled bond future-ல, delivery basket-ல இருந்து short-க்கு source பண்ணி deliver பண்ண மிக மலிவான eligible bond; conversion factor வெச்சு short தேர்ந்தெடுக்கும். <a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §5.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="4-rates-benchmarks">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Rates &amp; Benchmarks</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>CORRA</b></td><td>Canadian Overnight Repo Rate Average</td><td>Canada-வின் risk-free overnight benchmark; <b>Bank of Canada</b> தினமும், Government of Canada securities-ஆல collateral ஆன உண்மையான overnight repo transactions-ல இருந்து கணக்கிடுது (CDOR/LIBOR மாதிரி bank-ஓட மதிப்பீடுகள்ல இருந்து இல்ல). CAD swaps-ல floating leg. (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8; CDOR→CORRA கதை <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1).</td></tr><tr><td><b>CDOR</b></td><td>Canadian Dollar Offered Rate</td><td>CORRA மாற்றிய பழைய, survey-அடிப்படையிலான CAD interbank benchmark — banks தாங்க கடன் வாங்க முடியும்னு நம்பறதை தாங்களே சொல்வாங்க. <b>June 2024-க்கு பிறகு நிறுத்தப்பட்டது.</b> <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1.</td></tr><tr><td><b>SOFR</b></td><td>Secured Overnight Financing Rate</td><td>US-ன் risk-free overnight benchmark; USD LIBOR-ஓட வாரிசு.</td></tr><tr><td><b>SONIA</b></td><td>Sterling Overnight Index Average</td><td>UK-ன் risk-free overnight benchmark; GBP LIBOR-ஓட வாரிசு.</td></tr><tr><td><b>LIBOR</b></td><td>London Interbank Offered Rate</td><td>பழைய interbank benchmark; 2023-க்குள் SOFR/SONIA/CORRA மாதிரி "risk-free rates"-ஆல மாற்றப்பட்டது. பழைய trade data-ல இன்னும் தெரியும்.</td></tr><tr><td><b>OIS</b></td><td>Overnight Index Swap</td><td>Floating leg-ஆ compounded overnight rate (CORRA/SOFR மாதிரி) reference பண்ணும் swap — இப்போ standard IRS structure.</td></tr><tr><td><b>bps</b></td><td>Basis Points</td><td>1 bps = 0.01% (ஒரு சதவீதத்தில் நூறில் ஒண்ணு). Spreads, rates, சின்ன விலை நகர்வுகளை துல்லியமா சொல்ல (எ.கா. CDS spread "120 bps"). முழு theory: <a href="../docs/1-capital-markets/module-24-basis-points-deep-dive.html">Module 24 — Basis Points</a>.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="5-pricing-valuation">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Pricing &amp; Valuation</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>YTM</b></td><td>Yield to Maturity</td><td>ஒரு bond-ஐ maturity வரை வெச்சிருந்தா கிடைக்கும் மொத்த ஆண்டு return — கொடுத்த விலை, coupons, pull-to-par லாப/நஷ்டம் எல்லாம் சேர்த்து. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §1.</td></tr><tr><td><b>MTM</b></td><td>Mark-to-Market</td><td>ஒரு position-ஐ அதன் அசல் trade விலையில இல்லாம, நடப்பு market விலை/rates-ல மறுமதிப்பீடு செய்யறது — Middle Office தினமும் செய்யறது. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §4.</td></tr><tr><td><b>Position</b></td><td>(acronym இல்ல)</td><td>இதுவரை execute ஆன எல்லா trades-ல இருந்தும் கட்டப்பட்ட, ஒரு நேரத்தில் ஒரு instrument-ல நிகர holding — நீடிக்கும், தினமும் மறுமதிப்பீடு ஆகும் <i>நிலை</i>; Trade (ஒரு-முறை நிகழ்வு) இல்ல. <a href="../docs/1-capital-markets/module-25-position-deep-dive.html">Module 25 — Position</a>.</td></tr><tr><td><b>NPV</b></td><td>Net Present Value</td><td>எதிர்கால cash flows-ஐ தகுந்த rate-ல discount பண்ணி இன்றைய மதிப்பா மாத்தின தொகை. <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>; FRA upfront settlement-ல (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4b) NPV-style discounting ஏற்கனவே வருது.</td></tr><tr><td><b>PV01 / DV01</b></td><td>Price/Dollar Value of 1 Basis Point</td><td>வட்டி 1 bps நகர்ந்தா ஒரு position-ஓட value எவ்வளவு மாறும் — முக்கிய interest-rate risk sensitivity. <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §1, <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1, முழுசா <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>. Credit-ல spread நகர்வுக்கு இணையானது "Spread DV01" / "CS01" (<a href="../docs/1-capital-markets/module-24-basis-points-deep-dive.html">Module 24</a> §5).</td></tr><tr><td><b>P&amp;L</b></td><td>Profit and Loss</td><td>ஒரு காலத்தில் ஒரு position / trade-ல வந்த லாபம் அல்லது நஷ்டம்.</td></tr><tr><td><b>NAV</b></td><td>Net Asset Value</td><td>ஒரு fund-ஓட holdings-ஓட (assets − liabilities) ஒரு-unit மதிப்பு; fund units / ETF shares-ஐ price பண்ண.</td></tr><tr><td><b>IPV</b></td><td>Independent Price Verification</td><td>Front Office-ஓட சொந்த mark-ஐ எதிர்த்து, ஒரு position-ஓட valuation-ஐ சுதந்திரமா மறு-derive பண்ணும் control (பொதுவா Middle Office-ல Product Control); Fair Value Level அதிகமானா ஆய்வும் கடுமையாகும் (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §6-7).</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="6-settlement-clearing">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Settlement &amp; Clearing</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>T, T+1, T+2</b></td><td>Trade Date, Trade Date + n business days</td><td>Standard settlement நேர shorthand. உண்மையான தேதிகளோட உதாரணம்: <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §6.</td></tr><tr><td><b>DvP</b></td><td>Delivery versus Payment</td><td>Securities-உம் பணமும் ஒரே நேரத்துல நகர்வதை உறுதி செய்யும் settlement முறை — யாரும் ஒரே ஒரு leg மட்டும் வெச்சு ஆபத்துல இருக்க மாட்டாங்க. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7.</td></tr><tr><td><b>SSI</b></td><td>Standard Settlement Instructions</td><td>ஒரு party-க்கு securities / cash எங்க deliver பண்ணணும்னு (custodian, account number…) முன்கூட்டியே ஒப்புக்கொண்ட நிலையான instructions — reference data, trade-wise data இல்ல.</td></tr><tr><td><b>FOP</b></td><td>Free of Payment</td><td>பணம் இல்லாத securities transfer (DvP-க்கு எதிர்ப்பதம்) — எ.கா. collateral நகர்த்துறது, உள் transfer.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="7-risk-collateral-margin">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Risk, Collateral &amp; Margin</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>IM</b></td><td>Initial Margin</td><td>MTM கூட ஆகாத முன்னாடியே, எதிர்கால நஷ்டங்களுக்கு ஈடா ஒரு derivative position-க்கு முன்கூட்டியே post பண்ணும் collateral. <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>.</td></tr><tr><td><b>VM</b></td><td>Variation Margin</td><td><i>நடப்பு</i> mark-to-market லாப/நஷ்டத்தை ஈடு செய்ய அவ்வப்போது (exchange-traded, பல cleared products-ல தினமும்) பரிமாறப்படும் collateral. <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>; தினசரி உதாரணங்கள்: <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §5, <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §5, <a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §4c.</td></tr><tr><td><b>CSA</b></td><td>Credit Support Annex</td><td>ISDA Master Agreement-ஓட annex; ரெண்டு OTC derivative counterparties-ஓட collateral விதிகளை சொல்லும் சட்ட ஆவணம். <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7, <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>.</td></tr><tr><td><b>VaR</b></td><td>Value at Risk</td><td>கொடுக்கப்பட்ட காலம், confidence level-ல ஒரு portfolio-க்கு எதிர்பார்க்கும் அதிகபட்ச நஷ்டத்தின் புள்ளிவிவர மதிப்பீடு. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>.</td></tr><tr><td><b>PFE</b></td><td>Potential Future Exposure</td><td>ஒரு derivative-ஓட மீதமுள்ள வாழ்நாளில் counterparty credit exposure எவ்வளவு வளரலாம்னு மதிப்பீடு. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>.</td></tr><tr><td><b>CVA</b></td><td>Credit Valuation Adjustment</td><td>Contract maturity-க்கு முன்னாடி counterparty default ஆகும் risk-ஐ பிரதிபலிக்கும் derivative-ஓட value மாற்றம்; Credit-ஓட default-risk mechanics (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a>) Risk &amp; Exposure-ல (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>) பயன்படுவது.</td></tr><tr><td><b>CE</b></td><td>Current Exposure</td><td>Counterparty இப்பவே default ஆனா, firm-க்கு <i>இன்னிக்கு</i> வரக்கூடிய நஷ்டம் — MAX(MTM, 0), எப்பவும் எதிர்மறை ஆகாது. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §1.</td></tr><tr><td><b>SA-CCR</b></td><td>Standardized Approach for Counterparty Credit Risk</td><td>Derivatives மேல counterparty credit risk-க்கு regulatory capital கணக்கிட banks பயன்படுத்தும் தற்போதைய Basel முறை; Current Exposure / PFE / netting-ஐ ஒரு regulator formula-வா மாத்துது. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §8.</td></tr><tr><td><b>SIMM</b></td><td>ISDA Standard Initial Margin Model</td><td>Centrally clear ஆகாத derivatives-க்கு, position-ஓட risk sensitivities-ல இருந்து நேரடியா Initial Margin கணக்கிடும் ISDA-வின் standard model. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §7, <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>.</td></tr><tr><td><b>UMR</b></td><td>Uncleared Margin Rules</td><td>குறிப்பிட்ட அளவுகளுக்கு மேல, centrally clear ஆகாத derivatives-க்கு Initial &amp; Variation Margin கட்டாயமாக்கும் IOSCO/BCBS framework. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §8, <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>.</td></tr><tr><td><b>CCAR</b></td><td>Comprehensive Capital Analysis and Review</td><td>பெரிய banks-க்கான US Federal Reserve-ன் ஆண்டு stress-testing; VaR-style portfolio risk logic-ஐ தீவிர hypothetical macroeconomic scenarios-க்கு நீட்டுது. <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §8.</td></tr><tr><td><b>Haircut</b></td><td>— (acronym இல்ல; standard shorthand)</td><td>Collateral-ஆ பயன்படுத்தும்போது ஒரு security-ஓட Market Value-ல பிடிக்கப்படும் சதவீத குறைப்பு; அதை Collateral Value-வா மாத்துது. <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §3.</td></tr><tr><td><b>MTA</b></td><td>Minimum Transfer Amount</td><td>MTM தினமும் அசையும்போது சின்ன சின்ன transfers நடக்காம இருக்க, Threshold-ஓட சேர்ந்து CSA அனுமதிக்கும் மிகச்சிறிய collateral நகர்வு. <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §5.</td></tr><tr><td><b>AANA</b></td><td>Average Aggregate Notional Amount</td><td>UMR-ஓட ஆறு-wave rollout-ல ஒரு firm எந்த கட்டத்துக்குள் வருதுன்னு தீர்மானிக்கும் அளவீடு — AANA அதிகமான dealers முதல்ல scope-க்கு வந்தாங்க. <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §8.</td></tr><tr><td><b>HQLA</b></td><td>High-Quality Liquid Assets</td><td>Basel LCR-ன் கீழ, 30-நாள் stress scenario-ஐ தாங்க ஒரு bank போதுமான அளவு வெச்சிருக்கணும்கிற assets pool — collateral post பண்ணுறது bank-ஓட சொந்த HQLA-வை கட்டிப்போடுது. <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §8.</td></tr><tr><td><b>LCR</b></td><td>Liquidity Coverage Ratio</td><td>30-நாள் liquidity stress-ஐ தாங்க போதுமான HQLA வெச்சிருக்கணும்னு கோரும் Basel III/IV ratio — collateral management-ஓட நேரடி தொடர்பு (<a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §8).</td></tr><tr><td><b>CSDR</b></td><td>Central Securities Depositories Regulation</td><td>EU CSDs வழியா settle ஆகும் securities-collateral நகர்வுகளுக்கு பொருந்தும் settlement-ஒழுக்க விதிகள் (கட்டாய buy-ins, fails-க்கு cash அபராதம்). <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §8.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="8-global-regulatory-industry-bodies">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Global Regulatory &amp; Industry Bodies</h2>
+      <p>தனி jurisdictions-க்கு மேல / குறுக்கே இயங்கும் அமைப்புகள், standards — Section 9-ல் வர ஒவ்வொரு regional regime-உம் இறுதியில இவற்றில் ஒண்ணுக்கு திரும்பிப் போகும்.</p>
+<div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>ISDA</b></td><td>International Swaps and Derivatives Association</td><td>OTC derivative ஆவணங்களை (Master Agreement), product classification-ஐ (ISDA Taxonomy) standardize பண்ணும் trade body. <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7. இதன் <b>Determinations Committees</b> — அரசு regulator இல்ல, industry panels — ஒரு CDS Credit Event நடந்ததா என தீர்மானிக்கும்; CDS lifecycle-ல மிக முக்கிய முடிவு (<a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §5, §8).</td></tr><tr><td><b>BCBS</b></td><td>Basel Committee on Banking Supervision</td><td>Bank capital / liquidity விதிகளின் ("Basel" accords) உலகளாவிய standard-setter — IM/VM, capital தேவைகளை இயக்குது.</td></tr><tr><td><b>IOSCO</b></td><td>International Organization of Securities Commissions</td><td>பல jurisdictions-ஓட securities regulators-ஐ ஒருங்கிணைக்கும் உலகளாவிய standard-setter — பெரும்பாலான தேசிய trade-reporting regimes-ஓட கொள்கைகளுக்கு அடிப்படை.</td></tr><tr><td><b>FSB</b></td><td>Financial Stability Board</td><td>உலக நிதி அமைப்பு risk-ஐ கண்காணிக்கும் G20 அமைப்பு; 2008 crisis-க்கு பிறகு OTC derivative சீர்திருத்தங்களை (clearing, reporting, margining) உலகளவில் கட்டாயமாக்கியது இதுதான்; ஒவ்வொரு region-உம் அப்புறம் அதை உள்ளூரில செயல்படுத்துச்சு.</td></tr><tr><td><b>CPMI</b></td><td>Committee on Payments and Market Infrastructures</td><td>Payment, clearing, settlement systems-ஓட உலகளாவிய standard-setter (CCP/CSD standards-ல IOSCO-வோட இணைந்து வேலை செய்யும்).</td></tr><tr><td><b>GLEIF</b></td><td>Global Legal Entity Identifier Foundation</td><td>உலகளாவிய LEI அமைப்பை மேற்பார்வையிடும் அமைப்பு — ஒவ்வொரு நாட்டிலும் firms-க்கு LEI வழங்கும் Local Operating Units (LOUs)-ஐ அங்கீகரிக்கும்.</td></tr><tr><td><b>LOU</b></td><td>Local Operating Unit</td><td>LEI-களை உண்மையில வழங்கி புதுப்பிக்க GLEIF-ஆல அங்கீகரிக்கப்பட்ட தேசிய அமைப்பு — LEI-ஓட ACTIVE/LAPSED நிலை (<a href="../docs/1-capital-markets/module-13-parties-leis.html">Module 13</a> §7) LOU மட்டத்துல பராமரிக்கப்படும்.</td></tr><tr><td><b>IASB</b></td><td>International Accounting Standards Board</td><td>உலகளாவிய accounting standard-setter — Fair Value, அதன் Level 1/2/3 hierarchy-ஐ வரையறுக்கும் <b>IFRS 13</b>-ஐ வெளியிடுது (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §6). இந்த glossary-ல markets/derivatives regulator இல்லாத முதல் standard-setter — இது accounting அமைப்பு.</td></tr><tr><td><b>FASB</b></td><td>Financial Accounting Standards Board</td><td>US accounting standard-setter — IFRS 13-க்கு US GAAP இணையான <b>ASC 820</b>-ஐ வெளியிடுது; அதே Level 1/2/3 Fair Value concept. <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8.</td></tr><tr><td><b>FRTB</b></td><td>Fundamental Review of the Trading Book</td><td>Trading-book market risk-க்கு banks regulatory capital கணக்கிடும் முறையை BCBS 2008-க்கு பிறகு மாத்தியமைத்தது — observe பண்ண கடினமான, verify பண்ண கடினமான (Level 2/3) valuations கொண்ட positions வெச்சிருக்கும் banks-க்கு நேரடியா அபராதம். <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="9-regional-reporting-regimes-regulators-us-uk-eu-canada-hong-kong">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Regional Reporting Regimes &amp; Regulators — US / UK / EU / Canada / Hong Kong</h2>
+      <p>Bank Of Toronto book பண்ணும் ஒவ்வொரு OTC derivative trade-உம் உள்ளூர் சட்டப்படி <i>எங்கேயோ</i> report ஆகணும் — ஆனா அந்த "எங்கேயோ" என்பது trade-ஐ (அல்லது counterparty-ஐ) தொடும் jurisdiction-ஐ பொறுத்து வேற regulator, வேற rulebook, பல நேரம் வேற Trade Repository. இந்த section அந்த regulators யாருன்னு region-by-region map.</p>
+<h3>9a. United States</h3>
+<div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>CFTC</b></td><td>Commodity Futures Trading Commission</td><td>OTC derivatives (swaps)-க்கான US முதன்மை regulator — Dodd-Frank-ன் கீழ swap data reporting, clearing, SEF trading விதிகளை அமைக்கும்.</td></tr><tr><td><b>SEC</b></td><td>Securities and Exchange Commission</td><td>Securities markets (equities, bonds, exchanges)-க்கும், Reg SBSR-ன் கீழ <i>security-based</i> swaps-க்கும் (single-name equity/credit swaps) US regulator.</td></tr><tr><td><b>Dodd-Frank Act</b></td><td>Dodd-Frank Wall Street Reform and Consumer Protection Act</td><td>2008 நிதி நெருக்கடிக்கு பதிலா OTC derivative clearing, reporting, SEF trading-ஐ கட்டாயமாக்கிய 2010 US சட்டம் — EU-வில EMIR செய்யறதுக்கு US-ன் இணை.</td></tr><tr><td><b>Reg SBSR</b></td><td>Regulation Security-Based Swap Reporting</td><td>Security-based swaps-க்கு SEC-ஓட reporting rulebook (மற்ற swaps-க்கான CFTC rules-ல இருந்து வேறு) — பெரும்பாலான பிற jurisdictions-ல இல்லாத US-specific பிரிவு.</td></tr><tr><td><b>SDR</b></td><td>Swap Data Repository</td><td>Trade Repository-க்கு US-ல பயன்படும் சொல் — CFTC-regulated swap data report ஆக வேண்டிய இடம்.</td></tr><tr><td><b>FINRA</b></td><td>Financial Industry Regulatory Authority</td><td>Broker-dealers-ஐ மேற்பார்வையிடும் US self-regulatory அமைப்பு.</td></tr><tr><td><b>TRACE</b></td><td>Trade Reporting and Compliance Engine</td><td>Corporate/agency bonds-க்கான FINRA-வின் post-trade விலை வெளிப்படைத்தன்மை system — cash-bond reporting regime, derivatives reporting-ல இருந்து தனி.</td></tr><tr><td><b>CAT</b></td><td>Consolidated Audit Trail</td><td>சந்தை கண்காணிப்புக்காக, எல்லா US equity, options markets-ஓட order, trade lifecycle data-வையும் capture பண்ண SEC கட்டாயமாக்கிய system.</td></tr></tbody></table></div>
+<h3>9b. United Kingdom</h3>
+<div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>FCA</b></td><td>Financial Conduct Authority</td><td>UK-ன் முதன்மை markets/conduct regulator — trade reporting, market conduct, பெரும்பாலான firms-ஓட அன்றாட compliance-ஐ மேற்பார்வையிடும்.</td></tr><tr><td><b>PRA</b></td><td>Prudential Regulation Authority</td><td>Banks, பெரிய investment firms-ஓட prudential (capital/solvency) மேற்பார்வைக்கு பொறுப்பான Bank of England பிரிவு — UK-ன் Basel-implementer.</td></tr><tr><td><b>BoE</b></td><td>Bank of England</td><td>UK-ன் மத்திய வங்கி; PRA-வோட சேர்ந்து CCPs, systemic நிதி infrastructure-ஐ மேற்பார்வையிடும்.</td></tr><tr><td><b>UK EMIR</b></td><td>UK European Market Infrastructure Regulation</td><td>Brexit-க்கு பிறகு (1 Jan 2021) UK சட்டத்துக்குள் "onshore" ஆன EU EMIR — அதே core reporting/clearing கடமைகள், இப்போ ESMA இல்லாம FCA/BoE மேற்பார்வையில்.</td></tr><tr><td><b>UK MiFIR</b></td><td>UK Markets in Financial Instruments Regulation</td><td>EU MiFIR-ன் onshored UK பதிப்பு — Brexit-க்கு பிறகு UK transaction reporting, market transparency-ஐ நிர்வகிக்கும்.</td></tr></tbody></table></div>
+<h3>9c. European Union</h3>
+<div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>EMIR</b></td><td>European Market Infrastructure Regulation</td><td>OTC derivative trades Trade Repositories-க்கு report ஆகணும், standardized products centrally clear ஆகணும்னு கோரும் EU regulation.</td></tr><tr><td><b>EMIR REFIT</b></td><td>EMIR Regulatory Fitness and Performance Programme</td><td>EMIR reporting fields-ஐ ISO 20022 XML message format-க்கு standardize பண்ணின 2024 சீரமைப்பு — derivatives reporting pipelines-க்கு பெரிய IT migration நிகழ்வு. <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §8.</td></tr><tr><td><b>ISO 20022</b></td><td>(ISO messaging standard; initialism இல்ல)</td><td>EMIR REFIT (மற்றும் பெருகிவரும் பிற regimes) reports format செய்யப்படும் structured XML financial-messaging standard; பழைய, குறைந்த structured formats-ஐ மாற்றுது. <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §8.</td></tr><tr><td><b>MiFID II / MiFIR</b></td><td>Markets in Financial Instruments Directive / Regulation</td><td>பெரும்பாலான financial instruments முழுக்க market structure, transparency, transaction reporting-க்கான EU-ன் core rulebook.</td></tr><tr><td><b>RTS 22</b></td><td>Regulatory Technical Standard 22</td><td>Transaction Reporting field content (~65 fields)-ஐ நிர்வகிக்கும் MiFIR technical standard — EMIR-ஓட சொந்த field set-ல இருந்து வேறு; destination-ம் குறுகியது. <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §4.</td></tr><tr><td><b>ESMA</b></td><td>European Securities and Markets Authority</td><td>EMIR/MiFIR-ன் கீழ technical standards எழுதி, கீழே வரும் தேசிய regulators (NCAs)-ஐ ஒருங்கிணைக்கும் EU-மட்ட அமைப்பு.</td></tr><tr><td><b>NCA</b></td><td>National Competent Authority</td><td>ஒவ்வொரு EU member state-ஓட சொந்த regulator-க்கான பொதுச் சொல் (எ.கா. ஜெர்மனி BaFin, பிரான்ஸ் AMF) — அன்றாட மேற்பார்வை NCA மட்டத்துல; ESMA பொது rulebook-ஐ அமைக்கும்.</td></tr><tr><td><b>SFTR</b></td><td>Securities Financing Transactions Regulation</td><td>Repo, securities lending, மற்ற securities financing transactions-ஐ report பண்ண கோரும் EU regime — EMIR-ஓட சகோதர regime, வேறு product set-ஐ கவர் பண்ணும்.</td></tr><tr><td><b>TR</b></td><td>Trade Repository</td><td>OTC derivative trades report ஆக வேண்டிய மத்திய registry-க்கான EU/global பொதுச் சொல் (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §5) — US "SDR"-ன் EU இணை.</td></tr></tbody></table></div>
+<h3>9d. Canada</h3>
+<div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>CSA</b> <i>(regulatory)</i></td><td>Canadian Securities Administrators</td><td>Canada-வின் மாகாண/பிரதேச securities regulators (OSC, AMF, BCSC…) சேர்ந்த குடை அமைப்பு; OTC derivatives trade-reporting rules உட்பட இணக்கமான rules-ஐ சேர்ந்து எழுதும். <b>Credit Support Annex (Section 7) CSA-வோட ஒண்ணு இல்ல</b> — abbreviation மோதுது, அதனால எப்பவும் context-ல இருந்து படிங்க.</td></tr><tr><td><b>OSC</b></td><td>Ontario Securities Commission</td><td>Canada-வின் மிகப்பெரிய மாகாண securities regulator (Canada-ல ஒரே தேசிய SEC-equivalent இல்ல — regulation மாகாண அளவில், மேலே சொன்ன CSA வழியா ஒருங்கிணைப்பு).</td></tr><tr><td><b>CIRO</b></td><td>Canadian Investment Regulatory Organization</td><td>Investment dealers, trading activity-க்கான Canada-வின் self-regulatory அமைப்பு; 2023-ல IIROC, MFDA இணைந்து உருவானது.</td></tr><tr><td><b>TR Rules</b></td><td>Trade Reporting Rules (எ.கா. Multilateral Instrument 96-101)</td><td>CSA-ஓட இணக்கமான OTC derivatives trade-reporting rules; designated Trade Repository-க்கு report பண்ண கோரும் — EMIR/Dodd-Frank reporting-ன் Canada இணை.</td></tr><tr><td><b>OSFI</b></td><td>Office of the Superintendent of Financial Institutions</td><td>Banks, insurers-க்கான Canada-வின் federal prudential regulator — Bank Of Toronto போன்ற Canadian banks-க்கு Basel-implementer.</td></tr><tr><td><b>BoC</b></td><td>Bank of Canada</td><td>Canada-வின் மத்திய வங்கி; CORRA-வை வெளியிடும் (Section 4), systemically important clearing/settlement systems-ஐ மேற்பார்வையிடும்.</td></tr></tbody></table></div>
+<h3>9e. Hong Kong</h3>
+<div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>SFC</b></td><td>Securities and Futures Commission</td><td>Hong Kong-ன் முதன்மை securities, derivatives markets regulator.</td></tr><tr><td><b>HKMA</b></td><td>Hong Kong Monetary Authority</td><td>Hong Kong-ன் மத்திய வங்கி நிறுவனம் — OTC derivatives reporting regime-ஐ SFC-யோட (banks-க்கு HKMA, licensed corporations-க்கு SFC) சேர்ந்து நிர்வகிக்கும்; systemic infrastructure-ஐயும் மேற்பார்வையிடும்.</td></tr><tr><td><b>SFO</b></td><td>Securities and Futures Ordinance</td><td>OTC derivatives reporting, clearing, licensing regime நிறுவப்பட்ட முதன்மை Hong Kong சட்டம்.</td></tr><tr><td><b>HKTR</b></td><td>Hong Kong Trade Repository</td><td>Hong Kong-ல / வழியா book ஆன OTC derivative transactions report ஆக வேண்டிய, HKMA நடத்தும் trade repository.</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> acronyms வேறா இருந்தாலும் இந்த pattern எல்லா இடத்துலயும் திரும்பத் திரும்ப வரும் — ஒவ்வொரு region-லயும் (1) markets/conduct regulator, (2) prudential / central-bank-சார்ந்த supervisor, (3) OTC derivative reporting-ஐ கட்டாயமாக்கும் ஒரு குறிப்பிட்ட சட்டம்/rulebook, (4) data உண்மையில போய் சேரும் ஒரு Trade Repository. ஒரு jurisdiction-க்கு இந்த நாலையும் சொல்ல முடிஞ்சா, இன்னொண்ணுல இணையானதை கண்டுபிடிக்கறது பெரும்பாலும் சொல்லகராதி பயிற்சி மட்டும்தான் — அடிப்படை reporting கடமை (<a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a>) எல்லா இடத்துலயும் கட்டமைப்பில ஒண்ணுதான்.</p>
+    </section>
+    <section class="mod" id="10-organizational-shorthand">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. Organizational Shorthand</h2>
+      <div class="table-scroll"><table><thead><tr><th>Abbreviation</th><th>Full Form</th><th>விளக்கம்</th></tr></thead><tbody><tr><td><b>FO / MO / BO</b></td><td>Front Office / Middle Office / Back Office</td><td>ஒரு trade கடக்கும் மூன்று-நிலை உள் pipeline — execution; risk / valuation / confirmation; பின்னர் settlement / reporting. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §4.</td></tr><tr><td><b>KYC</b></td><td>Know Your Customer</td><td>ஒரு counterparty-உடன் trade பண்ணும் முன் அவங்க அடையாளத்தை சரிபார்க்கும் due-diligence செயல்முறை — LEI / reference-data setup-க்கு உணவளிக்கும்.</td></tr><tr><td><b>AML</b></td><td>Anti-Money Laundering</td><td>நிதி அமைப்பு சட்டவிரோத பணத்தை வெளுக்க பயன்படாம தடுக்கும் regulatory controls.</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="கூடுதல்-ஒரு-வாக்கியத்தில்-நினைவு-குறிப்புகள்">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>கூடுதல் — &quot;ஒரு வாக்கியத்தில்&quot; நினைவு குறிப்புகள்</h2>
+      <p>எளிதா நினைவில வைக்க சில ஜோடிகள்:</p>
+<div class="table-scroll"><table><thead><tr><th>குழப்பம்</th><th>எப்படி வேறுபடுத்தறது</th></tr></thead><tbody><tr><td><b>UTI vs UPI vs LEI</b></td><td>UTI = <i>எந்த transaction</i>; UPI = <i>எந்த product வகை</i>; LEI = <i>எந்த legal entity (யார்)</i></td></tr><tr><td><b>IM vs VM</b></td><td>IM = முன்கூட்டியே பாதுகாப்பு (எதிர்கால நஷ்டம்); VM = இன்றைய MTM மாற்றத்துக்கான தினசரி ஈடு</td></tr><tr><td><b>CSA (Credit Support Annex) vs CSA (Canadian Securities Administrators)</b></td><td>முதலாவது collateral ஒப்பந்தம்; இரண்டாவது Canadian regulators குழு — context தான் வழி</td></tr><tr><td><b>CCP vs CSD</b></td><td>CCP = trade-ஓட risk-ஐ ஏற்கும் clearing house; CSD = securities உரிமையை பதிவு செய்யும் ledger</td></tr><tr><td><b>CORRA vs CDOR</b></td><td>CORRA = உண்மையான overnight repo transactions-ல இருந்து (தற்போதையது); CDOR = banks-ஓட survey (நிறுத்தப்பட்டது, June 2024)</td></tr><tr><td><b>EMIR vs SFTR vs MiFIR</b></td><td>EMIR = OTC derivatives reporting; SFTR = repo/securities lending reporting; MiFIR = transaction reporting (பெரும்பாலான instruments)</td></tr><tr><td><b>SDR vs TR vs HKTR</b></td><td>ஒரே concept (trade data repository) — US, EU/global, Hong Kong-ஓட பெயர்கள்</td></tr></tbody></table></div>
+<p><b>இந்த glossary-ஐ எப்படி பயன்படுத்தறது:</b> ஒரு reporting field-லயோ உரையாடல்லயோ தெரியாத acronym வந்தா, முதல்ல இங்க பாருங்க — பெரும்பாலான entries, கருத்து வெறுமனே வரையறுக்கப்படாம எண்களோட கற்பிக்கப்படும் module section-க்கு திரும்ப link பண்ணுது.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Abbreviations Glossary (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

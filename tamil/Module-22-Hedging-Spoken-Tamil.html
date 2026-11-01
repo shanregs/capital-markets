@@ -1,0 +1,869 @@
+<!doctype html>
+<title>Module 22 — Hedging Deep Dive (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 22 — Hedging Deep Dive (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Hedging vs speculation vs arbitrage, symmetric vs asymmetric hedges, interest-rate, credit, FX, commodity and equity hedging, basis risk and hedge accounting — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Reference module</b>, <b><a href="../docs/1-capital-markets/module-19-interest-rate-swap-deep-dive.html">Interest Rate Swap Deep Dive</a></b>, <b><a href="../docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html">ISDA Product Taxonomy Deep Dive</a></b> குடும்பத்தை சேர்ந்தது. Hedging உதாரணங்கள் <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9–10, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §4d, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4d, <a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §4c-ல சிதறியிருக்கு — இந்த module அவை எல்லாத்தையும் ஒரே theory-க்குள்ள இழுத்து, தொகுப்பை நிறைவு செய்ய ஒரு Equity worked example-ஐ சேர்த்து, இந்த curriculum தொடர்ந்து திரும்பிவரும் "இது உண்மையில எப்படி/எங்க பயன்படுத்தப்படுது" என்ற நடைமுறைக் கேள்விக்கு பதில் சொல்லுது. <b>ஏற்கனவே இருக்கும் எழுத்துத் தமிழ் பதிப்பு:</b> <a href="./Hedging_Deep_Dive_Tamil.html">Hedging_Deep_Dive_Tamil</a> — இது அதே தலைப்பின் <i>பேச்சுத் தமிழ்</i> பதிப்பு, மூல English module-ஐ அப்படியே பின்தொடர்ந்து. <b>மூலம்:</b> English Module 22-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-hedging-ன்னா-என்ன-theory-மூன்று-trading-நோக்கங்கள்"><span class="toc-num">01</span>1. Hedging-ன்னா என்ன? — Theory &amp; மூன்று Trading நோக்கங்கள்</a></li>
+      <li><a href="#2-அடிப்படை-mechanic-risk-ஐ-நீக்கறது-இல்ல-p-l-ஐ-ஈடுசெய்யறது"><span class="toc-num">02</span>2. அடிப்படை Mechanic — Risk-ஐ நீக்கறது இல்ல, P&amp;L-ஐ ஈடுசெய்யறது</a></li>
+      <li><a href="#3-இரு-hedge-instrument-குடும்பங்கள்-symmetric-vs-asymmetric"><span class="toc-num">03</span>3. இரு Hedge Instrument குடும்பங்கள் — Symmetric vs. Asymmetric</a></li>
+      <li><a href="#4-worked-example-interest-rate-hedging-duration-dv01"><span class="toc-num">04</span>4. Worked Example — Interest Rate Hedging (Duration/DV01)</a></li>
+      <li><a href="#5-worked-example-credit-hedging-bond-credit-risk-க்கு-எதிரா-cds"><span class="toc-num">05</span>5. Worked Example — Credit Hedging (Bond Credit Risk-க்கு எதிரா CDS)</a></li>
+      <li><a href="#6-worked-example-fx-hedging-ரெண்டு-வழிகள்-forward-vs-option"><span class="toc-num">06</span>6. Worked Example — FX Hedging, ரெண்டு வழிகள் (Forward vs. Option)</a></li>
+      <li><a href="#7-worked-example-commodity-hedging-basis-risk-குறைபாடுள்ள-hedges"><span class="toc-num">07</span>7. Worked Example — Commodity Hedging &amp; Basis Risk (குறைபாடுள்ள Hedges)</a></li>
+      <li><a href="#8-worked-example-equity-hedging-protective-put"><span class="toc-num">08</span>8. Worked Example — Equity Hedging (Protective Put)</a></li>
+      <li><a href="#9-hedge-accounting-regulatory-பார்வை-hedge-ஒரு-legal-accounting-label-வெறும்-trading-strategy-இல்ல"><span class="toc-num">09</span>9. Hedge Accounting &amp; Regulatory பார்வை — &quot;Hedge&quot; ஒரு Legal/Accounting Label, வெறும் Trading Strategy இல்ல</a></li>
+      <li><a href="#10-hedging-உண்மையில-எங்க-பயன்படுத்தப்படுது-desk-by-desk-சுருக்கம்"><span class="toc-num">10</span>10. Hedging உண்மையில எங்க பயன்படுத்தப்படுது — Desk-by-Desk சுருக்கம்</a></li>
+      <li><a href="#11-அதிகாரப்பூர்வ-மூலங்கள்-links"><span class="toc-num">11</span>11. அதிகாரப்பூர்வ மூலங்கள் &amp; Links</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz"><span class="toc-num">★</span>Recap Quiz</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-hedging-ன்னா-என்ன-theory-மூன்று-trading-நோக்கங்கள்">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Hedging-ன்னா என்ன? — Theory &amp; மூன்று Trading நோக்கங்கள்</h2>
+      <p><b>Definition:</b> <b>hedging</b> = ஏற்கனவே இருக்கற ஒரு risk-க்கு <b>எதிர்த்திசைல மதிப்பு நகரும் ஒரு இரண்டாவது position-ஐ</b> வேணும்னே எடுப்பது, அதனால ஒரு பக்கத்துல இழப்பு மறுபக்கத்துல லாபத்தால — பகுதியா அல்லது முழுசா — ஈடுசெய்யப்படுது. Hedge தானே பணம் சம்பாதிக்கறது நோக்கம் இல்ல; <i>கூட்டுப் position</i>-ஓட சாத்தியமான விளைவுகளின் <b>வரம்பை குறுக்குவதுதான்</b>. ஒரு முழுசா hedge பண்ணின position, கட்டமைப்பால, சந்தை மேலே போனாலும் கீழே போனாலும் கிட்டத்தட்ட ஒரே நிகர விளைவைத் தரும் — சுவாரஸ்யமில்லாததா தோணுது, சரியா அதுதான் நோக்கம்.</p>
+<p>புதுசா வர்றவருக்கு குழப்பம்: hedging, speculation, arbitrage மூணுமே <b>ஒரே instruments</b>-ஐ — இந்த curriculum ஏற்கனவே கட்டின அதே swaps, futures, options, forwards — பயன்படுத்துது. அவற்றை வேறுபடுத்துறது trade-ஓட வடிவம் இல்ல, trader-ஓட தொடக்க position:</p>
+<div class="table-scroll"><table><thead><tr><th>நோக்கம்</th><th>Trader-க்கு ஏற்கனவே ஈடுசெய்ய வேண்டிய exposure இருக்கா?</th><th>இலக்கு</th><th>இந்த curriculum-ல ஏற்கனவே உள்ள உதாரணம்</th></tr></thead><tbody><tr><td><b>Hedging</b></td><td><b>ஆமா</b> — ஏற்கனவே இருக்கற position அல்லது தெரிஞ்ச எதிர்கால தேவை</td><td>கூட்டுப் position-ஓட விளைவுகளின் <i>வரம்பை</i> குறைக்கறது</td><td><a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §4c: Bank Of Toronto, தான் <b>ஏற்கனவே வெச்சிருக்கற</b> bonds-க்கு எதிரா T-Note futures-ஐ விற்கறது</td></tr><tr><td><b>Speculation</b></td><td>இல்ல — புத்தம்புது திசைசார்ந்த பந்தயம், எதுவும் ஈடுசெய்யப்படலை</td><td>விலை எங்க போகுதுங்கற ஒரு <i>பார்வையில்</i> இருந்து லாபம்</td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4c/§4d: Maple Leaf Pension Fund E-mini futures-ஐயும் AAPL call-ஐயும் வாங்குறது, ஒண்ணை ஈடுசெய்ய இல்ல, புது சந்தை exposure-ஐ <b>பெற</b></td></tr><tr><td><b>Arbitrage</b></td><td>பொருந்தாது — பொருளாதார ரீதியா சமமான ரெண்டு விஷயங்களுக்கு இடையிலான தற்காலிக விலை இடைவெளியை பயன்படுத்துது</td><td>Mispricing-ல இருந்து கிட்டத்தட்ட risk-free லாபம், வேகமா மூடப்படும்</td><td>இந்த curriculum-ல வேறெங்கும் இல்ல; வேறுபாட்டை நிறைவு செய்ய மட்டும் இங்க</td></tr></tbody></table></div>
+<div class="ticket"><pre>SAME INSTRUMENT, OPPOSITE MOTIVATION — THE SHARPEST ILLUSTRATION
+========================================================================
+
+  Module 15 §4c:  Bank Of Toronto SELLS 100 CME 10-Year T-Note
+                  futures -- because it already OWNS bonds whose
+                  value falls when rates rise. The future's loss/gain
+                  is designed to CANCEL OUT the bond book's gain/loss.
+                  -&gt; THIS IS A HEDGE.
+
+  Module 4 §4c:   Maple Leaf Pension Fund BUYS 20 E-mini S&amp;P 500
+                  futures -- with no existing short equity position
+                  anywhere being offset. It's taking on NEW market
+                  exposure on purpose.
+                  -&gt; THIS IS SPECULATION (or more precisely, deliberate
+                     exposure-taking -- see Section 10's nuance on
+                     "return-seeking" vs. purely directional bets).
+
+  -&gt; Both are Interest-Rate-or-Equity FUTURES. Nothing about the
+     CONTRACT TYPE tells you which one is the hedge -- only knowing
+     what ELSE the trader holds does.</pre></div>
+<p><b>Takeaway:</b> ஒரு reporting அல்லது risk system, instrument வகையை மட்டும் வெச்சு "இது hedge-ஆ?"ன்னு ஊகிக்க முயன்றா, ஒவ்வொரு தடவையும் தவறாகும் — hedging என்பது ஒரு தனி trade-ஓட பண்பு இல்ல, <i>ரெண்டு positions இடையிலான உறவு</i>. அந்த உறவை systems எப்படி (ஏன்) முறையா பிடிக்குதுன்னு Section 9 சொல்லுது.</p>
+<h3>கூடுதல் உதாரணம் — தமிழ் வாழ்க்கை ஒப்புமை: மழைக்காலத்துக்கு குடை</h3>
+<div class="table-scroll"><table><thead><tr><th></th><th>ஒப்புமை</th></tr></thead><tbody><tr><td><b>Hedging</b></td><td>நாளைக்கு மழைவந்தா நனையக்கூடாதுன்னு (ஏற்கனவே வெளியே போக வேண்டிய தேவை இருக்கு) குடை வாங்கறது</td></tr><tr><td><b>Speculation</b></td><td>வெளியே போகவே தேவையில்லை; "நாளைக்கு மழை கட்டாயம் வரும்"ன்னு பந்தயம் கட்டி குடை வியாபாரத்துல பணம் போடறது</td></tr><tr><td><b>Option vs Forward</b></td><td>Option = குடைக்கு பணம் கொடுத்து வாங்கறது (மழை வந்தா பயன், வராட்டி பணம் போச்சு); Forward = "மழை வந்தாலும் வராட்டியும் இந்த விலைக்கே" என்ற நிலையான ஒப்பந்தம்</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="2-அடிப்படை-mechanic-risk-ஐ-நீக்கறது-இல்ல-p-l-ஐ-ஈடுசெய்யறது">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. அடிப்படை Mechanic — Risk-ஐ நீக்கறது இல்ல, P&amp;L-ஐ ஈடுசெய்யறது</h2>
+      <p><b>Definition:</b> ஒவ்வொரு hedge-உம், அதே அடிப்படை risk factor (ஒரு rate, ஒரு விலை, ஒரு spread) நகரும்போது எதிர்த்திசைகள்ல நகரும் profit-and-loss கொண்ட ரெண்டு positions-ஐ இணைச்சு வேலை செய்யுது. கூட்டு P&amp;L கோடு ஒவ்வொரு position-ஓட தனி P&amp;L-ஐ விட <b>தட்டையானது</b> — அந்த தட்டையாக்கம் <i>தான்</i> hedge.</p>
+<div class="ticket"><pre>THE GENERIC SHAPE OF EVERY HEDGE IN THIS MODULE
+========================================================================
+
+  UNDERLYING POSITION P&amp;L:   loses money as risk factor moves one way,
+                              gains as it moves the other way
+                    +                                    -
+                    |                                    |
+       (e.g. bond value falls as rates rise)
+
+  HEDGE POSITION P&amp;L:        moves the OPPOSITE way to the underlying
+                    -                                    +
+                    |                                    |
+       (e.g. short future GAINS as rates rise)
+
+  COMBINED P&amp;L:              flatter than either leg alone -- some
+                              residual movement usually remains
+                              (Section 7's basis risk), but the SWINGS
+                              are smaller than holding the underlying
+                              position unhedged</pre></div>
+<p><b>Hedging ஒருபோதும் இலவசம் இல்ல.</b> செலவு ரெண்டு வடிவங்கள்ல ஒண்ணுல தெரியும், எந்த instruments குடும்பம் பயன்படுத்தப்படுதுங்கறதை பொறுத்து (Section 3 முழுசா விரிவாக்குது):</p>
+<ul><li><b>வாய்ப்புச் செலவு (Opportunity cost)</b> — ஒரு symmetric hedge (forward, future, swap) ஒரு விளைவை lock பண்ணுது, அதாவது downside-ஐ நீக்கறது போலவே சரியா <i>upside</i>-ஐயும் விட்டுக்கொடுக்குது.</li><li><b>வெளிப்படையான premium</b> — ஒரு asymmetric hedge (ஒரு option) முன்கூட்டியே பணம் செலவாகும், ஒரு insurance premium மாதிரி, downside-ஐ மட்டும் பாதுகாக்கறதுக்கு பதிலா upside-ஐ வெச்சிருக்க.</li></ul>
+<p><b>Takeaway:</b> "நாங்க position-ஐ hedge பண்ணிட்டோம்"ன்னா "risk மறைஞ்சிடுச்சு"ன்னு அர்த்தமில்ல — சாத்தியமான விளைவுகளின் வரம்பு ஒரு செலவுக்கு (விட்டுக்கொடுத்த upside அல்லது கொடுத்த premium) குறுகிடுச்சுன்னு அர்த்தம். Hedge பண்ணின position-ஓட P&amp;L ஒவ்வொரு தடவையும் சரியா பூஜ்யத்துக்கு தட்டையாகுதுன்னு காட்டும் reporting system கிட்டத்தட்ட கண்டிப்பா தவறு — Section 7-ஓட basis risk சாதாரண நிலை, முழுமையா தட்டையான கூட்டு P&amp;L அரிய விதிவிலக்கு.</p>
+    </section>
+    <section class="mod" id="3-இரு-hedge-instrument-குடும்பங்கள்-symmetric-vs-asymmetric">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. இரு Hedge Instrument குடும்பங்கள் — Symmetric vs. Asymmetric</h2>
+      <p><b>Definition:</b> இந்த curriculum கட்டின ஒவ்வொரு hedge instrument-உம் ரெண்டு குடும்பங்கள்ல ஒண்ணுல வருது; அவற்றுக்கு இடையிலான தேர்வு ஒரு hedger எடுக்கும் மிக முக்கியமான நடைமுறை முடிவு.</p>
+<div class="table-scroll"><table><thead><tr><th></th><th><b>Symmetric hedges</b></th><th><b>Asymmetric hedges</b></th></tr></thead><tbody><tr><td><b>Instruments</b></td><td>Forwards, Futures, Swaps</td><td>Options</td></tr><tr><td><b>Upfront cost</b></td><td>None (or near-none — futures need margin, not premium)</td><td>A premium, paid upfront</td></tr><tr><td><b>Payoff shape</b></td><td>Locks in one exact outcome — dollar-for-dollar offset in <i>either</i> direction</td><td>One-sided — protects the bad direction, keeps the good direction</td></tr><tr><td><b>Max loss on the hedge itself</b></td><td>Unbounded in the "wrong" direction (that's the whole point — it's meant to move against the trader when the underlying gains)</td><td>Capped at the premium paid</td></tr><tr><td><b>Best analogy</b></td><td>A fixed-price contract — you're locked in, for better or worse</td><td>An insurance policy — you pay a premium, you're only protected against loss</td></tr><tr><td><b>Curriculum examples</b></td><td><a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §10's FX Forward, <a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §4c's IR Future, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9's CDS (protection premium is periodic, but the <i>notional</i> payout structure is fixed by the contract, not optional)</td><td><a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §4d's FX Option, <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4d's Commodity Option</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Section 6 ரெண்டு குடும்பங்களையும் <i>சரியா அதே அடிப்படைத் தேவைக்கு</i> (3 மாசத்துல USD தேவைப்படும் Bank Of Toronto-ஓட client) எதிரா பக்கம்-பக்கம் வெக்குது — இது ரெண்டு வேறு products இல்ல, இரண்டும் "hedges"ன்னு அழைக்கப்படுது என்பதைத் தாண்டி, உண்மையான trade-offs-ஓட ஒரு உண்மையான தேர்வுன்னு காட்டும் மிகத் தெளிவான விளக்கம்.</p>
+    </section>
+    <section class="mod" id="4-worked-example-interest-rate-hedging-duration-dv01">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Worked Example — Interest Rate Hedging (Duration/DV01)</h2>
+      <p><b>Definition:</b> இந்த curriculum-ல வேறிடத்துல ஏற்கனவே நிறுவப்பட்ட ரெண்டு உண்மைகளை மறுபயன்படுத்தி — Bank Of Toronto-ஓட Canada 5% Bond 2035 position-க்கு <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §3-ஓட <b>DV01</b> (1 Basis Point-ஓட Dollar Value), அதே Fixed Income book-க்கு எதிரா <a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §4c-ஓட short T-Note futures hedge.</p>
+<div class="ticket"><pre>INTEREST RATE HEDGE — BANK OF TORONTO'S BOND BOOK vs. T-NOTE FUTURES
+========================================================================
+
+  THE EXPOSURE (Module 10 §3):
+    Canada 5% Bond 2035 position
+    Modified Duration: 7.2 | Market Value: CAD 9,850,000
+    DV01 = CAD 7,092 per basis point
+    -&gt; if rates RISE, this bond position LOSES roughly CAD 7,092
+       for every 1bp of rate increase (Module 10 §3's -CAD 177,300
+       for a 25bp move is this same DV01 scaled up)
+
+  THE HEDGE (Module 15 §4c):
+    Bank Of Toronto SELLS 100 CME 10-Year T-Note futures @ 112'16
+    -&gt; if rates RISE, bond futures prices FALL, and a SHORT position
+       GAINS -- moving opposite to the bond book's loss
+    Next business day, price falls to 111'24: Variation Margin
+    GAIN = USD 75,000, credited to Bank Of Toronto's margin account,
+    "offsetting the loss on the actual bond portfolio the future is
+    hedging" (Module 15 §4c's own wording)</pre></div>
+<p><b>Hedge-ஐ அளவிடறது — "hedge ratio" கேள்வி.</b> எத்தனை futures contracts <i>சரியான</i> எண்? ஒரு notional-matching பயிற்சி இல்ல — CAD 9,850,000 bonds-ஐ CAD 9,850,000 futures notional-உடன் பொருத்துவது ஒரு hedge இல்ல, ஒரு தற்செயல், ஏன்னா ஒரு bond-க்கும் ஒரு bond future-க்கும் rate நகர்வுக்கு ஒரே விலை உணர்திறன் இல்ல. சரியான அணுகுமுறை face தொகைகளை இல்ல, <b>risk sensitivities</b>-ஐ பொருத்துது:</p>
+<div class="ticket"><pre>HEDGE RATIO — THE GENERAL FORMULA (conceptual, not literally solved
+here — Module 15 §4c's 100-contract trade is illustrative, not
+derived from this formula against the exact bond position above)
+========================================================================
+
+  Number of futures contracts needed  ≈  Exposure's DV01
+                                          -----------------------
+                                          Future's DV01 per contract
+
+  -&gt; the goal is for the FUTURES POSITION'S total DV01 to
+     approximately match the BOND POSITION'S DV01 (CAD 7,092/bp
+     here), so a given rate move produces roughly equal and
+     opposite dollar moves on each side.</pre></div>
+<p><b>Takeaway:</b> interest rate hedging என்பது <b>risk-sensitivity பொருத்தல்</b>, notional பொருத்தல் இல்ல — <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8-ஓட "notional ஒரு reference எண், நகர்றது இல்ல"ங்கற கருத்து hedge அளவீட்டுக்கு குறிப்பா பொருத்தப்பட்டது. Hedge ratio-வை தவறா பெறுவது (DV01-க்குப் பதிலா face value பயன்படுத்தறது) ஒரு பெரிய rate நகர்வு இடைவெளியை வெளிப்படுத்தும் வரை யாருமே உணராம, ஒரு position-ஐ <b>under-hedged அல்லது over-hedged</b> ஆக்கும் பொதுவான நிஜ உலகத் தவறு.</p>
+<h3>கூடுதல் உதாரணம் — Hedge ratio-வை எண்களோட (முற்றிலும் விளக்க எண்கள்)</h3>
+<p>Bond DV01 = CAD 7,092/bp. ஒரு futures contract-ஓட DV01 per contract = CAD 110/bp என்று (விளக்கத்துக்கு மட்டும்; உண்மையான எண்ணை exchange specs-ல பாருங்க) வெச்சுக்கோங்க.</p>
+<div class="table-scroll"><table><thead><tr><th>அணுகுமுறை</th><th>கணக்கு</th><th>Contracts</th></tr></thead><tbody><tr><td><b>DV01 matching (சரி)</b></td><td>7,092 ÷ 110</td><td>≈ <b>64</b></td></tr><tr><td><b>Notional matching (தவறு)</b></td><td>CAD 9,850,000 ÷ CAD 100,000 face per contract</td><td>≈ <b>98</b></td></tr></tbody></table></div>
+<p>Notional-ஆ பொருத்தினா 98 contracts — சுமார் 53% அதிகம் (over-hedged): rates நகரும்போது futures லாபம்/நஷ்டம், bond இழப்பை விட பெருசா இருக்கும், அதாவது புது (எதிர்த்திசை) risk உருவாகிடும். அதனாலதான் DV01 matching முக்கியம்.</p>
+    </section>
+    <section class="mod" id="5-worked-example-credit-hedging-bond-credit-risk-க்கு-எதிரா-cds">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Worked Example — Credit Hedging (Bond Credit Risk-க்கு எதிரா CDS)</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9-ஓட Credit Default Swap-ஐ முழுசா மறுபயன்படுத்தி — இந்த curriculum-ல மிகத் தூய்மையான hedge உறவு, ஏன்னா hedge instrument (CDS) hedge பண்ணப்படும் exposure-ஓட <b>சரியா அதே reference entity</b>-ஐ reference பண்ணுது, ஒரு தோராயத்தை இல்ல.</p>
+<div class="ticket"><pre>CREDIT HEDGE — CDS ON NORTHERN RAIL CORP, AGAINST A BOND POSITION
+========================================================================
+
+  THE HYPOTHETICAL EXPOSURE (Module 2 §9's own framing): Bank Of
+  Toronto holds Northern Rail Corp bonds (or has lent it money
+  directly) -- if Northern Rail Corp defaults, the bond loses value.
+
+  THE HEDGE (Module 2 §9, fully worked):
+    Bank Of Toronto BUYS PROTECTION from Goldman Sachs
+    Notional: CAD 20,000,000 | Spread: 120bps | Maturity: 5 years
+
+    NO DEFAULT (normal case) -- Bank Of Toronto PAYS a quarterly
+    premium: CAD 59,836 (the "cost of the hedge" -- this is money
+    spent whether or not the bond ever defaults, the same "premium
+    even if never used" logic as an insurance policy)
+
+    DEFAULT OCCURS -- Goldman Sachs PAYS Bank Of Toronto:
+      Loss Given Default = 20,000,000 x (1 - 40% recovery)
+                          = CAD 12,000,000
+    -&gt; this payout is designed to roughly OFFSET the loss Bank Of
+       Toronto simultaneously takes on the defaulted bond itself</pre></div>
+<p><b>Takeaway:</b> இந்த module-ல "சரியான" hedge-க்கு மிக நெருக்கமானது இது, ஏன்னா reference entity பொருத்தம் சரியானது — ஆனா <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9 ஏற்கனவே சிக்கலைச் சுட்டிக்காட்டியது: CDS notional (CAD 20,000,000) bond exposure-ஓட உண்மையான அளவுக்கு எதிரா அளவிடப்படணும்; மேலும் — <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9-ஓட சொந்த cross-reference சொல்ற மாதிரி — Goldman Sachs (protection *seller்) சரியா Northern Rail Corp தோற்கற அதே நேரத்துல தோற்கும் வாய்ப்பு அதிகமா இருந்தா, அது <b>wrong-way risk</b>: hedge மிக அதிகம் தேவைப்படற நேரத்துலயே மிகக் குறைவா நம்பகமா இருக்கு. Reference-entity பொருத்தம் தானா counterparty-risk இல்லாத hedge-ஐ குறிக்காது.</p>
+    </section>
+    <section class="mod" id="6-worked-example-fx-hedging-ரெண்டு-வழிகள்-forward-vs-option">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Worked Example — FX Hedging, ரெண்டு வழிகள் (Forward vs. Option)</h2>
+      <p><b>Definition:</b> அதே அடிப்படைத் தேவை — Bank Of Toronto-ஓட client 3 மாசத்துல USD வாங்கணும் — கட்டமைப்பு ரீதியா ரெண்டு வேறு வழிகள்ல hedge பண்ணப்படுது, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §10-ஓட FX Forward-ஐயும் <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §4d-ஓட FX Option-ஐயும் மறுபயன்படுத்தி. இது Section 3-ஓட symmetric-vs-asymmetric theory-ஐ முழுசா உறுதியாக்குது.</p>
+<div class="ticket"><pre>SAME NEED, TWO HEDGE CHOICES — BUY USD IN 3 MONTHS
+========================================================================
+
+  OPTION A -- FX FORWARD (Module 2 §10, symmetric hedge, no premium)
+    Locks in TODAY: pay CAD 13,545,000, receive USD 10,000,000,
+    in 3 months, no matter what
+    -&gt; Spot moves to 1.3700 (USD costlier): Forward SAVED CAD 155,000
+    -&gt; Spot moves to 1.3400 (USD cheaper):  Forward COST CAD 145,000
+       (compared to just buying at spot on the day)
+    LOCKED IN EITHER WAY -- no premium paid, but also NO chance of
+    benefiting from a favorable rate move
+
+  OPTION B -- FX OPTION (Module 6 §4d, asymmetric hedge, premium paid)
+    USD Call / CAD Put, Strike 1.3600, Notional USD 5,000,000
+    Premium Paid: 5,000,000 x 0.0180 = CAD 90,000 (paid regardless
+    of outcome -- the cost of the hedge)
+    -&gt; Spot moves to 1.3800 (USD costlier): EXERCISE, saves CAD
+       100,000 vs. spot; net benefit after premium = CAD 10,000
+    -&gt; Spot moves to 1.3400 (USD cheaper): let it EXPIRE, buy USD
+       at the cheaper spot rate instead -- maximum loss is the
+       CAD 90,000 premium, capped, no matter how far spot falls</pre></div>
+<div class="table-scroll"><table><thead><tr><th></th><th>Forward (symmetric)</th><th>Option (asymmetric)</th></tr></thead><tbody><tr><td>முன்கூட்டிய செலவு</td><td>இல்ல</td><td>CAD 90,000 premium</td></tr><tr><td>Rate சாதகமா நகர்ந்தா</td><td>பலனை இழக்கும்</td><td>பலனை வெச்சிருக்கும் (premium கழிச்சு)</td></tr><tr><td>Rate பாதகமா நகர்ந்தா</td><td>முழுசா பாதுகாக்கப்பட்டது, dollar-for-dollar</td><td>முழுசா பாதுகாக்கப்பட்டது, இழப்பு வரம்பு = premium</td></tr><tr><td>மோசமான நிலை</td><td>பின்னோக்கிப் பார்த்தா, எதுவுமில்லாமல் upside-ஐ விட்டுக்கொடுத்தது</td><td>பின்னோக்கிப் பார்த்தா, எதுவுமில்லாமல் premium-ஐ இழந்தது</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> எந்தத் தேர்வும் புறநிலையா "சிறந்தது" இல்ல — hedger எதிர்கால தேவையைப் பத்தி முழுசா உறுதியா இருந்து விலை உறுதி மட்டும் வேணும்னா Forward மலிவான, எளிய hedge; Option அதிகம் செலவாகும், ஆனா hedger பாதுகாப்பையும் <i>அதே நேரத்துல</i> சாதகமான நகர்வின் வாய்ப்பையும் விட்டுக்கொடுக்க விரும்பாதப்போ சரியான கருவி. இந்த சரியான trade-off — upside இல்லாத உறுதி vs. upside வெச்சிருக்கும் பாதுகாப்பு — Section 8-ஓட Equity உதாரணத்துல வேறு underlying-ஓட அதே மாதிரி திரும்பி வருது.</p>
+    </section>
+    <section class="mod" id="7-worked-example-commodity-hedging-basis-risk-குறைபாடுள்ள-hedges">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Worked Example — Commodity Hedging &amp; Basis Risk (குறைபாடுள்ள Hedges)</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4d-ஓட Commodity Option-ஐ மறுபயன்படுத்தி — ஒரு hedge பயனுள்ளதாக இருக்க hedge பண்ணப்படும் பொருளையே <i>சரியா</i> reference பண்ண தேவையில்லைங்கறதுக்கு curriculum-ஓட மிகத் தெளிவான விளக்கம், ஆனா அந்த குறுக்குவழிக்கு ஒரு உண்மையான செலவு: <b>basis risk</b>.</p>
+<div class="ticket"><pre>COMMODITY HEDGE WITH A MISMATCHED UNDERLYING — JET FUEL VIA WTI
+========================================================================
+
+  THE ACTUAL EXPOSURE: an airline (Bank Of Toronto's client) is
+  exposed to JET FUEL prices rising -- its real operating cost.
+
+  THE HEDGE INSTRUMENT: a WTI Crude Oil Call option (Module 7 §4d)
+    Strike USD 80.00/bbl | Notional 100,000 bbl | Premium USD 3.20/bbl
+    Premium Paid = USD 320,000
+
+  WHY WTI, NOT JET FUEL? There's no sufficiently liquid, exchange-
+  listed jet fuel derivative for the airline to use directly -- WTI
+  crude is used as a PROXY, because jet fuel and crude oil prices are
+  highly correlated (crude is a major input cost to refining jet
+  fuel) but NOT identical.
+
+  THE GAP -- BASIS RISK:
+    If WTI rises 10% AND jet fuel also rises roughly 10%, the WTI
+    hedge offsets the airline's higher fuel cost well.
+
+    If WTI rises 10% but jet fuel rises only 4% (or falls, e.g. a
+    refinery-capacity shock specific to jet fuel, unrelated to crude)
+    -- the WTI Call still pays off as if fuel costs rose 10%, but the
+    airline's ACTUAL cost only rose 4%. The hedge OVER-corrects.
+
+    Equally, if jet fuel rises MORE than WTI (a widening "crack
+    spread" -- the refining margin between crude and refined
+    products), the hedge UNDER-corrects, and the airline is still
+    left exposed to part of the increase.</pre></div>
+<p><b>Takeaway:</b> இதை Section 5-ஓட CDS உதாரணத்தோட நேரடியா ஒப்பிடுங்க, அங்க hedge instrument exposure-ஓட <i>சரியா அதே</i> reference entity-ஐ reference பண்ணுது — இங்க, hedge instrument (WTI), exposure (jet fuel) <b>தொடர்புடைய ஆனா தனி</b> risk factors, அதனால hedge-க்குப் பிறகும் சில risk எப்பவும் மிஞ்சுது. Basis risk ஒரு தவறோ hedge-ஓட குறையோ இல்ல — இல்லாம இருக்கலாம் அல்லது மிகவும் அதிகம் செலவாகலாம்ங்கற bespoke ஒண்ணுக்குப் பதிலா கிடைக்கற மிக liquid instrument-ஆல hedge பண்றதோட தவிர்க்க முடியாத செலவு. <a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §4d-ஓட சொந்த சட்டகம் ("WTI-ஐ proxy hedge-ஆ பயன்படுத்தறது") இந்த சரியான trade-off-ஐ பெயரிடுது.</p>
+    </section>
+    <section class="mod" id="8-worked-example-equity-hedging-protective-put">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Worked Example — Equity Hedging (Protective Put)</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4a ஏற்கனவே நிறுவிய ஒரு position-ஐ அடிப்படையா வெச்ச ஒரு புது worked example — Maple Leaf Pension Fund-ஓட 10,000-share Coca-Cola (KO) holding, USD 68.40-ல வாங்கியது — asset-class தொகுப்பை நிறைவு செய்ய, Section 6 ஏற்கனவே FX-க்கு காட்டிய அதே asymmetric-hedge வடிவத்தோட.</p>
+<div class="ticket"><pre>PROTECTIVE PUT — MAPLE LEAF PENSION FUND HEDGES ITS KO HOLDING
+========================================================================
+(illustrative strike/premium; the 10,000-share KO position itself is
+Module 4 §4a's real worked trade)
+
+  EXISTING POSITION: 10,000 shares KO, bought @ USD 68.40
+                      (ISIN US1912161007, Module 4 §4a)
+
+  Ahead of an uncertain earnings announcement, Maple Leaf Pension
+  Fund BUYS a protective put instead of selling the shares outright
+  -- it wants to keep the position (and any dividend/upside) but cap
+  its downside:
+
+  Trade: KO Put, Strike USD 65.00, Notional 10,000 shares, Expiry
+         1 month
+  Premium: USD 1.20/share
+  Premium Paid = 10,000 x 1.20 = USD 12,000
+
+  AT EXPIRY -- Scenario A: KO falls to USD 58.00 (bad earnings)
+    Put is in-the-money: EXERCISE, sell at strike 65.00 instead of
+    market 58.00 -- avoided loss = (65.00 - 58.00) x 10,000 = USD 70,000
+    Net position result vs. holding unhedged: USD 70,000 avoided
+    loss, minus the USD 12,000 premium already paid
+    -&gt; the STOCK can still be sold at 65.00 regardless of how far
+       below that price the market has fallen -- the floor is fixed
+
+  AT EXPIRY -- Scenario B: KO rises to USD 75.00 (good earnings)
+    Put expires WORTHLESS -- selling at market (75.00) beats
+    exercising at strike (65.00)
+    Maple Leaf Pension Fund keeps the FULL upside on its 10,000
+    shares, out only the USD 12,000 premium already paid -- exactly
+    Module 6 §4d's FX Option pattern, same asymmetric shape</pre></div>
+<p><b>Takeaway:</b> ஒரு protective put வடிவத்துல Section 6-ஓட FX Option hedge-ஓட பொருளாதார ரீதியா ஒத்தது — ஒரு premium கொடுத்து, upside-ஐ வெச்சிருந்து, downside-ஐ strike-ல வரம்புக்குள்ள வெக்கறது — ஒரு currency payable-க்குப் பதிலா ஒரு equity position-க்கு பொருத்தப்பட்டது. Section 4-ஓட futures hedge-ல இருந்து இது எப்படி வேறுபடுதுன்னும் கவனிங்க: Maple Leaf Pension Fund அதுக்குப் பதிலா தன் equity exposure-க்கு எதிரா E-mini S&amp;P 500 futures-ஐ <i>விற்றிருக்கலாம்</i> (ஒரு symmetric hedge, premium இல்ல, ஆனா upside-ஐயும் விட்டுக்கொடுக்கும்) — symmetric-vs-asymmetric hedging-ஓட (Section 3) அதே தேர்வு equities-க்கு FX-க்கு போலவே சரியா பொருந்துது.</p>
+<h3>கூடுதல் உதாரணம் — Protective put-ஓட payoff எண்களோட அட்டவணை</h3>
+<div class="table-scroll"><table><thead><tr><th>KO expiry விலை (USD)</th><th>Put payoff (65 strike)</th><th>Shares மதிப்பு vs 68.40 cost</th><th>Put premium</th><th>நிகர (hedged)</th><th>நிகர (hedge இல்லாமல்)</th></tr></thead><tbody><tr><td>58.00</td><td>+70,000</td><td>-104,000</td><td>-12,000</td><td>-46,000</td><td>-104,000</td></tr><tr><td>65.00</td><td>0</td><td>-34,000</td><td>-12,000</td><td>-46,000</td><td>-34,000</td></tr><tr><td>68.40</td><td>0</td><td>0</td><td>-12,000</td><td>-12,000</td><td>0</td></tr><tr><td>75.00</td><td>0</td><td>+66,000</td><td>-12,000</td><td>+54,000</td><td>+66,000</td></tr></tbody></table></div>
+<p>Hedge பண்ணின நிகர விளைவு 65-க்குக் கீழ எவ்வளவு விழுந்தாலும் -46,000-லயே தடுக்கப்படுது (floor); upside முழுசா (premium கழிச்சு) வெச்சிருக்கப்படுது.</p>
+    </section>
+    <section class="mod" id="9-hedge-accounting-regulatory-பார்வை-hedge-ஒரு-legal-accounting-label-வெறும்-trading-strategy-இல்ல">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Hedge Accounting &amp; Regulatory பார்வை — &quot;Hedge&quot; ஒரு Legal/Accounting Label, வெறும் Trading Strategy இல்ல</h2>
+      <p><b>Definition:</b> இது ஒரு IT/reporting architect-க்கு மிகப் பொருத்தமான section, "இந்த trade ஒரு hedge-ஆ?"ங்கறதை P&amp;L pattern-ஐ பார்த்தே பதில் சொல்ல முடியாததற்கு காரணமும். <b>Accounting standards</b> (சர்வதேச அளவுல IFRS 9, US-ல ASC 815), <b>derivatives regulation</b> (EMIR, Dodd-Frank) இரண்டின் கீழும், ஏற்கனவே இருக்கற risk-ஐ உண்மையிலயே குறைக்கும் ஒரு trade, சமமான ஊக trade-ஐ விட கணிசமா வேறுபட்ட சிகிச்சைக்கு தகுதி பெறலாம் — ஆனா அது inception-ல <b>முறையா hedge-ஆ ஆவணப்படுத்தப்பட்டிருந்தா</b> மட்டும், வெறுமனே மறைமுகமா புரிந்துகொள்ளப்பட்டிருந்தா இல்ல.</p>
+<div class="table-scroll"><table><thead><tr><th>Hedge நிலையின் விளைவு</th><th>என்ன மாறுது</th><th>Operational ரீதியா ஏன் முக்கியம்</th></tr></thead><tbody><tr><td><b>Hedge accounting</b> (IFRS 9 / ASC 815)</td><td>Hedge instrument-ஓட gain/loss, hedged item-ஓட ஈடுசெய்யும் loss/gain-ஓட <i>அதே accounting period</i>-ல அங்கீகரிக்கப்படலாம், ரெண்டும் P&amp;L statement-ல வேறு நேரங்கள்ல தாக்காம</td><td>அது இல்லாட்டி, உண்மையிலயே risk-ஐ குறைக்கும் trade <i>reported</i> earnings-ஐ குறைவா இல்ல, அதிக ஏற்ற இறக்கமா காட்டலாம் — ஏன்னா hedge-ஓட mark-to-market நகர்வு உடனே தெரியும், hedged item-ஓட economics காலப்போக்குல விரியும்</td></tr><tr><td><b>EMIR clearing exemption</b> (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §5-ஓட clearing mandate)</td><td>ஒரு உண்மையான <i>வணிக</i> risk-ஐ hedge பண்ண (நிதி-சந்தை பந்தயம் இல்ல) derivative-ஐ பயன்படுத்தும் non-financial counterparty, அந்த trade-ஐ NFC+/NFC- clearing வரம்பு சோதனைக்கு எதிரா வேறுபட்டு எண்ணலாம்</td><td>Trade கட்டாய central clearing கடமைக்கு உட்படுதா இல்லையான்னு தீர்மானிக்குது</td></tr><tr><td><b>Dodd-Frank "end-user exception"</b></td><td>ஒரு உண்மையான வணிக risk-ஐ hedge பண்ற US non-financial end-user, அந்த swap-க்கு Dodd-Frank-ஓட கட்டாய clearing தேவையிலிருந்து விலக்கு பெறலாம்</td><td>EMIR விலக்கோட அதே நோக்கம், வேறு jurisdiction, ஒத்த ஆவணப்படுத்தும் சுமை</td></tr></tbody></table></div>
+<div class="callout"><b>Callout — இது எளிமைப்படுத்தப்பட்ட விளக்கம், உண்மையான தற்போதைய விதி text இல்ல.</b> ஒரு trade எந்த சோதனைகளை கடக்கணும் (effectiveness testing வரம்புகள், சரியான NFC+/NFC- notional கணக்கீடு, end-user exception தகுதி அளவுகோல்கள்) என்பது technical, jurisdiction-குறிப்பானது, அவ்வப்போது திருத்தப்படுது — இந்த curriculum-ஓட மற்ற reference modules தங்கள் சொந்த regulatory specifics-க்கு (<a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI/UTI</a> §2, <a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR</a> §7) ஏற்கனவே பயன்படுத்தற அதே hedge.</div>
+<div class="ticket"><pre>WHY THIS MATTERS FOR A TRADE/BOOKING SYSTEM'S DATA MODEL
+========================================================================
+
+  A trade being ECONOMICALLY a hedge (its P&amp;L happens to move
+  opposite to another position) is NOT the same fact as a trade
+  being FORMALLY DESIGNATED a hedge for accounting/regulatory
+  purposes -- the second requires:
+
+    -&gt; a "Hedge Designation" flag on the trade record, set AT
+       INCEPTION (not retroactively)
+    -&gt; a documented link to the SPECIFIC hedged item/exposure
+       (which bond, which forecasted cash flow, which portfolio)
+    -&gt; ongoing EFFECTIVENESS TESTING data (is the hedge still
+       working as designed, checked periodically)
+
+  Without all three captured, a trade that is economically a
+  perfectly good hedge (like Section 4's futures trade) still gets
+  TREATED as a plain speculative position by accounting and,
+  potentially, by the clearing-obligation rules -- an expensive
+  gap if the documentation was simply never captured in the system.</pre></div>
+<p><b>Takeaway:</b> "hedge" ஒரு முறைசாரா trading label மட்டுமில்ல, உண்மையான சட்ட, accounting எடையைச் சுமக்குது — நல்லா வடிவமைக்கப்பட்ட trade capture system trade-ஓட எளிய economic terms-ஓட பக்கத்துல ஒரு வெளிப்படையான hedge-designation data model-ஐ (flag, இணைக்கப்பட்ட exposure, effectiveness-test வரலாறு) தேவைப்படுத்துது; ஏன்னா ஒரே instrument ஒரு hedge ஆகவோ ஊகமாகவோ இருக்கலாம் என்பது trade record தானே ஊகிக்காம பிடிக்க வேண்டிய உண்மைகளைச் சார்ந்ததுன்னு Section 1 ஏற்கனவே நிறுவியது.</p>
+    </section>
+    <section class="mod" id="10-hedging-உண்மையில-எங்க-பயன்படுத்தப்படுது-desk-by-desk-சுருக்கம்">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. Hedging உண்மையில எங்க பயன்படுத்தப்படுது — Desk-by-Desk சுருக்கம்</h2>
+      <p><b>Definition:</b> இந்த module-ல ஒவ்வொரு உதாரணத்தையும் ஒரு வழக்கமான வங்கி, அதன் clients முழுக்க <i>யார்</i> எதை எந்த instruments-ஓட hedge பண்றாங்கன்னு ஒரு வரைபடமா இழுக்குது.</p>
+<div class="table-scroll"><table><thead><tr><th>Business function</th><th>Typical exposure being hedged</th><th>Typical hedge instrument(s)</th><th>This module</th></tr></thead><tbody><tr><td><b>Treasury / ALM</b> (Asset-Liability Management)</td><td>Interest rate risk on the bank's own loan/bond book</td><td>IR Swaps, IR Futures</td><td>Section 4</td></tr><tr><td><b>Corporate Treasury</b> (bank's client)</td><td>FX payables/receivables from international trade</td><td>FX Forwards, FX Options</td><td>Section 6</td></tr><tr><td><b>Corporate Treasury</b> (energy-consuming client, e.g. an airline)</td><td>Commodity input cost (fuel)</td><td>Commodity Futures/Options/Swaps</td><td>Section 7</td></tr><tr><td><b>Credit / Loan Portfolio Management</b></td><td>Credit/default risk on bonds or loans held</td><td>CDS (single-name or index)</td><td>Section 5</td></tr><tr><td><b>Asset Managers / Pension Funds</b></td><td>Portfolio market-value risk on an existing holding</td><td>Equity Index Futures (symmetric), Protective Puts (asymmetric)</td><td>Section 8</td></tr><tr><td><b>Dealers / Market Makers</b></td><td>Risk absorbed from client option flow (a dealer who just sold a client an option now has an unwanted exposure of its own)</td><td>Delta-hedging with the underlying instrument, or offsetting options</td><td>Not separately worked here — the same offsetting logic as every other section, just run continuously as client flow arrives, rather than once per position</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ஒவ்வொரு வரியும் இந்த curriculum முற்றிலும் வேறு நோக்கங்களுக்கு (நிதியளிப்பு திரட்டுவது, சந்தைப் பார்வையை வெளிப்படுத்துவது, exposure பெறுவது) ஏற்கனவே கட்டின instruments-ஐ மறுபயன்படுத்துவதை கவனிங்க — hedging ஒரு தனி product வகை இல்ல, அதே product set-ஓட ஒரு <b>பயன்பாடு</b>; ஈடுசெய்யும் exposure இருக்கறதாலும் (Section 1), சட்டப்படி முக்கியமான இடங்கள்ல முறையான hedge ஆவணப்படுத்தலாலும் (Section 9) மட்டும் வேறுபடுத்தப்படுது.</p>
+    </section>
+    <section class="mod" id="11-அதிகாரப்பூர்வ-மூலங்கள்-links">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>11. அதிகாரப்பூர்வ மூலங்கள் &amp; Links</h2>
+      <p><b>Definition:</b> இந்த curriculum-ஓட மற்ற reference modules போலவே, அவ்வப்போது திருத்தப்படும் technical விதிகளை மறுசொல்லாம, முதன்மை மூலங்களை சுட்டிக்காட்டுது.</p>
+<div class="table-scroll"><table><thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead><tbody><tr><td><b>ISDA</b></td><td>Standard derivative documentation used to execute most OTC hedges (Master Agreement, CSA) — see the <a href="../docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html">ISDA Product Taxonomy Deep Dive</a></td><td><a href="<a href="https://www.isda.org">www.isda.org">https://www.isda.org">www.isda.org</a></a></td></tr><tr><td><b>IFRS Foundation</b></td><td>IFRS 9 — international hedge accounting requirements (designation, effectiveness testing)</td><td><a href="<a href="https://www.ifrs.org">www.ifrs.org">https://www.ifrs.org">www.ifrs.org</a></a></td></tr><tr><td><b>FASB</b></td><td>ASC 815 — US GAAP's equivalent hedge accounting standard</td><td><a href="<a href="https://www.fasb.org">www.fasb.org">https://www.fasb.org">www.fasb.org</a></a></td></tr><tr><td><b>CFTC</b></td><td>Dodd-Frank's end-user exception for commercial hedgers</td><td><a href="<a href="https://www.cftc.gov">www.cftc.gov">https://www.cftc.gov">www.cftc.gov</a></a></td></tr><tr><td><b>ESMA</b></td><td>EMIR Article 10 — the NFC+/NFC- clearing-threshold test and its hedging exemption</td><td><a href="<a href="https://www.esma.europa.eu">www.esma.europa.eu">https://www.esma.europa.eu">www.esma.europa.eu</a></a></td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ISDA-ஓட ஆவணங்களை ஒரு hedge உண்மையில எப்படி ஆவணப்படுத்தப்பட்டு execute ஆகுதுங்கறதுக்கு source of truth-ஆவும்; IFRS/FASB-ஐ ஒரு hedge-ஓட P&amp;L நிதி அறிக்கைகள்ல எப்படி அங்கீகரிக்கப்படுதுங்கறதுக்கு source of truth-ஆவும்; CFTC/ESMA-ஐ ஒரு hedging நோக்கம் ஒரு trade-ஓட regulatory clearing கடமையை எப்போ மாற்றுதுங்கறதுக்கு source of truth-ஆவும் நடத்துங்க — இந்த curriculum-ஓட மற்ற reference modules தங்கள் சொந்த பகுதிகளுக்கு ஏற்கனவே பயன்படுத்தற அதே மூன்று-வழிப் பிரிவு (ஆவணப்படுத்தும் standard, accounting கட்டளை, regulatory கட்டளை).</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>தன் bond book-ஐ T-Note futures-ஆல hedge பண்ணுது (Section 4); Northern Rail Corp மேல CDS protection வாங்குது (Section 5); ஒரு client-ஓட FX payable-ஐயும் ஒரு client-ஓட jet fuel செலவையும் dealer counterparty-ஆ hedge பண்ணுது (Sections 6–7)</td></tr><tr><td>Goldman Sachs</td><td>Northern Rail Corp CDS-ல protection seller (Section 5); FX Forward-ல counterparty (Section 6)</td></tr><tr><td>Northern Rail Corp</td><td>CDS hedge-ஓட reference entity (Section 5)</td></tr><tr><td>Maple Leaf Pension Fund</td><td>E-mini S&amp;P 500 future-ஐ ஊகமா வாங்குது (Section 1-ஓட ஒப்பீடு); தன் existing KO equity position-ஐ ஒரு protective put-ஆல hedge பண்ணுது (Section 8)</td></tr><tr><td>Bank Of Toronto's client (FX)</td><td>எதிர்கால USD payable-ஐ ரெண்டு வழிகள்ல hedge பண்ணுது — Forward, Option (Section 6)</td></tr><tr><td>Bank Of Toronto's client (airline)</td><td>WTI proxy hedge வழியா jet fuel செலவு exposure-ஐ hedge பண்ணுது, basis risk-ஐ ஏற்று (Section 7)</td></tr><tr><td>ISDA / IFRS Foundation / FASB / CFTC / ESMA</td><td>ஒரு hedge எப்படி execute ஆகுது, அங்கீகரிக்கப்படுது, (தேவைப்படும் இடத்துல) clearing-ல இருந்து விலக்கு பெறுதுங்கறதை நிர்வகிக்கும் ஆவணப்படுத்தல், accounting/regulatory standard-setters (Sections 9, 11)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz</h2>
+      <ol><li>Section 1-ஐ பயன்படுத்தி, ரெண்டும் அதே instrument வகையை பயன்படுத்தினாலும், ஒரு hedge-ஐ ஒரு ஊக trade-ல இருந்து வேறுபடுத்தும் ஒற்றை உண்மை என்ன?</li><li>Section 2-ஐ பயன்படுத்தி, நல்லா hedge பண்ணின position-ஓட கூட்டு P&amp;L-ஐ "risk-free"ன்னு விவரிக்கறது தவறு ஏன்?</li><li>Section 3-ஐ பயன்படுத்தி, ஒரு Option-க்குப் பதிலா ஒரு symmetric hedge (Forward) தேர்ந்தெடுக்கறதால ஒரு hedger எதை விட்டுக்கொடுக்கறார்? Option-ஐ தேர்ந்தெடுக்கறதால எதை விட்டுக்கொடுக்கறார்?</li><li>Section 4-ஐ பயன்படுத்தி, notional தொகைகளை பொருத்தறது (bond market value-ஐ futures notional-உடன்) ஒரு interest rate hedge-ஐ அளவிடறதுக்கு தவறான வழி ஏன்? அதுக்குப் பதிலா எதை பொருத்தணும்?</li><li>Section 5-ஐ பயன்படுத்தி, CDS-on-Northern-Rail-Corp hedge ஒரு "சரியான" reference-entity பொருத்தத்துக்கு நெருக்கம்னு விவரிக்கப்படுறது ஏன்? அப்படி இருந்தும் எந்த risk இன்னும் இருக்கு?</li><li>Section 7-ஐ பயன்படுத்தி, basis risk என்றா என்ன? airline-ஓட WTI-சார்ந்த jet fuel hedge அதை சுமக்குது, ஆனா Section 5-ஓட CDS hedge (பெரும்பாலும்) சுமக்கலை ஏன்?</li><li>Section 8-ஐ பயன்படுத்தி, KO protective put-ஓட payoff வடிவம் Section 6-ஓட FX Option hedge-ஓட எந்த குறிப்பிட்ட வகையில ஒத்தது?</li><li>Section 9-ஐ பயன்படுத்தி, ஒரு trade பொருளாதார ரீதியா நல்ல hedge-ஆ இருந்தும் hedge accounting-ஐயோ clearing விலக்கையோ பெறத் தவறுவது ஏன்?</li></ol>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Trade, trader ஏற்கனவே வெச்சிருக்கற exposure-ஐ ஈடுசெய்யுதான்னு. ஒரு hedge, trader ஏற்கனவே வெச்சிருக்கற position (அல்லது தெரிஞ்ச எதிர்கால தேவை) மேல விளைவுகளின் வரம்பை குறைக்க இருக்கு; speculation எதுவும் ஈடுசெய்யப்படாத புத்தம்புது திசைசார்ந்த பந்தயம். Instrument தானே (ஒரு future, ஒரு option, ஒரு swap) இது எதுன்னு ஒருபோதும் வெளிப்படுத்தாது.</b></p>
+<p>Section 1-ஓட பக்கம்-பக்கம் உதாரணம் இதை வெளிப்படையாக்குது: Bank Of Toronto-ஓட short T-Note futures (அது ஏற்கனவே வெச்சிருக்கற bonds-க்கு எதிரா), Maple Leaf Pension Fund-ஓட long E-mini futures (ஈடுசெய்யும் position இல்லாம) ஒரே contract வகை, எதிர் நோக்கங்கள்.</p>
+<p><b>2. ஏன்னா கிட்டத்தட்ட எப்பவும் சில மிச்ச நகர்வு இருக்கும் — basis risk (Section 7), அபூரண hedge-ratio அளவீடு (Section 4), அல்லது hedge மேலயே counterparty/wrong-way risk (Section 5) எல்லாம், கூட்டு position-ஓட P&amp;L ஒவ்வொரு leg-ஐ விடவும் தட்டையானது, முழுசா தட்டையானது இல்லைன்னு அர்த்தப்படுத்தும். Hedging விளைவுகளின் வரம்பை குறுக்குது; அதை அழிக்காது.</b></p>
+<p>Section 2-ஓட takeaway இதை நேரடியா சொல்லுது — "hedging ஒருபோதும் இலவசம் இல்ல", கூட்டு P&amp;L diagram ஒரு தட்டையான கோட்டை இல்ல, இன்னும் தட்டையான கோட்டைக் காட்டுது.</p>
+<p><b>3. Forward-ஐ தேர்ந்தெடுக்கறது சாதகமான rate/விலை நகர்வின் பலனைப் பெறும் எந்த வாய்ப்பையும் விட்டுக்கொடுக்குது (எப்படியும் lock, premium இல்ல). Option-ஐ தேர்ந்தெடுக்கறது அந்த upside-ஐ வெச்சிருக்க ஒரு முன்கூட்டிய premium-ஐ (விளைவு எதுவா இருந்தாலும் கொடுக்கப்படும்) செலவழிக்குது.</b></p>
+<p>Section 3-ஓட table-உம் Section 6-ஓட worked forward-vs-option ஒப்பீடும் இந்த trade-off-ஐ நேரடியா சொல்லுது, ரெண்டு பக்கமும் உண்மையான எண்களோட (Forward பக்கம் CAD 155,000 விட்டுக்கொடுத்த upside vs. Option பக்கம் CAD 90,000 premium).</p>
+<p><b>4. ஏன்னா ஒரு bond-க்கும் ஒரு bond future-க்கும் கொடுக்கப்பட்ட rate நகர்வுக்கு ஒரே விலை உணர்திறன் இல்ல — face values-ஐ பொருத்தறது ஒரு hedge இல்ல, ஒரு தற்செயல். சரியான அணுகுமுறை risk sensitivities-ஐ (DV01) பொருத்துது, அதனால ஒரு rate நகர்வு bond position-லயும் futures position-லயும் கிட்டத்தட்ட சமமான, எதிரான dollar நகர்வுகளை உருவாக்குது.</b></p>
+<p>Section 4-ஓட hedge-ratio formula இதை நேரடியா சொல்லுது: தேவையான contracts ≈ exposure-ஓட DV01 ÷ future-ஓட ஒரு contract-க்கு DV01, Module 1 §8-ஓட "notional ஒரு reference எண், நகர்றது இல்ல"ங்கறதை குறிப்பா hedge அளவீட்டுக்கு பொருத்தி மறுசொல்லுது.</p>
+<p><b>5. ஏன்னா CDS, hedge பண்ணப்படும் bond-ஓட சரியா அதே reference entity-ஐ (Northern Rail Corp) reference பண்ணுது, ஒரு தோராயம் அல்லது proxy இல்ல — Section 7-ஓட WTI/jet fuel பொருத்தமின்மை போல இல்ல. அப்படியும் அது wrong-way risk-ஐ சுமக்குது: protection seller (Goldman Sachs) சரியா Northern Rail Corp தோற்கற அதே நேரத்துல தோற்கும் வாய்ப்பு அதிகம்னா, hedge மிக அதிகம் தேவைப்படற நேரத்துலயே மிகக் குறைவா நம்பகமானது.</b></p>
+<p>Section 5-ஓட takeaway இதை நேரடியா சொல்லுது, Module 2 §9-ஓட சொந்த wrong-way-risk flag-ஐ cross-reference பண்ணி.</p>
+<p><b>6. Basis risk = hedge instrument-ஓட விலை இயக்கி உண்மையான exposure-ஓட விலை இயக்கிக்கு தொடர்புடையது, ஆனா ஒரே மாதிரி இல்லாததால hedge-க்குப் பிறகும் மிஞ்சும் exposure — இங்க WTI crude oil vs. jet fuel, அவை சேர்ந்து நகருது ஆனா சரியா இல்ல ("crack spread" அகலலாம், குறுகலாம்). CDS hedge பெரும்பாலும் இதைத் தவிர்க்குது, ஏன்னா அது ஒரு தொடர்புள்ள proxy-ஐ இல்ல, சரியா அதே reference entity-ஐ reference பண்ணுது.</b></p>
+<p>Section 7-ஓட worked example நல்ல-தொடர்பு, பொருந்தாத-தொடர்பு ரெண்டு scenarios-ஐயும் வெளிப்படையா நடத்திக் காட்டுது, அதன் takeaway Section 5-ஓட சரியான-பொருத்த CDS case-உடன் நேரடி வேறுபாட்டை வரையுது.</p>
+<p><b>7. ரெண்டும் market பாதகமா நகர்ந்தா ஒரு வரம்புக்குள்ள, தெரிஞ்ச அதிகபட்ச இழப்புக்கு ஈடா முன்கூட்டியே ஒரு premium-ஐ (FX Call-க்கு CAD 90,000, KO Put-க்கு USD 12,000) செலுத்துது, சந்தை சாதகமா நகர்ந்தா முழு பலனையும் வெச்சிருக்குது — option வெறுமனே பயனற்று expire ஆகுது, premium மட்டும் ஒரே செலவு.</b></p>
+<p>Section 8-ஓட takeaway இதை வெளிப்படையா சொல்லுது: FX Option hedge-க்கு "வடிவத்துல பொருளாதார ரீதியா ஒத்தது", ஒரு currency payable-க்குப் பதிலா ஒரு equity position-க்கு பொருத்தப்பட்டது.</p>
+<p><b>8. ஏன்னா hedge accounting-உம் clearing விலக்குகளும் trade inception-ல பிடிக்கப்பட்ட </b>முறையான ஆவணப்படுத்தலை<b> கோருது — ஒரு hedge designation, குறிப்பிட்ட hedged item-க்கு ஆவணப்படுத்தப்பட்ட இணைப்பு, effectiveness-testing data — trade-ஓட P&amp;L ஏதோ ஒரு மற்ற position-க்கு எதிரா நகருதுங்கறது மட்டுமில்ல. அந்த ஆவணப்படுத்தலை ஒருபோதும் பிடிக்காத system, பொருளாதார ரீதியா சரியான hedge-ஐ accounting, regulatory நோக்கங்களுக்கு ஒரு எளிய ஊக trade-ஆ நடத்த விட்டுடும்.</b></p>
+<p>Section 9-ஓட diagram இதை நேரடியா சொல்லுது: பொருளாதார hedging-உம் முறையான hedge designation-உம் ரெண்டு வேறு உண்மைகள், ரெண்டாவது மட்டுமே accounting/regulatory சிகிச்சையை மாற்றுது.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 22 — Hedging Deep Dive (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

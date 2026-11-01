@@ -1,0 +1,664 @@
+<!doctype html>
+<title>Tamil Notes — Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  h1, h2 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  .mono, .num, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+  }
+
+  @media (max-width: 600px) {
+    .shell { padding: 40px 18px 72px; }
+  }
+
+  .masthead {
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); }
+
+  .masthead h1 { font-size: 2.15rem; line-height: 1.15; margin: 0 0 12px; }
+  .masthead .dek { color: var(--ink-soft); font-size: 1.02rem; max-width: 58ch; margin: 0 0 18px; }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag { color: var(--accent-2); font-family: "Cascadia Code", "SF Mono", Consolas, monospace; }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+  }
+
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0 4px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--paper-sunken);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 8.3%;
+    background: var(--accent);
+  }
+  .progress-label {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .progress-label b { color: var(--ink); }
+
+  .modlist { margin-top: 36px; }
+
+  .mod-row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mod-row:first-child { border-top: 1px solid var(--line); }
+
+  .mod-row.is-available {
+    background: linear-gradient(90deg, var(--accent-soft), transparent 60%);
+    margin: 0 -12px;
+    padding: 16px 12px;
+    border-radius: 4px;
+    border-bottom-color: var(--line);
+  }
+
+  .mod-num {
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  .is-available .mod-num { color: var(--accent); font-weight: 700; }
+
+  .mod-title { min-width: 0; }
+  .mod-title .t { font-weight: 600; color: var(--ink); display: block; }
+  .is-available .mod-title .t { color: var(--ink); }
+  .mod-title .p {
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .mod-title .p.high { color: var(--accent-2); }
+
+  .status-pill {
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .status-pill.available { color: var(--accent); background: var(--accent-soft); border-color: var(--accent); }
+  .status-pill.planned { color: var(--ink-faint); background: var(--paper-sunken); border-color: var(--line); }
+
+  .mod-link {
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .mod-link:hover { text-decoration: underline; }
+  .mod-link.disabled {
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  @media (max-width: 560px) {
+    .mod-row { grid-template-columns: 28px 1fr; row-gap: 8px; }
+    .status-pill, .mod-link { grid-column: 2; }
+  }
+
+  .conventions {
+    margin-top: 48px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent-2);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+  }
+  .conventions h2 { font-size: 1.05rem; margin: 0 0 10px; font-family: -apple-system, sans-serif; }
+
+  .ref-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 12px 0 12px;
+  }
+  .conventions ul { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.92rem; }
+  .conventions li { margin-bottom: 6px; }
+  .conventions b { color: var(--ink); }
+
+  footer {
+    margin-top: 40px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <a href="../index.html" style="display:inline-block;margin-bottom:12px;font-size:0.78rem;color:var(--ink-faint);text-decoration:none;font-family:'Cascadia Code','SF Mono',Consolas,monospace;">&larr; Back to Main Index</a>
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets — Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Tamil Notes — Index</h1>
+    <p class="dek">Standalone Tamil-language study notes on Capital Markets, written alongside the main Self-Paced Learning Path. Not part of the numbered module curriculum &mdash; these explain the same concepts in Tamil for a Java/Spring backend architect learning Capital Markets from an IT/reporting perspective.</p>
+    <div class="audience-note">Written for <b>a software architect (Java background)</b> new to Finance/Capital Markets, in Tamil. Example bank used throughout: <span class="bank-tag">Bank Of Toronto</span> (fictional, for illustration only).</div>
+  </div>
+
+  <div class="modlist">
+    <p class="ref-label">Fundamentals (பேச்சுத் தமிழ்)</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">01</span>
+      <div class="mod-title">
+        <span class="t">Module 1 &mdash; Capital Markets Fundamentals</span>
+        <span class="p">Primary vs secondary market, buy-side/sell-side, dealer vs broker, front/middle/back office, exchange vs OTC, settlement, custodian vs CSD, notional &amp; IRS basics &middot; spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-01-Fundamentals-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">02</span>
+      <div class="mod-title">
+        <span class="t">Module 2 — Asset Class → Product → Instrument → Trade</span>
+        <span class="p">Hierarchy, ISIN/CUSIP/Ticker, trade fields, ISDA taxonomy, CDS/FX Forward/IRS examples, UPI · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-02-Hierarchy-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">03</span>
+      <div class="mod-title">
+        <span class="t">Module 3 — Trade Lifecycle</span>
+        <span class="p">Nine stages, order vs execution, confirmation/matching, CCP novation, DvP, reconciliation, T+1 reporting, status state machine, settlement fail · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-03-Trade-Lifecycle-Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Equity</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Equity &mdash; Backend Architect Notes</span>
+        <span class="p">Canadian cash-equity &amp; derivative trade examples, lifecycle, regulatory infrastructure &middot; relates to Module 4</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Equity-tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Equity &mdash; Complete Tamil Explanation</span>
+        <span class="p">Terms, common vs preferred stock, futures, options, trade lifecycle, identifiers, regulation &middot; relates to Module 4</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Equity-tamil-2.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Rates</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Interest Rate Swap (IRS) &mdash; எளிய தமிழ் விளக்கம்</span>
+        <span class="p">Fixed/floating legs, notional, MTM, valuation data, full trade lifecycle &middot; relates to Module 8, Module 19</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./InterestRateSwap-IRS-inTamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Risk Management</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Hedging Deep Dive &mdash; தமிழில் முழுமையான விளக்கம்</span>
+        <span class="p">Symmetric vs asymmetric hedges, interest-rate (DV01), credit (CDS), FX, commodity &amp; equity hedging, hedge accounting, recap quiz &middot; relates to Module 22</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Hedging_Deep_Dive_Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Positions &amp; Valuation</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">—</span>
+      <div class="mod-title">
+        <span class="t">Position Deep Dive &mdash; தமிழ் விளக்கம்</span>
+        <span class="p">Trade vs Position, Valuation / MTM / YTM, DV01, position models by asset class, the three clocks, regulatory reporting, Java system design &middot; relates to Module 25</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Position_Deep_Dive_Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Asset Class Roadmap (பேச்சுத் தமிழ்)</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">04</span>
+      <div class="mod-title">
+        <span class="t">Module 4 — Equity</span>
+        <span class="p">Common/preferred, futures &amp; options, lifecycle, identifiers, regulation, Canadian equity systems · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-04-Equity-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">05</span>
+      <div class="mod-title">
+        <span class="t">Module 5 — Fixed Income</span>
+        <span class="p">Clean/dirty price, accrued interest, repo, bond trades, lifecycle, regulation, Canadian fixed-income systems · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-05-Fixed-Income-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">06</span>
+      <div class="mod-title">
+        <span class="t">Module 6 — FX</span>
+        <span class="p">Spot/forward/swap/option, forward points, CLS &amp; PvP, identifiers, regulation, Canadian FX systems · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-06-FX-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">07</span>
+      <div class="mod-title">
+        <span class="t">Module 7 — Commodities</span>
+        <span class="p">Contango/backwardation, physical/futures/swaps/options, variation margin, CFTC, Canadian commodity systems · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-07-Commodities-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">08</span>
+      <div class="mod-title">
+        <span class="t">Module 8 — Rates</span>
+        <span class="p">IRS/FRA/cap-floor/swaption/forward debt, CDOR→CORRA, mandatory clearing, Canadian rates systems · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-08-Rates-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">09</span>
+      <div class="mod-title">
+        <span class="t">Module 9 — Credit</span>
+        <span class="p">CDS, running coupon/upfront, credit event auction, LEI roles, CFTC/SEC split, Canadian credit systems · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-09-Credit-Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Cross-Cutting Topics (பேச்சுத் தமிழ்)</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">10</span>
+      <div class="mod-title">
+        <span class="t">Module 10 — Valuation</span>
+        <span class="p">Price/market value/fair value/MTM, YTM &amp; DV01, DCF/option/CDS valuation, fair value levels, IPV · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-10-Valuation-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">11</span>
+      <div class="mod-title">
+        <span class="t">Module 11 — Risk &amp; Exposure</span>
+        <span class="p">MTM vs exposure, CE/PFE, netting, CVA &amp; wrong-way risk, CCP, VaR, SIMM · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-11-Risk-Exposure-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">12</span>
+      <div class="mod-title">
+        <span class="t">Module 12 — Collateral &amp; Margin</span>
+        <span class="p">IM vs VM, haircuts, tri-party, threshold &amp; MTA, margin call workflow, UMR · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-12-Collateral-Margin-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">13</span>
+      <div class="mod-title">
+        <span class="t">Module 13 — Parties, LEIs &amp; Market Infrastructure</span>
+        <span class="p">Roles, CCP/CSD/custodian, clearing members, LEI roles, reporting entity, golden source · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-13-Parties-LEIs-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">14</span>
+      <div class="mod-title">
+        <span class="t">Module 14 — Regulatory Reporting + IT View</span>
+        <span class="p">Five obligations, EMIR/MiFID II/SFTR, TR pairing, annotated capstone record · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-14-Regulatory-Reporting-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">15</span>
+      <div class="mod-title">
+        <span class="t">Module 15 — Listed Derivatives</span>
+        <span class="p">Futures &amp; listed options, fungibility, CTD delivery basket, exchange codes, MX/CDCC · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-15-Listed-Derivatives-Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Reporting Deep Dives (பேச்சுத் தமிழ்)</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">16</span>
+      <div class="mod-title">
+        <span class="t">Module 16 — SFTR Reporting</span>
+        <span class="p">SFT types, scope test, lifecycle events, tables &amp; messages, reconciliation, haircuts · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-16-SFTR-Reporting-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">17</span>
+      <div class="mod-title">
+        <span class="t">Module 17 — UK DMO Reporting</span>
+        <span class="p">GEMMs, gilt auctions, daily/weekly/periodic reports, market share, DMO vs MiFIR · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-17-DMO-UK-Reporting-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">18</span>
+      <div class="mod-title">
+        <span class="t">Module 18 — UPI, UTI &amp; ANNA-DSB</span>
+        <span class="p">UTI waterfall, UPI templates, DSB governance, UPI vs OTC ISIN, regime map · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-18-UPI-UTI-DSB-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">20</span>
+      <div class="mod-title">
+        <span class="t">Module 20 — MiFID II / MiFIR Reporting</span>
+        <span class="p">Transaction reporting, transparency, eligibility, OTC equity rules, STO &amp; SI · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-20-MiFID-Reporting-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">21</span>
+      <div class="mod-title">
+        <span class="t">Module 21 — ISDA Product Taxonomy</span>
+        <span class="p">Four-level taxonomy, worked paths, taxonomy vs CFI vs UPI, uses, product-master config · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-21-ISDA-Taxonomy-Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Deep-Dive Reference Modules (பேச்சுத் தமிழ்)</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">19</span>
+      <div class="mod-title">
+        <span class="t">Module 19 — Interest Rate Swap (IRS) Deep Dive</span>
+        <span class="p">20-quarter schedule, CORRA compounding, novation, fixed/floating legs, trade &amp; valuation fields · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-19-IRS-Deep-Dive-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">22</span>
+      <div class="mod-title">
+        <span class="t">Module 22 — Hedging Deep Dive (spoken Tamil)</span>
+        <span class="p">Hedge vs speculation, symmetric vs asymmetric, DV01 hedge ratio, CDS/FX/commodity/equity hedges, hedge accounting · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-22-Hedging-Spoken-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">23</span>
+      <div class="mod-title">
+        <span class="t">Module 23 — Forward, Swap &amp; Option Deep Dive</span>
+        <span class="p">Three OTC building blocks across all asset classes, full matrix, exposure profiles, ISDA transaction types · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-23-Forward-Swap-Option-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">24</span>
+      <div class="mod-title">
+        <span class="t">Module 24 — Basis Points Deep Dive</span>
+        <span class="p">bps maths, DV01 family, equity fees, pips vs bps, change frequency, reporting units · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-24-Basis-Points-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">25</span>
+      <div class="mod-title">
+        <span class="t">Module 25 — Position Deep Dive</span>
+        <span class="p">Trade vs Position, asset class வாரியா position, மூன்று கடிகாரங்கள், regulatory position reporting · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-25-Position-Spoken-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">26</span>
+      <div class="mod-title">
+        <span class="t">Module 26 — USD/CAD FX Forward Complete Lifecycle</span>
+        <span class="p">ஒரு OTC FX Forward-ஓட Capture → Reporting முழு lifecycle, fields, microservices · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Module-26-OTC-Forward-Lifecycle-Tamil.html">Open &rarr;</a>
+    </div>
+
+    <p class="ref-label">Reference (பேச்சுத் தமிழ்)</p>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">1</span>
+      <div class="mod-title">
+        <span class="t">Abbreviations Glossary</span>
+        <span class="p">ISIN, LEI, CCP, DV01, EMIR… acronyms lookup · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Abbreviations-Glossary-Tamil.html">Open &rarr;</a>
+    </div>
+    <div class="mod-row is-available">
+      <span class="mod-num mono">2</span>
+      <div class="mod-title">
+        <span class="t">Systems Landscape</span>
+        <span class="p">Canada / US / UK / EU systems, CSD-CCP, settlement cycles, regulators · spoken Tamil</span>
+      </div>
+      <span class="status-pill available">Available</span>
+      <a class="mod-link" href="./Systems-Landscape-Tamil.html">Open &rarr;</a>
+    </div>
+  </div>
+
+  <div class="conventions">
+    <h2>Note on the two Equity files</h2>
+    <p style="margin:0;color:var(--ink-soft);font-size:0.92rem;">These cover overlapping ground. <b>Equity &mdash; Complete Tamil Explanation</b> is the cleaner, more complete rewrite. <b>Equity &mdash; Backend Architect Notes</b> is kept as an earlier pass with additional Canadian backend-architecture examples (microservices view, event flow, corporate actions) not repeated in the second file.</p>
+  </div>
+
+  <footer>Capital Markets Tamil Notes &middot; <a href="../index.html" style="color:var(--ink-faint);">&larr; Back to Main Index</a></footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

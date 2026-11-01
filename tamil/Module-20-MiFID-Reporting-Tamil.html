@@ -1,0 +1,938 @@
+<!doctype html>
+<title>Module 20 — MiFID II / MiFIR Reporting Deep Dive (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 20 — MiFID II / MiFIR Reporting Deep Dive (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">MiFID II vs MiFIR, transaction reporting vs transparency vs best execution, MiFID eligibility and FIRDS, RTS 22 fields, OTC equity rules, share trading obligation and systematic internalisers — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). இது <b><a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a></b>, <b><a href="../docs/2-reporting/module-17-dmo-uk-reporting.html">UK DMO Reporting Deep Dive</a></b>, <b><a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB Deep Dive</a></b> குடும்பத்தை சேர்ந்த <b>reference module</b>. <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §8, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §8, <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §4 ஒவ்வொண்ணும் ஒரு பரந்த கதையின் பகுதியா MiFID II/MiFIR-ஐ சுருக்கமா தொட்டுச்சு; இந்த module regime-ஐயே ஆழமா பார்க்கற ஒரே இடம் — ஒரு instrument-ஐ "MiFID eligible" ஆக்குவது எது, ஒரு முழு transaction report என்ன கொண்டிருக்கு, இந்த regime-க்கு புதுசா வர்ற கிட்டத்தட்ட எல்லாரையும் தடுமாற வைக்கற கேள்வி — <b>OTC-ல execute ஆன</b> equity trade உண்மையில எதுக்கு உட்பட்டது. <b>மூலம்:</b> English Module 20-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-mifid-ii-mifir-ன்னா-என்ன-ரெண்டு-சட்ட-instruments-ஒரே-regime"><span class="toc-num">01</span>1. MiFID II / MiFIR-ன்னா என்ன? — ரெண்டு சட்ட Instruments, ஒரே Regime</a></li>
+      <li><a href="#2-ஒரு-குடையின்-கீழ-மூணு-தனிக்-கடமைகள்-குழப்பிக்காதீங்க"><span class="toc-num">02</span>2. ஒரு குடையின் கீழ மூணு தனிக் கடமைகள் — குழப்பிக்காதீங்க</a></li>
+      <li><a href="#3-ஒரு-instrument-ஐ-mifid-eligible-ஆக்குவது-எது-article-26-2-scope-test"><span class="toc-num">03</span>3. ஒரு Instrument-ஐ &quot;MiFID Eligible&quot; ஆக்குவது எது? — Article 26(2) Scope Test</a></li>
+      <li><a href="#4-யார்-report-பண்ணணும்-எப்படி-investment-firms-arms-venues"><span class="toc-num">04</span>4. யார் Report பண்ணணும், எப்படி — Investment Firms, ARMs &amp; Venues</a></li>
+      <li><a href="#5-transaction-report-content-rts-22-field-groups-worked"><span class="toc-num">05</span>5. Transaction Report Content — RTS 22 Field Groups, Worked</a></li>
+      <li><a href="#6-transparency-regime-pre-trade-post-trade"><span class="toc-num">06</span>6. Transparency Regime — Pre-Trade &amp; Post-Trade</a></li>
+      <li><a href="#7-otc-equities-அவை-உண்மையில-எதுக்கு-உட்பட்டவை"><span class="toc-num">07</span>7. OTC Equities — அவை உண்மையில எதுக்கு உட்பட்டவை</a></li>
+      <li><a href="#8-worked-end-to-end-example-ஒரு-otc-equity-trade-ஒவ்வொரு-கடமையும்-ஒண்ணா"><span class="toc-num">08</span>8. Worked End-to-End Example — ஒரு OTC Equity Trade, ஒவ்வொரு கடமையும் ஒண்ணா</a></li>
+      <li><a href="#9-reporting-deadline-record-keeping"><span class="toc-num">09</span>9. Reporting Deadline &amp; Record-Keeping</a></li>
+      <li><a href="#10-regulatory-perspective-அதிகாரப்பூர்வ-மூலங்கள்-links"><span class="toc-num">10</span>10. Regulatory Perspective — அதிகாரப்பூர்வ மூலங்கள் &amp; Links</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-mifid-ii-mifir-ன்னா-என்ன-ரெண்டு-சட்ட-instruments-ஒரே-regime">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. MiFID II / MiFIR-ன்னா என்ன? — ரெண்டு சட்ட Instruments, ஒரே Regime</h2>
+      <p><b>Definition:</b> "MiFID II" என்பது <b>ஒண்ணா வேலை செய்யும் ரெண்டு தனி EU சட்டங்களுக்கான</b> பேச்சுவழக்கு சுருக்கம்:</p>
+<div class="table-scroll"><table><thead><tr><th>Instrument</th><th>வகை</th><th>எதை உள்ளடக்குது</th><th>எப்படி பொருந்துது</th></tr></thead><tbody><tr><td><b>MiFID II</b> — Directive 2014/65/EU</td><td>Directive</td><td>Investment firm அங்கீகாரம், conduct-of-business விதிகள், best execution (Section 7), market structure (RM/MTF/OTF venue வகைகள்)</td><td>ஒவ்வொரு member state-ஓட சொந்த தேசிய சட்டத்துக்குள்ள மாற்றப்படுது — நாட்டுக்கு நாடு விதிகள் சிறிது வேறுபடலாம்</td></tr><tr><td><b>MiFIR</b> — Regulation (EU) No 600/2014</td><td>Regulation</td><td>Transparency (Section 6), Share/Derivatives Trading Obligations (Section 7), <b>Transaction Reporting</b> (Article 26 — Section 3-5)</td><td>நேரடியா பொருந்தும், ஒவ்வொரு EU member state-லயும் ஒரே text — தேசிய transposition step இல்ல</td></tr></tbody></table></div>
+<p>நடைமுறை புள்ளி: இந்த module உண்மையில பத்தின reporting, transparency கடமைகள் — ஒரு trade-capture/reporting system எதுக்கு எதிரா கட்டணுமோ அந்தப் பகுதி — <b>MiFIR</b>-ல இருக்கு, முழு regime-க்கும் அதன் இன்னும் பிரபலமான பெயரை தந்த Directive-ல இல்ல. <b>UK MiFIR</b> என்பது UK-ஓட onshored, retained-EU-law பதிப்பு, Brexit-க்கு அப்புறம், <b>FCA</b> மேற்பார்வை பண்றது; பழைய Directive-பக்க conduct விதிகள் இப்போ FCA-ஓட சொந்த Handbook-ல (COBS, MAR) இருக்கு.</p>
+<p><b>ஏன் இருக்கு:</b> 2008 நிதி நெருக்கடி ரெண்டு குறிப்பிட்ட இடைவெளிகளை வெளிப்படுத்தியப்புறம் MiFID II/MiFIR அசல் 2007 MiFID I-ஐ மாத்தியது: பொது வெளிப்படைத்தன்மை கிட்டத்தட்ட இல்லாத வளர்ந்து வரும் <b>dark/OTC equity trading</b>, non-equity instruments-க்கு (bonds, derivatives) எந்த வெளிப்படைத்தன்மை regime-ஏ இல்லாதது. EMIR (systemic derivatives risk), G20-ஓட 2009 Pittsburgh உறுதிமொழிகளுடன் சேர்ந்து, MiFID II/MiFIR என்பது "regulators-உம் பொதுமக்களும் உண்மையில என்ன trade ஆகுது, என்ன விலையில, யார் செய்யறாங்கன்னு பார்க்க வேண்டும்" என்பதற்கு EU-ஓட பதில் — EMIR-ஓட "எவ்வளவு risk இருக்கு" கேள்வியை விட நெருக்கடிக்குப் பிந்தைய சீர்திருத்தத்தின் வேறு கோணம்.</p>
+<div class="ticket"><pre>WHERE MiFID II/MiFIR SITS AMONG THE REPORTING REGIMES
+========================================================================
+
+  EMIR    -&gt;  reports OTC DERIVATIVE ECONOMICS to a Trade Repository —
+              "how much systemic derivatives risk exists?" (Module 2 §7)
+
+  SFTR    -&gt;  reports SECURITIES FINANCING TRANSACTIONS to a Trade
+              Repository — "how much collateral re-use/leverage
+              exists?" (SFTR Deep Dive §1)
+
+  MiFIR   -&gt;  TWO separate obligations, THIS MODULE:
+              (a) Transaction Reporting -&gt; to the National Competent
+                  Authority (NCA) directly, PRIVATE — "did anyone
+                  behave abusively on this execution?" (Section 2-5)
+              (b) Transparency -&gt; to the PUBLIC market via the venue
+                  or an APA — "what did this actually trade at?"
+                  (Section 6-7)
+
+  All three can fire off the SAME single trade, answering three
+  genuinely different questions, to three different destinations,
+  under three different legal texts (Module 14 §1's five-obligation
+  framing, now with MiFIR's own internal two-way split added).</pre></div>
+<p><b>Takeaway:</b> இந்த regime-ல குழப்பத்துக்கு மிகப்பெரிய ஒற்றை மூலம் "MiFID reporting"-ஐ ஒரே கடமையா நடத்துறது. அது குறைந்தது <b>ரெண்டு</b>, கீழ Sections 2, 3-5, 6-7-ல தனித்தனியா உள்ளடக்கப்பட்டது — அவற்றை ஒண்ணா குழப்பிக்கறது ஒரு reporting build-ல மிகப் பொதுவான வடிவமைப்பு தவறு.</p>
+    </section>
+    <section class="mod" id="2-ஒரு-குடையின்-கீழ-மூணு-தனிக்-கடமைகள்-குழப்பிக்காதீங்க">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. ஒரு குடையின் கீழ மூணு தனிக் கடமைகள் — குழப்பிக்காதீங்க</h2>
+      <p><b>Definition:</b> <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §4-ஓட ஒப்பீட்டு table-ஐ விரிவாக்கி, MiFID II/MiFIR உண்மையில <b>மூணு</b> கடமைகளை மூட்டை கட்டுது; scope-ல trades-ஐ execute பண்ற firm அவற்றை சுயாதீனமா நிறைவேத்தணும். ஒண்ணை சரியா செய்யறது மற்ற ரெண்டையும் திருப்திப்படுத்தாது.</p>
+<div class="table-scroll"><table><thead><tr><th>Dimension</th><th>Transaction Reporting (MiFIR Art. 26 / RTS 22)</th><th>Transparency Regime (MiFIR Arts. 3-13 / RTS 1, RTS 2)</th><th>Best Execution (MiFID II Art. 27)</th></tr></thead><tbody><tr><td><b>Destination</b></td><td>National Competent Authority (NCA), directly or via an ARM — never public</td><td>The public market, via the trading venue itself or an APA (Approved Publication Arrangement)</td><td>The client, on request/periodic disclosure — not a regulator at all</td></tr><tr><td><b>Purpose</b></td><td>Market abuse detection (insider dealing, manipulation)</td><td>Price discovery — letting the whole market see what actually traded</td><td>Client protection — proving the firm got the client the best available outcome</td></tr><tr><td><b>What's published</b></td><td>Nothing public — full economic + party detail, restricted to the regulator</td><td>Price, volume, time — NOT counterparty identity</td><td>Execution-quality summaries (largely reduced in scope since a 2021 MiFID II "Quick Fix" amendment)</td></tr><tr><td><b>Sides reporting</b></td><td>Generally single-sided — the executing investment firm reports its own execution</td><td>Single publication per trade (by whichever side is designated the "reporting party" for transparency purposes)</td><td>Owed by the firm to its own client only</td></tr><tr><td><b>Deadline</b></td><td>T+1 (Section 9)</td><td>As close to real-time as technically possible, subject to deferrals (Section 6)</td><td>Ongoing obligation, not event-driven</td></tr><tr><td><b>First seen</b></td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §8</td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §7's Exchange vs OTC framing</td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §8 (Systematic Internalizer mention)</td></tr></tbody></table></div>
+<div class="ticket"><pre>SAME TRADE, TWO DIFFERENT MiFIR OUTPUTS -- NEITHER SUBSTITUTES THE OTHER
+========================================================================
+
+  Maple Leaf Pension Fund buys SAP SE shares via Bank Of Toronto,
+  executed OTC (bilaterally, off any venue's order book):
+
+  TRANSACTION REPORT (Section 3-5)         TRANSPARENCY PUBLICATION (Section 6)
+  ---------------------------------        ------------------------------------
+  -&gt; Goes to Bank Of Toronto's NCA          -&gt; Goes PUBLIC, via an APA
+     (e.g. the FCA, or BaFin)                  (Section 6)
+  -&gt; Full detail: both parties' LEIs,       -&gt; Price, volume, timestamp ONLY --
+     trader ID, algo flags, price,             no counterparty names at all
+     quantity, venue code "XOFF"            -&gt; Possibly DELAYED if the trade
+  -&gt; NEVER visible to the public               qualifies as Large In Scale
+     or to Goldman Sachs, a competitor          (Section 6)
+  -&gt; Required EVERY time, no exceptions     -&gt; Required EVERY time too --
+     for size (Section 3)                      size only changes the TIMING,
+                                                never whether it's required
+
+  -&gt; Building only ONE of these two pipelines satisfies HALF the
+     regime. A system that publishes to an APA but never files a
+     transaction report (or vice versa) is non-compliant either way.</pre></div>
+<p><b>Takeaway:</b> ஒரு transaction report-உம் ஒரு transparency publication-உம் ஒரே ஆவணத்துக்கான ரெண்டு பெயர்கள் இல்ல — அவை கிட்டத்தட்ட முழுக்க வேறு fields-ஐ கொண்டிருக்கு, முற்றிலும் வேறு பெறுநர்களுக்குப் போகுது, முற்றிலும் வேறு regulatory கேள்விகளுக்கு பதில் சொல்லவே இருக்கு. Section 3 யார் ஒரு transaction report-ஐ file பண்ணணும்னு உள்ளடக்குது; Section 6-7, தனி transparency கடமையை, இந்த module மீதி கட்டும் குறிப்பிட்ட OTC-equity விதிகள் உட்பட.</p>
+    </section>
+    <section class="mod" id="3-ஒரு-instrument-ஐ-mifid-eligible-ஆக்குவது-எது-article-26-2-scope-test">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. ஒரு Instrument-ஐ &quot;MiFID Eligible&quot; ஆக்குவது எது? — Article 26(2) Scope Test</h2>
+      <p><b>Definition:</b> MiFIR Article 26(2), எந்த financial instruments Transaction Reporting கடமையை தூண்டுதுன்னு துல்லியமா வரையறுக்குது. இந்த மூணு சோதனைகள்ல <b>ஏதாவது ஒண்ணு</b> உண்மையா இருந்தா ஒரு instrument <b>MiFID eligible</b> (அதாவது transaction-reportable):</p>
+<div class="ticket"><pre>ARTICLE 26(2) SCOPE TEST -- ANY ONE OF THREE CONDITIONS MAKES IT ELIGIBLE
+========================================================================
+
+  (a) THE INSTRUMENT ITSELF is admitted to trading, or actually
+      traded, on an EU/UK trading venue (a Regulated Market, MTF,
+      or OTF -- Module 1 §5's venue categories) -- OR a request for
+      its admission has been made
+
+  (b) THE INSTRUMENT'S UNDERLYING is a financial instrument that is
+      admitted to trading or traded on a trading venue (covers a
+      derivative referencing a venue-listed share, bond, or index
+      constituent)
+
+  (c) THE INSTRUMENT'S UNDERLYING is an INDEX OR BASKET composed of
+      financial instruments that are admitted to trading or traded
+      on a trading venue (covers, e.g., a derivative on the
+      EURO STOXX 50)</pre></div>
+<p><b>இந்த regime-க்கு புதுசா வர்றவங்க தவறவிடும் முக்கிய புள்ளி: இந்த மூணு சோதனைகள்ல ஒண்ணும் *கேள்விக்குட்பட்ட குறிப்பிட்ட trade எங்க execute ஆச்சு*ன்னு கேட்கறதில்ல.</b> அவை <i>instrument</i> (அல்லது அதன் underlying, அல்லது அதன் underlying-ஓட constituents) EU/UK-ல எங்கயாவது venue-admitted ஆ இருக்கான்னு மட்டுமே கேட்குது. அது உண்மையானவுடனே, <b>அந்த instrument-ல நடக்கற ஒவ்வொரு trade-உம் transaction-reportable — on-venue, OTC, bilateral, block, anonymous, எல்லாம்</b> — instrument admitted ஆ இருக்கும் வரை. இதுதான் ஒரு "OTC equity" transaction-ஐ முதல்லயே transaction-reportable ஆக்கும் ஒற்றை உண்மை (Section 7 நேரடியா இதன் மேல கட்டுது).</p>
+<p><b>FIRDS — operational mechanism.</b> நடைமுறைல, எந்த reporting system-உம் ஒவ்வொரு trade-க்கும் Section 3-ஓட மூணு சோதனைகளை முதல்ல இருந்து derive பண்றதில்ல. ESMA <b>Financial Instruments Reference Data System (FIRDS)</b>-ஐ நடத்துது: EU/UK trading venues தாங்கள் admit பண்ற ஒவ்வொரு instrument-க்கும் reference data-வை submit பண்ணும்; அதன் விளைவா வர்ற consolidated instrument பட்டியலை ESMA (Brexit-க்கு அப்புறம் தனியா, UK venues-க்கு FCA) வெளியிடுது. ஒரு reporting engine ஒரு trade-ஓட ISIN-ஐ FIRDS-க்கு எதிரா (நேரடியா, அல்லது ஒரு market-data vendor-ஓட FIRDS-derived feed வழியா) சரிபார்க்குது — சட்டச் சோதனையை மறுஅமலாக்காம encode பண்ற ஒரு எளிய lookup.</p>
+<h3>Worked example — மூணு trades, மூணு வேறு eligibility பதில்கள்</h3>
+<div class="ticket"><pre>TRADE 1 -- BANK OF TORONTO BUYS SAP SE SHARES FOR MAPLE LEAF
+PENSION FUND, EXECUTED OTC (BILATERALLY WITH GOLDMAN SACHS)
+========================================================================
+  Instrument: SAP SE ordinary shares
+  Admitted to trading on: Deutsche Börse Xetra (an EU Regulated
+    Market) -- present on FIRDS
+
+  -&gt; Test (a): YES, admitted on an EU trading venue
+  -&gt; MiFID ELIGIBLE, even though THIS specific trade never touched
+     Xetra's order book at all -- it was negotiated bilaterally
+     (Section 7 covers exactly what that OTC execution is then
+     subject to)
+
+TRADE 2 -- BANK OF TORONTO WRITES MAPLE LEAF PENSION FUND A
+BESPOKE OTC EQUITY OPTION ON SAP SE SHARES
+========================================================================
+  Instrument: bilateral OTC Equity Option (Module 4 §4d's product
+    family), Underlying: SAP SE shares
+
+  -&gt; Test (a): NO -- the OPTION itself is never admitted to any
+     venue; it's a private bilateral contract
+  -&gt; Test (b): YES -- its UNDERLYING (SAP SE shares) IS admitted to
+     trading on Xetra
+  -&gt; MiFID ELIGIBLE via Test (b) -- the derivative inherits its
+     underlying's venue-admitted status, even though the option
+     contract itself is entirely bespoke and bilateral
+
+TRADE 3 -- BANK OF TORONTO'S CORPORATE DESK ARRANGES A PRIVATE
+SHARE SALE IN AN UNLISTED FAMILY BUSINESS FOR A WEALTH CLIENT
+========================================================================
+  Instrument: ordinary shares of a private (unlisted) company
+
+  -&gt; Test (a): NO -- not admitted to, or traded on, any trading
+     venue anywhere, and no admission request has been made
+  -&gt; Test (b) / (c): N/A -- this IS the underlying, there's nothing
+     further to check
+  -&gt; NOT MiFID eligible -- no MiFIR Transaction Report is required,
+     regardless of trade size or how "professionally" it's executed</pre></div>
+<p><b>Takeaway:</b> "MiFID eligible" என்பது ஒரு தனி <b>execution</b>-ஓட பண்பு இல்ல, <b>instrument</b>-ஓட பண்பு (ஒரு தடவை, FIRDS வழியா சரிபார்க்கப்படுது). Section 4-ஓட "யார் report பண்றது"-உம் Section 5-ஓட "என்ன report பண்ணப்படுது"-உம் Section 3-ஓட சோதனை ஏற்கனவே அந்த instrument-க்கு YES-ஐ திருப்பினப்புறம் மட்டுமே பொருந்தும்.</p>
+    </section>
+    <section class="mod" id="4-யார்-report-பண்ணணும்-எப்படி-investment-firms-arms-venues">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. யார் Report பண்ணணும், எப்படி — Investment Firms, ARMs &amp; Venues</h2>
+      <p><b>Definition:</b> Transaction Reporting கடமை transaction-ஐ execute பண்ற <b>investment firm</b> மேல விழுது — MiFID II-ன் கீழ அங்கீகரிக்கப்பட்ட entity (ஒரு வங்கி, broker-dealer, அல்லது சொந்த கணக்குல deal பண்ணும் அல்லது client orders-ஐ execute பண்ணும் portfolio manager) — EMIR-ஓட dual-sided FC/NFC கட்டமைப்பு வேலை செய்யற மாதிரி இறுதி client அல்லது counterparty மேல இல்ல (<a href="../docs/1-capital-markets/module-13-parties-leis.html">Module 13</a> §6).</p>
+<p><b>பொதுவா single-sided, ஆனா முதல் பார்வைல தோணுறபடி இல்ல.</b> ஒரு trade ரெண்டு MiFID investment firms இடையில (உதா., Bank Of Toronto-வும் Goldman Sachs-உம்) என்றா, <b>ரெண்டு பேரும்</b> சுயாதீனமா ஒரு transaction report-ஐ submit பண்ணுது — ஆனா இது EMIR-ஓட dual-sided, UTI-ல pair ஆகும் model <i>இல்ல</i>. ஒவ்வொரு firm-உம் தன் <b>சொந்த</b> execution-ஐ, தன் <b>சொந்த</b> book-ல, தன் <b>சொந்த</b> (ஒருவேளை வேறுபட்ட) NCA-க்கு report பண்ணுது; <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §3 EMIR-க்கு விவரிச்ச மாதிரி ரெண்டு reports-ஐ ஒன்றுக்கொன்று match பண்ணும் Trade Repository pairing/reconciliation step இல்ல. பொருளாதார ரீதியா ஒரே trade-க்கான ரெண்டு firms-ஓட reports தனித்தனியா இருக்கு, ஒவ்வொண்ணும் தன்னளவுல செல்லுபடியாகும்.</p>
+<div class="table-scroll"><table><thead><tr><th>Reporting Channel</th><th>எப்படி வேலை செய்யுது</th></tr></thead><tbody><tr><td><b>Direct submission</b></td><td>Investment firm தன் சொந்த reports-ஐ கட்டி நேரடியா தன் NCA-க்கு submit பண்ணும்</td></tr><tr><td><b>ARM (Approved Reporting Mechanism)</b></td><td>Firm சார்பா reports-ஐ validate, format, transmit பண்ணும் regulator-authorized மூன்றாம் தரப்பு — Trade Repository-க்கு MiFIR-உலக இணை, ஆனா அடிப்படையில வேறு report வகை, destination-க்கு</td></tr><tr><td><b>Trading venue transmission</b></td><td>ஒரு venue-ல உண்மையில execute ஆன trades-க்கு, சில நிபந்தனைகளின் கீழ venue தானே firm சார்பா சில order/execution விவரங்களை transmit பண்ணலாம்; firm-ஓட சொந்த reporting சுமையை குறைக்கும் (நீக்காது)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> EMIR-ஓட dual-sided pairing mental model-ஐ இங்க மறுபயன்படுத்தாதீங்க — ஒரு MiFIR transaction report ஒரு தனியார், single-firm submission, regulator பக்கத்துல counterparty-matching step இல்ல; அதனாலதான் Section 5-ஓட report தன்னளவுலயே முழுமையா இருக்கணும் (<a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §3-ஓட EMIR pairing செய்யற மாதிரி field-நிலை தவறை பிடிக்க reconciliation process இல்ல).</p>
+    </section>
+    <section class="mod" id="5-transaction-report-content-rts-22-field-groups-worked">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Transaction Report Content — RTS 22 Field Groups, Worked</h2>
+      <p><b>Definition:</b> MiFIR-ஓட technical standard <b>RTS 22</b> தோராயமா <b>65 reportable fields</b>-ஐ வரையறுக்குது, அவை எதை விவரிக்குதுங்கறதை பொறுத்து தொகுக்கப்பட்டது:</p>
+<div class="table-scroll"><table><thead><tr><th>Field Group</th><th>Contains</th></tr></thead><tbody><tr><td><b>Report &amp; venue identification</b></td><td>Report status, executing entity's LEI, trading venue code (or <code>XOFF</code> for OTC — Section 5's worked example uses this)</td></tr><tr><td><b>Buyer/seller identification</b></td><td>LEI (for a legal entity) or a national identifier (for a natural person), plus the investment decision maker and executing trader/algo IDs</td></tr><tr><td><b>Instrument identification</b></td><td>ISIN (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §2), CFI code (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §6)</td></tr><tr><td><b>Transaction details</b></td><td>Trading date/time (to the microsecond, for venue-executed trades), price, quantity, currency</td></tr><tr><td><b>Flags</b></td><td>Short sale indicator, waiver indicator (which pre-trade transparency waiver applied, if any — Section 6), commodity derivative position-limit flag (<a href="../docs/1-capital-markets/module-07-commodities.html">Module 7</a> §8), OTC post-trade indicator</td></tr></tbody></table></div>
+<h3>Worked example — Trade 1-ஓட SAP SE purchase, transaction-reported</h3>
+<div class="ticket"><pre>RTS 22 TRANSACTION REPORT -- BANK OF TORONTO'S SIDE
+========================================================================
+  Executing entity LEI:      Bank Of Toronto's LEI
+  Buyer:                     Maple Leaf Pension Fund's LEI
+  Seller:                    Goldman Sachs' LEI
+  Investment decision maker: Maple Leaf Pension Fund's portfolio
+                              manager (national ID, per RTS 22)
+  Executing trader:          Bank Of Toronto desk trader ID
+
+  Instrument (ISIN):         DE0007164600 (SAP SE)
+  CFI Code:                  ESVUFR (equity, common share)
+
+  Trading date/time:         2026-08-25T14:32:07.219Z
+  Venue:                     XOFF (executed OTC -- Section 3's Trade 1)
+  Price:                     EUR 190.00 per share
+  Quantity:                  10,000 shares
+  Trade value:                EUR 1,900,000.00
+
+  Short sale indicator:      No
+  Waiver indicator:          Not applicable (Section 6 waivers apply
+                              to venue PRE-trade transparency, not to
+                              an off-venue OTC execution)
+
+  -&gt; Submitted to Bank Of Toronto's NCA by T+1, NEVER made public
+     (Section 2's comparison table)</pre></div>
+<p><b>Takeaway:</b> <code>XOFF</code>-ஐ கவனிங்க — "எந்த trading venue-க்கும் வெளியே execute ஆனது"ன்னு குறிக்கும் நிலையான venue code — transaction report-லயே நேரடியா தோன்றுது. ஒரு OTC execution off-venue ஆ இருக்கறதால regulator-கிட்ட இருந்து மறைக்கப்படறதில்ல; அது வெளிப்படையா அப்படியே flag பண்ணப்பட்டு, ஒரு on-venue trade சுமக்கும் அதே field முழுமையோட report பண்ணப்படுது.</p>
+    </section>
+    <section class="mod" id="6-transparency-regime-pre-trade-post-trade">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Transparency Regime — Pre-Trade &amp; Post-Trade</h2>
+      <p><b>Definition:</b> Section 3-5-ஓட தனியார் Transaction Report-ல இருந்து முற்றிலும் தனியா, MiFIR-ஓட transparency regime (Articles 3-13, equity-போன்ற instruments-க்கு RTS 1) MiFID-eligible equities-ல சில trading நடவடிக்கை <b>பொதுவில</b> வெளியிடப்படணும்னு கோருது.</p>
+<div class="table-scroll"><table><thead><tr><th>Transparency வகை</th><th>என்ன கோருது</th><th>யாருக்கு பொருந்தும்</th></tr></thead><tbody><tr><td><b>Pre-trade transparency</b></td><td>தற்போதைய உறுதியான bid/offer quotes, order-book depth-ஐ நிகழ்நேரத்துல வெளியிடுதல்</td><td>Trading venues எப்பவும்; OTC-ல deal பண்ற firm அந்த instrument-க்கு <b>Systematic Internaliser</b> என்றா மட்டும் (Section 7)</td></tr><tr><td><b>Post-trade transparency</b></td><td>Execute ஆன ஒவ்வொரு trade-க்கும் விலை, volume, நேரத்தை "தொழில்நுட்ப ரீதியா சாத்தியமான அளவு நிகழ்நேரத்துக்கு நெருக்கமா" வெளியிடுதல்</td><td>On-venue trades (venue தானே வழியா); OTC trades (ஒரு <b>APA</b>, Approved Publication Arrangement வழியா)</td></tr></tbody></table></div>
+<p><b>ஒத்திவைக்கப்பட்ட publication — operational ரீதியா முக்கியமான நுணுக்கம்.</b> Instrument-ஓட இயல்பான trading அளவுக்கு ஒப்பிட்டா <b>Large In Scale (LIS)</b> ஆ தகுதிபெறும் ஒரு trade, உடனடியா வெளியிடப்படாம, அதன் post-trade publication-ஐ <b>தாமதப்படுத்த</b> முடியும் — நிமிடங்களிலிருந்து நாள் முடிவு வரை (குறைந்த liquid instruments-க்கு இன்னும் நீளமா). இது ஒரு பெரிய block-ஐ execute பண்ற firm, position-ஐ இன்னும் வேலை செஞ்சுட்டிருக்கும்போதே சந்தை பாதிப்பிலிருந்து பாதுகாக்குது — அதனாலதான் ஒரு உண்மையிலயே பெரிய OTC block trade-உம் அதே share-ல ஒரு சிறிய OTC trade-உம், ஒத்த transaction-reporting கடமை இருந்தாலும், transparency-compliant-ஆ முற்றிலும் வேறு publication காலவரிசைகள்ல இருக்கலாம் (Section 2-ஓட diagram ஏற்கனவே flag பண்ணியது: அளவு <i>நேரத்தை</i> மாற்றும், <i>தேவையை</i> ஒருபோதும் இல்ல).</p>
+<h3>Worked example — Trade 1, transparency-க்கு வெளியிடப்படுது</h3>
+<div class="ticket"><pre>POST-TRADE TRANSPARENCY -- TRADE 1'S SAP SE PURCHASE
+========================================================================
+  Illustrative LIS threshold for SAP SE's liquidity band: EUR 650,000
+
+  Trade value: EUR 1,900,000.00  (Section 5's report)
+  1,900,000 &gt; 650,000  -&gt;  QUALIFIES AS LARGE IN SCALE
+
+  -&gt; Bank Of Toronto (as the designated reporting side) publishes
+     via an APA: price EUR 190.00, quantity 10,000 shares, timestamp
+     -- but DEFERRED, e.g. until end of trading day, rather than
+     immediately
+  -&gt; NO counterparty names published at any point -- contrast
+     Section 5's transaction report, which names both LEIs privately
+     to the NCA</pre></div>
+<p><b>Takeaway:</b> அதே trade ரெண்டு முற்றிலும் வேறு கடிகாரங்கள்ல ரெண்டு outputs-ஐ உருவாக்குது — ஒரு தனியார், ஒத்திவைக்க முடியாத, T+1 transaction report (Section 5), ஒரு பொது, ஒருவேளை ஒத்திவைக்கப்படும் transparency publication (இந்த section) — எந்த deadline எந்த output-க்குன்னு கலந்துபோறது ஒரு உண்மையான, பொதுவான build தவறு.</p>
+    </section>
+    <section class="mod" id="7-otc-equities-அவை-உண்மையில-எதுக்கு-உட்பட்டவை">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. OTC Equities — அவை உண்மையில எதுக்கு உட்பட்டவை</h2>
+      <p><b>இந்த module நேரடியா பதில் சொல்லவே இருக்கற கேள்வி இது.</b> "OTC-ல trade ஆனது"ன்னா "MiFID-க்கு வெளியே"ன்னு <b>அர்த்தமில்ல</b>. ஒரு MiFID-eligible equity-ல (Section 3) OTC-ல execute ஆன ஒரு trade, ஒரே நேரத்துல <b>நாலு தனிக் கடமைகள் வரை</b> உட்பட்டது:</p>
+<div class="ticket"><pre>AN OTC EQUITY TRADE'S FOUR POTENTIAL OBLIGATIONS
+========================================================================
+
+  1. TRANSACTION REPORTING (Section 3-5)
+     -&gt; ALWAYS required if the instrument is MiFID eligible.
+        No exceptions for size, venue, or counterparty type.
+
+  2. POST-TRADE TRANSPARENCY (Section 6)
+     -&gt; ALWAYS required too -- publication via an APA, with
+        possible LIS deferral (Section 6). Size changes WHEN,
+        never WHETHER.
+
+  3. BEST EXECUTION (MiFID II Art. 27)
+     -&gt; The firm must still take "all sufficient steps" to get the
+        client the best possible result, even with no venue order
+        book to benchmark against directly -- an ongoing conduct
+        obligation, not a per-trade filing.
+
+  4. THE SHARE TRADING OBLIGATION -- STO (MiFIR Art. 23)
+     -&gt; THE RULE THAT ACTUALLY RESTRICTS whether a trade can be
+        purely bilateral OTC in the first place (below).</pre></div>
+<h3>7a. Share Trading Obligation (STO) — OTC equity trading-ஐ உண்மையில கட்டுப்படுத்தும் விதி</h3>
+<p><b>Definition:</b> MiFIR Article 23, EU Regulated Market-ல trading-க்கு admit ஆன shares பொதுவா ஒரு venue-ல (ஒரு Regulated Market, MTF, OTF, அல்லது சமமான third-country venue) <b>அல்லது ஒரு Systematic Internaliser வழியா (Section 7b)</b> trade ஆகணும்னு கோருது — முழுக்க bilateral-ஆ இல்ல. ஒரு liquid, EU-RM-admitted share-ல உண்மையான, கட்டமைக்கப்படாத bilateral OTC trading <i>விதிவிலக்கு</i>, trade இதுவா இருக்கும்போது மட்டும் அனுமதிக்கப்படுது:</p>
+<ul><li><b>"Non-systematic, ad-hoc, irregular and infrequent,"</b> அல்லது</li><li>தகுதியுள்ள/தொழில்முறை counterparties இடையில, <b>price discovery-க்கு பங்களிக்காதது</b> (உதா., ஒரு portfolio transfer, ஒரு உள் reallocation, அல்லது புதுசா பேசப்படாம ஒரு venue விலையை reference பண்ணி விலையிடப்பட்ட trade).</li></ul>
+<div class="ticket"><pre>STO WORKED EXAMPLE -- CAN THIS SAP SE TRADE BE PURE BILATERAL OTC?
+========================================================================
+  SAP SE: admitted to trading on Deutsche Börse Xetra (Section 3),
+  a liquid, actively-traded EU blue-chip
+
+  Bank Of Toronto wants to sell 10,000 SAP SE shares to Goldman
+  Sachs via a one-off negotiated bilateral trade, priced off
+  Xetra's current quote, as an internal portfolio rebalancing --
+  NOT part of a regular OTC trading pattern in this name
+
+  -&gt; Does the trade contribute to price discovery? NO -- it's
+     referenced to an existing venue price, not independently
+     negotiated
+  -&gt; STO carve-out APPLIES -&gt; this specific trade CAN be executed
+     bilaterally OTC
+
+  Contrast: if Bank Of Toronto ran a REGULAR, ongoing bilateral
+  OTC dealing business in SAP SE shares against client flow
+  (systematic, not ad-hoc) -&gt; the carve-out does NOT apply -&gt; Bank
+  Of Toronto must either route the flow through a venue, OR
+  register as a Systematic Internaliser for SAP SE and trade it
+  through that regime instead (Section 7b)</pre></div>
+<p><b>"OTC equities எதுக்கு உட்பட்டவை"ன்னு இதுதான் மையம்:</b> உண்மையிலயே ad-hoc, விலை-உருவாக்காத bilateral trades என்ற சிறுபான்மைக்கு, மேல உள்ள Sections 1-3 முழுசா இன்னும் பொருந்தும் (transaction reporting, transparency, best execution) — ஆனா ஒரு liquid EU share-ல <b>வழக்கமான OTC dealing business</b>-ஐ ஒத்த எதுக்கும், STO அந்த நடவடிக்கையை கட்டமைக்கப்படாத bilateral OTC-யாவே விடாம, <b>Systematic Internaliser</b> regime-க்குள்ள தள்ளுது.</p>
+<h3>7b. Systematic Internaliser (SI) regime</h3>
+<p><b>Definition:</b> ஒரு குறிப்பிட்ட instrument-ல <b>ஒழுங்கமைக்கப்பட்ட, அடிக்கடி, முறையான, கணிசமான அடிப்படையில</b> client orders-ஐ OTC-ல execute பண்ணி சொந்த கணக்குல deal பண்ற ஒரு firm — ESMA அவ்வப்போது அளவிட்டு வெளியிடும் அளவு வரம்புகளுக்கு மேல — அந்த instrument-க்கு <b>Systematic Internaliser-ஆ register ஆகணும்</b>. Register ஆனப்புறம், ஒரு SI அதன் "OTC" dealing-ஐ ஒரு சிறிய trading venue போல நடந்துக்கும்படி செய்யும் கடமைகளை ஏற்குது:</p>
+<div class="table-scroll"><table><thead><tr><th>SI கடமை</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td><b>Pre-trade transparency (Section 6)</b></td><td>எந்த client-ஆலும் deal பண்ணக்கூடிய, வரையறுக்கப்பட்ட <b>Standard Market Size (SMS)</b> வரை உறுதியான, executable quotes-ஐ வெளியிடணும்</td></tr><tr><td><b>Quote செய்த விலையில execution</b></td><td>SMS வரை client orders-ஐ பொதுவா அதன் வெளியிடப்பட்ட quote-ல execute பண்ணணும் (நியாயமான விலை improvement-க்கு உட்பட்டு)</td></tr><tr><td><b>Post-trade transparency (Section 6)</b></td><td>Trade-ஐ தானே ஒரு APA வழியா வெளியிடணும், அதை client-ஓட சொந்த investment firm-க்கு மட்டுமே விட்டுடாம</td></tr><tr><td><b>Transaction reporting (Section 3-5)</b></td><td>மாறாது — வேறு எந்த MiFID-eligible instrument-க்கும் போல, இன்னும் தேவை</td></tr></tbody></table></div>
+<div class="ticket"><pre>SI vs NON-SI OTC DEALER -- SAME INSTRUMENT, DIFFERENT OBLIGATIONS
+========================================================================
+
+  Bank Of Toronto deals SAP SE shares OTC against client flow
+  frequently enough to cross ESMA's SI threshold for this name:
+
+  -&gt; REGISTERED SI for SAP SE
+  -&gt; Must publish firm bid/offer quotes up to SMS (illustrative:
+     SMS = 7,500 shares for this liquidity band)
+  -&gt; A client order for 5,000 shares (under SMS) -&gt; Bank Of Toronto
+     MUST deal at (or better than) its published quote
+  -&gt; A client order for 50,000 shares (well over SMS) -&gt; SI quoting
+     obligation doesn't bind at that size; negotiated bilaterally,
+     LIS deferral (Section 6) likely available given the size
+
+  A SMALLER firm dealing SAP SE OTC only occasionally, below the
+  threshold:
+
+  -&gt; NOT an SI for SAP SE
+  -&gt; No pre-trade quote-publication obligation
+  -&gt; STILL owes transaction reporting (Section 3-5) and post-trade
+     transparency (Section 6) on every trade, and its bilateral
+     dealing pattern must stay within the STO's "ad-hoc, irregular,
+     infrequent" carve-out (Section 7a) or it risks needing to
+     become an SI (or route to a venue) itself</pre></div>
+<p><b>Takeaway:</b> SI regime தான் MiFID II ஒவ்வொரு OTC trade-ஐயும் ஒரு முறையான exchange-க்கு கட்டாயப்படுத்தாம OTC equity சந்தைக்கு வெளிப்படைத்தன்மையை கொண்டு வர பயன்படுத்தற முறை — ஒரு firm "அவ்வப்போது bilateral dealer" (இலகுவான கடமைகள், ஆனா இதை எவ்வளவு அடிக்கடி செய்யலாம்ங்கறதுல STO-ஆல கட்டுப்படுத்தப்பட்டது) நிலையில இருந்து, ஒரு பெயரில அதன் சொந்த OTC dealing நடவடிக்கை, அந்த instrument-க்கு செயல்பாட்டு ரீதியா ஒரு trading venue-ஆவே இருக்கும் அளவு பெருசாவும் அடிக்கடியுமா மாறும்போது "Systematic Internaliser" (கனமான, venue-போன்ற pre-trade quoting கடமைகள்) நிலைக்கு கடக்குது.</p>
+<h3>7c. முழு முடிவு சட்டகம் — இந்த OTC equity trade compliant-ஆ?</h3>
+<div class="ticket"><pre>Q1. Is the instrument MiFID eligible?                 -&gt; Section 3
+    NO  -&gt; stop, no MiFIR obligations apply at all
+    YES -&gt; continue
+
+Q2. Is a Transaction Report being filed, T+1?          -&gt; Section 5
+    Required regardless of every answer below
+
+Q3. Is post-trade transparency being published,
+    via the venue or an APA (with LIS deferral if
+    applicable)?                                       -&gt; Section 6
+    Required regardless of every answer below
+
+Q4. Is this trade genuinely ad-hoc/non-price-forming,
+    OR is it part of a regular OTC dealing pattern?     -&gt; Section 7a
+    Ad-hoc      -&gt; STO carve-out applies, stays bilateral OTC
+    Regular     -&gt; continue to Q5
+
+Q5. Does the firm's OTC dealing volume in this
+    instrument cross the SI threshold?                  -&gt; Section 7b
+    NO  -&gt; must route to a venue instead of continuing
+           informal bilateral OTC dealing
+    YES -&gt; firm must be registered as an SI and quote
+           accordingly</pre></div>
+    </section>
+    <section class="mod" id="8-worked-end-to-end-example-ஒரு-otc-equity-trade-ஒவ்வொரு-கடமையும்-ஒண்ணா">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Worked End-to-End Example — ஒரு OTC Equity Trade, ஒவ்வொரு கடமையும் ஒண்ணா</h2>
+      <div class="ticket"><pre>BANK OF TORONTO (REGISTERED SI FOR SAP SE), SELLS 5,000 SAP SE
+SHARES OTC TO A RETAIL-SIZE CLIENT ORDER
+========================================================================
+  Instrument: SAP SE (ISIN DE0007164600) -- Section 3's Test (a),
+              MiFID eligible
+
+  Client:     Maple Leaf Pension Fund, order for 5,000 shares
+  SI quote:   Bank Of Toronto's published bid/offer for SAP SE,
+              valid up to SMS = 7,500 shares (Section 7b)
+  5,000 &lt; 7,500 -&gt; WITHIN SMS -&gt; Bank Of Toronto must deal at (or
+              better than) its own published quote: EUR 190.05
+  Trade value: 5,000 x 190.05 = EUR 950,250.00
+
+  1) TRANSACTION REPORT (Section 5)
+     -&gt; Filed by Bank Of Toronto to its NCA, T+1, full detail,
+        venue code XOFF, never public
+
+  2) POST-TRADE TRANSPARENCY (Section 6)
+     -&gt; EUR 950,250 vs. an illustrative LIS threshold of EUR
+        650,000 for this band -&gt; 950,250 &gt; 650,000 -&gt; QUALIFIES
+        FOR DEFERRAL -- published via APA, price/volume only, but
+        not necessarily instantaneous
+     -&gt; As the registered SI, Bank Of Toronto itself is the
+        publishing party (Section 7b), not the client's own firm
+
+  3) BEST EXECUTION (Section 7)
+     -&gt; Bank Of Toronto must be able to demonstrate EUR 190.05 met
+        or bettered prevailing market conditions for this size and
+        instrument -- an ongoing conduct obligation, evidenced on
+        request, not a per-trade filing
+
+  4) STO / SI STATUS (Section 7a-b)
+     -&gt; Compliant BY CONSTRUCTION: trading through a registered SI
+        at its published quote is one of the STO's own accepted
+        routes for share trading, not a carve-out exception --
+        Bank Of Toronto's SI registration is precisely what makes
+        this OTC-labeled trade legally equivalent to an on-venue
+        execution for STO purposes</pre></div>
+<p><b>Takeaway:</b> ஒரு registered SI-ல ஒரு OTC equity trade ஒரு தனியார் transaction report-ஐயும், ஒரு பொது (ஒருவேளை ஒத்திவைக்கப்படும்) transparency publication-ஐயும், ஒரு உள்ளார்ந்த best-execution கடமையையும் உருவாக்கி, Share Trading Obligation-ஐயும் ஒரே நேரத்துல நிறைவேத்துது — ஒருபோதும் ஒரு முறையான exchange order book-ஐத் தொடாமலே; MiFID II உலகத்துல "OTC" என்பது ஒரு trade <i>எங்க</i> பேசப்பட்டதுன்னு விவரிக்குது, அது <i>regulate பண்ணப்படுதா</i> இல்லையான்னு ஒருபோதும் இல்ல என்பதற்கான நிரூபணம்.</p>
+<h3>கூடுதல் உதாரணம் — அதே SAP SE trade, மூணு வேறு விற்பனையாளர் நிலைகள்</h3>
+<div class="table-scroll"><table><thead><tr><th>விற்பனையாளர் நிலை</th><th>Pre-trade quote கடமை</th><th>Transaction report</th><th>Post-trade transparency</th><th>STO</th></tr></thead><tbody><tr><td><b>Registered SI</b> (Bank Of Toronto)</td><td>ஆமா — SMS வரை உறுதியான quotes</td><td>ஆமா, T+1</td><td>ஆமா, SI தானே APA வழியா (LIS-ஆ இருந்தா ஒத்திவைப்பு)</td><td>SI வழியா trade பண்றது அனுமதிக்கப்பட்ட வழி</td></tr><tr><td><b>அவ்வப்போது bilateral dealer</b> (SI இல்ல)</td><td>இல்ல</td><td>ஆமா, T+1</td><td>ஆமா, APA வழியா</td><td>Ad-hoc, non-price-forming என்றா மட்டும் carve-out</td></tr><tr><td><b>Venue-ல execute</b> (Xetra order book)</td><td>Venue தானே</td><td>ஆமா, T+1 (அல்லது venue transmission)</td><td>Venue தானே</td><td>தானாக compliant</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="9-reporting-deadline-record-keeping">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Reporting Deadline &amp; Record-Keeping</h2>
+      <p><b>Transaction Reporting deadline:</b> <b>T+1</b> — EMIR, SFTR போல அதே அடுத்த-business-day-முடிவு ஒழுக்கம் (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §9).</p>
+<p><b>Transparency publication deadline:</b> ஒத்திவைக்கப்படாத trades-க்கு "தொழில்நுட்ப ரீதியா சாத்தியமான அளவு நிகழ்நேரத்துக்கு நெருக்கமா" — T+1-ஐ விட கணிசமா வேகமா — LIS ஒத்திவைப்பு windows-உடன் (Section 6) மட்டும் அனுமதிக்கப்பட்ட விதிவிலக்கா, அந்த windows தாங்களே ESMA/FCA technical standards-ஆல (RTS 1) நிர்ணயிக்கப்பட்டு அவ்வப்போது மறுஅளவிடப்படுது — <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §12-ஓட "hard-code பண்றதுக்கு முன்னாடி தற்போதைய எண்களை உறுதிப்படுத்துங்க" எச்சரிக்கை பொருந்தும் சரியான வகை எண்.</p>
+<p><b>Order record-keeping (MiFID II Article 25):</b> மேல உள்ள ரெண்டு reporting கடமைகளிலிருந்தும் தனியா, investment firms orders-ன், transactions-ன் (execute ஆன trades மட்டுமில்ல — execute ஆகாத/ரத்து ஆன orders-உம்) பதிவுகளை குறைந்தபட்ச retention காலத்துக்கு (தற்போதைய standard-ன் கீழ ஐந்து ஆண்டுகள்) வெச்சிருக்கணும், அதனால ஒரு NCA ஒரு விசாரணையின்போது trading நடவடிக்கையை பின்னோக்கி மறுகட்டமைக்க முடியும், அந்த நேரத்துல முன்கூட்டியே report பண்ணப்பட்டதை மட்டும் மதிப்பாய்வு பண்ணாம.</p>
+<div class="callout"><b>Callout — இவற்றுக்கு எதிரா கட்டறதுக்கு முன்னாடி தற்போதைய வரம்புகளை உறுதிப்படுத்துங்க.</b> LIS bands, SMS அளவீடுகள், குறிப்பிட்ட அளவு SI வரம்புகள் எல்லாம் MiFIR-ஓட சொந்த சட்ட text-ஆல இல்ல, ESMA/FCA technical standards-ஆல நிர்ணயிக்கப்படுது (அவ்வப்போது திருத்தப்படுது). Sections 6-8-ல ஒவ்வொரு குறிப்பிட்ட எண்ணையும் விளக்கமா எடுத்துக்கோங்க; ஒரு rules engine-ல encode பண்றதுக்கு முன்னாடி தற்போதைய எண்களை Section 10-ஓட அதிகாரப்பூர்வ மூலங்களுக்கு எதிரா உறுதிப்படுத்துங்க — <a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a> §7 தன் சொந்த phase-in தேதிகள், field எண்ணிக்கைகளுக்கு தரும் அதே எச்சரிக்கை.</div>
+    </section>
+    <section class="mod" id="10-regulatory-perspective-அதிகாரப்பூர்வ-மூலங்கள்-links">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. Regulatory Perspective — அதிகாரப்பூர்வ மூலங்கள் &amp; Links</h2>
+      <p><b>Definition:</b> technical standards, வரம்புகள் காலப்போக்குல திருத்தப்படுறதால (Section 9-ஓட callout) இந்த module வேணும்னே முதன்மை regulatory மூலங்களை மறுசொல்லாம சுட்டிக்காட்டுது.</p>
+<div class="table-scroll"><table><thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead><tbody><tr><td><b>EUR-Lex — Directive 2014/65/EU (MiFID II)</b></td><td>The full legal text of the Directive: authorization, conduct, market structure</td><td><a href="<a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065">eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065">https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065">eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065</a></a></td></tr><tr><td><b>EUR-Lex — Regulation (EU) 600/2014 (MiFIR)</b></td><td>The full legal text of MiFIR: transparency, trading obligations, transaction reporting</td><td><a href="<a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0600">eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0600">https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0600">eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0600</a></a></td></tr><tr><td><b>ESMA</b></td><td>RTS 22 (transaction reporting), RTS 1/RTS 2 (transparency), FIRDS, SI/LIS threshold calibrations, Q&amp;As</td><td><a href="<a href="https://www.esma.europa.eu">www.esma.europa.eu">https://www.esma.europa.eu">www.esma.europa.eu</a></a></td></tr><tr><td><b>FCA — UK MiFIR</b></td><td>UK's onshored regime, UK-specific technical standards, the COBS/MAR Handbook chapters</td><td><a href="<a href="https://www.fca.org.uk">www.fca.org.uk">https://www.fca.org.uk">www.fca.org.uk</a></a></td></tr><tr><td><b>ESMA FIRDS</b></td><td>The consolidated instrument reference-data system underlying Section 3's eligibility test</td><td><a href="<a href="https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds">registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds">https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds">registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds</a></a></td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ஒரு build பணிக்கு, Directive/Regulation texts-ஐ scope-க்கும் கடமைகளுக்கும் சட்ட மூலமாவும், ESMA/FCA technical standards-ஐ (RTS 22, RTS 1, RTS 2) சரியான field பட்டியல்களுக்கும், வரம்புகளுக்கும், ஒத்திவைப்பு windows-க்கும் மூலமாவும், FIRDS-ஐ "இந்த குறிப்பிட்ட ISIN இன்னிக்கு scope-ல இருக்கா"ங்கறதுக்கு operational மூலமாவும் நடத்துங்க — <a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a> §9 தன் சொந்த regime-க்கு வரையற அதே மூன்று-வழிப் பிரிவு.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>முழுக்க executing investment firm; SAP SE-க்கு registered Systematic Internaliser (Section 7b-8)</td></tr><tr><td>Maple Leaf Pension Fund</td><td>SAP SE trades-ல buy-side client (Sections 3, 5, 8)</td></tr><tr><td>Goldman Sachs</td><td>Trade 1-ல bilateral OTC counterparty (Section 3)</td></tr><tr><td>SAP SE</td><td>Section 3-ல இருந்து MiFID-eligible worked example-ஆ முழுக்க பயன்படுத்தப்படும் venue-admitted equity</td></tr><tr><td>Deutsche Börse Xetra</td><td>SAP SE admit ஆன EU Regulated Market — ஒவ்வொரு SAP SE trade-ஐயும் MiFID eligible ஆக்கும் உண்மை (Section 3)</td></tr><tr><td>ESMA</td><td>RTS 22/RTS 1/RTS 2 technical standards-ஐ வகுக்கும்; FIRDS-ஐ நடத்தும்</td></tr><tr><td>FCA</td><td>UK-ஓட National Competent Authority; UK MiFIR-ஐயும் Systematic Internalisers-ஐயும் மேற்பார்வை பண்ணும்</td></tr><tr><td>APA (Approved Publication Arrangement)</td><td>OTC post-trade transparency data-வை பொது சந்தைக்கு வெளியிடும் (Section 6-8)</td></tr><tr><td>ARM (Approved Reporting Mechanism)</td><td>ஒரு firm சார்பா NCA-க்கு transaction reports-ஐ transmit பண்ணும் விருப்ப இடைநிலை (Section 4)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Section 3-ஐ பயன்படுத்தி, Trade 2-ஓட SAP SE shares மேல bespoke bilateral OTC equity option MiFID eligible-ஆ? எந்த குறிப்பிட்ட சோதனையை அது கடக்குது? அதே instrument-க்கு Test (a) ஏன் தோற்குது?</li><li>Section 2-ஐ பயன்படுத்தி, ஒரு Transaction Report-ல தோன்றி ஒரு Transparency publication-ல ஒருபோதும் தோன்றாத ஒரு field-ஐயும், ஒரு Transparency publication-ல தோன்றி ஒரு Transaction Report-ஓட பொதுப் பக்கத்துல (அடையாளம் காணக்கூடிய வடிவத்துல) ஒருபோதும் தோன்றாத ஒண்ணையும் பெயரிடுங்க.</li><li>Section 7a-ஐ பயன்படுத்தி, Bank Of Toronto ஒருபோதும் Systematic Internaliser ஆ register ஆகாம, client flow-க்கு எதிரா SAP SE shares-ல தொடர்ச்சியான, வழக்கமான bilateral OTC dealing business-ஐ நடத்த முடியுமா? ஏன்/ஏன் இல்ல?</li><li>Section 6-ஐ பயன்படுத்தி, Bank Of Toronto ஒரு liquidity band-ல EUR 400,000 OTC trade-ஐ execute பண்றது, அந்த band-ஓட LIS threshold EUR 650,000 — ஒத்திவைக்கப்பட்ட publication கிடைக்குமா? இந்த trade எவ்வளவு வேகமா பொதுவில வருது என்பதுக்கு நடைமுறை விளைவு என்ன?</li><li>Section 8-ஓட worked example-ஐ பயன்படுத்தி, அந்த trade தூண்டும் நாலு கடமைகளையும் பெயரிடுங்க; அந்த நாலுல எது ஒரு குறிப்பிட்ட, தேதியிட்ட filing இல்லாம தொடர் conduct standard?</li><li>Section 4-ஐ பயன்படுத்தி, Bank Of Toronto-வும் Goldman Sachs-உம் ஒரே MiFID-eligible trade-ஓட எதிர் பக்கங்கள்ல இருந்தா, ஒரு EMIR Trade Repository செய்யற மாதிரி ஒரு regulator அவங்க ரெண்டு transaction reports-ஐயும் ஒன்றுக்கொன்று எதிரா pair செய்து reconcile பண்றாங்களா? ஒவ்வொரு தனி report-உம் எவ்வளவு முழுமையா இருக்கணும்ங்கறதுக்கு இது ஏன் முக்கியம்?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் <b><a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a>: Regulatory Reporting</b>-க்குத் திரும்பலாம், அல்லது <b><a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a></b>-ஐத் தொடரலாம்.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. ஆமா, Test (b) வழியா eligible — அதன் underlying (SAP SE shares) Deutsche Börse Xetra-ல trading-க்கு admit ஆகியிருக்கு. Test (a) தோற்குது, ஏன்னா OPTION CONTRACT தானே எந்த venue-லயும் admit ஆகலை, trade ஆகலை — அது Bank Of Toronto-க்கும் Maple Leaf Pension Fund-க்கும் இடையில மட்டும் இருக்கற bespoke bilateral instrument.</b></p>
+<p>Section 3-ஓட Trade 2 இந்த வேறுபாட்டை நேரடியா சொல்லுது: Test (a) report பண்ணப்படும் instrument-ஐ (option) பத்தி கேட்குது; Test (b) அந்த instrument-ஓட underlying-ஐ (shares) பத்தி கேட்குது — option தனக்கு venue இருப்பு இல்லாட்டியும், underlying-ஓட venue-admitted நிலை வழியா eligibility-ஐ பெறுது.</p>
+<p><b>2. Buyer/seller LEI (investment decision maker-ஓட அடையாளமும்) Transaction Report-ல (Section 5) தோன்றுது, Transparency publication-ல (Section 6) ஒருபோதும் தோன்றாது — அது counterparty அடையாளத்தை முழுசா நீக்குது. மாறாக, Transparency பக்கத்தில Transaction Report-ல இல்லாத தனித்துவமான எதுவும் இல்ல — Transaction Report பொருளாதார விவரத்தின் ஒரு கடுமையான superset, பொதுவில வெளியிடப்படாம regulator-க்கு மட்டும் கட்டுப்படுத்தப்பட்டது.</b></p>
+<p>Section 2-ஓட பக்கம்-பக்கம் diagram இதை வெளிப்படையா சொல்லுது: Transparency publication "விலை, volume, timestamp மட்டும் — counterparty பெயர்கள் அறவே இல்ல"ன்னு கொண்டிருக்கு; Transaction Report "முழு விவரம்: ரெண்டு parties-ஓட LEIs, trader ID, algo flags, விலை, quantity, venue code" கொண்டிருக்கு.</p>
+<p><b>3. இல்ல — ESMA-ஓட வரம்பை தன் dealing volume கடக்கும்போது, அந்த flow-ஐ ஒரு venue வழியா route பண்ணாம, இல்லன்னா Systematic Internaliser ஆ register ஆகாம இல்ல. STO-ஓட ad-hoc/irregular/infrequent carve-out (Section 7a) உண்மையிலயே அவ்வப்போதைய, விலை-உருவாக்காத bilateral trades-ஐ மட்டுமே பாதுகாக்குது; client flow-க்கு எதிரா வழக்கமான தொடர்ச்சியான OTC dealing business சரியா carve-out விலக்கும் pattern, firm-ஐ SI regime-க்குள்ள (Section 7b) தள்ளுது.</b></p>
+<p>Section 7a-ஓட worked example அதன் "Contrast" பத்தியில இதை நேரடியா சொல்லுது: ஒரு liquid EU share-ல முறையான, தொடர்ச்சியான bilateral dealing சரியா STO கட்டமைக்கப்படாத OTC-யா இருக்க அனுமதிக்காத scenario — அது venue-routed அல்லது SI-quoted ஆகணும்.</p>
+<p><b>4. இல்ல, ஒத்திவைக்கப்பட்ட publication கிடைக்காது — LIS ஒத்திவைப்புக்கு threshold-ஐ ஒப்பிட்டு பெருசா இருக்கணும்; 400,000 &lt; 650,000 என்றா இந்த trade Large In Scale ஆகத் தகுதிபெறாது. நடைமுறை விளைவு: இந்த trade தொழில்நுட்ப ரீதியா சாத்தியமான அளவு நிகழ்நேரத்துக்கு நெருக்கமா வெளியிடப்படணும் — ஒத்திவைப்பு இல்ல — threshold-ஐத் தாண்டி தகுதிபெற்ற Trade 1-ஓட EUR 1,900,000-க்கு (Section 6) எதிர்மறை.</b></p>
+<p><i>(குறிப்பு: ஆங்கில மூலத்தில் இந்த answer-ன் முதல் வாக்கியம் "Yes, deferred publication is available" என்று தொடங்கி, பின்னாடி தன்னைத்தானே திருத்திக்கொள்கிறது; சரியான பதில் "இல்ல" என்பதே.)</i> Section 6-ஓட worked example ஒப்பீட்டை சரியான திசையில காட்டுது: 1,900,000 &gt; 650,000 Trade 1-ஐ ஒத்திவைப்புக்கு தகுதியாக்கியது. ஒரு சிறிய EUR 400,000 trade அதே threshold-க்கு கீழ உட்காருது, அதனால உடனே வெளியிடப்படுது — இந்தக் கேள்வி inequality-ஐ தலைகீழா படிக்கறதை பிடிக்க வடிவமைக்கப்பட்டது.</p>
+<p><b>5. Section 7-ஓட நாலு கடமைகளும்: (1) Transaction Reporting, (2) Post-Trade Transparency, (3) Best Execution, (4) STO/SI compliance. Best Execution தான் தொடர் conduct standard — ஒரு குறிப்பிட்ட தேதியில file பண்ணப்படாம, கேட்கும்போது நிரூபிக்கப்படுது — மற்ற மூணும் இந்த குறிப்பிட்ட trade-ஓட execution-உடன் இணைந்த, தூண்டப்பட்ட, தேதியிட்ட கடமைகள்.</b></p>
+<p>Section 8-ஓட worked example நாலையும் வெளிப்படையா எண்ணிடுது; Best Execution பத்தின அதன் சொந்த "தொடர் conduct கடமை, கேட்கும்போது நிரூபிக்கப்படுது, ஒரு trade-க்கு ஒரு filing இல்ல" சட்டகம் கேள்வியின் ரெண்டாவது பாதிக்கு நேரடி எழுத்துப் பதில்.</p>
+<p><b>6. இல்ல — MiFIR transaction reports ஒருபோதும் ஒன்றுக்கொன்று எதிரா pair ஆகாது, reconcile ஆகாது; ஒரு EMIR Trade Repository ரெண்டு counterparties-ஓட reports-ஐ பகிரப்பட்ட UTI-ல pair பண்றது போல இல்ல. இது முக்கியம், ஏன்னா ஒவ்வொரு firm-ஓட report-உம் தன்னளவுலயே சரியாவும் முழுமையாவும் இருக்கணும் — Bank Of Toronto-ஓட, Goldman Sachs-ஓட சுயாதீன reports இடையிலான field-நிலை முரண்பாட்டை, Module 14 §3-ஓட EMIR pairing/reconciliation process செய்யற மாதிரி, பிடிக்கும் regulator-பக்க cross-check இல்ல.</b></p>
+<p>Section 4-ஓட takeaway இதை நேரடியா சொல்லுது: "Module 14 §3-ஓட EMIR pairing செய்யற மாதிரி field-நிலை தவறை பிடிக்க reconciliation process இல்ல" — MiFIR-ஓட ஒரு-firm-ஒரு-பக்க reporting model-ஓட வடிவமைப்பு விளைவு, EMIR-ஓட உண்மையிலயே dual-sided, UTI-ல matched model இல்ல.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 20 — MiFID II / MiFIR Reporting Deep Dive (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

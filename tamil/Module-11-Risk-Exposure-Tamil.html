@@ -1,0 +1,769 @@
+<!doctype html>
+<title>Module 11 — Risk & Exposure (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 11 — Risk & Exposure (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">MTM vs exposure, current exposure and PFE, netting, CVA and wrong-way risk, CCP exposure, VaR, SIMM and regulation — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Cross-cutting module</b> — <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §1-ஓட Market Value vs Exposure வேறுபாட்டின் மேல நேரடியா கட்டப்பட்டது; Modules 6, 8, 9-ல ஏற்கனவே நிறுவப்பட்ட positions-ஐ பயன்படுத்துது. எட்டு-பாக asset-class pattern-ஐ சுத்தி அமைக்கப்படலை. <b>மூலம்:</b> English Module 11-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-risk-exposure-ன்னா-என்ன-mtm-exposure"><span class="toc-num">01</span>1. Risk &amp; Exposure-ன்னா என்ன? — MTM ≠ Exposure</a></li>
+      <li><a href="#2-current-exposure-vs-potential-future-exposure"><span class="toc-num">02</span>2. Current Exposure vs Potential Future Exposure</a></li>
+      <li><a href="#3-netting-gross-exposure-ஏன்-உண்மை-risk-ஐ-மிகைப்படுத்துது"><span class="toc-num">03</span>3. Netting — Gross Exposure ஏன் உண்மை Risk-ஐ மிகைப்படுத்துது</a></li>
+      <li><a href="#4-counterparty-credit-risk-deep-dive-cva-wrong-way-risk"><span class="toc-num">04</span>4. Counterparty Credit Risk Deep Dive — CVA, Wrong-Way Risk</a></li>
+      <li><a href="#5-cross-asset-class-exposure-reference-bilateral-vs-ccp"><span class="toc-num">05</span>5. Cross-Asset-Class Exposure Reference — Bilateral vs CCP</a></li>
+      <li><a href="#6-portfolio-level-risk-value-at-risk-var"><span class="toc-num">06</span>6. Portfolio-Level Risk — Value at Risk (VaR)</a></li>
+      <li><a href="#7-it-reporting-பார்வை-exposure-fields-simm-real-time-vs-end-of-day-risk"><span class="toc-num">07</span>7. IT/Reporting பார்வை — Exposure Fields, SIMM, Real-Time vs End-of-Day Risk</a></li>
+      <li><a href="#8-regulatory-perspective-sa-ccr-frtb-ccar-uncleared-margin-rules"><span class="toc-num">08</span>8. Regulatory Perspective — SA-CCR, FRTB, CCAR &amp; Uncleared Margin Rules</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-risk-exposure-ன்னா-என்ன-mtm-exposure">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Risk &amp; Exposure-ன்னா என்ன? — MTM ≠ Exposure</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §1 முதல்ல Market Value-உம் Exposure-உம் ஒரே எண் இல்லைன்னு சுட்டிக்காட்டுச்சு. இந்த module அந்த வேறுபாட்டை துல்லியமாக்குது. <b>MTM</b> ஒரு position <i>இப்போ</i> எவ்வளவு மதிப்புள்ளதுன்னு சொல்லும். <b>Exposure</b> உங்க counterparty பணம் கொடுக்கத் தவறினா நீங்க எவ்வளவு *இழப்பீங்க*ன்னு சொல்லும் — இந்த ரெண்டும் ஒரே ஒரு குறிப்பிட்ட திசையில மட்டும்தான் ஒரே எண்.</p>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td>Market Value / MTM</td><td>Position-ஓட தற்போதைய மதிப்பு (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §1) — நேர்மறையாவும் இருக்கலாம், எதிர்மறையாவும்</td></tr><tr><td>Current Exposure (CE)</td><td>உங்க counterparty இப்போவே default ஆனா இன்னிக்கு நீங்க சந்திக்கும் இழப்பு — ஒருபோதும் எதிர்மறையாகாது, ஏன்னா ஒரு எதிர்மறைத் தொகையை நீங்க "இழக்க" முடியாது</td></tr><tr><td>Potential Future Exposure (PFE)</td><td>Position-ஓட மதிப்பு இன்னும் எவ்வளவு நகரலாம்ங்கறதைப் பொறுத்து, ஒரு எதிர்கால தேதிக்குள்ள Current Exposure எவ்வளவு பெருசாகலாம்ங்கற மதிப்பீடு</td></tr><tr><td>Net Exposure</td><td>ஒரே legal agreement-ஓட கீழ ஒரே counterparty-உடன் இருக்கற பல trades-ஐ netting பண்ணின பிறகு Exposure (Section 3)</td></tr><tr><td>Counterparty Risk</td><td>ஒரு trade-ஓட மறுபக்கத்துல இருக்கற தரப்பு தன் கடமைகளை நிறைவேற்றத் தவறும் பொது risk</td></tr><tr><td>Credit Exposure</td><td>பெரும்பாலும் Counterparty Risk-ஓட <i>dollar தொகையை</i> குறிக்க ஒண்ணுக்கொண்ணு மாத்தி பயன்படுத்தப்படுது — அந்தத் தவறு நடந்தா உண்மையில எவ்வளவு ஆபத்துல இருக்கு</td></tr></tbody></table></div>
+<div class="ticket"><pre>WHY MTM AND EXPOSURE AREN'T THE SAME NUMBER
+========================================================================
+
+  Current Exposure = MAX(MTM, 0)
+
+  5Y CAD IRS (Module 8 §4a), Bank Of Toronto pays fixed 4.00%:
+
+  Scenario A — 6 months later, MTM = +CAD 1,230,000 (Module 10 §4a)
+    -&gt; If Goldman Sachs defaulted RIGHT NOW, Bank Of Toronto would
+       lose the CAD 1,230,000 it's owed. Current Exposure = CAD 1,230,000.
+
+  Scenario B — market instead moved the OTHER way, MTM = -CAD 1,230,000
+    (Bank Of Toronto now owes Goldman Sachs, not the reverse)
+    -&gt; If Goldman Sachs defaulted RIGHT NOW, Bank Of Toronto loses
+       NOTHING from this trade -- Bank Of Toronto still owes the
+       money. Current Exposure = CAD 0, even though MTM is very
+       much non-zero.
+
+  -&gt; A negative MTM is a real number on a P&amp;L report (Module 10 §1)
+     but contributes ZERO to Current Exposure. This asymmetry is
+     the entire reason the two fields can never be treated as
+     synonyms on a risk report.</pre></div>
+<p><b>Takeaway:</b> Exposure அடிப்படையில ஒரு <i>ஒருபக்க</i> கருத்து — நீங்க இழக்கற scenarios-ஐ மட்டும் எண்ணுது, உங்க counterparty இழக்கற scenarios-ஐ ஒருபோதும் இல்ல. MTM, இதற்கு மாறா, சமச்சீர்: உங்களுக்கு எவ்வளவு எதிர்மறையோ, உங்க counterparty-க்கு அவ்வளவு நேர்மறை. ரெண்டையும் குழப்பிக்கறது ஒண்ணு risk-ஐ பயங்கரமா மிகைப்படுத்தும் (ஒவ்வொரு எதிர்மறை MTM-ஐயும் exposure போல நடத்துவது), இல்ல இன்னும் மோசமா குறைச்சுக் காட்டும்.</p>
+<h3>கூடுதல் உதாரணம் — ஒரே trade, இரு திசை MTM</h3>
+<div class="table-scroll"><table><thead><tr><th>நிலை</th><th>Bank Of Toronto-க்கு MTM</th><th>Current Exposure = MAX(MTM, 0)</th><th>இதன் பொருள்</th></tr></thead><tbody><tr><td>Rates உயர்ந்தது (Bank Of Toronto fixed payer)</td><td>+CAD 1,230,000</td><td>1,230,000</td><td>Goldman Sachs இவ்வளவு கொடுக்கணும் — default ஆனா இது இழப்பு</td></tr><tr><td>Rates குறைஞ்சது</td><td>-CAD 1,230,000</td><td>0</td><td>Bank Of Toronto தான் கொடுக்கணும் — Goldman Sachs default ஆனாலும் இழப்பில்ல</td></tr><tr><td>Rates மாறலை (inception)</td><td>0</td><td>0</td><td>இன்னிக்கு exposure இல்ல — ஆனா PFE இருக்கு (Section 2)</td></tr></tbody></table></div>
+<p>Goldman Sachs-ஓட பக்கத்துல இது கண்ணாடி பிம்பம்: அவங்க MTM மேல இருந்த எதிர்மறை, அவங்களுக்கு நேர்மறை exposure ஆகும் (Bank Of Toronto default ஆனா).</p>
+    </section>
+    <section class="mod" id="2-current-exposure-vs-potential-future-exposure">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Current Exposure vs Potential Future Exposure</h2>
+      <p><b>Definition:</b> Current Exposure "இன்னிக்கு எது ஆபத்துல"ங்கறதுக்கு பதில். Potential Future Exposure (PFE) "இந்த trade maturity ஆகறதுக்குள்ள ஏதோ ஒரு கட்டத்துல எது ஆபத்துல இருக்கலாம்"ங்கறதுக்கு பதில் — நீண்ட கால derivative-க்கு PFE பெரும்பாலும் பெரிய, அதிக விளைவுள்ள எண்.</p>
+<div class="ticket"><pre>PFE — WHY A ZERO-MTM TRADE STILL CARRIES REAL RISK
+========================================================================
+
+  5Y CAD IRS, Notional CAD 100,000,000, AT INCEPTION:
+    MTM = 0 (Module 10 §4a — a fairly-priced swap starts at zero)
+    Current Exposure = MAX(0, 0) = CAD 0
+
+  -&gt; A risk report showing "Current Exposure: CAD 0" on trade date
+     is CORRECT, not a broken feed. But it does NOT mean this trade
+     is risk-free -- over the next 5 years, rates can move a great
+     deal, and Module 10 §4a already showed a 30bp move alone
+     producing roughly CAD 1,230,000 of MTM swing after just 6 months.
+
+  POTENTIAL FUTURE EXPOSURE (illustrative, using a standard
+  percentile-of-simulated-outcomes approach real risk systems use):
+    At a 95% confidence level, 2 years into the trade, PFE might be
+    estimated at roughly CAD 4,500,000 -- the swap's notional,
+    remaining term, and rate volatility all feed this number, not
+    just today's zero MTM.
+
+  -&gt; PFE is why a bank extends a credit limit to a counterparty
+     BEFORE trading with them, sized off the WORST plausible future
+     exposure, not today's (currently zero) exposure.</pre></div>
+<p><b>Takeaway:</b> Current Exposure ஒரு snapshot; PFE ஒரு முன்னோக்கிய மதிப்பீடு — trade maturity ஆகும் முன்னாடி அதன் மதிப்புக்கு இன்னும் நடக்கக்கூடிய எல்லாத்தையும் கணக்குல எடுக்கணும். அதனாலதான் Initial Margin எவ்வளவு post பண்ணப்படுதுங்கறதை (<a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>) இயக்குறதும், ஒரு வங்கி ஒரு counterparty-க்கு முதல்ல எவ்வளவு பெரிய credit limit-ஐ வழங்குதுங்கறதை இயக்குறதும் Current Exposure இல்ல, PFE.</p>
+    </section>
+    <section class="mod" id="3-netting-gross-exposure-ஏன்-உண்மை-risk-ஐ-மிகைப்படுத்துது">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Netting — Gross Exposure ஏன் உண்மை Risk-ஐ மிகைப்படுத்துது</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7 ISDA Master Agreement-ஐ, ரெண்டு counterparties-க்கு இடையிலான ஒவ்வொரு OTC derivative trade-யையும் ஆளும் legal contract-ஆ அறிமுகப்படுத்திச்சு. Risk நோக்கத்துக்கு அதன் மிக விளைவுள்ள அம்சம்: <b>close-out netting</b> — ஒரு counterparty default ஆனா, அந்த ஒரே Master Agreement-ஓட கீழ உள்ள ஒவ்வொரு trade-உம் தனித்தனி வெற்றியாளர்கள், தோற்றவர்கள் குவியலா இல்லாம, ஒரே ஒரு net கடமையா ஒடுங்கிடும்.</p>
+<div class="ticket"><pre>GROSS EXPOSURE  vs  NET EXPOSURE — Bank Of Toronto &amp; Goldman Sachs,
+one ISDA Master Agreement, three outstanding trades
+========================================================================
+
+  Trade 1 — 5Y CAD IRS (Module 8 §4a):        MTM = +CAD 1,500,000
+  Trade 2 — FX Forward (Module 6 §4b):         MTM = +CAD   900,000
+  Trade 3 — CDS, Goldman Sachs as protection
+            seller (Module 9 §4a):              MTM = -CAD   400,000
+
+  GROSS POSITIVE EXPOSURE (sum only the trades where Bank Of
+  Toronto is owed money -- i.e., pretend netting doesn't exist):
+    1,500,000 + 900,000 = CAD 2,400,000
+
+  NET EXPOSURE (sum ALL three MTMs together, exactly what close-out
+  netting under the ISDA Master Agreement actually produces if
+  Goldman Sachs defaults):
+    1,500,000 + 900,000 - 400,000 = CAD 2,000,000
+
+  -&gt; Without netting, a risk system would overstate Bank Of
+     Toronto's exposure to Goldman Sachs by CAD 400,000 -- exactly
+     the amount of Trade 3, which nets AGAINST the other two rather
+     than adding on top of them.</pre></div>
+<div class="callout"><b>Callout — <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §4c-ல இருந்து வேறு scenario.</b> <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §4c இதே CDS-ஐ, Northstar Resources Inc.-ஓட spread விரியுற scenario-ல மறுமதிப்பீடு செய்யுது — Bank Of Toronto-ஓட protection position-க்கு லாபம். இங்க Trade 3-ஓட -CAD 400,000, எதிர்த்திசை விளக்க scenario-வை கருதுது — Northstar Resources Inc.-ஓட spread அதன் அசல் மட்டத்துல இருந்து <i>குறுகியிருக்கு</i>, Bank Of Toronto lock பண்ணின protection தற்போதைய சந்தை விலை தர்றதை விட குறைவான மதிப்புள்ளதா: லாபமில்ல, இழப்பு. இவை அதே trade-ஓட வேறு சந்தை நகர்வுகள்ல ரெண்டு சுயாதீன snapshots, முரண்பாடு இல்ல. தனியா, CDS-ஓட சொந்த notional USD 10,000,000 (Module 9 §4a); Trade 3-ஓட MTM இங்க CAD-ல காட்டப்பட்டிருக்கு, ஏன்னா ஒரு netting set-ஓட exposure, ஒவ்வொரு trade-ஓட சொந்த underlying currency எதுவா இருந்தாலும், Master Agreement-ஓட கீழ உள்ள எல்லா trades முழுக்க ஒரு பொது reporting currency-ல வெளிப்படுத்தப்படுது.</div>
+<p><b>IT/reporting பார்வை:</b> அதனாலதான் exposure, தனிப்பட்ட trade வாரியா இல்ல, <b>legal netting set</b> வாரியா (ஒரு counterparty-உடன் ஒரு ISDA Master Agreement-ஓட கீழ உள்ள எல்லா trades) கணக்கிடப்பட்டு store பண்ணப்படணும்; ஒரு வங்கி trade பண்ற ஒவ்வொரு counterparty முழுக்க கண்மூடித்தனமா கூட்டவும் கூடாது. Trade record-ல "Netting Set ID" அல்லது "Master Agreement ID" field தான், இந்த trade-க்கு எதிரா எந்த மற்ற trades-ஓட MTM-களை சட்டப்படி offset பண்ணலாம்னு risk system-க்கு சொல்லுது.</p>
+<p><b>Takeaway:</b> netting, ஒரு trade கூட கை மாறாம OTC derivatives சந்தையில உண்மையான counterparty risk-ஐ குறைக்கற ஒற்றை மிகப்பெரிய நெம்புகோல் — இது முழுக்க சட்ட/ஒப்பந்த mechanism, சந்தை அல்லது விலை விளைவு இல்ல; அதனாலதான் ஒரு credit risk team மிகவும் கவலைப்படற document, எந்த ஒரு தனி trade confirmation-ஓ இல்லாம, ISDA Master Agreement.</p>
+<h3>கூடுதல் உதாரணம் — Netting இல்லாம vs இருந்தா (இரண்டாவது counterparty-யோட)</h3>
+<p>Bank Of Toronto-க்கும் Maple Leaf Fund-க்கும் ஒரு தனி ISDA Master Agreement; ரெண்டு trades:</p>
+<div class="table-scroll"><table><thead><tr><th>Trade</th><th>MTM (CAD)</th></tr></thead><tbody><tr><td>IRS</td><td>+800,000</td></tr><tr><td>FX Forward</td><td>-300,000</td></tr></tbody></table></div>
+<ul><li><b>Netting இல்லாம:</b> exposure = 800,000 (எதிர்மறை trade-ஐ புறக்கணிச்சு).</li><li><b>Netting-ஓட:</b> exposure = MAX(800,000 − 300,000, 0) = <b>500,000</b>.</li><li><b>இரண்டு வேறு counterparties</b> (Goldman Sachs, Maple Leaf Fund) trades-ஐ ஒண்ணா netting பண்ண முடியாது — வெவ்வேறு legal agreements. அதனாலதான் Netting Set ID முக்கியம்.</li></ul>
+    </section>
+    <section class="mod" id="4-counterparty-credit-risk-deep-dive-cva-wrong-way-risk">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Counterparty Credit Risk Deep Dive — CVA, Wrong-Way Risk</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8-ஓட abbreviations table ஏற்கனவே <b>CVA (Credit Valuation Adjustment)</b>-ஐ counterparty default risk-ஐ பிரதிபலிக்கும் ஒரு adjustment-ஆ வரையறுத்திருக்கு. Mechanism இதோ: CVA, Net Exposure (Section 3)-ஐயும் ஒரு counterparty-ஓட சொந்த creditworthiness-ஐயும், position-ஓட மதிப்புக்கு எதிரான ஒரே dollar charge-ஆ மாத்துது.</p>
+<div class="ticket"><pre>CVA — ILLUSTRATIVE CALCULATION
+========================================================================
+
+  Net Exposure to Goldman Sachs (Section 03): CAD 2,000,000
+  Goldman Sachs' estimated 1-year Probability of Default: 0.50%
+  Loss Given Default (i.e., 1 - Recovery Rate, Module 9 §1's
+  Recovery Rate concept applied to a COUNTERPARTY rather than a
+  CDS Reference Entity): 60%
+
+  Simplified CVA ≈ Net Exposure x Probability of Default x Loss
+                    Given Default
+                  = 2,000,000 x 0.50% x 60%
+                  = CAD 6,000
+
+  -&gt; This CAD 6,000 is subtracted from the position's Fair Value
+     (Module 10 §1) specifically because the counterparty MIGHT
+     default -- a real accounting adjustment, not just an internal
+     risk metric.</pre></div>
+<p><b>Wrong-Way Risk:</b> counterparty-ஓட default ஆகும் வாய்ப்பு, exposure தானே பெருசாகுறதோட <i>தொடர்புடையதா</i> இருக்கற குறிப்பிட்ட, ஆபத்தான சந்தர்ப்பம் — <a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a>-ஓட Q4 பதில் இதே scenario-வை ஏற்கனவே முன்னோட்டம் காட்டியது: Goldman Sachs தன் <i>சொந்த</i> default risk மேல CDS protection விக்குது. Goldman Sachs தோற்க ஆரம்பிச்சா, அந்த CDS position மேல Bank Of Toronto-ஓட exposure வளருது (Section 2-ஓட PFE விளைவு, credit மோசமாகுது) — Goldman Sachs-ஓட பணம் கொடுக்கும் திறன் மறையற <i>அதே நொடில</i> — ஒரு risk model எதிர்கொள்ளக்கூடிய மிக மோசமான தொடர்பு; ஒரு உண்மையிலயே ஆபத்தான position-க்கு "counterparty யார்"-உம் "trade எதை reference பண்ணுது"-உம் ஏன் ஒருபோதும் சுயாதீன கேள்விகள் இல்லைங்கறதுக்கும் இதுதான் காரணம்.</p>
+<p><b>Takeaway:</b> CVA, Section 1–3-ஓட Current/Net Exposure கருத்துகளை ஒரு position-ஓட மதிப்புக்குள்ள பதிக்கப்பட்ட உண்மையான dollar செலவா மாத்துது; Wrong-Way Risk, அந்தக் கணக்கீட்டின் <i>probability</i> பாதி (Goldman Sachs-ஓட Probability of Default) எப்பவும் நிலையான, சுயாதீன எண்ணா இருக்காது — சில சமயம் அது பெருக்கப்படற exposure-உடனேயே ஒருங்கிணைந்து நகரும்ங்கற நினைவூட்டல்.</p>
+    </section>
+    <section class="mod" id="5-cross-asset-class-exposure-reference-bilateral-vs-ccp">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Cross-Asset-Class Exposure Reference — Bilateral vs CCP</h2>
+      <p><b>Definition:</b> ஒவ்வொரு asset-class module-லயும் (Modules 4–9, 15) Section 7 எந்த products bilateral, எவை centrally cleared-ன்னு ஏற்கனவே நிறுவியது. அதே பிரிவு, இந்த module கணக்கிட்டுட்டிருக்கற counterparty risk-ஐ <i>யார்</i> சுமக்கறாங்கன்னு தீர்மானிக்குது.</p>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Asset Class / Product</th><th>Counterparty Risk Sits With...</th><th>Why</th></tr></thead><tbody><tr><td>CASH</td><td>Cash Equity / Bonds (mostly)</td><td>CCP (NSCC, CDCC) for equities; bilateral for most bonds</td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §7, <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §7</td></tr><tr><td>CASH + DERIVATIVE</td><td>FX Spot/Forward/Swap</td><td>Bilateral, mitigated by CLS's PvP (settlement risk, not counterparty risk — <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §5)</td><td><a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §7</td></tr><tr><td>DERIVATIVE</td><td>Standardized IRS</td><td>CCP (LCH SwapClear) — Section 3-4's netting/CVA math still applies, just with the CCP as counterparty instead of Goldman Sachs</td><td><a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §7</td></tr><tr><td>DERIVATIVE</td><td>FRA / Cap-Floor / Swaption / IR Forward Debt</td><td>Bilateral (mostly)</td><td><a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §7</td></tr><tr><td>DERIVATIVE</td><td>CDS Index / liquid Single-Name CDS</td><td>CCP (ICE Clear Credit, LCH CDSClear)</td><td><a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §7</td></tr><tr><td>DERIVATIVE</td><td>Bespoke Single-Name CDS</td><td>Bilateral — Section 4's CVA/wrong-way-risk math applies directly</td><td><a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §7</td></tr><tr><td>DERIVATIVE</td><td>Futures / Listed Options</td><td><b>Always</b> CCP, from execution (<a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §7)</td><td><a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §7</td></tr></tbody></table></div>
+<div class="ticket"><pre>CCP EXPOSURE ISN'T ZERO -- IT'S REDIRECTED
+========================================================================
+
+  Bilateral trade: Bank Of Toronto's counterparty risk -&gt; Goldman
+                    Sachs directly. CVA math (Section 04) applies
+                    to Goldman Sachs' own creditworthiness.
+
+  Centrally cleared trade: Bank Of Toronto's counterparty risk -&gt;
+                    the CCP (e.g. LCH SwapClear). Novation (Module
+                    3 §6) legally substitutes the CCP for Goldman
+                    Sachs -- but Bank Of Toronto STILL has residual
+                    exposure to the CCP itself failing, mitigated
+                    by the CCP's own layered "default waterfall":
+                    the defaulting member's own Initial Margin,
+                    then its Default Fund contribution, then other
+                    members' mutualized Default Fund contributions,
+                    then the CCP's own capital.</pre></div>
+<p><b>Takeaway:</b> Central clearing counterparty risk-ஐ மறையச் செய்யாது — ஒரே அமைப்புக்குள்ள (CCP) அதை குவிச்சு பகிர்ந்து கொள்ளுது; அந்த அமைப்பு member defaults-ஐ உறிஞ்ச குறிப்பா கட்டமைக்கப்பட்டு, முதலீடு செய்யப்பட்டு, regulate பண்ணப்பட்டிருக்கு — இது ஒவ்வொரு தனி trading counterparty-க்கும் இருக்கற bilateral exposures வலையை விட அடிப்படையில வேறு (standardized products-க்கு பொதுவா பாதுகாப்பான) risk profile, ஆனா நேரடியா "பூஜ்ய risk" இல்ல.</p>
+    </section>
+    <section class="mod" id="6-portfolio-level-risk-value-at-risk-var">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Portfolio-Level Risk — Value at Risk (VaR)</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8-ஓட abbreviations table VaR-ஐ, ஒரு confidence மட்டத்துல ஒரு கால வரம்புக்கு எதிர்பார்க்கப்படும் அதிகபட்ச இழப்பின் புள்ளிவிவர மதிப்பீடா ஏற்கனவே வரையறுத்தது. கணக்கீடு இதோ, <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §3-ஓட bond DV01-ஐ மறுபயன்படுத்தி.</p>
+<div class="ticket"><pre>1-DAY 99% VaR — Canada 5% Bond 2035 Position (Module 10 §3)
+========================================================================
+
+  DV01: CAD 7,092 per basis point (Module 10 §3)
+  Assumed daily yield volatility (1 standard deviation): 8 basis points
+  99% confidence level ≈ 2.33 standard deviations (a standard
+  statistical constant for a normal distribution's 99th percentile)
+
+  1-Day 99% VaR = DV01 x Confidence Multiplier x Daily Volatility (bps)
+                = 7,092 x 2.33 x 8
+                = CAD 132,235
+
+  -&gt; Interpretation: on 99 out of 100 trading days, this bond
+     position should NOT lose more than approximately CAD 132,235
+     in a single day, based purely on interest rate moves. On the
+     1-in-100 "tail" day, it could lose more -- VaR explicitly does
+     NOT bound the worst case, only the 99th-percentile case.</pre></div>
+<p><b>IT/reporting பார்வை:</b> ஒரு தனி position-ஓட VaR (மேல உள்ள bond போல) பயனுள்ள sensitivity சோதனை, ஆனா உண்மையான risk systems, ஒரு desk (அல்லது முழு வங்கியும்) வெச்சிருக்கற ஒவ்வொரு position முழுக்கவும் <b>portfolio-level</b> VaR கணக்கிடுது — வெவ்வேறு positions-ஓட மதிப்பு மாற்றங்கள் முழுமையா தொடர்புபடாததால, portfolio VaR கிட்டத்தட்ட எப்பவும் ஒவ்வொரு தனி position-ஓட VaR-களின் எளிய கூட்டுத்தொகையை விட <i>குறைவு</i>. அந்த diversification நன்மை ஒரு உண்மையான, கணக்கிடக்கூடிய எண், "diversification உதவும்"ங்கற தரமான கூற்று மட்டுமில்ல — அதனாலதான் risk systems-க்கு ஒவ்வொரு position-ஓட சொந்த volatility மட்டுமில்ல, இந்த roadmap-ல உள்ள ஒவ்வொரு asset class முழுக்க முழு correlation data-வும் தேவை.</p>
+<div class="callout"><b>Deep dive இருக்கு.</b> இந்த VaR கணக்கீடு முழுக்க position-ஓட சொந்த அளவை சார்ந்தது — position-ஐ இரட்டிப்பாக்கினா, DV01 இரட்டிப்பு, VaR இரட்டிப்பு. Position உண்மையில என்ன, எவ்வளவு அடிக்கடி மாறுது, அதை reconcile பண்ணி சரியா வெச்சிருக்கறது முதல்-தர risk control ஏன்னு முழுசா: <a href="../docs/1-capital-markets/module-25-position-deep-dive.html">Module 25 — Position Deep Dive</a> §10.</div>
+<p><b>Takeaway:</b> VaR, Sections 1–5-ஓட counterparty-குறிப்பான Exposure/CVA கட்டமைப்பை நிரப்புது, மாற்றாது — VaR ஒரு position-ஓட <i>சொந்த மதிப்பு</i> <i>சந்தைக்கு</i> எதிரா எவ்வளவு நகரலாம்ங்கறதை அளக்குது; Exposure, CVA ஒரு குறிப்பிட்ட <i>counterparty</i> பணம் கொடுக்கத் தவறினா எவ்வளவு இழப்பீங்கன்னு அளக்குது. ஒரு portfolio-க்கு குறைவான VaR இருந்தும் ஒரே பெயர் மேல ஆபத்தான குவிந்த counterparty exposure இருக்கலாம், அல்லது நேர்மாறா — அவை வேறு வேறு கேள்விகளுக்கு பதில் சொல்லுது, <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §1 பொதுவா Market Value vs Exposure-க்கு ஏற்கனவே நிறுவினது போல.</p>
+    </section>
+    <section class="mod" id="7-it-reporting-பார்வை-exposure-fields-simm-real-time-vs-end-of-day-risk">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. IT/Reporting பார்வை — Exposure Fields, SIMM, Real-Time vs End-of-Day Risk</h2>
+      <p><b>Definition:</b> இந்த module-ஓட கருத்துகள் உருவாக்கும் மூணு நடைமுறை system-design நிஜங்கள்.</p>
+<p><b>Exposure fields, Valuation fields இல்ல:</b> <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §7 ஏற்கனவே Price/Market Value/Unrealized P&amp;L-ஐ மூணு தனி fields-ஆ பிரிச்சது. இங்க இன்னும் மூணு சேருது — Current Exposure, PFE, Net Exposure (netting set வாரியா) — இவற்றில் எதையும் ஒரு downstream consumer Market Value-ஐ மட்டும் வெச்சு ஊகிச்சு derive பண்ணக்கூடாது; Current Exposure-க்கு குறிப்பா Section 1-ஓட MAX(MTM, 0) தளம் தேவை; ஒரு எளிய "MTM-ஐ மட்டும் காட்டு" report, எதிர்மறை MTM உள்ள ஒவ்வொரு trade-லயும் இதை தவறா பெறும்.</p>
+<p><b>SIMM (ISDA Standard Initial Margin Model):</b> non-centrally-cleared derivatives-க்கு Initial Margin-ஐ, ஒரு எளிய notional-சதவீத மதிப்பீட்டுக்குப் பதிலா, ஒரு position-ஓட risk <i>sensitivities</i>-ல இருந்து (ஒவ்வொரு risk factor-க்கும் அதன் DV01-போன்ற Greeks) நேரடியா கணக்கிடும், ISDA (Master Agreement-ஐ உருவாக்கிய அதே அமைப்பு, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7) உருவாக்கிய தரப்படுத்தப்பட்ட, தொழில்துறை முழுமைக்குமான model — முழு mechanics <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> (Collateral &amp; Margin)-க்கு சொந்தம், ஆனா SIMM அடிப்படையில ஒரு PFE-குடும்ப கணக்கீடு (Section 2), தூய risk-reporting நோக்கத்துக்குப் பதிலா margin-sizing நோக்கத்துக்கு மறுபயன்படுத்தப்பட்டது.</p>
+<p><b>Real-time vs end-of-day risk:</b> ஒரு Front Office trading desk-க்கு pre-trade risk limit சோதனைகள் milliseconds-ல தேவை (இந்த புது trade ஒரு limit-ஐ மீறாம சேர்க்க முடியுமா?) — அவசியமாக ஒரு எளிமைப்படுத்தப்பட்ட, வேகமான தோராயம். இரவு நேரத்துல, ஒரு முழு portfolio மறுமதிப்பீடு VaR, PFE, CVA-வை துல்லியமா, ஒவ்வொரு position-ஐயும் முழு correlation data-வையும் உள்ளடக்கி மறுபடி கணக்கிடும். <b>ஒரே portfolio-க்கு நாளின் வெவ்வேறு புள்ளிகள்ல இந்த ரெண்டு எண்களும் நியாயமா வேறுபடலாம்</b>; ஒரு எண் எந்த risk run-ல இருந்து (real-time தோராயம் vs. end-of-day துல்லியம்) வந்ததுன்னு தெளிவா label பண்ணாத reporting system, ரெண்டும் பொருந்தாதப்போ உண்மையான குழப்பத்தை உண்டாக்கும்.</p>
+<p><b>Takeaway:</b> இந்த module-ல ஒவ்வொரு கருத்தும் — Current Exposure, PFE, Net Exposure, CVA, VaR — தன் சொந்த தெளிவா label பண்ணப்பட்ட field தேவை, தன் சொந்த cadence-ல (சில real-time, சில end-of-day) கணக்கிடப்பட்டு, ஏன்னா அவற்றை ஒரு trade record-க்கு ஒரே "Risk" எண்ணா ஒடுக்கறது, இந்த module ஏழு sections கட்டின சரியான தகவலை அழிச்சுடும்.</p>
+    </section>
+    <section class="mod" id="8-regulatory-perspective-sa-ccr-frtb-ccar-uncleared-margin-rules">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Regulatory Perspective — SA-CCR, FRTB, CCAR &amp; Uncleared Margin Rules</h2>
+      <div class="table-scroll"><table><thead><tr><th>Regulation / Body</th><th>Risk &amp; Exposure-ஐ குறிப்பா எப்படித் தொடுது</th></tr></thead><tbody><tr><td><b>BCBS SA-CCR</b> (Standardized Approach for Counterparty Credit Risk)</td><td>Derivatives மேல counterparty credit risk-க்கு எதிரா regulatory capital-ஐ கணக்கிட வங்கிகள் பயன்படுத்தற தற்போதைய Basel முறை — Section 1–3-ஓட Current Exposure/PFE/netting கருத்துகளை நேரடியா regulator-கட்டாய formula-வா முறைப்படுத்துது; பழைய, கரடுமுரடான "Current Exposure Method"-ஐ மாத்துது</td></tr><tr><td><b>BCBS FRTB</b></td><td><a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8-ல valuation-observability capital charge-க்காக ஏற்கனவே அறிமுகம்; தனியா, trading book-ல <b>market risk</b>-க்கும் (VaR-குடும்ப அளவுகள், Section 06) capital தேவைகளை வகுக்குது — ஒரே standard, இந்த roadmap இப்போ ரெண்டு வேற modules-ல சந்தித்த ரெண்டு வேறு risk பரிமாணங்களை உள்ளடக்குது</td></tr><tr><td><b>Federal Reserve CCAR</b> (Comprehensive Capital Analysis and Review)</td><td>பெரிய வங்கிகளுக்கு US Federal Reserve-ஓட வருடாந்திர stress-testing regime — நிறுவனங்களை portfolio-level இழப்புகளை model பண்ணி (Section 06-ஓட VaR logic, தீவிர hypothetical scenarios வரை நீட்டி), அவற்றை சமாளிக்க போதுமான capital வெச்சிருக்கணும்னு கட்டாயப்படுத்துது; அதே பெயரின் கீழ நேரடி EU/UK சமமான எதுவும் இல்லாத US-குறிப்பான மேற்பார்வை நடவடிக்கை</td></tr><tr><td><b>EMIR / Dodd-Frank</b></td><td>ரெண்டு regimes-உம், Trade Repository-க்கு (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §07) OTC derivative reports, valuation fields-ஓட (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §08) சேர்த்து exposure தொடர்பான fields-ஐயும் சேர்க்கணும்னு கோருது — Current Exposure, post பண்ணின collateral ஆகியவை trade-ஓட நிலையான economics மட்டுமில்லாம, கட்டாய reportable fields-ல அடிக்கடி இருக்கும்</td></tr><tr><td><b>IOSCO / BCBS Uncleared Margin Rules (UMR)</b></td><td>சில வரம்புகளுக்கு மேல non-centrally-cleared derivatives-க்கு Initial, Variation Margin-ஐ கோரும் கூட்டு கட்டமைப்பு — இந்த module-ஓட PFE (Section 02), SIMM (Section 07) கருத்துகளை அதன் கணக்கீட்டு inputs-ஆ நேரடியா எடுத்துக்கும்; முழு posting mechanics <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>-ல</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> இந்த module-ஓட regulatory section, market-risk regulation (FRTB, CCAR)-உம் counterparty-credit-risk regulation (SA-CCR, UMR)-உம் சந்திக்கற இடம் — உண்மையிலயே வேறுபட்ட ரெண்டு regulatory கவலைகள், ரெண்டுமே இந்த module தொடங்கின அதே அடிப்படைக் கேள்விக்குத் திரும்புது: Market Value மட்டும் (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>) முழுக் கதையையும் சொல்லாத ஒரு position-ல இருந்து உண்மையில எவ்வளவு, எந்த சூழ்நிலைகள்ல இழக்கலாம்.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>Netting set முழுக்க Goldman Sachs-க்கு Net Exposure-ஐ வெச்சிருப்பவர் (Section 03); CVA charge-ஐ சுமந்து, தன் bond position மேல VaR-ஐ கணக்கிடுபவர்</td></tr><tr><td>Goldman Sachs</td><td>CVA, Wrong-Way Risk விவாதத்தை (Section 04) இயக்கும் creditworthiness கொண்ட counterparty</td></tr><tr><td>LCH SwapClear</td><td>தன் default waterfall மூலம் standardized IRS-க்கு counterparty risk-ஐ உறிஞ்சும் CCP (Section 05)</td></tr><tr><td>ISDA</td><td>netting-ஐ சாத்தியமாக்கும் Master Agreement (Section 03), SIMM methodology (Section 07) ரெண்டின் ஆசிரியர்</td></tr><tr><td>BCBS / Federal Reserve</td><td>SA-CCR, FRTB-ஓட market-risk capital charge, CCAR stress testing-க்குப் பின்னாலுள்ள standard-setters (Section 08)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Section 01-ஓட formula-வை பயன்படுத்தி, 5Y CAD IRS-ஓட MTM சரியா CAD 0 (ஒருத்தருக்கொருத்தர் கடனில்லாம) இருந்தா, Current Exposure என்ன? அது அந்த trade-க்கு risk சுத்தமா இல்லைன்னு அர்த்தமா?</li><li>Section 03-ஓட மூணு-trade netting set-ல, Trade 3-ஓட CDS MTM -CAD 400,000-க்குப் பதிலா -CAD 2,600,000 (Bank Of Toronto-க்கு மிகப் பெரிய இழப்பு) ஆக இருந்திருந்தா, Net Exposure என்ன? ஒரு எதிர்மறை Net Exposure எண் உண்மையில எதைக் குறிக்குது?</li><li>Section 04-ஓட CVA formula-வை பயன்படுத்தி, Goldman Sachs-ஓட மதிப்பிடப்பட்ட Probability of Default 1.00%-க்கு இரட்டிப்பானா (credit நிலைமைகள் மோசமாகி), Net Exposure-உம் Loss Given Default-உம் அப்படியே இருந்தா, புது CVA என்ன?</li><li>Central clearing counterparty risk-ஐ நீக்காம "திசை திருப்புது"ன்னு Section 05 ஏன் சொல்லுது — CCP-க்கு novation ஆனப்புறமும் எந்த குறிப்பிட்ட மீதி risk இருக்கு?</li><li>Section 06-ஓட VaR formula-வை பயன்படுத்தி, கருதப்படற தினசரி yield volatility 16 basis points-க்கு இரட்டிப்பானா (மிக volatile சந்தை), அதே bond position-க்கு புது 1-Day 99% VaR என்ன?</li><li>ஒரு risk report ஒரு position-ஓட real-time (நாளுக்குள்ள) VaR-உம் end-of-day VaR-உம் குறிப்பிடத்தக்க அளவு பொருந்தாததைக் காட்டுது. Section 07-ஐ பயன்படுத்தி, இது கட்டாயம் system bug-ஆ?</li><li>Section 08-ஐ பயன்படுத்தி, BCBS SA-CCR-உம் Federal Reserve CCAR-உம் ஒவ்வொண்ணும் குறிப்பா எதை அளக்குதுன்னு ஒப்பிடுங்க — ஒரு வங்கியின் risk பத்தி ஒரே கேள்விக்கு பதில் சொல்லுதா, வேறு கேள்விகளுக்கா?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் <b><a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>: Collateral &amp; Margin</b>-க்குப் போலாம்; இது இந்த module-ஓட PFE, SIMM கருத்துகளை, எது, யாருக்கு, எப்போ post பண்ணப்படுதுங்கற உண்மையான mechanics-ஆ மாத்துது.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Current Exposure = MAX(0, 0) = CAD 0. இது trade-க்கு risk பூஜ்யம்னு அர்த்தமில்ல — இன்னிக்கு snapshot "இப்போவே default ஆனா இழப்பில்ல"ன்னு காட்டுது, ஆனா maturity-க்கு முன்னாடி rates கணிசமா நகரக்கூடிய 5-வருஷ trade-க்கு Potential Future Exposure (Section 02) இன்னும் உண்மையானது.</b></p>
+<p>Section 02-ஓட takeaway இதை நேரடியா சொல்லுது: "trade date-ல 'Current Exposure: CAD 0' காட்டும் risk report சரியானது, உடைஞ்ச feed இல்ல... அது இந்த trade risk-free-னு அர்த்தமில்ல." இதே காரணத்துக்காகத்தான், ஒரு வங்கி credit limits-ஐ Current Exposure-க்கு எதிரா இல்ல, PFE-க்கு எதிரா அளவிடணும்.</p>
+<p><b>2. Net Exposure = 1,500,000 + 900,000 - 2,600,000 = -CAD 200,000. எதிர்மறை Net Exposure என்றா, close-out-ல Bank Of Toronto தான் Goldman Sachs-க்கு பணம் <i>கடன்பட்டிருக்கும்</i>, மாறா இல்ல — அதனால Bank Of Toronto-ஓட Goldman Sachs மேல Current Exposure (Section 01-ஓட MAX(MTM, 0) விதி) CAD 0, netting set-க்குள்ள தனி trades இன்னும் பெரிய நேர்மறை MTM-களைக் காட்டினாலும்.</b></p>
+<p>இது Section 01-ஓட Current Exposure logic-ஐ ஒரு தனி-trade மட்டத்துல இல்லாம, netting-set மட்டத்துல பொருத்தினது — ஒரு எதிர்மறை net எண், ஒரு எதிர்மறை தனி-trade MTM போலவே, Current Exposure-க்கு பூஜ்யம் பங்களிக்குது, ஏன்னா இந்த scenario-ல Goldman Sachs default ஆனா இழப்பவர் Bank Of Toronto இல்ல; Bank Of Toronto தான் net கடனாளி.</p>
+<p><b>3. புது CVA = 2,000,000 x 1.00% x 60% = CAD 12,000 — அசல் CAD 6,000-ஐ சரியா இரட்டிப்பு.</b></p>
+<p>Section 04-ஓட CVA formula மூணு காரணிகளின் எளிய பெருக்கல் — Net Exposure × Probability of Default × Loss Given Default — அதனால மற்ற ரெண்டையும் மாறாம வெச்சு எந்த ஒரு input-ஐயும் இரட்டிப்பாக்கினா முடிவு நேர்கோட்டுல இரட்டிப்பாகும். இந்த நேர்கோட்டுத்தன்மைதான் Wrong-Way Risk (Section 04) ஏன் இவ்வளவு ஆபத்தானதுங்கறதுக்கு காரணம்: Probability of Default உயரலாம் மட்டுமில்ல, Net Exposure-உம் உயருகிற <i>அதே நேரத்துல</i> உயரலாம், CVA தாக்கத்தை வெறுமனே இரட்டிப்பாக்காம கூட்டுநிலைப்படுத்தி.</p>
+<p><b>4. ஏன்னா Bank Of Toronto-க்கு CCP-யே தோற்கற மீதி exposure இன்னும் இருக்கு — CCP-ஓட சொந்த அடுக்கு default waterfall (default ஆன member-ஓட Initial Margin, அதன் Default Fund contribution, மற்ற members-ஓட பகிரப்பட்ட Default Fund contributions, அப்புறம் CCP-ஓட சொந்த capital) தீர்ந்தப்புறம்தான் Bank Of Toronto உண்மையில இழப்பைச் சந்திக்கும், ஆனா அந்த பாதுகாப்புச் சங்கிலி முடிவற்றதில்ல.</b></p>
+<p>Section 05-ஓட diagram இதை துல்லியமா சொல்லுது: novation சட்டப்படி CCP-ஐ அசல் bilateral counterparty-க்குப் பதிலா மாத்துது, ஆனா Bank Of Toronto-ஓட counterparty risk மறையாம, ஒரு புது, வித்தியாசமா கட்டமைக்கப்பட்ட counterparty-க்கு (CCP) நகருது — குவிக்கப்பட்டு, பகிரப்பட்டு, standardized products-க்கு பொதுவா மிகப் பாதுகாப்பானது, ஆனா "நேரடியா பூஜ்ய risk" இல்ல.</p>
+<p><b>5. புது 1-Day 99% VaR = 7,092 x 2.33 x 16 ≈ CAD 264,470 — அசல் CAD 132,235-ஐ இரட்டிப்பு.</b></p>
+<p>Section 06-ஓட VaR formula தினசரி volatility-ஓட நேர்கோட்டுல scale ஆகுது (DV01-உம் confidence multiplier-உம் மாறாம), Q3-ஓட CVA பதில் வேறு formula-க்கு காட்டிய அதே நேர்கோட்டு-scaling பண்பு — volatility input-ஐ இரட்டிப்பாக்கினா விளைவான VaR மதிப்பீடு நேரடியா இரட்டிப்பாகும்.</p>
+<p><b>6. இல்ல, கட்டாயம் system bug இல்ல — Section 07 வெளிப்படையா இந்த ரெண்டு எண்களும் "நியாயமா வேறுபடலாம்"னு சொல்லுது, ஏன்னா அவை வேறு cadences-ல வேறு துல்லிய மட்டங்களோட கணக்கிடப்படுது: real-time risk, pre-trade limit சோதனைகளுக்கு வேகமான, எளிமைப்படுத்தப்பட்ட தோராயங்களை பயன்படுத்துது; end-of-day risk முழு portfolio, correlation data-வோட துல்லியமா மறுகணக்கிடுது.</b></p>
+<p>Section 07-ஓட takeaway உண்மையான ஆபத்தை நேரடியா சுட்டிக்காட்டுது: ஒத்துப்போகாததே bug இல்ல; ஒரு எண் எந்த risk run-ல இருந்து (real-time தோராயம் vs. end-of-day துல்லியம்) வந்ததுன்னு தெளிவா LABEL பண்ணத் தவறும் reporting system தான், ரெண்டும் பொருந்தாதப்போ உண்மையான, தவிர்க்கக்கூடிய குழப்பத்தை உண்டாக்குது.</p>
+<p><b>7. வேறு கேள்விகள் — BCBS SA-CCR ஒரு வங்கி தன் derivatives book-ல COUNTERPARTY CREDIT RISK-க்கு எதிரா எவ்வளவு regulatory capital வெச்சிருக்கணும்ங்கறதை அளக்குது (ஒரு குறிப்பிட்ட trading partner பணம் கொடுக்கத் தவறும் risk, Sections 01-04-ஓட கவலை); Federal Reserve CCAR ஒரு வங்கி ஒரு முழு hypothetical MACROECONOMIC STRESS SCENARIO-வை தாங்க முடியுமான்னு அளக்குது (இயல்பான சந்தை நகர்வுகளின் புள்ளிவிவர percentiles-க்குப் பதிலா, Section 06-ஓட VaR logic-ஐ தீவிர, regulator-வடிவமைத்த scenarios வரை நீட்டிய, ஒரு பரந்த portfolio-உம்-balance-sheet-முழுமைக்குமான solvency கேள்வி).</b></p>
+<p>Section 08 இவற்றை நேரடியா வேறுபடுத்துது: SA-CCR இந்த module-ஓட Current Exposure/PFE/netting கருத்துகளை (Sections 01-03) ஒரு capital formula-வா முறைப்படுத்துது, CCAR Section 06-ஓட portfolio-risk logic-ஐ hypothetical தீவிர scenarios வரை நீட்டும் ஒரு supervisory stress-testing பயிற்சி — உணர்வுல தொடர்புடையவை (ரெண்டும் கடைசில வங்கி தோற்பதிலிருந்து பாதுகாக்குது) ஆனா உண்மையிலயே வேறு வேறு scopes-ல உண்மையிலயே வேறு விஷயங்களை அளக்குது.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 11 — Risk & Exposure (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

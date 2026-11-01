@@ -1,0 +1,772 @@
+<!doctype html>
+<title>Module 13 — Parties, LEIs & Market Infrastructure (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 13 — Parties, LEIs & Market Infrastructure (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Buyer/seller/counterparty/broker/dealer, CCP vs CSD vs custodian, clearing members, LEI roles, reporting entity, golden source and LEI lifecycle — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Cross-cutting module</b> — இதுவரை உள்ள ஒவ்வொரு module-க்கும் "யார் யார்" துணை. எட்டு-பாக asset-class pattern-ஐ சுத்தி அமைக்கப்படலை; அதுக்குப் பதிலா இந்த roadmap ஏற்கனவே பயன்படுத்தி வந்த ஒவ்வொரு actor பாத்திரத்தையும் பெயரிட்டு map பண்ணுது. <b>மூலம்:</b> English Module 13-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-buyer-seller-counterparty-broker-dealer-பாத்திரங்கள்-துல்லியமா"><span class="toc-num">01</span>1. Buyer, Seller, Counterparty, Broker, Dealer — பாத்திரங்கள், துல்லியமா</a></li>
+      <li><a href="#2-market-infrastructure-பாத்திரங்கள்-ccp-custodian-csd-settlement-agent"><span class="toc-num">02</span>2. Market Infrastructure பாத்திரங்கள் — CCP, Custodian, CSD &amp; Settlement Agent</a></li>
+      <li><a href="#3-clearing-member-நேரடி-access-vs-client-clearing"><span class="toc-num">03</span>3. Clearing Member — நேரடி Access vs Client Clearing</a></li>
+      <li><a href="#4-lei-deep-dive-ஒரு-trade-பல-பாத்திரங்கள்"><span class="toc-num">04</span>4. LEI Deep Dive — ஒரு Trade, பல பாத்திரங்கள்</a></li>
+      <li><a href="#5-worked-example-ஒரு-trade-ல-முழு-party-map"><span class="toc-num">05</span>5. Worked Example — ஒரு Trade-ல முழு Party Map</a></li>
+      <li><a href="#6-reporting-entity-vs-counterparty-உண்மையில-யார்-report-file-பண்றது"><span class="toc-num">06</span>6. Reporting Entity vs Counterparty — உண்மையில யார் Report File பண்றது</a></li>
+      <li><a href="#7-it-reporting-பார்வை-reference-data-golden-source-lei-lifecycle"><span class="toc-num">07</span>7. IT/Reporting பார்வை — Reference Data, Golden Source &amp; LEI Lifecycle</a></li>
+      <li><a href="#8-regulatory-perspective-gleif-lous-no-lei-no-trade-cpmi-iosco"><span class="toc-num">08</span>8. Regulatory Perspective — GLEIF/LOUs, &quot;No LEI, No Trade&quot; &amp; CPMI-IOSCO</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-buyer-seller-counterparty-broker-dealer-பாத்திரங்கள்-துல்லியமா">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Buyer, Seller, Counterparty, Broker, Dealer — பாத்திரங்கள், துல்லியமா</h2>
+      <p><b>Definition:</b> இந்த ஐந்து சொற்களும் பேச்சுல தளர்வா பயன்படுத்தப்படுது, ஆனா ஒரு trade record-ல துல்லியமா வேறு வேறு அர்த்தம். <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §3 ஏற்கனவே Dealer (Principal) vs Broker (Agent)-ஐ ஒரு முழு worked example-ஓட நிறுவியது; இந்த section முழு பாத்திரத் தொகுப்பையும் ஒரே இடத்துல மறுபடி சொல்லுது.</p>
+<div class="table-scroll"><table><thead><tr><th>Role</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td>Buyer</td><td>ஒரு குறிப்பிட்ட trade-ல instrument/exposure-ஐ பெறும் தரப்பு — திசை-சார்ந்தது, எதிர் trade-ல புரளும்</td></tr><tr><td>Seller</td><td>Instrument/exposure-ஐ விடுக்கும் தரப்பு — Buyer-ஓட mirror</td></tr><tr><td>Counterparty</td><td>திசையைப் பொருட்படுத்தாம, "trade-ஓட மறுபக்கம்"ங்கற பொதுச் சொல் — ஒவ்வொரு Buyer-ஓட Counterparty-உம் ஒரு Seller, நேர்மாறும்</td></tr><tr><td>Broker (Agent)</td><td>ஒரு client <b>சார்பா</b> trade-ஐ execute பண்ணும், position-ஐ தன் சொந்த book-ல ஒருபோதும் எடுக்காது — <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §3b-ஓட சரியான mechanic</td></tr><tr><td>Dealer (Principal)</td><td>Position-ஐ <b>தன் சொந்த book-ல</b> எடுக்கும், சிறிது நேரமே ஆனாலும் — வெறுமனே ஒரு match-ஐ எளிதாக்காம, client-ஓட உண்மையான Counterparty ஆகுது — <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §3a</td></tr></tbody></table></div>
+<div class="ticket"><pre>WHY "COUNTERPARTY" IS THE WORD THAT SURVIVES EVERY CONTEXT
+========================================================================
+
+  Coca-Cola trade (Module 4 §4a):
+    Maple Leaf Pension Fund is the BUYER.
+    Goldman Sachs is the SELLER.
+    -&gt; From Maple Leaf Pension Fund's perspective, Goldman Sachs
+       is simply "the Counterparty" -- the label that doesn't
+       depend on which direction the trade ran.
+
+  5Y CAD IRS (Module 8 §4a):
+    Bank Of Toronto pays fixed, Goldman Sachs pays floating --
+    there's no "buyer" or "seller" of a swap in the equity sense
+    at all, yet BOTH parties are unambiguously each other's
+    COUNTERPARTY. This is exactly why Module 11's entire risk
+    framework (Current Exposure, Net Exposure, CVA) is built
+    around "Counterparty," never "Buyer" or "Seller" -- those
+    labels don't even apply to every product in this roadmap.</pre></div>
+<p><b>Takeaway:</b> Buyer/Seller என்பது Cash-instrument வடிவ labels ஜோடி; இயற்கையான buy/sell திசை இல்லாத swaps போன்ற products-க்கு அது உடைஞ்சுடும். Counterparty தான் இந்த roadmap-ல ஒவ்வொரு module-லயும் ஒவ்வொரு உறவையும் விவரிக்கும் அளவு பொதுவான ஒரே சொல் — அதனாலதான் <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>-ஓட risk சொல்லகராதி அதையே தரமாக்கியது.</p>
+    </section>
+    <section class="mod" id="2-market-infrastructure-பாத்திரங்கள்-ccp-custodian-csd-settlement-agent">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Market Infrastructure பாத்திரங்கள் — CCP, Custodian, CSD &amp; Settlement Agent</h2>
+      <p><b>Definition:</b> இந்த roadmap தொடர்ந்து பயன்படுத்தி வந்த நாலு பாத்திரங்கள், பெரும்பாலும் துல்லியமா வேறுபடுத்தாமலே. நடைமுறைல அவை அடிக்கடி ஒரே நிறுவனத்துல உட்காரும், ஆனா தர்க்க ரீதியா வேறு வேறு செயல்பாடுகள்.</p>
+<div class="table-scroll"><table><thead><tr><th>Role</th><th>உண்மையில என்ன செய்யுது</th><th>ஏற்கனவே பார்த்த இடம்</th></tr></thead><tbody><tr><td><b>CCP</b> (Central Counterparty)</td><td>Trade-க்கு அப்புறம் ஒவ்வொரு seller-க்கும் buyer-ஆ, ஒவ்வொரு buyer-க்கும் seller-ஆ ஆகுது (novation), counterparty risk-ஐ உறிஞ்சுது (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §5)</td><td>NSCC, LCH SwapClear, ICE Clear Credit, CME Clearing, OCC</td></tr><tr><td><b>CSD</b> (Central Securities Depository)</td><td>ஒரு security-ஓட <i>legal ownership</i>-ஐ பதிவு பண்ற ஒற்றை மைய ledger — DvP settlement இங்கதான் நடக்குது (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7)</td><td>DTC, CDS/CDSX (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7, <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §04)</td></tr><tr><td><b>Custodian</b></td><td>ஒரு institutional owner <i>சார்பா</i> securities, cash-ஐ வெச்சிருக்கும் (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7), <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §4-ப்படி post பண்ணின collateral-ஐயும் வெச்சிருக்கலாம்</td><td>Modules 4-12 முழுக்க குறிப்பிடப்பட்டது</td></tr><tr><td><b>Settlement Agent</b></td><td>உண்மையான DvP instruction-ஐ execute பண்ணும் — trade-ஓட settlement தேதில CSD வழியா securities-ஐயும் payment system வழியா cash-ஐயும் நகர்த்தும்</td><td><a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7-ஓட Fedwire உதாரணம்</td></tr><tr><td><b>Tri-Party Agent</b></td><td>தானியங்கி collateral தேர்வு, valuation, substitution-க்கான சிறப்பு custodian-போன்ற பாத்திரம் (<a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §4)</td><td>Euroclear, Clearstream</td></tr></tbody></table></div>
+<div class="ticket"><pre>WHY THESE ROLES BLUR IN PRACTICE, BUT AREN'T THE SAME FUNCTION
+========================================================================
+
+  A single large custodian bank might simultaneously:
+    - hold Maple Leaf Pension Fund's Coca-Cola shares as CUSTODIAN
+    - act as SETTLEMENT AGENT, instructing DTC (the CSD) to move
+      those shares on T+1
+    - separately act as TRI-PARTY AGENT for a totally different
+      client's derivatives collateral
+
+  -&gt; One institution, three DIFFERENT ROLES on three different
+     relationships. A reporting system that has a single
+     "Custodian" field covering all three blurs together data that
+     actually serves three separate operational purposes.</pre></div>
+<p><b>Takeaway:</b> இந்தப் பட்டியல்ல CSD தான் ஒரே <i>உண்மையான</i> மைய ledger — மற்ற எல்லாமே (Custodian, Settlement Agent, Tri-Party Agent) அந்த ஒற்றை ledger மேல உட்கார்ந்த, அல்லது அதுக்கு instructions-ஐ ஊட்டும் service layer. அதனாலதான் <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7 DvP-ஐ முழுக்க CSD-யின் அடிப்படையிலயே விவரிக்க முடிஞ்சது, ஒரு உண்மையான operational trade record-க்கு வேலையை உண்மையில யார் செய்யறாங்கன்னு காட்ட தனி Custodian, Settlement Agent fields தேவை.</p>
+    </section>
+    <section class="mod" id="3-clearing-member-நேரடி-access-vs-client-clearing">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Clearing Member — நேரடி Access vs Client Clearing</h2>
+      <p><b>Definition:</b> Centrally-cleared trade (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6) வேணும்னு விரும்பற ஒவ்வொரு firm-உம் ஒரு CCP-ஐ நேரடியா அணுக முடியாது. <b>Clearing Member</b> = ஒரு CCP-ஓட நேரடி member ஆன firm; மற்ற எல்லாரும் ஒரு Clearing Member வழியா, <b>client clearing</b>-ன்னு சொல்லப்படற உறவுல மறைமுகமா clearing-ஐ அணுகறாங்க.</p>
+<div class="ticket"><pre>DIRECT CLEARING MEMBER  vs  CLIENT CLEARING
+========================================================================
+
+  Goldman Sachs: large enough to be a DIRECT Clearing Member of
+    LCH SwapClear -- posts its own Initial Margin (Module 12 §2)
+    directly to the CCP, faces the CCP's default waterfall
+    directly (Module 11 §5)
+
+  Maple Leaf Pension Fund: NOT a direct Clearing Member -- too
+    small, doesn't meet LCH SwapClear's membership/capital
+    requirements. To get a centrally-cleared IRS anyway, it uses
+    Bank Of Toronto as its CLEARING MEMBER (a "client clearing"
+    relationship):
+
+    Maple Leaf Pension Fund  --trades with--&gt;  Bank Of Toronto
+                                                     |
+                                        (submits trade to CCP,
+                                         GUARANTEES performance)
+                                                     v
+                                            LCH SwapClear (CCP)
+
+  -&gt; Bank Of Toronto stands between Maple Leaf Pension Fund and
+     the CCP -- if Maple Leaf Pension Fund fails, Bank Of Toronto
+     (the Clearing Member) is on the hook to the CCP, not the
+     other way around. This is a DIFFERENT counterparty risk
+     relationship than the bilateral CVA math of Module 11 §4.</pre></div>
+<p><b>IT/reporting பார்வை:</b> Client-cleared trade record-க்கு "Clearing Member"-ஐ "Counterparty"-ல இருந்து வேறுபடுத்தும் ஒரு field தேவை — Bank Of Toronto, Maple Leaf Pension Fund-ஓட Clearing Member, ஆனா பொருளாதார ரீதியா Maple Leaf Pension Fund-ஓட உண்மையான counterparty risk, novation-க்கு அப்புறம் CCP-க்கு ஓடுது; Bank Of Toronto ஒரு இடைநிலை guarantor, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>-ஓட bilateral CVA கட்டமைப்பு கருதிய மாதிரி இறுதி risk-தாங்கி இல்ல.</p>
+<p><b>Takeaway:</b> Client clearing தான், ஒரு firm நேரடி member ஆகற அளவு பெருசா இல்லாமலே <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §5-ஓட CCP risk-mutualization நன்மைகள் எல்லாத்தையும் அணுக முடியும்ங்கறதுக்கு காரணம் — ஆனா அது CCP உறவை மாத்தாம, அதுக்குப் பக்கத்துல ஒரு புது, உண்மையிலயே தனி counterparty உறவை (client-to-Clearing-Member) அறிமுகப்படுத்துது.</p>
+    </section>
+    <section class="mod" id="4-lei-deep-dive-ஒரு-trade-பல-பாத்திரங்கள்">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. LEI Deep Dive — ஒரு Trade, பல பாத்திரங்கள்</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §6 முதல்ல LEI-ஐ "எது" இல்ல, "யார்"ன்னு identify பண்றதா அறிமுகப்படுத்தியது. இந்த roadmap அதுக்கப்புறம் வெவ்வேறு modules முழுக்க LEI உண்மையிலயே வேறுபட்ட பாத்திரங்கள்ல நடிக்கிறதைக் காட்டியிருக்கு — Section 5-ஓட worked example அவை ஒவ்வொண்ணையும் ஒரே trade record-ல ஒரே நேரத்துல வைக்குது.</p>
+<div class="table-scroll"><table><thead><tr><th>LEI Role</th><th>எதை Identify பண்ணுது</th><th>முதல்ல பார்த்த இடம்</th></tr></thead><tbody><tr><td>Buyer / Seller LEI</td><td>Trade-ஓட ரெண்டு பொருளாதார counterparties</td><td><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §6</td></tr><tr><td>Counterparty LEI</td><td>Buyer/Seller பொருந்தாதப்போ பயன்படுத்தற, எந்த ஒரு பக்கத்துக்குமான பொது label (Section 01)</td><td><a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §6</td></tr><tr><td><b>Reference Entity LEI</b></td><td>ஒரு CDS-ஓட default risk-ஐ reference பண்ற company — trading party அல்லவே அல்ல</td><td><a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §6</td></tr><tr><td><b>Clearing Member LEI</b></td><td>ஒரு client-ஓட trade-ஐ CCP-க்கு submit பண்ற firm (Section 03)</td><td>இந்த module-க்கு புதுசு</td></tr><tr><td><b>CCP LEI</b></td><td>CCP தானே — ஆமா, CCPs-க்கும் தங்களோட சொந்த LEIs உண்டு, ஏன்னா அவையும் legal entities</td><td>இந்த module-க்கு புதுசு</td></tr><tr><td><b>Reporting Entity LEI</b></td><td>Regulatory trade report-ஐ submit பண்ற சட்டப் பொறுப்பு கொண்ட தரப்பு (Section 06) — எப்பவும் ரெண்டு trading parties-ல ஒண்ணாவே இருக்காது</td><td>இந்த module-க்கு புதுசு</td></tr><tr><td>Custodian LEI</td><td>ஒரு தரப்பு சார்பா securities/collateral-ஐ வெச்சிருக்கும் நிறுவனம்</td><td><a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §4</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> "யார்"ன்னு பதில் சொல்லும் LEI, இந்த roadmap அறிமுகப்படுத்தின ஒவ்வொரு பாத்திரத்தையும் பக்கம் பக்கமா வெச்சா, குறைந்தது ஏழு தனி உப-கேள்விகளை கொண்டிருக்குன்னு தெரியுது — "யார் trade பண்றாங்க", "யார் subject", "யார் clear பண்றாங்க", "யார் report பண்றாங்க", "யார் custody வெச்சிருக்காங்க" என்பவை ஐந்து உண்மையிலயே வேறு கேள்விகள்; அத்தனைக்கும் ஒரே 20-character identifier வடிவம்தான் பதில்.</p>
+    </section>
+    <section class="mod" id="5-worked-example-ஒரு-trade-ல-முழு-party-map">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Worked Example — ஒரு Trade-ல முழு Party Map</h2>
+      <div class="ticket"><pre>5Y CAD IRS  —  CLIENT-CLEARED, FULL PARTY MAP
+========================================================================
+
+  Maple Leaf Pension Fund wants a 5Y CAD IRS, pays fixed 4.00%,
+  Notional CAD 50,000,000 -- economically identical structure to
+  Module 8 §4a's swap, different notional and buyer
+
+  EXECUTION: Maple Leaf Pension Fund trades bilaterally against
+    Goldman Sachs (dealer, Module 1 §3a)
+
+  CLEARING: submitted to LCH SwapClear for novation (Module 3 §6)
+    - Goldman Sachs: DIRECT Clearing Member, submits its own side
+    - Maple Leaf Pension Fund: uses Bank Of Toronto as its
+      CLEARING MEMBER (Section 03), which submits Maple Leaf's
+      side and guarantees its performance to the CCP
+
+  COLLATERAL: Maple Leaf Pension Fund's Initial Margin (Module 12
+    §2) is held via a TRI-PARTY AGENT (Euroclear, Module 12 §4)
+
+  ONE TRADE RECORD, SEVEN LEI FIELDS:
+    Buyer LEI              : Maple Leaf Pension Fund
+    Seller LEI              : Goldman Sachs
+    Clearing Member LEI     : Bank Of Toronto (for Maple Leaf's side)
+    CCP LEI                 : LCH SwapClear
+    Reporting Entity LEI    : Bank Of Toronto (delegated reporting
+                               on Maple Leaf's behalf -- Section 06)
+    Custodian/Tri-Party LEI : Euroclear
+    (Counterparty LEI field would duplicate Buyer/Seller here,
+     since this product DOES have a clear buy/sell direction on
+     the fixed-vs-floating economics -- Section 01's nuance)
+
+  -&gt; Seven distinct legal entities, seven distinct LEI roles, ONE
+     trade. None of these seven entities appears twice in the
+     same role, and none of these roles is optional to model
+     correctly if this trade needs to be reconstructed later from
+     its LEI fields alone.</pre></div>
+<p><b>Takeaway:</b> இந்த ஒற்றை worked example, <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §6-ல இருந்து இந்த roadmap கேட்ட ஒவ்வொரு "யார்" கேள்வியின் உறுதியான பலன் — ஒரு production trade record உண்மையிலயே இத்தனை தனித்தனி party-role fields தேவை; இவற்றில் ஏதாவது ரெண்டை ஒரு பொதுவான "Counterparty" field-ஆ ஒடுக்கறது, யார் உண்மையில என்ன செய்தாங்கன்னு பத்தின உண்மையான, சட்டப்படி அர்த்தமுள்ள தகவலை இழக்குது.</p>
+<h3>கூடுதல் உதாரணம் — அதே trade, யாருக்கு என்ன கடமை? (எளிய தமிழ்ல)</h3>
+<div class="table-scroll"><table><thead><tr><th>Entity</th><th>பாத்திரம்</th><th>இவங்க தோத்தா என்ன ஆகும்?</th></tr></thead><tbody><tr><td>Maple Leaf Pension Fund</td><td>Buyer (fixed payer)</td><td>Bank Of Toronto (Clearing Member) CCP-க்கு அவங்க சார்பா பொறுப்பேற்கணும்</td></tr><tr><td>Goldman Sachs</td><td>Seller + நேரடி Clearing Member</td><td>CCP-ஓட default waterfall (அவங்க IM → Default Fund → ...)</td></tr><tr><td>Bank Of Toronto</td><td>Maple Leaf-ஓட Clearing Member + Reporting Entity</td><td>Maple Leaf default ஆனா CCP-க்கு guarantor-ஆ கட்டணும்</td></tr><tr><td>LCH SwapClear</td><td>CCP</td><td>அவங்களோட சொந்த capital + waterfall கடைசி தடுப்பு</td></tr><tr><td>Euroclear</td><td>Tri-party agent</td><td>Collateral-ஐ பாதுகாத்து வைத்திருக்கிறார்; உரிமையாளர் இல்ல</td></tr></tbody></table></div>
+<p>ஒரே trade — ஆனா "பிரச்சனை வந்தா யார் கொடுக்கணும்"ங்கறது ஒவ்வொரு entity-க்கும் வேறு. இதனால தான் ஒவ்வொரு LEI பாத்திரத்தையும் தனி field-ஆ வைக்கணும்.</p>
+    </section>
+    <section class="mod" id="6-reporting-entity-vs-counterparty-உண்மையில-யார்-report-file-பண்றது">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Reporting Entity vs Counterparty — உண்மையில யார் Report File பண்றது</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7-ஓட OTC derivative reporting கடமை, ரெண்டு trading parties-உம் தனித்தனியா ஒரே மாதிரி reports-ஐ submit பண்ணணும்னு தானா அர்த்தப்படுத்தறதில்ல — வெவ்வேறு regimes Reporting Entity பாத்திரத்தை வெவ்வேறு விதமா ஒதுக்குது; அது அடிக்கடி ரெண்டு trading counterparties-ல ஒண்ணாவே இருக்கறதில்ல.</p>
+<div class="ticket"><pre>DUAL-SIDED vs SINGLE-SIDED REPORTING
+========================================================================
+
+  EMIR (EU/UK) — DUAL-SIDED: BOTH counterparties must report their
+    side of the trade to a Trade Repository, though a smaller
+    counterparty can DELEGATE its reporting obligation to the
+    larger one (exactly Section 05's Bank Of Toronto reporting on
+    Maple Leaf Pension Fund's behalf)
+
+  Dodd-Frank (US) — SINGLE-SIDED: only ONE party (determined by a
+    defined hierarchy -- generally the more "regulated" or
+    "swap dealer" party) reports the trade; the other party has no
+    independent reporting obligation for that same trade at all
+
+  -&gt; The SAME bilateral trade between a US dealer and an EU buy-
+     side client can be REPORTED ONCE under Dodd-Frank's rules but
+     TWICE (or once, if delegated) under EMIR's rules for the
+     EU-domiciled leg -- "Reporting Entity" isn't a fixed role,
+     it's assigned differently by every regulatory regime a trade
+     happens to touch.</pre></div>
+<p><b>Takeaway:</b> Maple Leaf Pension Fund உண்மையான Buyer-ஆ இருக்கற trade-ல "Reporting Entity: Bank Of Toronto"ன்னு காட்டும் reporting field தவறில்ல — EMIR அனுமதிக்கறபடி Section 05-ஓட delegated-reporting ஏற்பாடு சரியா வேலை செய்யறது; <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> regulators உண்மையில என்ன பெறுறாங்கன்னு உள்ளடக்கும்போது இந்த வேறுபாட்டை நேரடியா எடுத்துக்கும்.</p>
+    </section>
+    <section class="mod" id="7-it-reporting-பார்வை-reference-data-golden-source-lei-lifecycle">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. IT/Reporting பார்வை — Reference Data, Golden Source &amp; LEI Lifecycle</h2>
+      <p><b>Definition:</b> இதுவரை விவாதித்த ஒவ்வொரு party/LEI field-உம் <b>reference data</b>, trade data இல்ல — அது எந்த ஒரு trade-ஐயும் சாராம இருக்கற ஒரு entity-ஐ விவரிக்குது; ஒவ்வொரு தடவையும் புதுசா உள்ளிடாம, trade capture நேரத்துல தேடிப் பிடிச்சு இணைக்கப்படுது.</p>
+<div class="ticket"><pre>REFERENCE DATA vs TRADE DATA — the distinction that matters
+========================================================================
+
+  TRADE DATA (specific to THIS trade, changes every time):
+    Notional, Price, Trade Date, Maturity Date
+
+  REFERENCE DATA (describes an ENTITY, reused across every trade
+  that entity is party to):
+    Maple Leaf Pension Fund's LEI, registered address, credit
+    rating -- the SAME values whether this is trade #1 or #10,000
+    Bank Of Toronto references this year
+
+  -&gt; A "Golden Source" is the single authoritative system a firm
+     designates to own each reference data entity -- every other
+     system (trade capture, risk, collateral, reporting) is
+     supposed to LOOK UP that entity's LEI from the Golden Source,
+     never store its own independently-typed copy that can drift
+     out of sync.</pre></div>
+<p><b>LEI Lifecycle — ஒரு உண்மையிலயே operational நிஜம்:</b> LEI ஒரு தடவை வழங்கப்பட்டு மறக்கப்படறதில்ல — அதை வழங்கிய Local Operating Unit (LOU, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a>-ஓட abbreviations glossary)-உடன் <b>ஆண்டுதோறும் புதுப்பிக்கப்படணும்</b>; புதுப்பிக்கப்படாத (lapsed) LEI, GLEIF global database-ல முழுசா செல்லாததா இல்லாம "LAPSED"ன்னு flag பண்ணப்படுது. Lapsed LEI உள்ள counterparty சட்டப்படி இன்னும் இருக்கலாம், சில jurisdictions-ல இன்னும் trade கூட பண்ணலாம்; ஆனா MiFID II-ஓட <b>"No LEI, No Trade"</b> கொள்கை (Section 08) என்றால், EU-regulated firm பொதுவா புதுப்பிக்கப்படற வரை LEI lapsed ஆன counterparty-க்கு எதிரா ஒரு புது reportable trade-ஐ execute பண்ண முடியாது — LEI lifecycle கண்காணிப்பை ஒரு உண்மையான, தொடர் operational control ஆக்குது, ஒரு தடவை onboarding checkbox இல்ல.</p>
+<p><b>Takeaway:</b> இந்த module பெயரிட்ட ஒவ்வொரு party பாத்திரமும் — Buyer, Clearing Member, Custodian, Reference Entity — கடைசில ஒரு Golden-Source-நிர்வகிக்கும் LEI record-க்கு resolve ஆகுது; அதன் சொந்த lifecycle (வழங்கப்பட்டது, புதுப்பிக்கப்பட்டது, lapsed ஆனது) trade-ஓட சொந்த economics-ஐப் பற்றி எதுவும் சாராம, அந்த entity-க்கு எதிரா ஒரு புது trade-ஐ சட்டப்படி execute பண்ணவே முடியுமா இல்லையாங்கறதை தனியா பாதிக்கலாம்.</p>
+    </section>
+    <section class="mod" id="8-regulatory-perspective-gleif-lous-no-lei-no-trade-cpmi-iosco">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Regulatory Perspective — GLEIF/LOUs, &quot;No LEI, No Trade&quot; &amp; CPMI-IOSCO</h2>
+      <div class="table-scroll"><table><thead><tr><th>Regulation / Body</th><th>Parties, LEIs &amp; Market Infrastructure-ஐ குறிப்பா எப்படித் தொடுது</th></tr></thead><tbody><tr><td><b>GLEIF</b> (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8-ஓட abbreviations-ல ஏற்கனவே)</td><td>உலகளாவிய LEI அமைப்பை மேற்பார்வை பண்ணுது; ஒவ்வொரு நாட்டுலயும் firms-க்கு LEIs வழங்கற (பெரும்பாலும் தேசிய business registries அல்லது exchanges) <b>Local Operating Units (LOUs)</b>-ஐ அங்கீகரிக்குது; Section 07 விவரிக்கற LAPSED/ACTIVE நிலையையும் பராமரிக்குது</td></tr><tr><td><b>MiFID II "No LEI, No Trade"</b></td><td>செல்லுபடியாகும், செயலில் உள்ள LEI இல்லாத counterparty-க்காக/எதிரா ஒரு முதலீட்டு firm பொதுவா reportable trade-ஐ execute பண்ணக்கூடாதுங்கற EU விதி (தொழில்நுட்ப ரீதியா MiFIR transaction reporting தேவைகளின் பகுதி) — LEI-ஐ reporting சிறப்பிலிருந்து ஒரு உண்மையான trading முன்நிபந்தனையா மாத்துது</td></tr><tr><td><b>CPMI-IOSCO</b> (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §8-ஓட abbreviations-ல ஏற்கனவே)</td><td>CCP, CSD risk-management standards-க்கான கூட்டு உலகளாவிய standard-setter ("Principles for Financial Market Infrastructures") — Section 02-ஓட table-ல உள்ள ஒவ்வொரு CCP-யும் (LCH SwapClear, ICE Clear Credit, NSCC, முதலியன) எந்த தேசிய regulator நேரடியா மேற்பார்வை பண்ணினாலும் பூர்த்தி செய்ய எதிர்பார்க்கப்படும் அடிப்படையை வகுக்குது</td></tr><tr><td><b>EMIR / Dodd-Frank</b> (Reporting Entity விதிகள், Section 06)</td><td>ஒவ்வொரு regime-உம் தன் சொந்த Reporting Entity hierarchy-ஐ சுயாதீனமா வரையறுக்குது — Section 06-ல உள்ள "dual-sided vs single-sided" வேறுபாடு சட்டத்துக்குள்ள உண்மையிலயே குறிவைக்கப்பட்ட இடம் இதுதான், சந்தை வழக்கம் மட்டுமில்ல</td></tr><tr><td><b>தேசிய CCP/CSD Regulators</b></td><td>ஒவ்வொரு jurisdiction-ஓட markets regulator-உம் (LCH-க்கு FCA, CDCC-க்கு Bank of Canada/CIRO, US CCPs-க்கு Fed/CFTC/SEC கூட்டா — <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §10) தன் உள்நாட்டு CCPs/CSDs-ஐ CPMI-IOSCO அடிப்படையின் கீழ நேரடியா உரிமம் வழங்கி மேற்பார்வை பண்ணுது</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> LEI regulation தான் இந்த முழு roadmap-லயும், ஒரு data-quality கருத்து (இந்த entity-க்கு செல்லுபடியாகும் identifier இருக்கா) ஒரு கடினமான சட்ட முன்நிபந்தனையாகவும் இருக்கற ஒரே இடம் — "No LEI, No Trade"ன்னா Section 07-ஓட Golden Source, lifecycle-monitoring கவலைகள் வெறும் நல்ல reference-data சுகாதாரம் இல்ல; ஒரு trade execute ஆகுமா ஆகாதாங்கறதுக்கான வித்தியாசம்.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Maple Leaf Pension Fund</td><td>Client-cleared IRS-ல Buyer (Section 05); நேரடி Clearing Member இல்ல, Bank Of Toronto-வை சார்ந்திருக்கு</td></tr><tr><td>Goldman Sachs</td><td>Seller/dealer counterparty; LCH SwapClear-ஓட ஒரு நேரடி Clearing Member</td></tr><tr><td>Bank Of Toronto</td><td>Maple Leaf Pension Fund-ஓட Clearing Member (Section 03); delegated EMIR reporting-ன் கீழ Reporting Entity (Section 06)</td></tr><tr><td>LCH SwapClear</td><td>Novation செய்யும் CCP; தானே ஒரு LEI-ஐ சுமக்கும் (Section 04)</td></tr><tr><td>Euroclear</td><td>Maple Leaf Pension Fund-ஓட Initial Margin-ஐ வெச்சிருக்கும் tri-party agent (<a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> §4)</td></tr><tr><td>GLEIF / LOUs</td><td>LEI வழங்கல், lifecycle-ஐ மேற்பார்வை பண்ற உலகளாவிய அமைப்பு, தேசிய வழங்குநர்கள் (Section 07-08)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Section 05-ஓட 5Y CAD IRS-ல, Maple Leaf Pension Fund பின்னாடி LCH SwapClear-ஓட ஒரு நேரடி Clearing Member ஆகுற அளவு பெருசானா, trade record-ல இருந்து முழுசா மறைகிற LEI field எது? எந்த உறவை அது மாத்தும்?</li><li>Section 01-ஐ பயன்படுத்தி, ஒரு plain interest rate swap-ல "Buyer" என்ற சொல் எந்த தரப்புக்காவது அர்த்தமுள்ளதா? <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>-ஓட risk கட்டமைப்பு ஏன் "Counterparty"-ஐ பயன்படுத்துது?</li><li>ஒரு firm-ஓட LEI GLEIF database-ல "LAPSED" status-ஐ காட்டுது. Section 07-08-ஐ பயன்படுத்தி, இந்த firm MiFID II-ன் கீழ ஒரு EU-regulated counterparty-உடன் ஒரு புது reportable trade-ஐ இன்னும் சட்டப்படி execute பண்ண முடியுமா?</li><li>Section 06-ஐ பயன்படுத்தி, ஒரு US dealer-க்கும் ஒரு EU buy-side client-க்கும் இடையிலான அதே bilateral trade, Dodd-Frank-ன் கீழும் EMIR-ன் கீழும் ஒரே நேரத்துல report பண்ணப்பட முடியுமா? அவை ஒரே report-ஆ?</li><li>Section 02-ஐ பயன்படுத்தி, இந்த roadmap-ல மற்றொரு பாத்திரத்தோட ஒரே நிறுவனத்துல உட்கார வாய்ப்புள்ள ஒரு institution பாத்திரத்தைப் பெயரிடுங்க; அது ஏன் அந்த ரெண்டு பாத்திரங்களையும் ஒரே செயல்பாடு ஆக்காதுன்னு விளக்குங்க.</li><li>Bank Of Toronto-வுக்கும் Maple Leaf Pension Fund-க்கும் இடையிலான client-clearing உறவு "<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §4-ஓட bilateral CVA கணக்கை விட வேறுபட்ட counterparty risk உறவு"ன்னு Section 03 ஏன் சொல்லுது — குறிப்பா என்ன மாறியது?</li><li>Section 07-ஐ பயன்படுத்தி, ஒரு counterparty-ஓட LEI-ஐ Golden Source-ல இருந்து தேடாம, சுயாதீனமா தட்டச்சு செய்த தன் சொந்த நகலை store பண்ற trade capture system, அந்த நகல் உள்ளிட்ட நாளன்னிக்கு சரியா இருந்திருந்தாலும் ஒரு உண்மையான data-quality risk ஏன்?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் <b><a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a>: Regulatory Reporting + IT View</b>-க்குப் போலாம்; roadmap-ஓட இறுதி module, இது Section 06-ஓட Reporting Entity வேறுபாட்டை நேரடியா எடுத்துக்குது.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. "Clearing Member LEI" field (தற்போது Bank Of Toronto) மறையும், Maple Leaf Pension Fund தானே LCH SwapClear-க்கு நேரடியா, தன் சொந்த Clearing Member-ஆ submit பண்றதா மாறும் — Section 03-ஓட client-clearing உறவு ஒரு நேரடி Clearing Member உறவால மாற்றப்படும், CCP-யோட Goldman Sachs-ஓட தற்போதைய உறவுக்கு கட்டமைப்புல ஒத்தது.</b></p>
+<p>Section 03-ஓட diagram சரியா இந்த மாற்றுப் பாதையைக் காட்டுது: Goldman Sachs, போதுமான அளவு பெருசா இருப்பதால், இடைநிலையை முழுசா தவிர்த்து CCP-ஐ நேரடியா எதிர்கொள்ளுது — நேரடி Clearing Member ஆகுறதுதான் Section 05-ஓட party map-ல Bank Of Toronto-ஓட guarantor பாத்திரத்தின் தேவையை நீக்கும் கட்டமைப்பு மாற்றம்.</p>
+<p><b>2. இல்ல — plain IRS-ல "Buyer" என்பது அர்த்தமுள்ளதா இல்ல, ஏன்னா fixed-vs-floating cash flows பரிமாற்றத்துல இயற்கையான buy/sell திசை இல்ல (Section 01). <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>-ஓட risk கட்டமைப்பு குறிப்பா "Counterparty"-ஐ பயன்படுத்துது, ஏன்னா அது buy/sell சமச்சீரற்ற தன்மையே இல்லாத ஒரு உறவையும் விவரிக்கும் அளவு பொதுவானது; Buyer/Seller ஒரு திசைசார்ந்த trade-ஐ முன்னிறுத்துது.</b></p>
+<p>Section 01-ஓட takeaway இதை நேரடியா சொல்லுது: Buyer/Seller Cash-instrument வடிவம், swaps-க்கு உடையுது; Counterparty இந்த roadmap-ல ஒவ்வொரு module-லயும் ஒவ்வொரு உறவையும் விவரிக்கும் அளவு பொதுவான ஒரே சொல் — அதனாலதான் risk சொல்லகராதி (Current Exposure, Net Exposure, CVA) Buyer/Seller மொழியை ஒருபோதும் பயன்படுத்தறதில்ல.</p>
+<p><b>3. பொதுவா இல்ல — MiFID II-ஓட "No LEI, No Trade" கொள்கை (Section 08) என்றா, EU-regulated firm lapsed LEI உள்ள counterparty-க்கு எதிரா ஒரு புது reportable trade-ஐ அது புதுப்பிக்கப்படற வரை execute பண்ண முடியாது, firm தானே சட்டப்படி தொடர்ந்து இருந்தாலும்.</b></p>
+<p>Section 07-08 சேர்ந்து இதை நிறுவுது: lapsed LEI entity-யையே செல்லாததாக்காது, ஆனா புது MiFID II-reportable trading நடவடிக்கையை தடுக்குது — இருக்கற positions unwind ஆகாது, ஆனா புது trade execution தான் விதி கடிக்கற இடம்; LEI lifecycle கண்காணிப்பை ஒரு செயலற்ற data-quality சோதனையா இல்லாம, ஒரு செயலில் உள்ள pre-trade control ஆக்குது.</p>
+<p><b>4. ஆமா, ரெண்டு regimes-உம் அதே அடிப்படை trade-க்கு சுயாதீனமா ஒரு report-ஐ கோரலாம், அவை தானா அதே report இல்ல — Section 06 விளக்குது: EMIR dual-sided reporting-ஐ (delegate ஆகலாம்) கோருது, Dodd-Frank தன் சொந்த hierarchy-ன் கீழ single-sided reporting-ஐ கோருது; ரெண்டு jurisdictions-ஐயும் கடக்கும் ஒரு trade உண்மையிலயே தனி report submissions-ஐ, உண்மையிலயே வேறு Trade Repositories-க்கு உருவாக்கலாம், ஒவ்வொண்ணும் Reporting Entity யாருங்கறதைப் பத்தி தன் சொந்த regime-ஓட விதிகளால ஆளப்படும்.</b></p>
+<p>Section 06-ஓட takeaway இதை துல்லியமா சொல்லுது: "Reporting Entity" நிலையான பாத்திரம் இல்ல, ஒரு trade தொடும் ஒவ்வொரு regulatory regime-உம் அதை வேறுவிதமா ஒதுக்குது — ஒரு cross-border trade ஒரே ஒரு report-ஐ பெறாது, ரெண்டு தரப்பில எதன் மேலயும் அதிகார எல்லை கொண்ட regimes எத்தனை இருக்கோ அத்தனை reports வரை சாத்தியமா பெறும்.</p>
+<p><b>5. ஒரு பெரிய custodian bank, வெவ்வேறு clients-க்கு அல்லது ஒரே client-ஓட வெவ்வேறு உறவுகளுக்கு, ஒரே நேரத்துல Custodian-உம், Settlement Agent-உம், Tri-Party Agent-உம் ஆக இருக்கலாம் — ஒவ்வொரு பாத்திரமும் ஒரே legal entity-யால செய்யப்பட்டாலும், ஒரு தர்க்க ரீதியா வேறுபட்ட நோக்கத்துக்கு (assets வெச்சிருக்கறது, DvP instructions-ஐ execute பண்றது, collateral-ஐ தானா நிர்வகிக்கறது) சேவை செய்யறதால, அது இந்தப் பாத்திரங்களை ஒரே செயல்பாடு ஆக்காது.</b></p>
+<p>Section 02-ஓட diagram இதை நேரடியா சொல்லுது: "ஒரு நிறுவனம், மூன்று வேறு உறவுகள்ல மூன்று வேறு பாத்திரங்கள்" — மூணையும் உள்ளடக்கும் ஒரே பொதுவான "Custodian" field-ஓட reporting system, அவை ஒரே நிறுவனப் பெயரைப் பகிர்ந்தாலும், உண்மையிலயே தனி operational நோக்கங்களுக்கு சேவை செய்யற data-வை ஒண்ணா கலக்கும்.</p>
+<p><b>6. ஏன்னா client-clearing உறவுல, Maple Leaf Pension Fund-க்கு Bank Of Toronto-ஓட counterparty risk, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §3-4-ஓட தூய bilateral MTM-and-Net-Exposure கணக்கை விட, Clearing-Member-guarantees-the-CCP கட்டமைப்பு (Section 03) வழியா ஓடுது — Maple Leaf Pension Fund default ஆனா, Bank Of Toronto, Maple Leaf-ஓட கடமைகளுக்காக CCP-க்கு பொறுப்பு; <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §4 மாதிரியாக்கிய uncleared bilateral trade மேல CVA scenario-வை விட அடிப்படையில வேறுபட்ட risk (ஒரு client-ஓட cleared position மேல guarantor risk).</b></p>
+<p>Section 03 இதை வெளிப்படையா சொல்லுது: client clearing "ஒரு புது, உண்மையிலயே தனி counterparty உறவை... CCP உறவுக்குப் பக்கத்துல, அதை மாத்தாம" அறிமுகப்படுத்துது — <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a>-ஓட CVA formula நடுவுல CCP-யோ Clearing Member-ஓ இல்லாத bilateral trade-ஐ கருதியது; client-cleared trade novation-உம் guarantor உறவும் அடுக்கப்பட்ட முற்றிலும் வேறு risk topology-ஐ கொண்டிருக்கு.</p>
+<p><b>7. ஏன்னா reference data (Section 07) — ஒரு LEI-ஓட ACTIVE/LAPSED நிலை உட்பட — எந்த trade-ஐயும் சாராம சுயாதீனமா மாறலாம் (ஆண்டு புதுப்பிப்பு, lapse, புது LOU-ன் கீழ மறுபதிவு); தன் சொந்த நிலையான, சுயாதீனமா தட்டச்சு செய்த நகலை வெச்சிருக்கற trade capture system-க்கு அந்த மாற்றத்தைப் பின்னாடி தெரிஞ்சுக்க எந்த mechanism-உம் இல்ல; ஒவ்வொரு முறையும் Golden Source-ஓட தற்போதைய record-ஐ தேடற system மட்டுமே இன்னிக்கான உண்மை நிலையை பெறும், நகல் முதல்ல உள்ளிடப்பட்ட நேரத்தின் உறைந்த snapshot-ஐ இல்ல.</b></p>
+<p>Section 07-ஓட takeaway இதை Golden Source கட்டமைப்புக்கான மைய வாதமா ஆக்குது: உள்ளிட்ட நாளன்னிக்கான சரியான தன்மை, பின்னாடி சரியா இருக்கும்னு உத்தரவாதம் இல்ல, LEI lifecycle நிகழ்வுகள் (Section 07-08) சரியா ஒரு பழைய, உள்ளூர்ல நகல் எடுத்த reference data field அமைதியா தவறவிடும் வகை மாற்றம்.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 13 — Parties, LEIs & Market Infrastructure (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

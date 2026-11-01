@@ -1,0 +1,783 @@
+<!doctype html>
+<title>Module 19 — Interest Rate Swap (IRS) Deep Dive (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 19 — Interest Rate Swap (IRS) Deep Dive (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">A 5-year CAD IRS through all 20 quarterly settlements: fixed leg, CORRA compounded in arrears, novation to LCH SwapClear, full payment schedule and trade/valuation fields — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). இது <b><a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR Reporting Deep Dive</a></b>, <b><a href="../docs/2-reporting/module-17-dmo-uk-reporting.html">UK DMO Reporting Deep Dive</a></b>, <b><a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB Deep Dive</a></b> குடும்பத்தை சேர்ந்த <b>reference module</b>. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8-உம் <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4a/§5-உம் ஒரு ஒற்றை-quarter worked example-ஓட Interest Rate Swap-ஐ அறிமுகப்படுத்தியது; இந்த module ஆழமா போகுது — ஒரு உண்மையான trade, அதன் 5-வருஷ வாழ்க்கையின் எல்லா <b>20 quarterly settlements</b>-ஐ ஆரம்பம் முதல் முடிவு வரை, சரியான தேதிகள், சரியான cash தொகைகள், CORRA floating leg சரியா எப்படி கணக்கிடப்படுது, ஒரு Trade/Valuation record சுமக்க வேண்டிய ஒவ்வொரு field-உம். <b>கூடுதலா:</b> <a href="../examples/"><code>examples/</code></a> folder-ல <a href="../examples/Interest_Rate_Swap_IRS_Complete_Example.html">Interest Rate Swap (IRS) — Complete Example</a> — ஒரு சிறிய, ஒற்றை-quarter-மையம் கொண்ட துணை walkthrough, FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS வரை இணைந்த standalone examples சங்கிலியோட முதல் பாடம். <b>மூலம்:</b> English Module 19-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-trade-economic-terms"><span class="toc-num">01</span>1. Trade — Economic Terms</a></li>
+      <li><a href="#2-fixed-leg-எப்படி-கணக்கிடப்படுது"><span class="toc-num">02</span>2. Fixed Leg எப்படி கணக்கிடப்படுது</a></li>
+      <li><a href="#3-floating-leg-எப்படி-கணக்கிடப்படுது-corra-compounded-in-arrears-spread"><span class="toc-num">03</span>3. Floating Leg எப்படி கணக்கிடப்படுது — CORRA Compounded in Arrears + Spread</a></li>
+      <li><a href="#4-netting-settlement-mechanics-உண்மையில-என்ன-நகருது-எப்போ"><span class="toc-num">04</span>4. Netting &amp; Settlement Mechanics — உண்மையில என்ன நகருது, எப்போ</a></li>
+      <li><a href="#5-முழு-payment-schedule-20-quarters-உம்-5-வருஷம்"><span class="toc-num">05</span>5. முழு Payment Schedule — 20 Quarters-உம், 5 வருஷம்</a></li>
+      <li><a href="#6-maturity-ல-இறுதி-settlement"><span class="toc-num">06</span>6. Maturity-ல இறுதி Settlement</a></li>
+      <li><a href="#7-முக்கிய-fields-attributes"><span class="toc-num">07</span>7. முக்கிய Fields &amp; Attributes</a></li>
+      <li><a href="#8-trade-lifecycle-ல-இது-எங்க-பொருந்துது"><span class="toc-num">08</span>8. Trade Lifecycle-ல இது எங்க பொருந்துது</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-trade-economic-terms">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Trade — Economic Terms</h2>
+      <div class="ticket"><pre>5-YEAR CAD INTEREST RATE SWAP — ECONOMIC TERMS
+========================================================================
+  Trade ID:            BOT-IRS-2026-034410
+  Trade Date:           2026-08-25  (Tuesday)
+  Effective Date:       2026-08-27  (Trade Date + 2 business days — "spot start")
+  Maturity Date:        2031-08-27  (Effective Date + 5 years)
+  Notional:              CAD 100,000,000  (reference only — NEVER exchanged, Module 1 §8)
+  Currency:              CAD
+
+  Bank Of Toronto:       pays FIXED, receives FLOATING (CORRA + spread)
+  Goldman Sachs:         pays FLOATING (CORRA + spread), receives FIXED
+
+  Fixed Rate:            4.00% per annum
+  Fixed Leg Frequency:   Quarterly
+  Fixed Leg Day Count:   Actual/365 (fixed) — standard for CAD swaps
+
+  Floating Index:        CORRA (Canadian Overnight Repo Rate Average — Module 8 §1)
+  Floating Spread:       +0.05% (5 basis points), applied to Bank Of Toronto's
+                          receive leg
+  Floating Compounding:  Daily, compounded IN ARREARS over each quarter
+  Floating Leg Frequency: Quarterly (same payment dates as the fixed leg)
+  Floating Leg Day Count: Actual/365
+
+  Business Day Convention: Modified Following
+  Payment Lag:            2 business days after each Accrual End Date
+                           (Section 4 explains why the floating leg needs this lag)
+
+  Clearing:                Centrally cleared via LCH SwapClear (CCP) — mandatory
+                           for a standardized CAD IRS under EMIR/Dodd-Frank
+                           (Section 4 covers the novation mechanics and how it
+                           changes every money flow described in this document)</pre></div>
+<p><b>துல்லியம் பத்தின குறிப்பு.</b> கையால சரிபார்க்கக்கூடிய கணக்குக்காக, கீழ உள்ள ஒவ்வொரு quarter-உம் ஒரே மாதிரி 91-நாள் accrual period-ஆ நடத்தப்படுது (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4a பயன்படுத்தும் அதே எளிமைப்படுத்தல்); காலண்டர் தேதிகள், ஒவ்வொரு தேதியையும் உண்மையான holiday calendar வழியா நடத்தாம, ஒவ்வொரு period-க்கும் 3 calendar மாதங்களை கூட்டி உருவாக்கப்படுது. Production-ல, day-count fraction-உம் (இது ஒவ்வொரு உண்மையான quarter-க்கும் 90–92 நாட்கள் வரை உண்மையில வேறுபடும்), business-day-adjusted தேதிகளும் கையால கணக்கிடப்படாம, trade system-ஓட schedule engine-ஆல உருவாக்கப்படுது — இங்க உள்ள தேதிகளையும் நாள் எண்ணிக்கைகளையும் விளக்கமா எடுத்துக்கோங்க, rate/formula mechanics-ஐ சரியானதா.</p>
+    </section>
+    <section class="mod" id="2-fixed-leg-எப்படி-கணக்கிடப்படுது">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Fixed Leg எப்படி கணக்கிடப்படுது</h2>
+      <p>Fixed leg trade-ஓட வாழ்நாள் முழுக்க மாறவே மாறாது — inputs Notional, ஒத்துக்கிட்ட Fixed Rate, ஒவ்வொரு period-ஓட day-count fraction மட்டும்:</p>
+<div class="ticket"><pre>Fixed Leg Accrual = Notional x Fixed Rate x (Accrual Days / 365)
+
+  = 100,000,000 x 4.00% x (91 / 365)
+  = 100,000,000 x 0.04 x 0.249315...
+  = CAD 997,260.27
+
+-&gt; This SAME amount recurs every one of the 20 quarters, because the
+   fixed rate and notional never change. It is the one number in this
+   entire worked example that doesn't need to be recalculated per period.</pre></div>
+    </section>
+    <section class="mod" id="3-floating-leg-எப்படி-கணக்கிடப்படுது-corra-compounded-in-arrears-spread">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Floating Leg எப்படி கணக்கிடப்படுது — CORRA Compounded in Arrears + Spread</h2>
+      <p><b>ஏன் "reset in advance"-க்குப் பதிலா "compounded in arrears".</b> பழைய CDOR/LIBOR-பாணி regime-ல, ஒரு floating leg-ஓட rate ஒவ்வொரு period-ஓட <i>ஆரம்பத்துல ஒரு தடவை நிர்ணயிக்கப்பட்டு</i>, quarter முழுக்க மாறாம இருந்தது — rate முன்கூட்டியே தெரியும். CORRA (SOFR, €STR, SONIA போல — <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1) ஒரு <b>overnight</b> rate, அதனால quarterly floating leg அதுக்குப் பதிலா முழு period முழுக்க கவனிக்கப்பட்ட தினசரி overnight CORRA prints-ஐ நாளுக்கு நாள் <b>compound பண்ணுது</b>; period-க்கான compounded rate period <i>முடிந்த பிறகே</i> முழுசா தெரியும். LIBOR-to-RFR மாற்றத்துல IT systems உள்வாங்க வேண்டியிருந்த மிகப்பெரிய ஒற்றை இயந்திர வேறுபாடு இதுதான்.</p>
+<div class="ticket"><pre>COMPOUNDED-IN-ARREARS FORMULA
+
+  Compounded Factor = PRODUCT over every calendar day i in the period
+                       of  [ 1 + r_i x (d_i / 365) ]
+
+    where r_i  = that day's published overnight CORRA rate
+          d_i  = the number of calendar days that rate applies to
+                 (1 for a weekday; 3 for a Friday print, which also
+                 covers Saturday and Sunday under the standard
+                 "non-business day carries the prior day's rate" rule)
+
+  Compounded Rate (annualized) = (Compounded Factor - 1) x (365 / D)
+
+    where D = total calendar days in the period (91, in this example)</pre></div>
+<p>இது முழு quarter-க்கும் ஒரே annualized rate-ஐ உருவாக்குது — இந்த rate அளவுகள்ல பொருளாதார ரீதியா எளிய தினசரி சராசரிக்கு மிக நெருக்கம், ஆனா அதே இல்ல; அதனாலதான் இந்த ஆவணமும் <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4a-உம் பயன்படுத்தும் "இந்த quarter CORRA சராசரி 3.20%" என்ற சுருக்கம் உண்மையில "period-க்கு தினசரி-compound ஆன rate 3.20%-ஆ வந்தது"ன்னு அர்த்தம், ஒரு எளிய arithmetic mean இல்ல.</p>
+<p><b>ஏன் +0.05% spread இருக்கு.</b> ஒரு swap பொதுவா inception-ல அதன் மதிப்பு பூஜ்யமா (ஒரு "par swap") இருக்கும்படி விலையிடப்படுது — அதை உண்மையாக்கும் fixed rate அரிதாவே ஒரு சுத்தமான round எண். 3.9713% போன்ற விசித்திரமான fixed rate-ஐ quote பண்றதுக்குப் பதிலா, ஒரு desk பொதுவா சுத்தமான round Fixed Rate-ஐ (இங்க 4.00%) quote பண்ணி, மீதி அடிப்படையை floating leg-ல சேர்க்கப்பட்ட ஒரு சிறிய spread-ஆ உள்வாங்குது. Spread ஒரு தடவை, trade date-ல ஒத்துக்கப்படுது; CORRA போல இல்லாம, trade-ஓட வாழ்நாள் முழுக்க ஒருபோதும் மாறாது.</p>
+<p><b>Worked example — Period 1-ஓட floating leg:</b></p>
+<div class="ticket"><pre>Floating Leg Accrual = Notional x (Compounded CORRA + Spread) x (Accrual Days / 365)
+
+  Compounded CORRA over Period 1:  3.20%
+  + Spread:                        0.05%
+  = Floating Rate Applied:         3.25%
+
+  = 100,000,000 x 3.25% x (91 / 365)
+  = 100,000,000 x 0.0325 x 0.249315...
+  = CAD 810,273.97</pre></div>
+<p><b>IT/reporting பார்வை:</b> compounded rate accrual period தானே முடியும் வரை முழுசா தெரியாததால, ஒரு floating-leg accrual தொகையை period-ஓட கடைசி CORRA print வெளியிடப்படுவதுக்கு முன்னாடி கணக்கிடவே முடியாது — invoice பண்ணவோ settle பண்ணவோ கூட. அதனாலதான் Section 1-ஓட terms ஒவ்வொரு Accrual End Date-க்கும் அப்புறம் <b>2-business-day payment lag</b>-ஐ கொண்டிருக்கு: ஒரு back-office system கடைசி தினசரி CORRA prints-ஐ இழுத்து, மேல உள்ள compounding formula-வை ஓட்டி, settlement தொகையை உருவாக்கி, payment instructions-ஐ release பண்ண தேவைப்படும் operational buffer — தன்னிச்சையான வழக்கம் இல்ல.</p>
+<h3>கூடுதல் உதாரணம் — "Compounded in arrears" ஏன் எளிய சராசரியிலிருந்து சிறிது வேறுபடுது? (சிறிய எண்களோட)</h3>
+<p>3 நாள் மட்டும் எடுத்துப் பாருங்க (வெறும் புரிதலுக்கு), CORRA = 3.00%, 3.20%, 3.40%:</p>
+<div class="table-scroll"><table><thead><tr><th>முறை</th><th>கணக்கு</th><th>ஆண்டு rate</th></tr></thead><tbody><tr><td>எளிய சராசரி</td><td>(3.00 + 3.20 + 3.40) / 3</td><td>3.2000%</td></tr><tr><td>Compounded (3 நாள்)</td><td>[(1 + 0.0300/365) × (1 + 0.0320/365) × (1 + 0.0340/365) − 1] × (365/3)</td><td>≈ 3.2001%</td></tr></tbody></table></div>
+<p>வித்தியாசம் மிகச் சிறியது (ஒரு basis point-ஓட நூறில் ஒரு பங்கு கூட இல்ல), ஆனா CAD 100,000,000 notional-ல 91 நாள் காலத்துல இது சில பத்துகள் முதல் சில நூறுகள் CAD வரை வித்தியாசமாகலாம் — அதனால systems சரியான compounding formula-வை பயன்படுத்தணும்.</p>
+    </section>
+    <section class="mod" id="4-netting-settlement-mechanics-உண்மையில-என்ன-நகருது-எப்போ">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Netting &amp; Settlement Mechanics — உண்மையில என்ன நகருது, எப்போ</h2>
+      <h3>Clearing — LCH SwapClear-க்கு Novation</h3>
+<p>Section 1 சொன்ன மாதிரி, இந்த trade centrally cleared — கற்பனை இல்ல, Section 7 trade record-ல சுமக்கப்படும் உண்மையான நிலை (<code>clearingStatus: Cleared</code>, <code>ccpId: LCH SwapClear</code>). Execution-க்கு சிறிது நேரத்துல, Bank Of Toronto-வும் Goldman Sachs-உம் ஒவ்வொண்ணும் trade-ஐ <b>LCH SwapClear</b>-க்கு submit பண்ணுது — interest rate swaps-க்கான LCH-ஓட அர்ப்பணிப்பு clearing service (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6 பொது novation mechanism-ஐ உள்ளடக்குது; இந்த குறிப்பிட்ட trade-க்கு பொருத்தப்பட்ட அதே mechanism இது). Novation அசல் bilateral contract-ஐ <b>ரத்து செய்து (extinguish)</b>, அதுக்குப் பதிலா பொருளாதார ரீதியா பிரதிபலிக்கும் இரண்டு புது contracts-ஐ <b>உருவாக்குது</b>:</p>
+<div class="ticket"><pre>BEFORE NOVATION  —  one bilateral trade
+========================================================================
+  Bank Of Toronto  &lt;====  5Y CAD IRS, Notional CAD 100,000,000  ====&gt;  Goldman Sachs
+       (pays fixed 4.00% / receives floating CORRA + 0.05%)
+
+AFTER NOVATION  —  LCH SwapClear steps in; TWO trades now exist
+========================================================================
+  Bank Of Toronto      &lt;====  IRS Leg #1, CAD 100,000,000  ====&gt;  LCH SwapClear (CCP)
+       (pays fixed 4.00% / receives floating CORRA + 0.05%)
+
+  LCH SwapClear (CCP)  &lt;====  IRS Leg #2, CAD 100,000,000  ====&gt;  Goldman Sachs
+       (pays fixed 4.00% / receives floating CORRA + 0.05% — mirror of Leg #1)
+
+  -&gt; The original Bank Of Toronto &lt;-&gt; Goldman Sachs contract no longer
+     exists; it was legally extinguished by novation. Every Fixed/
+     Floating accrual and Net Amount calculated in Sections 2, 3, and
+     5 below now settles TWICE — once per leg — never once directly
+     between the two banks. Bank Of Toronto's only counterparty for
+     the remaining life of the trade is LCH SwapClear; if Goldman
+     Sachs defaulted, LCH SwapClear absorbs the loss and Bank Of
+     Toronto's own leg is unaffected.</pre></div>
+<p>ரெண்டு legs-உம் rate, notional, தேதிகள்ல ஒன்றையொன்று சரியா பிரதிபலிக்குது, அதனால LCH SwapClear இந்த trade-ல நிகர <i>சந்தை</i> risk-ஐ ஏற்கவே ஏற்காது — ஒரு leg-ல கொடுக்கறதை சரியா மற்றதுல வசூலிக்குது. அது ஏற்பது ஒவ்வொரு வங்கியிலிருந்தும் <b>counterparty credit risk</b> — அதனாலதான் novation-ல ரெண்டு பக்கத்துல இருந்தும் Initial Margin-ஐயும், அதுக்குப் பிறகு தினசரி Variation Margin-ஐயும் கோருது (முழு mechanics <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>-ல; novation mechanism தானே <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6-ல).</p>
+<h3>Netting கணக்கீடு — ஒவ்வொரு Leg-க்கும் ஒரே மாதிரி</h3>
+<div class="ticket"><pre>NETTING, EVERY QUARTER  (same math on each of the two novated legs)
+========================================================================
+  Fixed Leg Accrual (fixed-rate payer owes the other side)   CAD 997,260.27
+  Floating Leg Accrual (floating-rate payer owes the other)  CAD 810,273.97  (Period 1)
+                                                              --------------
+  Net Settlement = Fixed - Floating = 997,260.27 - 810,273.97 = CAD 186,986.30
+
+  -&gt; Only this ONE net amount moves, in ONE direction, per leg, on the
+     Payment Date. Neither side of either leg ever transfers its own
+     gross accrual — that is purely an intermediate calculation. The
+     CAD 100,000,000 notional itself never moves at all, on this date
+     or any other, on either leg (Module 1 §8).</pre></div>
+<div class="ticket"><pre>MONEY FLOW — PERIOD 1  (post-novation, via LCH SwapClear)
+========================================================================
+   Bank Of Toronto  --CAD 186,986.30 (net)--&gt;  LCH SwapClear (CCP)  --CAD 186,986.30 (net)--&gt;  Goldman Sachs
+   (fixed-rate payer, Leg #1)                                       (floating-rate payer, Leg #2)
+
+   Settlement Date: 2026-11-29  (Accrual End 2026-11-27 + 2 business days)
+
+   -&gt; Two separate settlement instructions fire on the same date, for
+      the same amount, in the same direction. LCH SwapClear passes the
+      amount straight through and is never left holding a net position
+      on this trade — the same "collects on one leg what it pays on
+      the other" property noted above.</pre></div>
+<p><b>Section 5-ஓட schedule முழுக்க பயன்படுத்தப்படும் குறி வழக்கம்:</b> ஒரு <b>நேர்மறை</b> Net Amount என்பது Fixed leg பெருசுன்னு அர்த்தம், அதனால <b>Bank Of Toronto, LCH SwapClear-க்கு (Leg #1) கொடுக்கும், LCH SwapClear, Goldman Sachs-க்கு (Leg #2) கொடுக்கும்</b>. ஒரு <b>எதிர்மறை</b> Net Amount என்பது Floating leg பெருசுன்னு அர்த்தம், அதனால ரெண்டு legs-லயும் திசை புரளுது — <b>Goldman Sachs, LCH SwapClear-க்கு கொடுக்கும், LCH SwapClear, Bank Of Toronto-க்கு கொடுக்கும்</b>. Section 5-ஓட table பொருளாதார தெளிவுக்காக அசல் bilateral திசையை ("Bank Of Toronto → Goldman Sachs") பெயரிடுது; operational ரீதியா அது எப்பவும் CCP வழியா ரெண்டு legs, ஒருபோதும் ஒரு நேரடி transfer இல்ல — <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4a-ஓட Recap Quiz Answer 1 ஒரு ஒற்றை quarter-க்கு நடத்திக் காட்டும் அதே fixed-vs-floating திசை புரள் mechanic.</p>
+    </section>
+    <section class="mod" id="5-முழு-payment-schedule-20-quarters-உம்-5-வருஷம்">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. முழு Payment Schedule — 20 Quarters-உம், 5 வருஷம்</h2>
+      <p>கீழ உள்ள ஒவ்வொரு period-உம் Section 2/3 formulas-ஐ சரியா பயன்படுத்துது — Fixed Accrual முழுக்க CAD 997,260.27-ல நிலையா; Floating Accrual ஒவ்வொரு quarter-உம் அந்த quarter-ஓட கருதப்படுற compounded CORRA rate-ஓட மாறுது (விளக்கம், ஒரு நம்பகமான கதை சொல்ல இங்க தேர்ந்தெடுக்கப்பட்டது: 2-ஆம் வருஷம் முழுக்க rates சரிந்து, அப்புறம் மேல ஏறி 5-ஆம் வருஷத்துக்குள்ள 4.00% fixed rate-ஐ தாண்டுது).</p>
+<p><b>Post-novation "Who Pays" column-ஐ படிக்கறது:</b> கீழ உள்ள ஒவ்வொரு Net Amount-உம் ரெண்டு பேருக்கும் இடையில நேரடியா இல்லாம, <b>LCH SwapClear</b> வழியா ரெண்டு legs-ஆ settle ஆகுதுன்னு Section 4 நிறுவியது. Table பொருளாதார தெளிவுக்காக அசல் bilateral திசையை பெயரிடுது — "Bank Of Toronto → Goldman Sachs"-ஐ முழுக்க "Bank Of Toronto → LCH SwapClear → Goldman Sachs"-க்கான சுருக்கமா படிங்க, Periods 17–20-க்கு எதிர்த்திசையையும் அதே மாதிரி.</p>
+<div class="table-scroll"><table><thead><tr><th>#</th><th>Accrual Start</th><th>Accrual End</th><th>Payment Date</th><th>CORRA (compounded)</th><th>Floating Rate (+0.05%)</th><th>Fixed Accrual (CAD)</th><th>Floating Accrual (CAD)</th><th>Net Amount (CAD)</th><th>Who Pays</th></tr></thead><tbody><tr><td>---:</td><td>---</td><td>---</td><td>---</td><td>---:</td><td>---:</td><td>---:</td><td>---:</td><td>---:</td><td>---</td></tr><tr><td>1</td><td>2026-08-27</td><td>2026-11-27</td><td>2026-11-29</td><td>3.20%</td><td>3.25%</td><td>997,260.27</td><td>810,273.97</td><td>186,986.30</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>2</td><td>2026-11-27</td><td>2027-02-27</td><td>2027-03-01</td><td>3.10%</td><td>3.15%</td><td>997,260.27</td><td>785,342.47</td><td>211,917.80</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>3</td><td>2027-02-27</td><td>2027-05-27</td><td>2027-05-29</td><td>3.05%</td><td>3.10%</td><td>997,260.27</td><td>772,876.71</td><td>224,383.56</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>4</td><td>2027-05-27</td><td>2027-08-27</td><td>2027-08-29</td><td>3.00%</td><td>3.05%</td><td>997,260.27</td><td>760,410.96</td><td>236,849.31</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>5</td><td>2027-08-27</td><td>2027-11-27</td><td>2027-11-29</td><td>2.95%</td><td>3.00%</td><td>997,260.27</td><td>747,945.21</td><td>249,315.06</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>6</td><td>2027-11-27</td><td>2028-02-27</td><td>2028-02-29</td><td>2.90%</td><td>2.95%</td><td>997,260.27</td><td>735,479.45</td><td>261,780.82</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>7</td><td>2028-02-27</td><td>2028-05-27</td><td>2028-05-29</td><td>2.90%</td><td>2.95%</td><td>997,260.27</td><td>735,479.45</td><td>261,780.82</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>8</td><td>2028-05-27</td><td>2028-08-27</td><td>2028-08-29</td><td>2.95%</td><td>3.00%</td><td>997,260.27</td><td>747,945.21</td><td>249,315.06</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>9</td><td>2028-08-27</td><td>2028-11-27</td><td>2028-11-29</td><td>3.05%</td><td>3.10%</td><td>997,260.27</td><td>772,876.71</td><td>224,383.56</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>10</td><td>2028-11-27</td><td>2029-02-27</td><td>2029-03-01</td><td>3.20%</td><td>3.25%</td><td>997,260.27</td><td>810,273.97</td><td>186,986.30</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>11</td><td>2029-02-27</td><td>2029-05-27</td><td>2029-05-29</td><td>3.40%</td><td>3.45%</td><td>997,260.27</td><td>860,136.99</td><td>137,123.28</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>12</td><td>2029-05-27</td><td>2029-08-27</td><td>2029-08-29</td><td>3.55%</td><td>3.60%</td><td>997,260.27</td><td>897,534.25</td><td>99,726.02</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>13</td><td>2029-08-27</td><td>2029-11-27</td><td>2029-11-29</td><td>3.70%</td><td>3.75%</td><td>997,260.27</td><td>934,931.51</td><td>62,328.76</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>14</td><td>2029-11-27</td><td>2030-02-27</td><td>2030-03-01</td><td>3.80%</td><td>3.85%</td><td>997,260.27</td><td>959,863.01</td><td>37,397.26</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>15</td><td>2030-02-27</td><td>2030-05-27</td><td>2030-05-29</td><td>3.90%</td><td>3.95%</td><td>997,260.27</td><td>984,794.52</td><td>12,465.75</td><td>Bank Of Toronto → Goldman Sachs</td></tr><tr><td>16</td><td>2030-05-27</td><td>2030-08-27</td><td>2030-08-29</td><td>3.95%</td><td>4.00%</td><td>997,260.27</td><td>997,260.27</td><td>0.00</td><td>— (no payment; legs exactly offset)</td></tr><tr><td>17</td><td>2030-08-27</td><td>2030-11-27</td><td>2030-11-29</td><td>4.00%</td><td>4.05%</td><td>997,260.27</td><td>1,009,726.03</td><td>12,465.76</td><td>Goldman Sachs → Bank Of Toronto</td></tr><tr><td>18</td><td>2030-11-27</td><td>2031-02-27</td><td>2031-03-01</td><td>4.05%</td><td>4.10%</td><td>997,260.27</td><td>1,022,191.78</td><td>24,931.51</td><td>Goldman Sachs → Bank Of Toronto</td></tr><tr><td>19</td><td>2031-02-27</td><td>2031-05-27</td><td>2031-05-29</td><td>4.10%</td><td>4.15%</td><td>997,260.27</td><td>1,034,657.53</td><td>37,397.26</td><td>Goldman Sachs → Bank Of Toronto</td></tr><tr><td><b>20 (Final)</b></td><td><b>2031-05-27</b></td><td><b>2031-08-27</b></td><td><b>2031-08-29</b></td><td><b>4.15%</b></td><td><b>4.20%</b></td><td><b>997,260.27</b></td><td><b>1,047,123.29</b></td><td><b>49,863.02</b></td><td><b>Goldman Sachs → Bank Of Toronto</b></td></tr></tbody></table></div>
+<div class="ticket"><pre>LIFETIME SUMMARY
+========================================================================
+  Total Fixed Leg paid (20 periods x CAD 997,260.27)      CAD 19,945,205.40
+  Total Floating Leg paid (sum of 20 varying accruals)     CAD 17,427,123.29
+                                                            ------------------
+  Cumulative net cash flow, Bank Of Toronto -&gt; Goldman Sachs  CAD 2,518,082.11
+
+  -&gt; Read this as "sum of 20 independent quarterly settlements," NOT as
+     a single discounted valuation figure -- each period settles and
+     closes out on its own Payment Date (Section 4); no period's cash
+     flow carries forward into, or nets against, a later period's.
+     A genuine present-value figure for the trade at any point in its
+     life is covered in Module 10 (Valuation), not here.</pre></div>
+<p><b>Takeaway:</b> யார் யாருக்கு கொடுக்கறாங்கங்கற திசை சரியா ஒரே ஒரு தடவை புரளுது — Period 16-க்கும் (floating, fixed-க்கு சரியா சமம், அதனால net தொகை பூஜ்யம், எதுவும் settle ஆகாது) Period 17-க்கும் (floating முதல் தடவை fixed-ஐ தாண்டுது) இடையில. முதல் 16 quarters, floating CORRA 4.00% fixed rate-க்கு கீழ நிக்குது, அதனால fixed-rate payer ஆன Bank Of Toronto முழுக்க net payer; கடைசி நாலு quarters-ல CORRA 4.00%-ஐ தாண்டி ஏறினதும், Bank Of Toronto net <i>receiver</i>-ஆ புரளுது. ஒரு IRS-ல ஒரு treasury desk fixed கொடுக்கறதுக்கான பொருளாதார காரணம் சரியா இதுதான்: rates குறைவா இருக்கும் வரை பணம் செலவாகும், rates lock பண்ணின fixed rate-ஐ தாண்டி உயர்ந்தப்புறம் பலன் தரும் ஒரு hedge.</p>
+<h3>கூடுதல் உதாரணம் — Schedule-ஐ ஒரு விரைவுப் பார்வையில்</h3>
+<div class="table-scroll"><table><thead><tr><th>கட்டம்</th><th>Periods</th><th>CORRA நிலை</th><th>Net payer</th></tr></thead><tbody><tr><td>Rates விழுகிற கட்டம்</td><td>1–6</td><td>3.20% → 2.90%</td><td>Bank Of Toronto (net தொகை 186,986 → 261,781 வரை அதிகரிக்குது)</td></tr><tr><td>தாழ்வு நிலை</td><td>6–7</td><td>2.90% (குறைந்தபட்சம்)</td><td>Bank Of Toronto (மிகப்பெரிய net: 261,780.82)</td></tr><tr><td>Rates மீளும் கட்டம்</td><td>8–15</td><td>2.95% → 3.90%</td><td>Bank Of Toronto (net படிப்படியா குறையுது)</td></tr><tr><td>Crossover</td><td>16</td><td>3.95% + 0.05% = 4.00%</td><td>யாருமில்ல (0.00)</td></tr><tr><td>Rates fixed-ஐ தாண்டுது</td><td>17–20</td><td>4.00% → 4.15%</td><td>Goldman Sachs (Bank Of Toronto net receiver)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="6-maturity-ல-இறுதி-settlement">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Maturity-ல இறுதி Settlement</h2>
+      <p>மேல உள்ள Period 20 வரிதான் இறுதி settlement — அதைத் தாண்டி தனி "maturity payment" இல்ல:</p>
+<div class="ticket"><pre>FINAL SETTLEMENT — 2031-08-29 (Period 20's Payment Date)
+========================================================================
+  Goldman Sachs --CAD 49,863.02--&gt; LCH SwapClear --CAD 49,863.02--&gt; Bank Of Toronto
+  (the same two-leg routing Section 4 established, applied one last time)
+
+  On the SAME date, the trade reaches its Maturity Date (2031-08-27,
+  two business days earlier) and simply EXPIRES:
+
+  - The CAD 100,000,000 Notional is NEVER exchanged -- not on this
+    date, not on any of the prior 19 Payment Dates, on either leg. A
+    single-currency IRS has nothing left to settle beyond each
+    period's net cash flow (contrast a Cross-Currency Swap, which
+    DOES exchange notional at both start and maturity -- out of
+    scope for this module).
+  - LCH SwapClear closes out BOTH legs simultaneously — there is no
+    separate unwind step specific to the CCP relationship; maturity
+    just means Period 20 was the last Payment Date on the schedule.
+  - Bank Of Toronto's Rates book removes the position; the trade's
+    UTI (Section 7) transitions from ACTIVE to MATURED in the
+    position-keeping system.
+  - No further regulatory reporting event is required beyond the
+    routine lifecycle-event report closing the trade out at the
+    Trade Repository (Module 14 §-scoped lifecycle reporting).</pre></div>
+    </section>
+    <section class="mod" id="7-முக்கிய-fields-attributes">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. முக்கிய Fields &amp; Attributes</h2>
+      <h3>Trade-நிலை fields</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Value in this example</th><th>Notes</th></tr></thead><tbody><tr><td><code>tradeId</code></td><td><code>BOT-IRS-2026-034410</code></td><td>Internal trade identifier (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §-scoped Trade ID)</td></tr><tr><td><code>uti</code></td><td>Fresh UTI generated at execution</td><td>One per trade — <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §12</td></tr><tr><td><code>upi</code></td><td>Shared UPI for "5Y CAD Fixed-Float IRS referencing CORRA"</td><td>Reused across every trade sharing this product shape — <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §6</td></tr><tr><td><code>tradeDate</code></td><td>2026-08-25</td><td>Date the trade was executed</td></tr><tr><td><code>effectiveDate</code></td><td>2026-08-27</td><td>First Accrual Start Date ("spot start," T+2)</td></tr><tr><td><code>maturityDate</code></td><td>2031-08-27</td><td>Last Accrual End Date</td></tr><tr><td><code>notionalAmount</code></td><td>100,000,000.00</td><td>Calculation input only — never settles (Section 1)</td></tr><tr><td><code>notionalCurrency</code></td><td>CAD</td><td></td></tr><tr><td><code>payerParty</code> (fixed leg)</td><td>Bank Of Toronto (LEI)</td><td></td></tr><tr><td><code>receiverParty</code> (fixed leg)</td><td>Goldman Sachs (LEI)</td><td></td></tr><tr><td><code>fixedRate</code></td><td>0.0400</td><td>Section 2</td></tr><tr><td><code>fixedLegFrequency</code></td><td>Quarterly</td><td></td></tr><tr><td><code>fixedLegDayCountConvention</code></td><td>ACT/365</td><td></td></tr><tr><td><code>floatingRateIndex</code></td><td>CORRA</td><td><a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1</td></tr><tr><td><code>floatingSpread</code></td><td>0.0005</td><td>Section 3</td></tr><tr><td><code>floatingLegFrequency</code></td><td>Quarterly</td><td></td></tr><tr><td><code>floatingLegDayCountConvention</code></td><td>ACT/365</td><td></td></tr><tr><td><code>compoundingMethod</code></td><td>Compounded-in-Arrears</td><td>Section 3</td></tr><tr><td><code>businessDayConvention</code></td><td>Modified Following</td><td></td></tr><tr><td><code>paymentLagBusinessDays</code></td><td>2</td><td>Section 3's IT/reporting angle</td></tr><tr><td><code>counterpartyLei</code></td><td>Goldman Sachs' LEI</td><td><a href="../docs/1-capital-markets/module-13-parties-leis.html">Module 13</a></td></tr><tr><td><code>clearingStatus</code></td><td>Cleared</td><td></td></tr><tr><td><code>ccpId</code></td><td>LCH SwapClear</td><td>Section 4</td></tr></tbody></table></div>
+<h3>Valuation-நிலை fields</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Purpose</th></tr></thead><tbody><tr><td><code>valuationDate</code></td><td>The date this mark-to-market snapshot is taken (typically daily, between Payment Dates)</td></tr><tr><td><code>discountCurve</code></td><td>The CORRA OIS discount curve used to present-value remaining cash flows (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>)</td></tr><tr><td><code>presentValue</code> / <code>npv</code></td><td>Net present value of all remaining projected fixed-vs-floating cash flows, discounted back to <code>valuationDate</code></td></tr><tr><td><code>dv01</code> / <code>pv01</code></td><td>Change in <code>presentValue</code> for a 1 basis point parallel shift in the CORRA curve — <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1</td></tr><tr><td><code>accruedFixedInterest</code></td><td>Fixed leg interest accrued since the last Payment Date but not yet settled</td></tr><tr><td><code>accruedFloatingInterest</code></td><td>Floating leg interest accrued (compounding daily) since the last Payment Date</td></tr><tr><td><code>lastSettledAmount</code></td><td>The most recent Section 5 Net Amount actually paid</td></tr><tr><td><code>nextPaymentDate</code></td><td>The next unpaid row's Payment Date from Section 5's schedule</td></tr><tr><td><code>unrealizedPnl</code></td><td>Change in <code>presentValue</code> since trade inception or since the last reporting date</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="8-trade-lifecycle-ல-இது-எங்க-பொருந்துது">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Trade Lifecycle-ல இது எங்க பொருந்துது</h2>
+      <p>இந்த module, அதே trade-க்கு (<code>BOT-IRS-2026-034410</code>) <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §5-ஓட முழு lifecycle walkthrough-ல <b>Clearing</b>, <b>Settlement</b>, <b>Position</b> stages மேல ஒரு drill-down — Order, Execution, Trade Capture, Confirmation எல்லாம் trade inception-ல சரியா ஒரு தடவை நடக்கும்; <b>Clearing ஒரு தடவை, execution-க்கு சிறிது நேரத்துல நடக்கும் — Section 4 வரையற ரெண்டு பிரதிபலிக்கும் legs-க்கு LCH SwapClear trade-ஐ novate பண்ணும் தருணம் இது</b>; ஆனா <b>Settlement 20 தடவை திரும்ப நடக்கும்</b>, Section 5-ஓட table-ல ஒவ்வொரு வரிக்கும் ஒரு தடவை, ஒவ்வொண்ணும் அந்த quarter-ஓட சொந்த CORRA compounding-ல இருந்து சுயாதீனமா கணக்கிடப்பட்டு, LCH SwapClear வழியா ரெண்டு தடவை (ஒரு leg-க்கு ஒண்ணு) settle ஆகுது. <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> roadmap-ல வேறெதுக்கும், ஒரே Trade Capture event-ல இருந்து தன் சொந்த Settlement stage-ஐ இத்தனை முறை மறுபடி பார்க்கற lifecycle இல்ல.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>Fixed-rate payer; Periods 1–15-ல net payer, Periods 17–20-ல net receiver</td></tr><tr><td>Goldman Sachs</td><td>Floating-rate payer; Periods 1–15-ல net receiver, Periods 17–20-ல net payer</td></tr><tr><td>LCH SwapClear</td><td>Execution-க்கு அப்புறம் trade novate ஆகும் CCP — Section 4-ல இருந்து ஒவ்வொரு money flow-வின் நடுவுலயும் உட்காரும், 20 settlements எல்லாத்தின் ரெண்டு legs-லயும் + Section 6-ஓட இறுதி settlement-லயும்</td></tr><tr><td>Bank of Canada</td><td>Floating leg compound பண்ணும் தினசரி CORRA prints-ஐ வெளியிடுது (Section 3; <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §1)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Period 6-ல compounded CORRA 2.90% (schedule-ல மிகக் குறைவு). Section 3-ஓட formula-வை பயன்படுத்தி, CAD 735,479.45 Floating Accrual-ஐ உறுதிப்படுத்துங்க; இதுதான் Bank Of Toronto-ல இருந்து Goldman Sachs-க்கு மிகப்பெரிய net payment உள்ள period-உம் ஏன்னு விளக்குங்க.</li><li>Period 16 சரியா CAD 0.00-க்கு settle ஆகுறது ஏன்? அந்த Payment Date-ல operational ரீதியா எதுவுமே நடக்காதுன்னு அர்த்தமா?</li><li>Section 5, Period 17-ல இருந்து payment திசை புரளுதுன்னு காட்டுது. Period 21-ல (கற்பனையா, trade 20-க்குப் பதிலா 21 quarters-ஆ இருந்திருந்தா) compounded CORRA 4.30%-ஆ வந்தா, யார் யாருக்கு கொடுக்கறாங்க, தோராயமா எவ்வளவு?</li><li>Section 6, CAD 100,000,000 notional maturity-ல கூட ஒருபோதும் பரிமாறப்படாதுன்னு சொல்லுது. <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a>-ல ஒரு principal தொகை இறுதியில உண்மையில கை மாறும் ஒரு Rates-family product-ஐ பெயரிடுங்க — அந்த product ஒரு plain IRS-ல இருந்து கட்டமைப்பு ரீதியா ஏன் வேறுபடுது?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் <b><a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a>: Rates</b>-க்குத் திரும்பலாம், அல்லது Asset Class Roadmap-ஐ <b><a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a>: Credit</b>-ல தொடரலாம்.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Floating Accrual = 100,000,000 x 2.95% x (91/365) = CAD 735,479.45 — உறுதிப்படுத்தப்பட்டது. இது 4.00% fixed rate-க்கு கீழ மிக அகலமான இடைவெளி உள்ள period என்பதால் மிகப்பெரிய net payment (2.95% floating vs. 4.00% fixed = 1.05-புள்ளி spread, முழு schedule-லயும் மிக அகலமானது).</b></p>
+<p>Net Amount = Fixed Accrual − Floating Accrual, அதனால மிகப்பெரிய net payment, Fixed Rate-க்கும் (4.00%-ல நிலையா) அந்த period-ஓட Floating Rate-க்கும் இடையிலான மிகப்பெரிய இடைவெளிக்கு ஒத்தது — Period 6/7-ஓட 2.95% floating rate முழு 20-quarter schedule-லயும் மிகக் குறைவு, மிக அகலமான இடைவெளியையும் அதனால மிகப்பெரிய ஒற்றை net payment-ஐயும் (CAD 261,780.82) உருவாக்குது.</p>
+<p><b>2. Period 16 சரியா CAD 0.00-க்கு settle ஆகுது, ஏன்னா compounded CORRA (3.95%) + 0.05% spread சரியா 4.00% Fixed Rate-க்கு சமம் — ரெண்டு legs-உம் எண்ணளவுல ஒரே மாதிரி, net பண்ண மிச்சம் எதுவும் இல்ல. Operational ரீதியா, Payment Date இன்னும் நடக்குது, CAD 0.00 settlement instruction-ஐ இன்னும் உருவாக்குது — பெரும்பாலான systems தணிக்கைத் தடத்தின் முழுமைக்காக ஒரு பூஜ்ய-மதிப்பு settlement event-ஐ இன்னும் book பண்ணுது, period-ஐ அமைதியா தவிர்க்காம.</b></p>
+<p>இது <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §4c-ஓட Recap Quiz Answer 3 at-the-money Cap caplet-க்கு நிறுவிய "rate-ஐ சரியா தொடுவது எல்லை நிலையை உருவாக்குது" pattern.</p>
+<p><b>3. Goldman Sachs, Bank Of Toronto-க்கு கொடுக்கும். Floating Rate = 4.30% + 0.05% spread = 4.35%; Floating Accrual = 100,000,000 x 4.35% x (91/365) = CAD 1,084,520.55; Net = 997,260.27 − 1,084,520.55 = −CAD 87,260.28, அதாவது Goldman Sachs, Bank Of Toronto-க்கு CAD 87,260.28 கொடுக்குது.</b></p>
+<p>இது Periods 17–20 ஏற்கனவே நிறுவற அதே போக்கை தொடருது: compounded CORRA 4.00% fixed rate-ஐ விட எவ்வளவு அதிகமா உயருதோ, Bank Of Toronto-ஓட net receipt அவ்வளவு பெருசாகுது.</p>
+<p><b>4. Cross-Currency Swap என்பது notional உண்மையிலயே பரிமாறப்படும் Rates-family product — ஆரம்பத்துலயும் maturity-லயும், ரெண்டு வேறு currencies-ல, ஏன்னா ஒரு cross-currency swap-ஓட முழு நோக்கமே ஒரு currency-ல ஒரு principal தொகையை, மற்றொண்ணுல சமமான principal-க்கு மாத்தறது; ஒவ்வொரு தரப்பும் அப்புறம் தான் இப்போ வெச்சிருக்கற currency மேல வட்டி கொடுக்குது. ஒரு plain single-currency IRS-க்கு notional-ஐ பரிமாறவே தேவையில்ல, ஏன்னா ரெண்டு legs-ஓட cash flows-உம் ஏற்கனவே ஒரே currency-ல (இங்க CAD) denominate ஆகியிருக்கு — வட்டியை net பண்ணினா போதும், principal-ஐ பரிமாற வேண்டிய currency-conversion நோக்கமே முதல்லயே இல்ல.</b></p>
+<p>Cross-Currency Swap <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a>-ஓட ஐந்து-product Interest Rate taxonomy-க்கு வெளியே உட்காருது (அது பொதுவா தன் சொந்த FX/Rates-hybrid product-ஆ model பண்ணப்படுது) — இங்க குறிப்பா flag பண்ணப்படுறது, "notional ஒருபோதும் settle ஆகாது" (Section 1; <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8) என்பது <i>இந்த</i> module-ஓட ஐந்து products பத்தின விதி, Notional field உள்ள ஒவ்வொரு derivative பத்தின முழுமையான விதி இல்லை என்பதால.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 19 — Interest Rate Swap (IRS) Deep Dive (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
