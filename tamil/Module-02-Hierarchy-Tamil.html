@@ -1,0 +1,912 @@
+<!doctype html>
+<title>Module 2 — Asset Class → Product → Instrument → Trade (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 2 — Asset Class → Product → Instrument → Trade (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">The four-layer hierarchy, ISIN/CUSIP/Ticker, core trade fields, cash vs derivative products, ISDA taxonomy, CDS / FX Forward / IRS worked examples, UPI — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>மூலம்:</b> English Module 2-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன். Diagrams-ம் numbers-ம் மூலத்தோட அப்படியே.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-hierarchy-asset-class-ல-இருந்து-ஒரு-trade-வரை"><span class="toc-num">01</span>1. Hierarchy — Asset Class-ல இருந்து ஒரு Trade வரை</a></li>
+      <li><a href="#2-instrument-identifiers-isin-vs-cusip-vs-ticker"><span class="toc-num">02</span>2. Instrument Identifiers — ISIN vs CUSIP vs Ticker</a></li>
+      <li><a href="#3-core-trade-fields-trade-id-quantity-vs-notional-price-currency"><span class="toc-num">03</span>3. Core Trade Fields — Trade ID, Quantity vs Notional, Price, Currency</a></li>
+      <li><a href="#4-ஒரே-hierarchy-மூணு-asset-classes-பக்கம்-பக்கமா"><span class="toc-num">04</span>4. ஒரே Hierarchy, மூணு Asset Classes — பக்கம் பக்கமா</a></li>
+      <li><a href="#5-full-field-reference-trade-record-ல-ஒவ்வொரு-field-க்கும்-அர்த்தம்"><span class="toc-num">05</span>5. Full Field Reference — Trade record-ல ஒவ்வொரு field-க்கும் அர்த்தம்</a></li>
+      <li><a href="#6-முக்கிய-asset-classes-products-cash-instruments-isda-classification-இல்லாதவை"><span class="toc-num">06</span>6. முக்கிய Asset Classes &amp; Products — Cash Instruments (ISDA classification இல்லாதவை)</a></li>
+      <li><a href="#7-isda-ன்னா-என்ன-derivative-க்கு-ஏன்-isda-classification-தேவை"><span class="toc-num">07</span>7. ISDA-ன்னா என்ன? Derivative-க்கு ஏன் &quot;ISDA Classification&quot; தேவை?</a></li>
+      <li><a href="#8-isda-derivative-asset-classes-products-master-table"><span class="toc-num">08</span>8. ISDA Derivative Asset Classes &amp; Products — Master Table</a></li>
+      <li><a href="#9-worked-example-credit-default-swap-cds"><span class="toc-num">09</span>9. Worked Example — Credit Default Swap (CDS)</a></li>
+      <li><a href="#10-worked-example-fx-forward"><span class="toc-num">10</span>10. Worked Example — FX Forward</a></li>
+      <li><a href="#11-extended-hierarchy-cash-derivatives-பக்கம்-பக்கமா-isda-tie-in-ஓட"><span class="toc-num">11</span>11. Extended Hierarchy — Cash + Derivatives பக்கம் பக்கமா, ISDA Tie-In-ஓட</a></li>
+      <li><a href="#12-upi-unique-product-identifier-theory-worked-example"><span class="toc-num">12</span>12. UPI — Unique Product Identifier: Theory &amp; Worked Example</a></li>
+      <li><a href="#13-worked-example-interest-rate-swap-irs"><span class="toc-num">13</span>13. Worked Example — Interest Rate Swap (IRS)</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-hierarchy-asset-class-ல-இருந்து-ஒரு-trade-வரை">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Hierarchy — Asset Class-ல இருந்து ஒரு Trade வரை</h2>
+      <p><b>Definition:</b> Reporting system-ல நீங்க பார்க்கற ஒவ்வொரு record-உம் நாலு layer hierarchy-ஓட அடில இருக்கும். மேல இருக்கற மூணு layers "<i>எது</i> trade ஆகுது"-ன்னு சொல்லும், அது மாறாது. அடில இருக்கற layer ஒரு <i>குறிப்பிட்ட நிகழ்வை</i> சொல்லும், ஒவ்வொரு தடவையும் புது record உருவாகும்.</p>
+<p>Java-ல யோசிச்சா: மேல மூணு layers = reference data (master table), கடைசி layer = transaction table. Master-ல ஒரு தடவை look up பண்ணுவோம்; transaction table-ல தினமும் ஆயிரக்கணக்கான rows சேரும்.</p>
+<div class="ticket"><pre>ASSET CLASS  -&gt;  PRODUCT  -&gt;  INSTRUMENT  -&gt;  TRADE
+========================================================
+
+Asset Class:  Fixed Income
+                    |
+Product:       Government Bond
+                    |
+Instrument:    "Canada 5% Bond 2035"    (ISIN: CA1358XXXXX)
+                    |
+Trade:         Bank Of Toronto buys CAD 10,000,000 face value
+               from Goldman Sachs @ Price 98.50, Trade Date 17-Aug-2026</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Layer</th><th>எந்தக் கேள்விக்குப் பதில்</th><th>Example value</th><th>ஒவ்வொரு trade-க்கும் மாறுமா?</th></tr></thead><tbody><tr><td><b>Asset Class</b></td><td>"இது என்ன பெரிய வகை?"</td><td>Fixed Income</td><td>இல்ல — instrument-ஓட முழு வாழ்க்கைக்கும் ஒண்ணுதான்</td></tr><tr><td><b>Product</b></td><td>"Fixed Income-ல என்ன வகை?"</td><td>Government Bond</td><td>இல்ல</td></tr><tr><td><b>Instrument / Security</b></td><td>"எந்த குறிப்பிட்ட tradable பொருள்?"</td><td>Canada 5% Bond 2035 (ISIN CA1358XXXXX)</td><td>இல்ல — ஒரு instrument-ஐ ஆயிரக்கணக்கான trades reference பண்ணும்</td></tr><tr><td><b>Trade</b></td><td>"யார், யார்கிட்ட, எவ்வளவு, என்ன விலைக்கு, எப்போ?"</td><td>Bank Of Toronto CAD 10,000,000 @ 98.50, 17-Aug-2026</td><td><b>ஆமா</b> — ஒவ்வொரு தடவையும் புது record</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Asset Class, Product, Instrument = reference data — ஒரு தடவை பார்த்தா போதும், நகராது. Trade = transactional data — ஒரே Instrument-ஐ நோக்கி ஆயிரக்கணக்கான Trade records இருக்கலாம் (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a>-ல "One Issuance, Many Investors" மாதிரியே).</p>
+<h3>கூடுதல் உதாரணம் — ஒரே Instrument, மூணு Trades</h3>
+<p>"Canada 5% Bond 2035" ஒரே ஒரு instrument. ஆனா ஒரே நாள்ல மூணு வேற வேற trades நடக்குது:</p>
+<div class="table-scroll"><table><thead><tr><th>Trade ID</th><th>Buyer</th><th>Seller</th><th>Face Value (CAD)</th><th>Price</th></tr></thead><tbody><tr><td>T-001</td><td>Bank Of Toronto</td><td>Goldman Sachs</td><td>10,000,000</td><td>98.50</td></tr><tr><td>T-002</td><td>Maple Leaf Pension Fund</td><td>Bank Of Toronto</td><td>50,000,000</td><td>98.55</td></tr><tr><td>T-003</td><td>Bank Of Toronto</td><td>Interbank dealer</td><td>5,000,000</td><td>98.48</td></tr></tbody></table></div>
+<p>மூணு rows-லயும் Asset Class, Product, Instrument, ISIN — எல்லாமே ஒரே மாதிரி. Trade ID, parties, quantity, price மட்டும்தான் வேற. Database design-ல இது foreign key: <code>trade.instrument_id → instrument.id</code>.</p>
+    </section>
+    <section class="mod" id="2-instrument-identifiers-isin-vs-cusip-vs-ticker">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Instrument Identifiers — ISIN vs CUSIP vs Ticker</h2>
+      <p><b>Definitions:</b></p>
+<ul><li><b>ISIN</b> (International Securities Identification Number) — 12 characters, உலகம் முழுக்க unique: 2-letter country code + 9-character national identifier + 1 check digit. Bonds, equities, இப்போ derivatives-லயும் பயன்படற de-facto global standard.</li><li><b>CUSIP</b> (Committee on Uniform Securities Identification Procedures) — 9 characters, North America (US &amp; Canada) மட்டும். North American securities-க்கு CUSIP, ISIN-க்குள்ளயே embed ஆகியிருக்கும்.</li><li><b>Ticker</b> (trading symbol) — ஒரு குறிப்பிட்ட exchange-ல பயன்படற குறுகிய, படிக்கக்கூடிய code (உதா., <code>AAPL</code>). இது உலகளவுல unique <i>இல்ல</i> — ஒரே ticker வேற exchange-ல வேற பொருளை குறிக்கலாம்; முக்கியமா exchange-traded instruments-க்கு (equities) மட்டும் அர்த்தமுள்ளது. Bonds, OTC derivatives-க்கு ticker கிடையாது.</li></ul>
+<div class="ticket"><pre>IDENTIFYING THE SAME KIND OF THING, THREE DIFFERENT WAYS
+=============================================================
+
+Apple Inc. common stock (equity, exchange-traded on NASDAQ):
+  Ticker : AAPL
+  CUSIP  : 037833100
+  ISIN   : US 037833100 5
+           ^^ US (country) + 037833100 (CUSIP, embedded) + 5 (check digit)
+
+Canada 5% Bond 2035 (government bond — NOT exchange-traded):
+  Ticker : (none — bonds don't trade under exchange tickers)
+  CUSIP  : 135087XX1   (illustrative)
+  ISIN   : CA 135087XX1 X
+           ^^ CA (country) + CUSIP-style body + check digit</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Scope</th><th>பொதுவான asset classes</th><th>Example</th></tr></thead><tbody><tr><td><b>ISIN</b></td><td>Global — உலகம் முழுக்க ஒரு security-க்கு ஒண்ணு</td><td>எல்லாம்: equities, bonds, சில derivatives (UPI வழியா)</td><td><code>US0378331005</code></td></tr><tr><td><b>CUSIP</b></td><td>North America மட்டும்</td><td>US/Canada-ல issue/trade ஆகற equities &amp; bonds</td><td><code>037833100</code></td></tr><tr><td><b>Ticker</b></td><td>Exchange-specific, globally unique இல்ல</td><td>முக்கியமா exchange-traded equities</td><td><code>AAPL</code></td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Reporting record-ல Ticker மட்டும் இருந்து ISIN/CUSIP இல்லன்னா, அது exchange feed-ல இருந்து வந்த equity data-ன்னு கிட்டத்தட்ட உறுதி — bond அல்லது OTC derivative-க்கு பொதுவா ISIN இருக்கும்.</p>
+    </section>
+    <section class="mod" id="3-core-trade-fields-trade-id-quantity-vs-notional-price-currency">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Core Trade Fields — Trade ID, Quantity vs Notional, Price, Currency</h2>
+      <p><b>Definitions:</b></p>
+<ul><li><b>Trade ID</b> — Trade capture ஆன உடனே, trade பண்ற firm-ஓட trading system generate பண்ற unique reference. ஒரு transaction-ஐ அதன் முழு lifecycle-லயும் (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a>) இணைக்கற நூல்.</li><li><b>Quantity</b> — equities, bonds-க்கு, வாங்கின/வித்த உண்மையான அளவு (shares, அல்லது face value). Settlement-ல இது உண்மையிலயே நகரும்.</li><li><b>Notional</b> — derivatives-க்கு, periodic cash flows கணக்கிட மட்டும் பயன்படற reference principal. இது ஒருபோதும் நகராது (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> Section 8).</li><li><b>Price</b> — ஒரு unit-ஓட விலை, அந்த instrument-ஓட convention-படி: per share, per 100 face value, அல்லது FX rate.</li><li><b>Currency</b> — trade denominate/settle ஆகற currency.</li></ul>
+<h3>Worked example — Bank Of Toronto-ஓட blotter, மூணு asset classes, ஒரு நாள்</h3>
+<div class="ticket"><pre>BANK OF TORONTO'S BLOTTER — 17 AUGUST 2026
+==============================================
+
+TRADE 1 — BOND
+  Trade ID   : BOT-2026-000512
+  Instrument : Canada 5% Bond 2035  (ISIN CA1358XXXXX)
+  Quantity   : CAD 10,000,000 face value
+  Price      : 98.50  (per 100 face value)
+  Currency   : CAD
+  Value      : 10,000,000 x 98.50 / 100 = CAD 9,850,000
+
+TRADE 2 — EQUITY
+  Trade ID   : BOT-2026-000513
+  Instrument : Apple Inc. common stock  (Ticker AAPL, ISIN US0378331005)
+  Quantity   : 5,000 shares
+  Price      : USD 227.15 per share
+  Currency   : USD
+  Value      : 5,000 x 227.15 = USD 1,135,750
+
+TRADE 3 — OTC DERIVATIVE
+  Trade ID   : BOT-2026-000514
+  Instrument : 5Y CAD Interest Rate Swap vs Goldman Sachs
+  Notional   : CAD 100,000,000   (reference only — NEVER exchanged)
+  Price      : Bank Of Toronto pays Fixed 4.00% / receives Floating
+  Currency   : CAD
+  Value      : no upfront value exchanged — only periodic net cash flows</pre></div>
+<p><b>Takeaway:</b> "Quantity"-யும் "Notional"-உம் ஒண்ணில்ல — சில systems ஒரே database column-ஐ ரெண்டுக்கும் பயன்படுத்தினாலும். Quantity நகரும் — bonds, shares settlement-ல உண்மையிலயே கை மாறும். Notional நகராது — அதுலருந்து கணக்கிட்ட cash flows மட்டும்தான் நகரும்.</p>
+    </section>
+    <section class="mod" id="4-ஒரே-hierarchy-மூணு-asset-classes-பக்கம்-பக்கமா">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. ஒரே Hierarchy, மூணு Asset Classes — பக்கம் பக்கமா</h2>
+      <p>அதே நாலு-layer mental model எல்லா இடத்துலயும் பொருந்தும்; ஆனா அடில (Trade level) உண்மையில *என்ன settle ஆகுது*ங்கறது asset class-க்கு ஏத்தபடி மாறும். அதுக்கு தனித்தனி modules வரும் (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a>, <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>/7).</p>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Asset Class</th><th>Product</th><th>Instrument (example)</th><th>Identifier</th><th>"Size" field</th><th>உண்மையில என்ன settle ஆகுது</th></tr></thead><tbody><tr><td>CASH</td><td>Fixed Income</td><td>Government Bond</td><td>Canada 5% Bond 2035</td><td>ISIN</td><td>Quantity (face value)</td><td>Face value + accrued interest</td></tr><tr><td>CASH</td><td>Equity</td><td>Common Stock</td><td>Apple Inc. shares</td><td>Ticker / ISIN</td><td>Quantity (shares)</td><td>Shares + cash</td></tr><tr><td>DERIVATIVE</td><td>Derivatives (OTC)</td><td>Interest Rate Swap</td><td>5Y CAD IRS</td><td>பொதுவா ISIN இல்ல (புது rules-ல UPI)</td><td>Notional (reference மட்டும்)</td><td>Net cash-flow வித்தியாசம் மட்டும்</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Asset Class, Product, Instrument-ஐ சொல்ல முடிஞ்சா, அந்த trade-ல "settlement"-னா என்னன்னு Module 4/5/6 திறக்கறதுக்கு முன்னாடியே ஊகிக்கலாம் — bonds, equities உண்மையான பொருளை நகர்த்தும்; OTC derivatives (பெரும்பாலும்) நகர்த்தாது.</p>
+    </section>
+    <section class="mod" id="5-full-field-reference-trade-record-ல-ஒவ்வொரு-field-க்கும்-அர்த்தம்">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Full Field Reference — Trade record-ல ஒவ்வொரு field-க்கும் அர்த்தம்</h2>
+      <p>Section 3-ல வந்த Trade 1 (bond)-ஐ running example-ஆ வெச்சு:</p>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>அர்த்தம்</th><th>Example value</th><th>Static (reference) ஆ, இல்ல ஒவ்வொரு trade-க்கும் புதுசா?</th></tr></thead><tbody><tr><td>Asset Class</td><td>பெரிய வகை</td><td>Fixed Income</td><td>Static</td></tr><tr><td>Product</td><td>Asset class-க்குள்ள வகை</td><td>Government Bond</td><td>Static</td></tr><tr><td>Instrument / Security</td><td>குறிப்பிட்ட tradable பொருள்</td><td>Canada 5% Bond 2035</td><td>Static</td></tr><tr><td>ISIN</td><td>Instrument-ஓட global identifier</td><td>CA1358XXXXX</td><td>Static</td></tr><tr><td>CUSIP</td><td>Instrument-ஓட North American identifier</td><td>135087XX1</td><td>Static</td></tr><tr><td>Ticker</td><td>Exchange trading symbol (முக்கியமா equities)</td><td>இந்த bond-க்கு n/a</td><td>Static</td></tr><tr><td>Trade ID</td><td>இந்த ஒரு transaction-ஓட unique reference</td><td>BOT-2026-000512</td><td><b>ஒவ்வொரு trade-க்கும் புதுசு</b></td></tr><tr><td>Notional</td><td>Reference principal (derivatives மட்டும்)</td><td>இந்த bond-க்கு n/a</td><td><b>ஒவ்வொரு trade-க்கும் புதுசு</b>, பொருந்தினா</td></tr><tr><td>Quantity</td><td>உண்மையில transact ஆன அளவு</td><td>CAD 10,000,000 face value</td><td><b>ஒவ்வொரு trade-க்கும் புதுசு</b></td></tr><tr><td>Price</td><td>ஒரு unit-ஓட விலை</td><td>98.50</td><td><b>ஒவ்வொரு trade-க்கும் புதுசு</b></td></tr><tr><td>Currency</td><td>Denomination / settlement currency</td><td>CAD</td><td>பொதுவா instrument-க்கு static, ஆனா ஒவ்வொரு trade-லயும் confirm ஆகும்</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ஒரு reporting field-ஐ debug பண்ணும்போது முதல் கேள்வி: "இது static reference-data field-ஆ (Asset Class → Instrument), இல்ல per-trade transactional field-ஆ (Trade ID → Currency)?" — இதுவே நீங்க security master-ஐ பார்க்கணுமா, trade capture system-ஐ பார்க்கணுமான்னு சொல்லிடும்.</p>
+    </section>
+    <section class="mod" id="6-முக்கிய-asset-classes-products-cash-instruments-isda-classification-இல்லாதவை">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. முக்கிய Asset Classes &amp; Products — Cash Instruments (ISDA classification இல்லாதவை)</h2>
+      <p><b>Definition:</b> "Cash" (அல்லது "physical") instruments = தானாகவே இருந்து, தானாகவே settle ஆகற securities — bond அல்லது share, issue ஆன உடனே ஒரு உண்மையான, deliver பண்ணக்கூடிய பொருள். இவற்றை <b>ISIN/CUSIP</b> (எந்த instrument) + <b>CFI code</b> (ISO 10962 — <i>Classification of Financial Instruments</i>, 6-character code; உதா., "இது debt instrument, straight bond, fixed rate, registered form") வெச்சு classify பண்றோம். Cash instruments-க்கு ISDA classification <b>கிடையாது</b> — ISDA taxonomy derivatives-க்கு மட்டும் (Section 7).</p>
+<div class="table-scroll"><table><thead><tr><th>Asset Class</th><th>Key Products</th><th>Example Instrument</th><th>பொதுவான Identifier</th><th>"Size"-னா என்ன</th><th>உண்மையில என்ன settle ஆகுது</th></tr></thead><tbody><tr><td><b>Fixed Income — Government</b></td><td>Treasury Bills, Government Bonds, Sovereign Bonds</td><td>Canada 5% Bond 2035</td><td>ISIN</td><td>Face value (Quantity)</td><td>Face value + accrued interest</td></tr><tr><td><b>Fixed Income — Corporate</b></td><td>Investment-Grade Bonds, High-Yield Bonds, Convertible Bonds</td><td>Bank Of Toronto 4.5% Bond 2030</td><td>ISIN</td><td>Face value (Quantity)</td><td>Face value + accrued interest</td></tr><tr><td><b>Fixed Income — Securitized</b></td><td>MBS (Mortgage-Backed), ABS (Asset-Backed), CLO (Collateralized Loan Obligation)</td><td>Fannie Mae 30Y MBS Pool #12345</td><td>ISIN / CUSIP</td><td>Face value (Quantity), காலப்போக்குல குறையும்</td><td>Face value (amortizing) + interest</td></tr><tr><td><b>Money Market</b></td><td>T-Bills, Commercial Paper, Certificates of Deposit, Repo</td><td>90-Day Commercial Paper — Bank Of Toronto</td><td>ISIN / CUSIP</td><td>Face value, குறுகிய maturity (&lt;1yr)</td><td>Maturity-ல face value (பொதுவா discount-ல issue)</td></tr><tr><td><b>Equity — Common</b></td><td>Common Stock, ADR/GDR (cross-listed shares)</td><td>Apple Inc. common stock</td><td>Ticker / ISIN</td><td>Shares எண்ணிக்கை (Quantity)</td><td>Shares + cash</td></tr><tr><td><b>Equity — Preferred/Fund</b></td><td>Preferred Stock, ETFs, Mutual Fund Units</td><td>S&amp;P 500 ETF units</td><td>Ticker / ISIN</td><td>Units எண்ணிக்கை (Quantity)</td><td>Units + cash</td></tr><tr><td><b>FX — Spot/Cash</b></td><td>FX Spot</td><td>USD/CAD spot</td><td>Currency pair (ISIN இல்ல)</td><td>Notional currency amount</td><td>ரெண்டு currencies-உம், T+1/T+2 (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §6)</td></tr><tr><td><b>Commodity — Physical</b></td><td>Physical Gold, Physical Oil (வங்கியோட சொந்த book-ல அரிது — பொதுவா derivatives வழியாத்தான்)</td><td>100oz Gold Bar</td><td>ISIN இல்ல — commodity code</td><td>Physical unit (oz, barrel)</td><td>Physical delivery (அரிது) அல்லது cash-settled equivalent</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> மேல இருக்கற ஒவ்வொரு row-வும் நீங்க கோட்பாட்டளவுல கைல வெச்சுக்கக்கூடிய பொருள் — bond certificate (இப்போ book-entry, ஆனா "ஒரு பொருள்"), ஒரு share, ஒரு gold bar. அதனாலதான் இவற்றுக்கு ISDA classification இல்ல: ISDA <i>ரெண்டு parties-க்கு இடையிலான contracts</i>-ஐ மட்டும்தான் classify பண்ணும், அதாவது derivative (Section 7) — underlying பொருளை இல்ல.</p>
+    </section>
+    <section class="mod" id="7-isda-ன்னா-என்ன-derivative-க்கு-ஏன்-isda-classification-தேவை">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. ISDA-ன்னா என்ன? Derivative-க்கு ஏன் &quot;ISDA Classification&quot; தேவை?</h2>
+      <p><b>Definition:</b> <b>ISDA</b> (International Swaps and Derivatives Association) ஒரு trade body; மக்கள் அடிக்கடி குழப்பிக்கற ரெண்டு தனி விஷயங்களை standardize பண்ணுது:</p>
+<ol><li><b>ISDA Master Agreement</b> — ரெண்டு counterparties ஒரே ஒரு தடவை கையெழுத்து போடற legal contract template; அதுக்கப்புறம் அவங்களுக்குள்ள நடக்கற <i>ஒவ்வொரு</i> OTC derivative trade-யையும் இது ஆளும் (netting, default, collateral terms). இது <a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a> (Collateral &amp; Margin)-ல விரிவா.</li><li><b>ISDA Product Taxonomy</b> — ஒரு derivative என்ன வகைன்னு label பண்ண ஒரு standardized <i>classification scheme</i>. இதுதான் இந்த module-க்கும், regulatory reporting-க்கும் (<a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a>) சம்பந்தம்: Bank Of Toronto ஒரு OTC derivative trade-ஐ EMIR, MiFIR, அல்லது Dodd-Frank/CFTC rules-படி Trade Repository-க்கு report பண்ணும்போது, கட்டாய fields-ல ஒண்ணு "ISDA Taxonomy" (அல்லது அதிலிருந்து derive ஆன field) — ஒவ்வொரு firm-ஓட மில்லியன் கணக்கான trades-ஐ regulator-ஓட systems, ஒவ்வொரு contract-ஐயும் கையால படிக்காம, ஒப்பிடக்கூடிய categories-ஆ பிரிக்கற வழி இதுதான்.</li></ol>
+<p>ISDA Product Taxonomy <b>நாலு-level hierarchy</b> — இது Section 1-ல பார்த்த Asset Class → Product → Instrument → Trade hierarchy-ல இருந்து வேற என்பதை கவனிங்க; இது regulatory நோக்கத்துக்காக <i>product-ஐயே</i> classify பண்ணுது, நம்ம "Product" layer-ஐ விட ஒரு படி நுணுக்கமானது:</p>
+<div class="ticket"><pre>ISDA PRODUCT TAXONOMY  —  four levels
+=========================================
+
+  ISDA Asset Class   -&gt;   Base Product   -&gt;   Sub-Product   -&gt;   Transaction Type
+  ==================================================================================
+
+  Interest Rate      -&gt;   IRSwap         -&gt;   FixedFloat     -&gt;   Swap
+  Credit             -&gt;   SingleName     -&gt;   Corporate      -&gt;   CreditDefaultSwap
+  Foreign Exchange   -&gt;   Forward        -&gt;   Deliverable    -&gt;   Forward
+  Equity             -&gt;   Swap           -&gt;   PriceReturn    -&gt;   Swap
+  Commodity          -&gt;   Energy         -&gt;   Oil            -&gt;   Swap</pre></div>
+<p>Derivatives-க்கு <b>அதிகாரப்பூர்வமா சரியா ஐந்து ISDA Asset Classes</b> இருக்கு — cash + derivative products எல்லாத்தையும் சேர்த்துப் பார்க்கும்போது வரும் திறந்த-முனை "Asset Class" values-ஐ விட ரொம்பக் குறுகிய, நிலையான பட்டியல்:</p>
+<div class="table-scroll"><table><thead><tr><th>ISDA Asset Class</th><th>எளிய தமிழ்ல அர்த்தம்</th><th>Desk-ல பொதுவான பேரு</th></tr></thead><tbody><tr><td><b>Interest Rate</b></td><td>Cash flows interest rates-ஐ பொறுத்தது</td><td>"Rates"</td></tr><tr><td><b>Credit</b></td><td>Default/credit event-ஐ பொறுத்து payout</td><td>"Credit"</td></tr><tr><td><b>Foreign Exchange</b></td><td>Currency rates-ஐ பொறுத்து payout</td><td>"FX"</td></tr><tr><td><b>Equity</b></td><td>Stock/index விலையைப் பொறுத்து payout</td><td>"Equity Derivatives"</td></tr><tr><td><b>Commodity</b></td><td>Physical commodity விலையைப் பொறுத்து payout</td><td>"Commodities"</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Reporting record-ல "ISDA Taxonomy" அல்லது "ISDA Asset Class" field நிரம்பியிருந்தா, அது OTC derivative தான், cash bond அல்லது cash equity இல்ல — cash instruments-க்கு இந்த field இருக்காது, ஏன்னா ISDA அவற்றை classify பண்றதில்ல (Section 6).</p>
+    </section>
+    <section class="mod" id="8-isda-derivative-asset-classes-products-master-table">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. ISDA Derivative Asset Classes &amp; Products — Master Table</h2>
+      <p>இது Section 6-ல இருக்கற cash-instrument table-ஓட derivatives பதிப்பு — ஆனா இங்க ஒவ்வொரு row-வும் ஒரு <b>contract</b>, deliver பண்ணக்கூடிய பொருள் இல்ல; அதனால "Notional", "What actually settles" columns Section 6-ல இருந்து முற்றிலும் வேறுபடுவதை கவனிங்க.</p>
+<div class="table-scroll"><table><thead><tr><th>ISDA Asset Class</th><th>Key Products (Base Product)</th><th>Example Instrument</th><th>Sub-Product / Transaction Type</th><th>உண்மையில என்ன settle ஆகுது</th></tr></thead><tbody><tr><td><b>Interest Rate</b></td><td>Interest Rate Swap (IRS), Forward Rate Agreement (FRA), Swaption, Cap/Floor, Cross-Currency Swap</td><td>5Y CAD IRS, Bank Of Toronto fixed pay / floating receive</td><td>FixedFloat / Swap</td><td>Periodic net cash flows மட்டும் (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8)</td></tr><tr><td><b>Credit</b></td><td>Single-Name CDS, CDS Index (CDX, iTraxx), Total Return Swap (TRS)</td><td>"Northern Rail Corp"-ஓட 5Y CDS, Bank Of Toronto protection வாங்குது</td><td>SingleName-Corporate / CreditDefaultSwap</td><td>Periodic premium; credit event நடந்தா மட்டும் payout (Section 9)</td></tr><tr><td><b>Foreign Exchange</b></td><td>FX Forward, FX Swap, FX Option, Non-Deliverable Forward (NDF)</td><td>3M USD/CAD Forward, Bank Of Toronto USD வாங்குது</td><td>Forward-Deliverable / Forward</td><td>Value date-ல ரெண்டு currency amounts-உம் (NDF-ல net cash) (Section 10)</td></tr><tr><td><b>Equity</b></td><td>Equity Option, Equity Swap, Equity Index Future, Variance Swap</td><td>Apple Inc. shares மேல Total Return Swap</td><td>Swap-PriceReturn / Swap</td><td>Share விலை/dividends-ஐ பின்தொடரும் periodic net cash flows</td></tr><tr><td><b>Commodity</b></td><td>Commodity Swap, Commodity Forward, Commodity Option</td><td>1Y Brent Crude Oil Swap, notional 100,000 barrels</td><td>Energy-Oil / Swap</td><td>Commodity price index-ஐ reference பண்ற periodic net cash flows (உண்மையான barrels கிட்டத்தட்ட இல்ல)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ஐந்து ISDA asset classes-லயும் <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8-ல பார்த்த pattern திரும்பத் திரும்ப வரும் — cash flows கணக்கிட மட்டும் ஒரு Notional/reference amount trade-ல இருக்கும்; net வித்தியாசம் (Credit-ல contingent payout) மட்டும்தான் நகரும். Underlying-ஓட physical settlement (உதா., உண்மையான oil barrels) OTC derivatives-ல விதிவிலக்கு, வழக்கம் இல்ல.</p>
+    </section>
+    <section class="mod" id="9-worked-example-credit-default-swap-cds">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Worked Example — Credit Default Swap (CDS)</h2>
+      <p><b>Definition:</b> CDS = ஒரு company default ஆகும் risk-க்கு எதிரான insurance மாதிரியான protection. <b>Protection buyer</b>, <b>protection seller</b>-க்கு periodic premium (basis points per year-ல quote பண்ற "spread") கொடுப்பாங்க. <b>Reference entity</b> (எந்த company-க்கு எதிரா insure பண்றோமோ அது) ஒரு வரையறுக்கப்பட்ட <b>credit event</b> (default, bankruptcy, restructuring) சந்திச்சா, protection seller, buyer-க்கு loss amount கொடுப்பாங்க — இல்லன்னா seller premium-ஐ வாங்கிக்கிட்டு எதுவும் கொடுக்கமாட்டாங்க.</p>
+<p><b>CDS-ல ரெண்டு parties மட்டும்தான் — reference entity அதுல ஒரு party இல்ல.</b> Northern Rail Corp இந்த contract-ஓட <i>subject</i>, <i>party</i> இல்ல: அது எதுலயும் கையெழுத்து போடலை, எதுவும் கொடுக்காது, எதுவும் வாங்காது, இந்த trade இருக்கறதே அதுக்குத் தெரியாது. இணைப்பு reference மட்டும்தான் — அதோட credit behavior, அந்த ரெண்டு உண்மையான counterparties-ஓட cash flows-ஐ தூண்டற condition. வேறொருத்தர் வீட்டுக்கு எடுக்கற insurance மாதிரி: வீடு எரிஞ்சா payout கிடைக்கும், ஆனா வீட்டு உரிமையாளர் அந்த policy-ல party இல்ல.</p>
+<div class="ticket"><pre>THREE NAMES, ONLY TWO PARTIES TO THE CONTRACT
+========================================================================
+
+  Bank Of Toronto  &lt;====  CDS CONTRACT  ====&gt;  Goldman Sachs
+  (protection buyer)     (bilateral,            (protection seller)
+                          just these two)
+
+                    Northern Rail Corp
+                 (reference entity -- outside the
+                  contract, referenced BY it, not
+                  a party TO it)
+
+  -&gt; Bank Of Toronto pays Goldman Sachs premium; Goldman Sachs pays
+     Bank Of Toronto a loss amount IF Northern Rail Corp defaults.
+     Northern Rail Corp itself pays or receives NOTHING under this
+     contract, ever.</pre></div>
+<p>நடைமுறைல protection buyer-க்கு reference entity மேல வேற ஒரு exposure இருக்கும் — உதா., Bank Of Toronto, Northern Rail Corp bonds வெச்சிருக்கலாம், அல்லது நேரடியா கடன் கொடுத்திருக்கலாம் — அந்த தனி credit risk-ஐ Goldman Sachs-க்கு மாத்த CDS-ஐ பயன்படுத்தும். ஆனா CDS contract-க்கே அந்த exposure இருக்கணும்னு தேவையில்ல; அடிப்படை position எதுவும் இல்லாம, Northern Rail Corp-ஓட credit தரத்தை <i>ஊகிக்க</i> (speculate) கூட வாங்கலாம்.</p>
+<div class="ticket"><pre>CREDIT DEFAULT SWAP  —  Bank Of Toronto buys protection from Goldman Sachs
+================================================================================
+
+  Reference Entity : Northern Rail Corp (a corporate borrower — fictional)
+  Notional          : CAD 20,000,000  (reference only — never exchanged upfront)
+  Spread            : 120 bps (1.20% per year)
+  Maturity          : 5 years, quarterly premium payments
+  Recovery Rate     : 40% (assumed, if default occurs)
+
+SCENARIO A — No default this quarter (the normal case)
+----------------------------------------------------------
+  Quarterly premium (Bank Of Toronto pays Goldman Sachs):
+    20,000,000 x 1.20% x (91 / 365) = CAD 59,836
+
+  Bank Of Toronto  ---- pays CAD 59,836 ----&gt;  Goldman Sachs
+  (repeats every quarter for 5 years = 20 payments, unless default happens first)
+
+SCENARIO B — Northern Rail Corp (the reference entity) defaults during the 5 years
+----------------------------------------------------------
+  Loss Given Default = Notional x (1 - Recovery Rate)
+                      = 20,000,000 x (1 - 0.40)
+                      = CAD 12,000,000
+
+  Goldman Sachs  ---- pays CAD 12,000,000 ----&gt;  Bank Of Toronto
+  (premium payments then stop — the contract has been triggered)</pre></div>
+<p><b>ISDA classification:</b> Asset Class = <b>Credit</b>, Base Product = <b>SingleName</b>, Sub-Product = <b>Corporate</b>, Transaction Type = <b>CreditDefaultSwap</b>. இந்த trade-க்கான Trade Repository report இந்த நாலு-level label-ஐத்தான் சுமக்கும்.</p>
+<p><b>Takeaway:</b> CAD 20,000,000 notional மேல உள்ள ரெண்டு cash flows-லயும் வரவே இல்ல — அது premium கணக்கிட multiplier, loss-given-default கணக்கிட base அவ்வளவுதான். Bank Of Toronto உண்மையிலயே CAD 12,000,000 பார்க்குமா இல்லையா என்பது, Northern Rail Corp default ஆகுதா இல்லையாங்கறதை முழுசா பொறுத்தது; பெரும்பாலான CDS contracts சின்ன quarterly premium மட்டும் கட்டி, முழு காலமும் ஓடி, trigger ஆகாமலே முடியும்.</p>
+<h3>கூடுதல் உதாரணம் — 5 வருஷ CDS-ல மொத்தம் எவ்வளவு premium?</h3>
+<p>Scenario A-ல ஒரு quarter-க்கு CAD 59,836. 20 quarters-க்கு: 59,836 × 20 ≈ <b>CAD 1,196,720</b> (default ஆகாம முழுசா ஓடினா). அதே நேரம் default ஆனா payout CAD 12,000,000 — அதாவது premium-ஐ விட சுமார் 10 மடங்கு. இதுதான் insurance logic: சின்ன, உறுதியான செலவு vs. பெரிய, நிச்சயமில்லாத பாதுகாப்பு.</p>
+    </section>
+    <section class="mod" id="10-worked-example-fx-forward">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. Worked Example — FX Forward</h2>
+      <p><b>Definition:</b> FX Forward = எதிர்காலத்துல நடக்கப்போற currency exchange-க்கான exchange rate-ஐ இன்னிக்கே lock பண்றது. FX Spot (T+1/T+2-ல settle, <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a>) போல இல்லாம, Forward-ஓட value date வாரங்கள் அல்லது மாதங்கள் தள்ளி இருக்கலாம் — இன்னிக்கும் அன்னிக்கும் நடுவுல rate மாறுவதுனால வர்ற risk இல்லாம, தெரிஞ்ச எதிர்கால cash தேவையை hedge பண்ண இது உதவும்.</p>
+<div class="callout"><b>Complete worked example இருக்கு.</b> இதே trade-ஐ முழு lifecycle-ஓட — trade capture, MTM, settlement, regulatory reporting — பார்க்க <a href="../examples/FX_Forward_Complete_Example.html">FX Forward — Complete Example</a> பாருங்க.</div>
+<div class="ticket"><pre>FX FORWARD  —  Bank Of Toronto needs USD 10,000,000 in 3 months
+========================================================================
+
+  Today's Spot Rate (USD/CAD)     : 1.3500   (1 USD = CAD 1.3500)
+  3-Month Forward Points          : +0.0045  (driven by CAD-USD interest rate gap)
+  3-Month Forward Rate            : 1.3545   (1.3500 + 0.0045)
+
+  Bank Of Toronto agrees TODAY with Goldman Sachs:
+    In 3 months, Bank Of Toronto pays CAD 13,545,000
+                 and receives USD 10,000,000
+    (10,000,000 x 1.3545 = 13,545,000)
+
+  -&gt; No cash or currency moves today. Only the RATE is locked in now.
+
+3 MONTHS LATER — value date arrives, two possible outcomes:
+--------------------------------------------------------------
+  If spot has moved to 1.3700 (USD got MORE expensive):
+    Bank Of Toronto still only pays 13,545,000, not 13,700,000
+    -&gt; Forward SAVED Bank Of Toronto CAD 155,000 vs. buying at spot then.
+
+  If spot has moved to 1.3400 (USD got CHEAPER):
+    Bank Of Toronto still pays 13,545,000, even though spot would have
+    only cost 13,400,000
+    -&gt; Forward COST Bank Of Toronto CAD 145,000 vs. buying at spot then.
+       This is not "the trade going wrong" — it's the price of certainty:
+       Bank Of Toronto hedged a known future need and gave up any chance
+       of a better rate in exchange for eliminating the risk of a worse one.</pre></div>
+<p><b>ISDA classification:</b> Asset Class = <b>Foreign Exchange</b>, Base Product = <b>Forward</b>, Sub-Product = <b>Deliverable</b> (ரெண்டு currencies-உம் உண்மையில பரிமாறப்படும் — <b>NDF</b>-ல ஒரு currency freely convertible இல்லாததால் cash வித்தியாசம் மட்டும் settle ஆகும்), Transaction Type = <b>Forward</b>.</p>
+<p><b>Takeaway:</b> Interest Rate Swap-ஓட notional-ஐ போல இல்லாம், Forward-ஓட Notional (இங்க USD 10,000,000) <i>கடைசில settle ஆகும்</i> — Forward = ஒரே ஒரு எதிர்கால தேதில ரெண்டு உண்மையான currency amounts-ஐ மாத்திக்கற வாக்குறுதி; reference number-ல இருந்து கணக்கிட்ட periodic net cash flows இல்ல.</p>
+    </section>
+    <section class="mod" id="11-extended-hierarchy-cash-derivatives-பக்கம்-பக்கமா-isda-tie-in-ஓட">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>11. Extended Hierarchy — Cash + Derivatives பக்கம் பக்கமா, ISDA Tie-In-ஓட</h2>
+      <p>Section 4-ல இருந்த மூணு-row table-ஐ, Sections 6–10-ல அறிமுகமான முழு set-க்கு நீட்டியிருக்கு — தெரியாத instrument-ஐ எங்க வைக்கணும்னு தெரியாதப்போ திரும்பத் திரும்ப பார்க்க வேண்டிய ஒரே reference table.</p>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Asset Class</th><th>Product</th><th>Example Instrument</th><th>Identifier</th><th>ISDA Classification (derivatives மட்டும்)</th><th>உண்மையில என்ன settle ஆகுது</th></tr></thead><tbody><tr><td>CASH</td><td>Fixed Income</td><td>Government Bond</td><td>Canada 5% Bond 2035</td><td>ISIN</td><td>n/a — cash instrument</td><td>Face value + accrued interest</td></tr><tr><td>CASH</td><td>Fixed Income</td><td>Corporate Bond</td><td>Bank Of Toronto 4.5% Bond 2030</td><td>ISIN</td><td>n/a — cash instrument</td><td>Face value + accrued interest</td></tr><tr><td>CASH</td><td>Money Market</td><td>Commercial Paper</td><td>90-Day CP — Bank Of Toronto</td><td>ISIN/CUSIP</td><td>n/a — cash instrument</td><td>Maturity-ல face value</td></tr><tr><td>CASH</td><td>Equity</td><td>Common Stock</td><td>Apple Inc. shares</td><td>Ticker/ISIN</td><td>n/a — cash instrument</td><td>Shares + cash</td></tr><tr><td>CASH</td><td>FX</td><td>FX Spot</td><td>USD/CAD spot</td><td>Currency pair</td><td>n/a — cash/spot, derivative இல்ல</td><td>ரெண்டு currencies-உம், T+1/T+2</td></tr><tr><td>DERIVATIVE</td><td>Interest Rate Derivative</td><td>Interest Rate Swap</td><td>5Y CAD IRS</td><td>UPI (ISIN இல்ல)</td><td>Interest Rate / IRSwap / FixedFloat / Swap</td><td>Net cash flows மட்டும்</td></tr><tr><td>DERIVATIVE</td><td>Credit Derivative</td><td>Credit Default Swap</td><td>5Y CDS on Northern Rail Corp</td><td>UPI (ISIN இல்ல)</td><td>Credit / SingleName / Corporate / CreditDefaultSwap</td><td>Premium; default-ல contingent payout</td></tr><tr><td>DERIVATIVE</td><td>FX Derivative</td><td>FX Forward</td><td>3M USD/CAD Forward</td><td>UPI (ISIN இல்ல)</td><td>Foreign Exchange / Forward / Deliverable / Forward</td><td>Value date-ல ரெண்டு currencies-உம்</td></tr><tr><td>DERIVATIVE</td><td>Equity Derivative</td><td>Equity Swap</td><td>TRS on Apple Inc. shares</td><td>UPI (ISIN இல்ல)</td><td>Equity / Swap / PriceReturn / Swap</td><td>விலை + dividends-ஐ பின்தொடரும் net cash flows</td></tr><tr><td>DERIVATIVE</td><td>Commodity Derivative</td><td>Commodity Swap</td><td>1Y Brent Crude Swap</td><td>UPI (ISIN இல்ல)</td><td>Commodity / Energy / Oil / Swap</td><td>Net cash flows மட்டும்</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ஒரு reporting record-ஐ உடனே sanity-check பண்ண ஒரு வழி — ISIN இருந்தா அது கிட்டத்தட்ட cash instrument (மேல rows); UPI (Unique Product Identifier — ad-hoc OTC identifiers-ஐ மாத்தற புது global standard) + ISDA Taxonomy field இருந்தா அது derivative (கீழ rows). இந்த ஒரே வேறுபாடுதான் valuation, collateral, regulatory reporting-க்கான முற்றிலும் வேற downstream systems-க்கு உங்களை வழிநடத்தும் (Modules 8–12).</p>
+    </section>
+    <section class="mod" id="12-upi-unique-product-identifier-theory-worked-example">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>12. UPI — Unique Product Identifier: Theory &amp; Worked Example</h2>
+      <div class="callout"><b>Deep dive இருக்கு:</b> இந்த section UPI (மற்றும் UTI)-ஐ, இனி curriculum-க்குத் தேவையான அளவுல பார்க்குது. UTI-ஓட structure, generation waterfall, ஆறு asset classes-க்கான UPI reference-data templates, ANNA-DSB உண்மையில எப்படி இயங்குது (MiFIR-க்கான OTC-derivative ISINs வழங்கற தனிப் பங்கு உட்பட), ஒவ்வொரு regime-லயும் எந்த identifier கட்டாயம் என்ற map — இவற்றுக்கு <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB Deep Dive</a> பாருங்க.</div>
+<p><b>Definition:</b> <b>UPI (Unique Product Identifier)</b> = OTC derivative <i>product</i>-க்கான global, standardized identifier — derivatives உலகத்துல ISIN-க்கு மிக நெருக்கமான விஷயம், ஆனா ஒரு குறிப்பிட்ட trade-ஐ இல்ல, ஒரு <b>product template</b>-ஐ identify பண்ணுது. இதை வழங்குவது <b>DSB (Derivatives Service Bureau)</b> — உலகம் முழுக்க ISIN issuance-ஐ ஒருங்கிணைக்கற அதே அமைப்பான ANNA-ஓட subsidiary — <b>CPMI-IOSCO</b> தொழில்நுட்ப வழிகாட்டுதல்படி. சுமார் 2022–2024 முதல், முக்கிய jurisdictions-ல regulators (CFTC, EMIR/UK EMIR rewrites, மற்றவை — Abbreviations Glossary §9 பாருங்க) OTC derivative trade reports-ல UPI-ஐ <i>கட்டாய</i> field ஆக்கியிருக்காங்க; firm-க்கு firm வேறுபடற internal product codes-ஓட குழப்பத்தை மாத்தி, firms-க்கு இடையில data-வை ஒப்பிட regulators-க்கு வழி செய்ய.</p>
+<p>குழப்பம் தர்ற முக்கிய விஷயம்: <b>UPI product-ஐ identify பண்ணுது; trade-ஐயும் இல்ல, குறிப்பிட்ட counterparty pair-ஐயும் இல்ல.</b> நாலு identifier வகைகளையும் பக்கம் பக்கமா வெச்சா இது எளிதா புரியும்:</p>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>எதை identify பண்ணுது</th><th>எதுக்கு unique…</th><th>Example</th></tr></thead><tbody><tr><td><b>ISIN</b></td><td>ஒரு குறிப்பிட்ட cash security</td><td>ஒரு instrument, பல trades reference பண்ணும்</td><td><code>US0378331005</code> (Apple common stock)</td></tr><tr><td><b>UPI</b></td><td>ஒரு derivative <i>product template</i> (asset class + type + underlier + முக்கிய economic terms)</td><td>ஒரு product, பல trades reference பண்ணும் — வேற வேற counterparties-க்கு நடுவுலயும்</td><td>"CORRA-ஐ reference பண்ற 5Y CAD Fixed-Float IRS"-க்கு ஒரு UPI</td></tr><tr><td><b>UTI</b></td><td>ஒரு குறிப்பிட்ட derivative <i>transaction</i></td><td>சரியா ஒரு trade, execution-ப்போ generate ஆகும்</td><td>Bank Of Toronto ஒரு swap execute பண்ற ஒவ்வொரு தடவையும் புது UTI</td></tr><tr><td><b>Trade ID</b></td><td>Firm-ஓட சொந்த internal transaction reference</td><td>சரியா ஒரு trade, ஆனா அந்த firm-ஓட systems-க்குள்ள மட்டும் அர்த்தமுள்ளது</td><td><code>BOT-2026-000514</code></td></tr></tbody></table></div>
+<p>இந்த pattern Section 1-ஓட hierarchy-யை கிட்டத்தட்ட அப்படியே பிரதிபலிக்குது: UPI "Product/Instrument" level-ல உட்காருது (reference data, ஒரு தடவை பார்த்து தொடர்ந்து reuse), UTI-யும் Trade ID-யும் "Trade" level-ல (ஒவ்வொரு தடவையும் புது value). Cash instruments-ஓட வித்தியாசம்: ஒரு derivative-க்கு <i>instrument</i> level-ல ISIN போல "ஒரு instrument, பல trades" identifier கிடையாது — Section 7 சொன்னபடி, derivative-க்கு ரெண்டு parties-ஓட contract-ஐத் தவிர தனி இருப்பே இல்ல. அந்த structural இடைவெளியை UPI, ISIN உட்காரற இடத்துக்கு ஒரு படி மேல, <i>product</i> level-ல நிரப்புது.</p>
+<div class="ticket"><pre>UPI vs UTI  —  WHERE EACH SITS IN THE HIERARCHY
+====================================================================
+
+  ASSET CLASS -&gt; PRODUCT -&gt; [ no instrument-level ID for OTC derivatives ] -&gt; TRADE
+                      |                                                          |
+                      v                                                          v
+              UPI identifies                                        UTI identifies
+              the PRODUCT TEMPLATE                                  ONE TRANSACTION
+              (reused across trades)                                 (new every time)</pre></div>
+<h3>UPI எப்படி build ஆகுது</h3>
+<p>UPI = ISIN மாதிரி format-ல 12-character code; ஆனா code தானே ஒரு lookup key மட்டும் — உண்மையான content, அதுக்குப் பின்னாடி இருக்கற <b>UPI Reference Data</b> record-ல: product-ஐ விவரிக்கற standardized fields (Asset Class, Instrument Type, Underlier(s), Notional Currency, Delivery Type, மற்றும் அந்த instrument type-க்கே உரிய சில economic terms). ரெண்டு derivative trades-க்கு <b>ஒரே UPI</b> வரும் — அந்த product-defining fields எல்லாமே பொருந்தினா, அப்போ மட்டும்தான். Trade-specific விவரங்கள் (notional amount, price/rate, counterparty, trade date) UPI-ஐ வரையறுக்கறதில் வேணும்னே சேர்க்கப்படலை — அதனாலதான் ஒரே UPI ஆயிரக்கணக்கான சம்பந்தமில்லாத trades-ல சட்டப்படி வரலாம்.</p>
+<h3>Worked example — ஒரு UPI, மூணு வேற வேற Interest Rate Swap trades</h3>
+<p>Section 8-ல பார்த்த 5Y CAD Interest Rate Swap product-ஐ திரும்பப் பார்க்கலாம் — Bank Of Toronto சில மாதங்களுக்குள்ள மூணு தனி swaps execute பண்ணுதுன்னு வெச்சுக்கோங்க; எல்லாம் ஒரே product shape (5Y tenor, CAD notional, fixed-vs-CORRA-floating), ஆனா trade-specific விவரங்கள் முற்றிலும் வேற:</p>
+<div class="ticket"><pre>ONE PRODUCT (ONE UPI) -- THREE UNRELATED TRADES (THREE UTIs)
+========================================================================
+
+  UPI: QZ9F4K2XR7T1   (illustrative — issued by the DSB)
+  Product definition behind this UPI:
+    Asset Class      : Interest Rate
+    Instrument Type  : Swap, Fixed-Float
+    Underlier        : CORRA
+    Notional Currency: CAD
+    Tenor             : 5 Years
+
+  TRADE A                         TRADE B                         TRADE C
+  Trade ID : BOT-2026-000514      Trade ID : BOT-2026-000601      Trade ID : BOT-2026-000725
+  UTI      : CA1B0T20260817001    UTI      : CA1B0T20260903002    UTI      : CA1B0T20261014003
+  UPI      : QZ9F4K2XR7T1  &lt;-SAME UPI as Trade A and Trade B, same product
+  Counterparty : Goldman Sachs    Counterparty : Maple Leaf Fund   Counterparty : Goldman Sachs
+  Notional : CAD 100,000,000      Notional : CAD 35,000,000        Notional : CAD 250,000,000
+  Fixed Rate : 4.00%              Fixed Rate : 3.85%                Fixed Rate : 4.15%
+  Trade Date : 17-Aug-2026        Trade Date : 03-Sep-2026          Trade Date : 14-Oct-2026</pre></div>
+<p><b>Takeaway:</b> மேல மூணு rows-உம் வேற வேற counterparties, notionals, rates, dates உள்ள முற்றிலும் வேற trades — ஒவ்வொண்ணுக்கும் தனி UTI, தனி internal Trade ID, Trade layer-ல எதிர்பார்க்கற மாதிரியே. ஆனா மூணுக்கும் ஒரே product shape (5Y CAD fixed-vs-CORRA swap) இருக்கறதால, எல்லாமே <b>அதே UPI</b>-ஐ report பண்ணுது. ஒரு reporting query ஆயிரக்கணக்கான தனித்தனி trades-ஐ ஒரே UPI value-ல group பண்ணா, அது data quality bug இல்ல — UPI தன் வேலையைத்தான் செய்யுது: ஒவ்வொரு firm-ஓட internal product coding-ஐயும் புரிஞ்சுக்காமலே "முழு market-ல எவ்வளவு 5Y CAD fixed-vs-CORRA swap risk இருக்கு"-ன்னு regulator aggregate பண்ண வழி செய்யுது.</p>
+    </section>
+    <section class="mod" id="13-worked-example-interest-rate-swap-irs">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>13. Worked Example — Interest Rate Swap (IRS)</h2>
+      <p><b>Definition:</b> IRS = ஒரே <b>Notional</b> (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8) மேல கணக்கிட்ட <b>fixed</b> வட்டி stream-ஐயும் <b>floating</b> வட்டி stream-ஐயும் பரிமாறிக்கற ஒப்பந்தம்; Notional கை மாறாது. Section 9-ஓட CDS (நடக்காமலே போகலாம்ங்கற contingent payout), Section 10-ஓட FX Forward (ரெண்டு உண்மையான currency amounts, கடைசில settle) போல இல்லாம, IRS-ஓட notional <b>ஒருபோதும் settle ஆகாது</b> — சின்ன net வித்தியாசம் மட்டும் நகரும், அதுவும் maturity-ல ஒரு தடவை இல்ல, <b>ஒவ்வொரு period-லயும்</b>.</p>
+<div class="callout"><b>Complete worked example இருக்கு.</b> <a href="../examples/Interest_Rate_Swap_IRS_Complete_Example.html">Interest Rate Swap (IRS) — Complete Example</a> பாருங்க — FRA → Cap → Floor → Collar → Swaption → Cross-Currency Swap → CDS வரை இணைஞ்ச standalone examples வரிசைல இதுதான் முதல் பாடம்.</div>
+<div class="ticket"><pre>INTEREST RATE SWAP  —  Bank Of Toronto pays fixed, receives floating vs CORRA
+================================================================================
+
+  Notional          : CAD 100,000,000  (reference only — never exchanged)
+  Fixed Rate         : 4.00% (Bank Of Toronto pays)
+  Floating Rate      : 3-month CORRA + 0.05% spread (Goldman Sachs pays)
+  Term               : 5 years, quarterly payment dates (20 settlements total)
+
+SCENARIO A — CORRA averages 3.20% this quarter (the normal case)
+----------------------------------------------------------
+  Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+  Floating leg (Goldman Sachs pays) : 100,000,000 x 3.25% x (91/365) = CAD 810,068
+                                       (3.20% CORRA + 0.05% spread)
+
+  Bank Of Toronto  ---- pays CAD 187,192 net ----&gt;  Goldman Sachs
+
+SCENARIO B — CORRA instead averages 4.30% this quarter (rates moved up)
+----------------------------------------------------------
+  Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+  Floating leg (Goldman Sachs pays) : 100,000,000 x 4.35% x (91/365) = CAD 1,084,521
+                                       (4.30% CORRA + 0.05% spread)
+
+  Goldman Sachs  ---- pays CAD 87,261 net ----&gt;  Bank Of Toronto
+  (the direction FLIPS — same trade, same two parties, opposite net payer,
+  purely because CORRA reset higher this quarter)
+
+  -&gt; This repeats every quarter for 5 years — 20 separate net settlements,
+     each independently determined by that period's own CORRA reset. The
+     CAD 100,000,000 notional itself never moves on ANY of those 20 dates.</pre></div>
+<p><b>ISDA classification:</b> Asset Class = <b>Interest Rate</b>, Base Product = <b>IRSwap</b>, Sub-Product = <b>FixedFloat</b>, Transaction Type = <b>Swap</b>. Section 11 table-ல பயன்படுத்தின "Interest Rate / IRSwap / FixedFloat / Swap" shorthand-ஓட முழு நாலு-level label இதுதான்.</p>
+<p><b>Takeaway:</b> Sections 9, 10-ஓட பக்கத்துல வெச்சுப் பார்த்தா, இந்த trade "உண்மையில என்ன settle ஆகுது"-ங்கறதுல மூணு-வழி வித்தியாசத்தை நிறைவு பண்ணுது: IRS-ஓட notional <b>ஒருபோதும்</b> settle ஆகாது (net வித்தியாசம் மட்டும், திரும்பத் திரும்ப); FX Forward-ஓட notional கடைசில <b>settle ஆகும்</b> (ரெண்டு முழு currency amounts, ஒரு தடவை, Section 10); CDS-ஓட notional <b>ஒருவேளை settle ஆகவே ஆகாது</b> (credit event நடந்தா மட்டும் contingent lump sum, Section 9). மூணு OTC derivatives, "Notional"-க்கும் "cash-ல உண்மையில நகர்றதுக்கும்" இடையில மூணு முற்றிலும் வேற உறவுகள் — ஒரே மாதிரின்னு assume பண்ணாம, reporting system ஒவ்வொரு product-க்கும் தனியா encode பண்ண வேண்டிய field-level நுணுக்கம் இதுதான்.</p>
+<h3>கூடுதல்: மூணு derivatives-ஐ ஒரே பார்வைல</h3>
+<div class="table-scroll"><table><thead><tr><th>Derivative</th><th>Notional settle ஆகுமா?</th><th>எப்போ cash நகரும்?</th><th>யார் யாருக்கு?</th></tr></thead><tbody><tr><td>IRS</td><td>ஒருபோதும் இல்ல</td><td>ஒவ்வொரு period-லயும் (net)</td><td>Fixed vs floating-ல யார் அதிகமோ அவங்க கொடுப்பாங்க; direction புரளலாம்</td></tr><tr><td>FX Forward</td><td>ஆமா, கடைசில</td><td>Value date-ல ஒரு தடவை (ரெண்டு currencies-உம்)</td><td>ரெண்டு பக்கமும் பரிமாற்றம்</td></tr><tr><td>CDS</td><td>ஒருவேளை</td><td>Premium தவணை தவணையா; payout default ஆனா மட்டும்</td><td>Buyer premium; seller loss amount</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>மேல Trade 1-ஐ வெச்சு, Bank Of Toronto அதே Price 98.50-க்கு CAD 25,000,000 face value வாங்கியிருந்தா, புது market value என்ன? Original trade-ஓட ஒப்பிட்டா record-ல எந்த fields மாறியிருக்கும்?</li><li>ஒரு reporting record-ல CUSIP இருக்கு, Ticker இல்ல. அது bond-ஆ, exchange-listed equity-ஆ இருக்கறதுக்கு வாய்ப்பு அதிகம்? ஏன்?</li><li>CAD 100,000,000 Interest Rate Swap-உம், CAD 100,000,000 bond purchase-உம் ரெண்டுமே report-ல "CAD 100,000,000"-ன்னு பெரிசா காட்டலாம். இந்த ரெண்டு "CAD 100,000,000"-உம் அடிப்படைல ஏன் வேற வேற அர்த்தம்?</li><li>Asset Class → Product → Instrument → Trade hierarchy-ல எந்த ஒரு layer Bank Of Toronto transact பண்ற ஒவ்வொரு தடவையும் புது record பெறும்? எந்த மூணு layers பல trades-க்கு ஒரே மாதிரி இருக்கும்?</li><li>Apple Inc. common stock-க்கு Ticker <code>AAPL</code>, CUSIP <code>037833100</code>, ISIN <code>US0378331005</code>. NASDAQ-க்கு பதிலா ஒரு ஐரோப்பிய exchange-ல நடந்த Apple trade-ஐ பார்க்கும்போது, இந்த மூணுல எது தொடர்ந்து வேலை செய்யும், எது செய்யாம போக வாய்ப்பு?</li><li>Northern Rail Corp CDS-ல (Section 9), recovery rate 40%-க்கு பதிலா 25%-ஆ இருந்து default ஆனா, Goldman Sachs-ஓட payout என்ன? <i>குறைவான</i> recovery rate ஏன் <i>அதிகமான</i> payout-ஐ குறிக்குது?</li><li>Cash bond-க்கு reporting system-ல "ISDA Taxonomy" field ஏன் நிரம்பவே நிரம்பாது, ஆனா Interest Rate Swap-க்கு எப்பவும் நிரம்புது?</li><li>ISDA Product Taxonomy-ஓட நாலு levels-ஐ வரிசைப்படி சொல்லுங்க. "Credit" எந்த level-ல உட்காரும்? "CreditDefaultSwap" எந்த level-ல?</li><li>FX Forward உதாரணத்துல (Section 10), Bank Of Toronto USD 10,000,000-ஐ 3 மாசத்துல <i>விக்க</i> (வாங்க இல்ல) வேண்டியிருந்து, அதே 1.3545 forward rate-ஐ lock பண்ணிச்சுன்னு வெச்சுக்கோங்க. Spot பிறகு 1.3700-க்கு நகர்ந்தா, காத்திருந்து spot-ல விக்கறதோட ஒப்பிட்டா இது Bank Of Toronto-க்கு நல்லதா கெட்டதா? இது original உதாரணத்தோட mirror image ஆக எப்படி?</li><li>Section 12 worked example-ல Trade A-வும் Trade C-யும் ஒரே UPI, ஒரே counterparty (Goldman Sachs), ரெண்டும் CAD-denominated — ஆனா அவை தெளிவா ரெண்டு தனி trades. அவை தனின்னு நிரூபிக்கற ரெண்டு identifiers என்ன? UPI-ஐ share பண்றதால அவை "ஒரே trade" ஆகாதது ஏன்?</li><li>Section 13-ஓட Scenario B-ஐ பயன்படுத்தி, CORRA இந்த quarter-ல சரியா 3.95% சராசரியா இருந்தா (+0.05% spread = 4.00% floating, fixed rate-க்கு சரியா சமம்), net settlement என்ன? அப்போ அந்த payment date-ல எதுவுமே நடக்காதுன்னு அர்த்தமா?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் <b><a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a>: Trade Lifecycle</b>.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. புது market value = CAD 24,625,000. Quantity-யும் Value-உம் மாறின; Price, Currency, Instrument, எல்லா reference-data fields-உம் அப்படியே.</b></p>
+<div class="ticket"><pre>Market Value = 25,000,000 x 98.50 / 100 = CAD 24,625,000</pre></div>
+<p>Quantity (Trade field) value-வை நேரடியா scale பண்ணுது. Price (98.50) மாறல, ஏன்னா அது அந்த நேரத்துல instrument-க்கான market விலை, ஒவ்வொரு buyer எவ்வளவு வாங்கறாங்கங்கறதைச் சார்ந்தது இல்ல. Trade layer-க்கு மேல இருக்கற எல்லாமே — Asset Class, Product, Instrument, ISIN — அதே, ஏன்னா அது இன்னும் அதே bond.</p>
+<p><b>2. பெரும்பாலும் bond.</b></p>
+<p>Tickers exchange-traded instruments-க்கு — நடைமுறைல முக்கியமா equities-க்கு — இருக்கும். Ticker இல்லாம CUSIP மட்டும் இருக்கறது bond record-ஓட classic அடையாளம்: bonds-க்கு identifiers (CUSIP/ISIN) உண்டு, ஆனா shares மாதிரி exchange ticker-ஓட trade ஆகாது.</p>
+<p><b>3. ஒண்ணு Quantity (உண்மையில settle ஆகறது), இன்னொண்ணு Notional (கணக்கிட மட்டும் பயன்படற reference number).</b></p>
+<p>CAD 100,000,000 bond purchase-னா, CAD 100,000,000 face value bonds உண்மையிலயே deliver ஆகி, settlement-ல கிட்டத்தட்ட அதே அளவு cash (price கொஞ்சம் மேல கீழ) கை மாறும் — உண்மையான securities, உண்மையான cash. CAD 100,000,000 swap notional ஒருபோதும் நகராது; fixed, floating legs-க்கு பெருக்க ஒரு number இருக்கணும்னு மட்டும்தான் அது இருக்கு (Section 3, <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> Section 8). காட்டற எண் ஒண்ணு, settlement நிஜம் முற்றிலும் வேற.</p>
+<p><b>4. Trade தான் ஒவ்வொரு தடவையும் புதுசா இருக்கற ஒரே layer. Asset Class, Product, Instrument பல trades-ல அப்படியே இருக்கும்.</b></p>
+<p>"Canada 5% Bond 2035" மாதிரி ஒரு instrument-க்கு அடில அதன் வாழ்நாள்ல ஆயிரக்கணக்கான Trade records இருக்கலாம் — ஒவ்வொண்ணும் அதே Asset Class (Fixed Income), Product (Government Bond), Instrument (அந்த ஒரு bond)-க்கே திரும்பிச் சுட்டும். யார் transact பண்ணாங்க, எவ்வளவு, என்ன விலை, எப்போன்னு Trade layer மட்டும்தான் பிடிக்குது.</p>
+<p><b>5. ISIN-உம் CUSIP-உம் எல்லா இடத்துலயும் வேலை செய்யும்; Ticker செய்யாம போக வாய்ப்பு.</b></p>
+<p>ISIN வடிவமைப்பிலேயே உலகளவுல unique; எந்த exchange-ல trade ஆனாலும் security-கூடவே பயணிக்கும். CUSIP-உம் exchange venue-ஆல பாதிக்கப்படாது (listing-ஐ இல்ல, security-ஐ identify பண்ணுது). ஆனா Ticker exchange-specific — ஐரோப்பிய exchange-ல (உதா., Frankfurt Xetra) Apple-ஓட ticker <code>AAPL</code> இல்ல, <code>APC</code> மாதிரி ஏதாவது காட்டப்படும்; ஏன்னா tickers ஒவ்வொரு listing venue-க்கும் assign ஆகும், ISIN/CUSIP மாதிரி global இல்ல.</p>
+<p><b>6. Payout = CAD 15,000,000. குறைவான recovery rate = default-ல creditors குறைவாத் திரும்பப் பெறறாங்க, அதனால CDS பெரிய loss-ஐ cover பண்ணணும்.</b></p>
+<div class="ticket"><pre>Loss Given Default = Notional x (1 - Recovery Rate)
+                    = 20,000,000 x (1 - 0.25)
+                    = CAD 15,000,000</pre></div>
+<p>Recovery Rate = default-க்கு அப்புறம் (உதா., default ஆன company-ஓட மீதி assets-ஐ விற்று) creditors ஒரு dollar-க்கு எத்தனை cents திரும்பப் பெறறாங்க. Recovery Rate-உம் CDS payout-உம் எதிர்த்திசைல நகரும்: 40% recovery-ல payout CAD 12,000,000; recovery 25%-க்கு விழுந்தா creditors தங்க பணத்துல இன்னும் குறைவா திரும்பப் பெறறாங்க, அதனால protection seller (Goldman Sachs) பெரிய இடைவெளியை — CAD 15,000,000 — ஈடுகட்டணும்.</p>
+<p><b>7. ISDA Taxonomy OTC derivative <i>contracts</i>-ஐ classify பண்ணுது; cash bond ரெண்டு parties-க்கு இடையிலான contract இல்ல — அது தனித்து நிற்கற security.</b></p>
+<p>Bond, அதை இப்போ யார் வெச்சிருக்காங்கங்கறதைச் சாராம தனியா இருக்கும்; அதை வாங்கறது/விக்கறது ஏற்கனவே இருக்கற ஒரு பொருளோட ownership-ஐ மாத்தறது மட்டும் (Section 6). Interest Rate Swap, ரெண்டு counterparties ஒப்புக்கிட்டதாலதான் இருக்கு — அந்த bilateral contract-க்கு வெளியே அதுக்கு இருப்பே இல்ல; இதைத்தான் ISDA taxonomy தொழில்துறை முழுக்க ஒரே மாதிரி classify பண்ண உருவாக்கப்பட்டது (Section 7). Cash instruments CFI codes, ISIN/CUSIP-ஐ பயன்படுத்துது; அவை ISDA-ஓட scope-ல இருந்ததே இல்ல.</p>
+<p><b>8. ISDA Asset Class → Base Product → Sub-Product → Transaction Type. "Credit" முதல் level-ல (Asset Class); "CreditDefaultSwap" கடைசி level-ல (Transaction Type).</b></p>
+<p>Section 9 உதாரணம்: Asset Class = Credit, Base Product = SingleName, Sub-Product = Corporate, Transaction Type = CreditDefaultSwap. ஒவ்வொரு level-லயும் taxonomy இன்னும் குறிப்பிட்டதாகுது — "Credit" மட்டும் CDS-ஐயும் Total Return Swap-ஐயும் பிரிச்சுக் காட்டாது, ஆனா நாலாவது level-ல "CreditDefaultSwap" தெளிவா அடையாளம் காட்டிடும்.</p>
+<p><b>9. Bank Of Toronto-க்கு கெட்ட விளைவு (opportunity cost) — original உதாரணத்தோட mirror image, ஏன்னா இப்போ Bank Of Toronto USD-ஐ வாங்கற பக்கம் இல்ல, விக்கற பக்கம்.</b></p>
+<div class="ticket"><pre>Bank Of Toronto sells USD 10,000,000 forward at locked rate 1.3545:
+  Receives CAD 13,545,000 in 3 months, regardless of where spot lands.
+
+If spot later moves to 1.3700 (USD got MORE expensive):
+  Selling USD at that HIGHER spot rate would fetch MORE CAD:
+  10,000,000 x 1.3700 = CAD 13,700,000 (spot) vs CAD 13,545,000 (forward)
+  -&gt; Forward COST Bank Of Toronto CAD 155,000 vs. waiting and selling at spot.</pre></div>
+<p>Section 10-ல Bank Of Toronto (USD <i>வாங்குபவர்)</i> spot, locked forward rate-ஐ விட உயர்ந்தப்போ நன்மை அடைஞ்சது. இங்க USD <i>விற்பவரா</i> இருப்பதால், spot locked rate-ஐ விட உயர்ந்தா பாதிப்பு — காத்திருந்து உயர்ந்த spot-ல வித்திருந்தா அதிக CAD கிடைச்சிருக்கும். ஒரு rate நகர்வு forward-க்கு "உதவுதா" "பாதிக்குதா"ங்கறது, currency pair-ல நீங்க எந்தப் பக்கத்தை lock பண்ணீங்கன்னு பொறுத்தது — buyer, seller ரெண்டு பேரும் ஒரே rate நகர்வுக்கு சரியா எதிர் exposure-ஐ சந்திக்கறாங்க.</p>
+<p><b>10. அவற்றின் UTI-யும் Trade ID-யும் வேற. UPI-ஐ share பண்றது ரெண்டு trades-க்கும் ஒரே <i>product shape</i> மட்டும்தான்னு சொல்லுது — counterparty, size, rate, date பத்தி எதுவும் இல்ல, அவை UPI-ஓட வரையறையில சேராது.</b></p>
+<div class="ticket"><pre>Trade A: UTI CA1B0T20260817001, Trade ID BOT-2026-000514, Notional CAD 100,000,000, Rate 4.00%, 17-Aug-2026
+Trade C: UTI CA1B0T20261014003, Trade ID BOT-2026-000725, Notional CAD 250,000,000, Rate 4.15%, 14-Oct-2026</pre></div>
+<p>UPI, product-defining fields-ல இருந்து மட்டும் கட்டப்படுது (Asset Class, Instrument Type, Underlier, Notional Currency, Tenor) — Section 12 அந்த fields எவை எனப் பட்டியலிடுது; counterparty/notional/rate/date அவற்றில் இல்ல. இது வேணும்னே அப்படி: "எல்லா 5Y CAD fixed-vs-CORRA swaps-ஐயும்" market முழுக்க ஒண்ணா group பண்ண regulator-க்கு உதவறதுதான் UPI-ஓட வேலை; trade-specific details விலக்கப்பட்டாதான் அது வேலை செய்யும். UTI-யும் (internal-ஆ Trade ID-யும்) UPI வேணும்னே விட்ட trade-specific அடையாளத்தை சுமக்கத்தான் இருக்கு — ஆயிரம் மற்ற transactions அதே product template-ஐ share பண்ணினாலும், ஒவ்வொரு உண்மையான transaction-க்கும் புது ஒண்ணு கிடைக்கும்.</p>
+<p><b>11. Net settlement = CAD 0 — ஆனா அந்த தேதில எதுவுமே நடக்காதுன்னு அர்த்தம் இல்ல.</b></p>
+<div class="ticket"><pre>Fixed leg (Bank Of Toronto pays)  : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+Floating leg (Goldman Sachs pays) : 100,000,000 x 4.00% x (91/365) = CAD 997,260
+                                     (3.95% CORRA + 0.05% spread)
+Net = 997,260 - 997,260 = CAD 0</pre></div>
+<p>ரெண்டு legs-உம் அந்த quarter-ஓட CORRA reset-ல இருந்து தனித்தனியா கணக்கிடப்படும் — CORRA இந்த quarter-ல எங்க இறங்கிச்சுங்கற தற்செயலால, netting step இந்தத் தடவை பூஜ்யம் தருது, அவ்வளவுதான். Trade நிக்கவோ, terminate ஆகவோ, processing-ஐ skip பண்ணவோ இல்ல; அடுத்த quarter-ஓட settlement, CORRA அடுத்து என்ன செய்யுதோ அதிலிருந்து முழுசா தனியா கணக்கிடப்படும். Net cash உண்மையிலயே நகரும்போது மட்டும் entry book பண்ற reporting system, இந்த period-ஓட settlement-ஐ பதிவு பண்ணாம சத்தமில்லாம தவறவிட்டுடும் — net பூஜ்யமா இருந்தாலும் ரெண்டு legs-ஐயும் net-ஐயும் எப்பவும் கணக்கிட்டு report பண்றதுதான் சரியான நடத்தை.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 2 — Asset Class → Product → Instrument → Trade (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

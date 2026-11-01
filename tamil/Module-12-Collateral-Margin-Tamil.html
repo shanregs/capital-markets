@@ -1,0 +1,785 @@
+<!doctype html>
+<title>Module 12 — Collateral & Margin (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 12 — Collateral & Margin (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Initial vs variation margin, haircuts, pledge/custodian/tri-party, thresholds and remaining exposure, margin call workflow, UMR and LCR — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Cross-cutting module</b> — <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> (Valuation), <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> (Risk &amp; Exposure) திறந்த சங்கிலியை முடிக்குது: Trade → Valuation → Exposure → Margin → Collateral. எட்டு-பாக asset-class pattern-ஐ சுத்தி அமைக்கப்படலை. <b>மூலம்:</b> English Module 12-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-collateral-margin-ன்னா-என்ன-சங்கிலியை-முடிக்கிறது"><span class="toc-num">01</span>1. Collateral &amp; Margin-ன்னா என்ன? — சங்கிலியை முடிக்கிறது</a></li>
+      <li><a href="#2-initial-margin-vs-variation-margin-deep-dive"><span class="toc-num">02</span>2. Initial Margin vs Variation Margin — Deep Dive</a></li>
+      <li><a href="#3-collateral-வகைகளும்-haircuts-உம்"><span class="toc-num">03</span>3. Collateral வகைகளும் Haircuts-உம்</a></li>
+      <li><a href="#4-collateral-நகர்வு-mechanics-pledge-custodian-tri-party"><span class="toc-num">04</span>4. Collateral நகர்வு Mechanics — Pledge, Custodian &amp; Tri-Party</a></li>
+      <li><a href="#5-மீதமிருக்கும்-exposure-சங்கிலியை-முடிக்கிறது"><span class="toc-num">05</span>5. மீதமிருக்கும் Exposure — சங்கிலியை முடிக்கிறது</a></li>
+      <li><a href="#6-cross-asset-class-margin-reference"><span class="toc-num">06</span>6. Cross-Asset-Class Margin Reference</a></li>
+      <li><a href="#7-it-reporting-பார்வை-margin-call-workflow-static-vs-daily-fields-disputes"><span class="toc-num">07</span>7. IT/Reporting பார்வை — Margin Call Workflow, Static vs Daily Fields, Disputes</a></li>
+      <li><a href="#8-regulatory-perspective-umr-phase-in-bcbs-iosco-sftr-basel-lcr"><span class="toc-num">08</span>8. Regulatory Perspective — UMR Phase-In, BCBS-IOSCO, SFTR &amp; Basel LCR</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-collateral-margin-ன்னா-என்ன-சங்கிலியை-முடிக்கிறது">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Collateral &amp; Margin-ன்னா என்ன? — சங்கிலியை முடிக்கிறது</h2>
+      <p><b>Definition:</b> Modules 10, 11 ஒரு சங்கிலி எண்களை — Market Value, அப்புறம் Exposure — கட்டின; அவை எல்லாம் risk-ஐ விவரிக்குது, ஆனா அதைப் பத்தி <i>எதுவும் செய்யறதில்ல</i>. Collateral = அந்த risk-ஐ cover பண்ண post பண்ணப்படற உண்மையான asset (cash அல்லது securities); Margin = எவ்வளவு collateral தேவைன்னு கணக்கிட்டு அதை கோரும் பரந்த process. இந்த module curriculum தானே வகுக்கற சங்கிலியை முடிக்குது:</p>
+<div class="ticket"><pre>Trade  -&gt;  Valuation (Module 10)  -&gt;  Exposure (Module 11)  -&gt;  Margin  -&gt;  Collateral</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td>Collateral</td><td>ஒரு தரப்பு மற்ற தரப்போட exposure-ஐ cover பண்ண post பண்ற உண்மையான asset (cash அல்லது securities)</td></tr><tr><td>Margin</td><td>பரந்த process/தொகை — எவ்வளவு collateral தேவைன்னு கணக்கிடறது</td></tr><tr><td>Initial Margin (IM)</td><td>ஒரு position உங்களுக்கு எதிரா நகரறதுக்கு முன்னாடியே, Potential Future Exposure-க்கு (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §2) அளவிடப்பட்டு முன்கூட்டியே post பண்ற collateral</td></tr><tr><td>Variation Margin (VM)</td><td><i>இன்னிக்கான</i> MTM நகர்வை (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §1) cover பண்ண அவ்வப்போது பரிமாறப்படற collateral</td></tr><tr><td>Cash Collateral</td><td>நேரடியா post பண்ணப்படற currency — valuation adjustment தேவையில்ல, அதன் மதிப்பு அதன் face தொகையேதான்</td></tr><tr><td>Securities Collateral</td><td>Cash-க்குப் பதிலா post பண்ணப்படற bond அல்லது வேறு security — Market Value-வை Collateral Value-ஆ மாத்த Haircut (Section 3) தேவை</td></tr><tr><td>Eligible Collateral</td><td>ஒரு CSA (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7) collateral-ஆ அனுமதிக்கற குறிப்பிட்ட asset வகைகளின் பட்டியல் — எல்லா security-உம் தகுதியுடையது இல்ல</td></tr><tr><td>Haircut</td><td>ஒரு security collateral-ஆ பயன்படுத்தப்படும்போது அதன் Market Value-வுக்கு பொருந்தும் சதவீத குறைப்பு — collateral தானே, அதை liquidate பண்ண முடியுமுன்னாடி மதிப்பு இழக்கும் அபாயத்துக்கு ஒரு தடுப்பு</td></tr></tbody></table></div>
+<div class="ticket"><pre>THE FULL CHAIN, WITH REAL NUMBERS — continuing Module 11 §3's netting set
+========================================================================
+
+  Module 10: Trade 1 (IRS) MTM = +CAD 1,500,000
+             Trade 2 (FX Fwd) MTM = +CAD 900,000
+             Trade 3 (CDS) MTM = -CAD 400,000
+             (Gross Positive MTM = CAD 2,400,000)
+
+  Module 11 §3: NET EXPOSURE (after ISDA netting) = CAD 2,000,000
+
+  Module 12 (this module):
+             Collateral Held (Section 05 explains the exact number)
+               = CAD 1,800,000
+             Remaining (uncollateralized) Exposure
+               = 2,000,000 - 1,800,000 = CAD 200,000
+
+  -&gt; Four modules, one continuous worked example: Bank Of Toronto's
+     real, final risk to Goldman Sachs after EVERYTHING -- netting
+     AND collateral -- is CAD 200,000, not the CAD 2,400,000 the
+     raw MTM numbers alone would suggest.</pre></div>
+<p><b>Takeaway:</b> இந்தச் சங்கிலியில ஒவ்வொரு எண்ணும் அதுக்கு முந்தையதை விடச் சிறியது, ஒவ்வொரு குறைப்பும் முற்றிலும் வேறு காரணத்துக்காக நடக்குது — netting (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §3) ஒரு சட்ட mechanism; collateral உண்மையில கை மாறும் ஒரு physical asset. MTM-ல இருந்து நேரா "வங்கி நல்லா இருக்கு"ன்னு தாவும் risk report, அந்த முடிவை உண்மையாக்கற வேலையையே மறைச்சிடுது.</p>
+<h3>கூடுதல் உதாரணம் — தமிழ் வாழ்க்கை ஒப்புமை: வீட்டு வாடகை Advance &amp; மாதாந்திர ஈடு</h3>
+<div class="table-scroll"><table><thead><tr><th>Derivative ஒப்புமை</th><th>வாடகை ஒப்புமை</th></tr></thead><tbody><tr><td>Initial Margin (ஆரம்பத்துல ஒரு தடவை)</td><td>வீடு எடுக்கும்போது கொடுக்கற <b>advance / deposit</b> — சேதம் வந்தா ஈடுகட்ட</td></tr><tr><td>Variation Margin (தினசரி)</td><td>மாதாமாதம் <b>மின்சாரக் கட்டணம் உண்மையான meter reading-ப்படி</b> கொடுக்கறது — நடப்பு நிலையை சரிக்கட்ட</td></tr><tr><td>Threshold</td><td>"சின்ன பாக்கி 500 ரூபாய் வரை பரவாயில்ல, தனியா வசூலிக்க வேண்டாம்"ன்னு ஒத்துக்கறது</td></tr><tr><td>Haircut</td><td>வீட்டுக்காரர் "நகையை அடமானமா வைக்கறீங்களா? அதன் மதிப்புல 80% தான் கணக்கு"ன்னு சொல்றது</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="2-initial-margin-vs-variation-margin-deep-dive">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Initial Margin vs Variation Margin — Deep Dive</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6 ஏற்கனவே CAD 100,000,000 IRS மேல விளக்க எண்களோட IM, VM-ஐ அறிமுகப்படுத்திச்சு; <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §7 bilateral IM-க்குப் பின்னாலுள்ள model-ஆ SIMM-ஐ அறிமுகப்படுத்தியது. இந்த section ரெண்டையும் உண்மையில எது post பண்ணப்படுது, IM-உம் VM-உம் ஏன் முற்றிலும் வேறு ரெண்டு தோல்வி முறைகளை எதிர்த்துப் பாதுகாக்குதுங்கற mechanics-ஓட இணைக்குது.</p>
+<div class="ticket"><pre>IM PROTECTS AGAINST THE FUTURE; VM PROTECTS AGAINST THE PRESENT
+========================================================================
+
+  INITIAL MARGIN (IM) — Module 3 §6's worked example:
+    100,000,000 x 2.00% (illustrative rate for a 5Y IRS) = CAD 2,000,000
+    Posted ONCE, at trade inception, by BOTH sides independently.
+    Purpose: if the counterparty defaults TOMORROW, before any VM
+    has even had a chance to react, IM is the buffer that covers
+    the loss during the time it takes to close out and replace the
+    position (the "Margin Period of Risk," typically 10 business
+    days for bilateral trades under UMR).
+
+  VARIATION MARGIN (VM) — Module 3 §6's worked example:
+    Next business day, MTM shifts CAD 180,000 in Bank Of Toronto's
+    favor -&gt; Goldman Sachs pays CAD 180,000 VM to Bank Of Toronto
+    Purpose: keeps CURRENT Exposure (Module 11 §1) at effectively
+    ZERO on an ongoing basis, by transferring exactly today's MTM
+    movement, every business day, for the life of the trade.
+
+  -&gt; IM is sized off Module 11 §2's PFE (a FORWARD-LOOKING
+     estimate); VM is sized off Module 10 §1's MTM (a CURRENT
+     snapshot). Two completely different questions, two completely
+     different collateral flows, calculated on two different
+     schedules (IM once at inception plus periodic recalculation;
+     VM daily).</pre></div>
+<p><b>Takeaway:</b> ஒரு position-க்கு கணிசமான IM post பண்ணப்பட்டிருந்தும், மறுநாளே பெரிய VM call உருவாகலாம் — IM போதுமானது VM தற்போதையதுங்கறதை பத்தி எதுவும் சொல்லாது, ஏன்னா IM <i>எதிர்கால</i> default scenario-க்கு எதிரா பாதுகாக்குது, VM <i>இன்னிக்கான</i> மதிப்பை பின்தொடருது. இவை ரெண்டையும் குழப்பிக்கறது, <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>/11-ஓட MTM-vs-Exposure குழப்பத்தின் collateral-management பதிப்பு, சங்கிலியில ஒரு படி கீழ.</p>
+    </section>
+    <section class="mod" id="3-collateral-வகைகளும்-haircuts-உம்">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Collateral வகைகளும் Haircuts-உம்</h2>
+      <p><b>Definition:</b> எல்லா collateral-உம் சமமில்ல. Cash-க்கு adjustment தேவையில்ல; securities-க்கு Haircut தேவை, ஏன்னா collateral post பண்ணப்படற தருணத்துக்கும் அதை liquidate பண்ண வேண்டியிருக்கலாம்ங்கற தருணத்துக்கும் (ஒரு default scenario) நடுவுல அதன் சொந்த சந்தை மதிப்பு விழலாம்.</p>
+<div class="ticket"><pre>SECURITIES COLLATERAL — Canada 5% Bond 2035 posted as collateral
+========================================================================
+
+  Market Value (Module 5 §4a, Module 10 §1): CAD 9,850,000
+  Haircut (illustrative, for a high-quality government bond): 2%
+
+  Collateral Value = Market Value x (1 - Haircut)
+                    = 9,850,000 x 0.98
+                    = CAD 9,653,000
+
+  -&gt; The bond's Collateral Value (CAD 9,653,000) is LOWER than its
+     Market Value (CAD 9,850,000) -- the CAD 197,000 gap is the
+     buffer against the bond itself losing value before it can be
+     sold to cover a default. A riskier, less liquid security (a
+     corporate bond, or equity) would carry a MUCH larger haircut
+     than a government bond -- Eligible Collateral schedules
+     (Section 01) typically list a specific haircut percentage per
+     asset type, not one flat rate for everything.</pre></div>
+<p><b>Takeaway:</b> "Collateral Value" ஒரு உண்மையிலயே தனி field, "Market Value"-ல இருந்து — <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §1 Price, Market Value, Fair Value இடையில நிறுவின அதே வகை வேறுபாடு; ஒரு security-க்கு ஒரே எண்ணை மட்டும் store பண்ணி valuation, collateral ரெண்டு நோக்கத்துக்கும் மறுபயன்படுத்தும் reporting system, post பண்ணப்பட்ட security உண்மையில வழங்கும் பாதுகாப்பின் அளவை அமைதியா மிகைப்படுத்தும்.</p>
+<h3>கூடுதல் உதாரணம் — வெவ்வேறு collateral, வெவ்வேறு haircut (எண்களோட)</h3>
+<div class="table-scroll"><table><thead><tr><th>Collateral</th><th>Market Value (CAD)</th><th>Haircut</th><th>Collateral Value (CAD) = MV × (1 − Haircut)</th></tr></thead><tbody><tr><td>Cash (CAD)</td><td>5,000,000</td><td>0%</td><td>5,000,000</td></tr><tr><td>Canada 5% Bond 2035</td><td>9,850,000</td><td>2%</td><td>9,653,000</td></tr><tr><td>Bank Of Toronto 4.5% Bond 2030 (corporate)</td><td>12,210,000</td><td>8%</td><td>11,233,200</td></tr><tr><td>Equity (Coca-Cola shares)</td><td>684,000</td><td>15%</td><td>581,400</td></tr></tbody></table></div>
+<p>அதே CAD 5,000,000 exposure-ஐ cover பண்ண, cash-ல 5,000,000 போதும்; equity-ல இருந்து cover பண்ண CAD 5,882,353 market value-வுள்ள shares தேவை (5,000,000 ÷ 0.85). Haircut அதிகம் = அதிக collateral தேவை.</p>
+    </section>
+    <section class="mod" id="4-collateral-நகர்வு-mechanics-pledge-custodian-tri-party">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Collateral நகர்வு Mechanics — Pledge, Custodian &amp; Tri-Party</h2>
+      <p><b>Definition:</b> Collateral எங்கயாவது physically நகர வேண்டும், ரெண்டு counterparties-உம் ஒப்பந்தத்தை நம்பும் அளவுக்கு நடுநிலையான ஒருவரால வெச்சிருக்கப்படணும்.</p>
+<div class="ticket"><pre>PLEDGE vs RECEIVE, AND WHO HOLDS IT
+========================================================================
+
+  PLEDGE: Bank Of Toronto POSTS (pledges) collateral TO Goldman
+          Sachs, because Bank Of Toronto owes the exposure.
+  RECEIVE: Goldman Sachs RECEIVES that same collateral.
+          (On the netting set from Section 01, it's actually
+          Goldman Sachs who owes Bank Of Toronto CAD 2,000,000 net
+          -- so in THIS relationship, Goldman Sachs pledges and
+          Bank Of Toronto receives.)
+
+  CUSTODIAN vs TRI-PARTY AGENT -- two different operating models:
+
+  Bilateral custody: Bank Of Toronto's own custodian (Module 1 §7)
+    holds collateral received directly, and Bank Of Toronto's own
+    Middle Office values it, applies haircuts, and tracks
+    Eligible Collateral rules manually against the CSA.
+
+  Tri-party arrangement: a neutral THIRD PARTY (e.g. Euroclear,
+    Clearstream, or a custodian bank acting as tri-party agent)
+    sits between Bank Of Toronto and Goldman Sachs. Both parties
+    agree the Eligible Collateral schedule and haircuts UP FRONT;
+    the tri-party agent then automatically selects, values,
+    applies haircuts to, and even SUBSTITUTES eligible securities
+    from a pool -- neither Bank Of Toronto nor Goldman Sachs has
+    to manually pick and track individual securities day to day.
+
+  COLLATERAL SUBSTITUTION: if Bank Of Toronto wants to sell a bond
+    it's currently using as posted collateral (e.g. to fund
+    something else), it can SUBSTITUTE a different eligible asset
+    of equivalent Collateral Value -- a tri-party agent handles
+    this automatically; bilateral custody requires manual
+    negotiation and agreement from the receiving party first.</pre></div>
+<p><b>Takeaway:</b> Tri-party ஏற்பாடுகள் இருக்கறதே, Section 3-ஓட haircut கணக்கு, Eligible Collateral சரிபார்ப்பு ஆகிய இயக்கச் சுமையை ரெண்டு trading counterparties-ல இருந்தும் நீக்கத்தான் — ஒரு உண்மையிலயே முக்கியமான IT/operations வேறுபாடு, ஏன்னா tri-party custody பயன்படுத்தும் firm-க்கு (tri-party agent-உடன்/இடமிருந்து ஒரு feed) bilateral collateral-ஐ உள்ளுக்குள்ளயே நிர்வகிக்கும் firm-ஐ விட அடிப்படையில வேறு system integration தேவைகள்.</p>
+    </section>
+    <section class="mod" id="5-மீதமிருக்கும்-exposure-சங்கிலியை-முடிக்கிறது">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. மீதமிருக்கும் Exposure — சங்கிலியை முடிக்கிறது</h2>
+      <p><b>Definition:</b> Collateral அரிதா exposure-ஐ சரியா பூஜ்யத்துக்கு cover பண்ணும் — ஒரு <b>Threshold</b> (எந்த collateral-உம் தேவைப்படுவதற்கு முன்னாடி, ஒரு counterparty collateral இல்லாம சுமக்கச் சம்மதிக்கற exposure தொகை) ஒரு நிலையான CSA term, இந்த module-ஓட தொடக்க worked example-ஐ விளக்குறதும் அதுதான்.</p>
+<div class="ticket"><pre>WHY CAD 200,000 OF EXPOSURE REMAINS UNCOLLATERALIZED
+========================================================================
+
+  Net Exposure to Goldman Sachs (Module 11 §3): CAD 2,000,000
+  CSA Threshold agreed between Bank Of Toronto and Goldman Sachs:
+    CAD 200,000 (the amount of exposure Bank Of Toronto has agreed
+    to simply ACCEPT, uncollateralized, as the cost of not having
+    to call/post tiny amounts of collateral for every small MTM move)
+
+  Required Collateral = Net Exposure - Threshold
+                       = 2,000,000 - 200,000
+                       = CAD 1,800,000  &lt;- exactly Section 01's
+                                            "Collateral Held" figure
+
+  Remaining (uncollateralized) Exposure = Net Exposure - Collateral Held
+                                          = 2,000,000 - 1,800,000
+                                          = CAD 200,000  &lt;- exactly
+                                            equal to the Threshold
+
+  -&gt; This isn't a coincidence -- collateral is called to bring
+     Exposure DOWN TO the Threshold, never below it. A Minimum
+     Transfer Amount (MTA) works alongside Threshold to prevent
+     even that Threshold-sized gap from triggering constant tiny
+     collateral movements as MTM wobbles by small amounts day to day.</pre></div>
+<p><b>Takeaway:</b> மீதமிருக்கும் Exposure ஒரு system கோளாறோ under-collateralized தவறோ இல்ல — CSA-வில் (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7) கையெழுத்து போட்டப்போ ரெண்டு counterparties-உம் ஒத்துக்கிட்ட Threshold-ஓட வேண்டுமென்றே பேசி முடிவுசெய்யப்பட்ட விளைவு. "CAD 200,000 exposure-க்கு collateral இல்ல"ன்னு flag பண்ணும் risk report, அந்த இடைவெளியை பிரச்சனையா நடத்தறதுக்கு முன்னாடி CSA-ஓட Threshold term-ஐ சரிபார்க்கணும்.</p>
+<h3>கூடுதல் உதாரணம் — Threshold + MTA சேர்ந்து எப்படி வேலை செய்யுது</h3>
+<p>CSA terms: Threshold = CAD 200,000; Minimum Transfer Amount (MTA) = CAD 50,000.</p>
+<div class="table-scroll"><table><thead><tr><th>நாள்</th><th>Net Exposure (CAD)</th><th>Required Collateral = Exposure − Threshold</th><th>ஏற்கனவே வெச்சிருக்கறது</th><th>வித்தியாசம்</th><th>Call? (MTA 50,000-ஐ கடக்குதா)</th></tr></thead><tbody><tr><td>Day 1</td><td>2,000,000</td><td>1,800,000</td><td>1,800,000</td><td>0</td><td>இல்ல</td></tr><tr><td>Day 2</td><td>2,030,000</td><td>1,830,000</td><td>1,800,000</td><td>+30,000</td><td>இல்ல — MTA-க்கு கீழ (தினமும் சின்ன சின்ன நகர்வுகளை தவிர்க்க)</td></tr><tr><td>Day 3</td><td>2,090,000</td><td>1,890,000</td><td>1,800,000</td><td>+90,000</td><td>ஆமா — CAD 90,000 call</td></tr><tr><td>Day 4</td><td>1,950,000</td><td>1,750,000</td><td>1,890,000</td><td>−140,000</td><td>ஆமா — CAD 140,000 திருப்பிக் கொடுக்கணும்</td></tr></tbody></table></div>
+<p>MTA இல்லாட்டி Day 2-ல ஒரு சின்ன 30,000 call-உம் அதன் settlement-உம் நடந்திருக்கும்; Threshold இல்லாட்டி exposure முழுசும் collateralize ஆகியிருக்கும்.</p>
+    </section>
+    <section class="mod" id="6-cross-asset-class-margin-reference">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Cross-Asset-Class Margin Reference</h2>
+      <p><b>Definition:</b> ஒரு position IM/VM தேவையை உருவாக்குதான்னே, அது எப்படி clear ஆகுதுங்கறதை முழுக்க சார்ந்தது (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §5-ஓட bilateral-vs-CCP பிளவு), இங்க margin கேள்விக்கு குறிப்பா மறுபயன்படுத்தப்பட்டது.</p>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative / SFT</th><th>Product Category</th><th>IM Required?</th><th>VM Required?</th><th>Basis</th></tr></thead><tbody><tr><td>CASH</td><td>Cash Equity / Bonds (settled DvP)</td><td>No</td><td>No</td><td>Settles outright via DvP (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7) — no ongoing position risk to margin against</td></tr><tr><td>DERIVATIVE</td><td>Exchange-traded Futures / Listed Options</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td><td>CCP's own initial and variation margin methodology (<a href="../docs/1-capital-markets/module-15-listed-derivatives.html">Module 15</a> §5)</td></tr><tr><td>DERIVATIVE</td><td>Centrally-cleared standardized IRS / CDS Index</td><td>Yes (CCP's own model)</td><td>Yes, <b>daily</b></td><td>Same CCP-driven mechanic as Futures (<a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §5, <a href="../docs/1-capital-markets/module-09-credit.html">Module 9</a> §7)</td></tr><tr><td>DERIVATIVE</td><td>Bilateral OTC derivatives <b>above</b> UMR thresholds (<a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §8)</td><td>Yes, via <b>SIMM</b> (Section 02, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §7)</td><td>Yes</td><td>Bilaterally agreed CSA (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7), reused throughout this module</td></tr><tr><td>DERIVATIVE</td><td>Bilateral OTC derivatives <b>below</b> UMR thresholds</td><td>No</td><td>Yes (VM-only CSA is common even below the IM threshold)</td><td>CSA terms, but IM specifically not mandated</td></tr><tr><td>SFT</td><td>Repo / Securities Lending</td><td>N/A (uses <b>haircuts on the collateral itself</b>, Section 03's mechanic, rather than separate IM/VM)</td><td>N/A</td><td>The security/cash exchanged IS the collateral (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §3)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Repo, IM/VM framework-க்கே பொருந்தாதுங்கறதை கவனிங்க — <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §3 ஏற்கனவே repo-வை, security தானே collateral-ஆ இருக்கற secured loan-ஆ நிறுவியது; அதனால Section 3-ஓட haircut கருத்து, ஒரு derivative மேல அடுக்கப்பட்ட தனி margin process-ஆ இல்லாம, loan structure-க்கே நேரடியா பொருந்துது.</p>
+    </section>
+    <section class="mod" id="7-it-reporting-பார்வை-margin-call-workflow-static-vs-daily-fields-disputes">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. IT/Reporting பார்வை — Margin Call Workflow, Static vs Daily Fields, Disputes</h2>
+      <p><b>Definition:</b> ஒரு margin call ஒரே நிகழ்வு இல்ல — அது பல-படி workflow; field வகைகளை (static CSA terms vs தினசரி கணக்கிடப்படும் எண்கள்) சரியா பெறுவதுதான் அந்த workflow-வை நம்பகமானதாக்குது.</p>
+<div class="ticket"><pre>MARGIN CALL WORKFLOW — STATE BY STATE
+========================================================================
+
+  1. CALLED    — Bank Of Toronto's system computes today's Net
+                 Exposure (Module 11 §3) and Threshold gap, issues
+                 a formal margin call to Goldman Sachs for the
+                 shortfall
+
+  2. AGREED / DISPUTED — Goldman Sachs independently recomputes the
+                 SAME exposure using its OWN valuation (Module 10
+                 §7's IPV concept applies directly here) -- if the
+                 two numbers match within an agreed tolerance,
+                 AGREED; if not, DISPUTED, and the gap gets
+                 investigated before any collateral moves
+
+  3. SETTLED   — once agreed, collateral actually moves (Pledge/
+                 Receive, Section 04) via the custodian or
+                 tri-party agent, and both parties' records update</pre></div>
+<p><b>Static vs daily fields:</b> Threshold-உம் Minimum Transfer Amount-உம் (Section 05) <b>static CSA reference data</b> — ஒரு தடவை பேசி முடிவு செய்யப்பட்டு, அரிதாவே மாற்றப்படுது. Net Exposure, Collateral Held, Remaining Exposure <b>தினசரி கணக்கிடப்படும் fields</b> — ஒவ்வொரு business day-யும் அந்த நாளின் MTM-ல இருந்து மறுகணக்கிடப்படுது. Threshold-ஐ தினசரி மறுகணக்கிட வேண்டியதா நடத்தும் (அல்லது, இன்னும் மோசமா, இன்னிக்கு கணக்கிட்ட exposure-ஐ static reference data போல நடத்தும்) collateral management system, கட்டமைப்பு ரீதியா தவறான margin calls-ஐ உருவாக்கும்.</p>
+<p><b>Disputes சாதாரணம், விதிவிலக்கு இல்ல:</b> ரெண்டு counterparties-உம் அதே trades-ஐ சுயாதீனமா value பண்றதாலும் (Section 7-ஓட AGREED/DISPUTED படி), <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §6 Level 2/3 valuations உண்மையான model judgment-ஐ உள்ளடக்குதுன்னு ஏற்கனவே நிறுவியதாலும், ரெண்டு firms-ஓட exposure எண்களுக்கு இடையில சின்ன வேறுபாடுகள் வழக்கமானவை, குறிப்பா குறைவான liquid, Model-Based positions-க்கு — ஒரு முதிர்ந்த collateral operation-க்கு, ரெண்டு தரப்பும் எப்பவும் ஒத்துக்கும்னு கருதாம, வரையறுக்கப்பட்ட dispute-resolution process உண்டு.</p>
+<p><b>Takeaway:</b> margin call workflow என்பது <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>-ஓட valuation-observability கருத்துகள் (Quote-Based vs Model-Based, Fair Value Levels, IPV) அருவமான accounting கவலைகளா இருப்பதை நிறுத்தி, தங்கள் சொந்த எண்ணை சுயாதீனமா கணக்கிடற ரெண்டு counterparties இடையிலான இயக்க, அன்றாட reconciliation பிரச்சனையா மாறற இடம்.</p>
+    </section>
+    <section class="mod" id="8-regulatory-perspective-umr-phase-in-bcbs-iosco-sftr-basel-lcr">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Regulatory Perspective — UMR Phase-In, BCBS-IOSCO, SFTR &amp; Basel LCR</h2>
+      <div class="table-scroll"><table><thead><tr><th>Regulation / Body</th><th>Collateral &amp; Margin-ஐ குறிப்பா எப்படித் தொடுது</th></tr></thead><tbody><tr><td><b>BCBS-IOSCO Margin Framework</b> (UMR-ஓட parent, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §8)</td><td>2016-க்கும் 2022-க்கும் இடையில ஆறு அலைகளாக ("Phase 1" முதல் "Phase 6" வரை) படிப்படியா அமல்படுத்தப்பட்டது; ஒவ்வொரு firm-ஓட non-cleared derivatives-ஓட <b>Average Aggregate Notional Amount (AANA)</b>-ஐ அடிப்படையா வெச்சு — மிகப்பெரிய dealers (அதிக AANA) முதல்ல scope-க்குள்ள கொண்டு வரப்பட்டாங்க, பிந்தைய phases-ல சிறிய firms படிப்படியா; இந்த module-ஓட IM தேவை (Section 02) தங்கள் பொருந்தும் phase-ன் கீழ உண்மையில scope-ல உள்ள firms-க்கு மட்டும்தான் பொருந்தும்</td></tr><tr><td><b>SFTR</b></td><td>ஏற்கனவே (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §08) குறிப்பா repo/securities lending-ஐ உள்ளடக்குதுன்னு நிறுவப்பட்டது — Section 6-ஓட table, repo தனி IM/VM process-க்குப் பதிலா collateral haircuts-ஐ நேரடியா பயன்படுத்துதுன்னு flag பண்ணுது; SFTR-ஓட reporting கடமை சரியா அந்த collateral-ஐயும் (என்ன post பண்ணப்பட்டது, என்ன haircut பொருந்தியது) loan-ஓட சொந்த economics-உடன் சேர்த்து உள்ளடக்குது</td></tr><tr><td><b>Basel LCR (Liquidity Coverage Ratio)</b> — இந்த module-க்கு புதுசு</td><td>ஒரு வங்கி 30-நாள் stress scenario-வை தாங்க போதுமான High-Quality Liquid Assets (HQLA) வெச்சிருக்கணும்; collateral post பண்றது (Section 01-ஓட சங்கிலி) வங்கியோட சொந்த HQLA-வை கட்டிப்போடுது, collateral பெறுவது (அது தானே HQLA-தகுதியுடையதா இருந்தா) பெறும் வங்கியோட LCR நிலையை மேம்படுத்தலாம் — collateral management-உம் liquidity management-உம் நேரடியா இணைந்த balance-sheet கவலைகள், தனித்தனி துறைகள் இல்ல</td></tr><tr><td><b>EMIR / Dodd-Frank</b></td><td>ரெண்டு regimes-ஓட Trade Repository reporting-உம் (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §07, <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §08, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §08) collateral-குறிப்பான fields-ஐ உள்ளடக்குது — post பண்ணின collateral, பெற்ற collateral, trade ஒரு bilateral CSA-க்கு உட்பட்டதா centrally cleared-ஆன்னு; trade-ஓட economics, valuation மட்டுமில்ல</td></tr><tr><td><b>CSDR</b> (Central Securities Depositories Regulation, EU)</td><td>settlement-discipline விதிகளை (கட்டாய buy-ins, settlement fails-க்கு cash penalties) வகுக்குது; இவை EU CSDs வழியா settle ஆகற securities-collateral நகர்வுகளுக்கும் (Section 04) நேரடியா பொருந்தும், outright securities trades-க்கு மட்டுமில்ல</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> UMR-ஓட படிப்படியான அமலாக்கம், Section 2-ஓட Initial Margin தேவை ஒரு குறிப்பிட்ட bilateral உறவுக்கு பொருந்துதா இல்லையாங்கறதை தீர்மானிக்கும் regulatory mechanism — Bank Of Toronto-வுடன் trade பண்ற ஒரு சிறிய firm-க்கு, எந்தத் தரப்போட AANA-வும் பொருந்தும் phase-ஓட வரம்பைக் கடக்கலைன்னா, IM கடமையே இல்லாம இருக்கலாம்; IM scope-ல இருக்கோ இல்லையோ, அதே VM mechanics (Section 5-ஓட Threshold-இயக்கப்படும் மீதமிருக்கும் Exposure-உம்) இன்னும் பொருந்தும்.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>Goldman Sachs-ல இருந்து CAD 1,800,000 collateral-ஓட net recipient (Section 05); Section 03-ஓட விளக்க உதாரணத்துல Canada 5% Bond 2035-ஐ collateral-ஆ post பண்றவர்</td></tr><tr><td>Goldman Sachs</td><td><a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §3-ஓட netting set-ஓட கீழ collateral-ஓட net poster</td></tr><tr><td>Euroclear / Clearstream</td><td>தானியங்கி collateral தேர்வு, valuation, substitution-ஐ கையாளும் விளக்க tri-party agents (Section 04)</td></tr><tr><td>ISDA</td><td>CSA (Section 01), SIMM (Section 02, <a href="../docs/1-capital-markets/module-11-risk-exposure.html">Module 11</a> §7) ஆகியவற்றின் ஆசிரியர்</td></tr><tr><td>BCBS-IOSCO</td><td>படிப்படியான UMR அமலாக்கத்துக்குப் பின்னாலுள்ள கூட்டு standard-setter (Section 08)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Section 05-ஓட worked example-ல, Bank Of Toronto-க்கும் Goldman Sachs-க்கும் இடையிலான CSA Threshold CAD 200,000-க்குப் பதிலா CAD 500,000 ஆக இருந்திருந்தா, Net Exposure CAD 2,000,000-லயே இருக்க, Required Collateral-உம் Remaining Exposure-உம் ஒவ்வொண்ணும் என்ன?</li><li>Section 03-ஓட Haircut formula-வை பயன்படுத்தி, Canada 5% Bond 2035-க்கு 2%-க்குப் பதிலா 5% haircut (ஆபத்தான collateral schedule) இருந்தா, அதன் Collateral Value என்ன?</li><li>IM-உம் VM-உம் "முற்றிலும் வேறு ரெண்டு தோல்வி முறைகளை எதிர்த்துப் பாதுகாக்குது"ன்னு Section 02 ஏன் சொல்லுது — ஒரு firm-க்கு வலுவான VM இருந்து IM சுத்தமா இல்லாட்டி குறிப்பா என்ன தப்பாப் போகலாம்?</li><li>Bank Of Toronto-க்கும் Goldman Sachs-க்கும் இடையிலான ஒரு margin call DISPUTED status-க்கு போகுது. Section 07-ஐ பயன்படுத்தி, இது உடைஞ்ச system-க்கு ஆதாரமா? பெரும்பாலும் அடிப்படைக் காரணம் என்ன?</li><li>Section 06-ஓட table-ஐ பயன்படுத்தி, IRS, CDS-உடன் சேர்ந்து repo-வுக்கு தனி IM/VM தேவையில்லாதது ஏன் — அதுக்குப் பதிலா எந்த mechanic-ஐ பயன்படுத்துது, அந்த mechanic முதல்ல எங்க நிறுவப்பட்டது?</li><li>Section 08-ஐ பயன்படுத்தி, ஒரு bilateral உறவுக்கு ஒரு CSA-ஓட கீழ முழுசா செயல்படும் VM process இருந்து, ஆனா பூஜ்யம் Initial Margin கடமை இருக்க முடியுமா? UMR-ஓட phase-in கட்டமைப்பை வெச்சு விளக்குங்க.</li><li>Tri-party ஏற்பாடு ஒரு firm-ஓட operational process-ஐ மட்டுமில்ல, SYSTEM INTEGRATION தேவைகளையும் மாத்துதுன்னு Section 04 ஏன் சொல்லுது — bilateral custody-ல இருந்து உண்மையான IT வேறுபாடு என்ன?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் <b><a href="../docs/1-capital-markets/module-13-parties-leis.html">Module 13</a>: Parties, LEIs &amp; Market Infrastructure</b>-க்குப் போலாம்; இது இந்த module ஏற்கனவே பயன்படுத்தி வந்த ஒவ்வொரு actor-ஐயும் (Custodian, Tri-Party Agent, CCP, Clearing Member) பெயரிடுது.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Required Collateral = 2,000,000 - 500,000 = CAD 1,500,000. Remaining Exposure = 2,000,000 - 1,500,000 = CAD 500,000 (புது Threshold-க்கு சரியா சமம்).</b></p>
+<p>Section 05 சரியான உறவை நிறுவுது: Required Collateral = Net Exposure மைனஸ் Threshold; collateral சரியா call பண்ணப்பட்டப்புறம் Remaining Exposure எப்பவும் Threshold-க்கே சமம் — பெரிய பேசி முடிவு செய்யப்பட்ட Threshold நேரடியா பெரிய நிரந்தர uncollateralized exposure இடைவெளியை உருவாக்குது, கட்டமைப்பால, தவறால இல்ல.</p>
+<p><b>2. Collateral Value = 9,850,000 x (1 - 0.05) = 9,850,000 x 0.95 = CAD 9,357,500.</b></p>
+<p>பெரிய haircut சதவீதம் Market Value-க்கும் Collateral Value-க்கும் இடையிலான பெரிய இடைவெளியை உருவாக்கும் — Section 03 இது, இந்த குறிப்பிட்ட security (அல்லது இந்த CSA-ஓட risk appetite)-க்கு, ஒரு default scenario-ல liquidate பண்ணப்படுவதுக்கு முன்னாடி collateral தானே மதிப்பிழக்கும் ஆபத்துக்கு எதிரா பெரிய தடுப்பு தேவைங்கற judgment-ஐ பிரதிபலிக்குதுன்னு விளக்குது.</p>
+<p><b>3. IM இல்லாம, ஒரு position-க்கு எதிரா திடீர், பெரிய இரவு நகர்வு (அடுத்த நாளின் VM call வெளியிடப்பட்டு settle ஆகறதுக்கு முன்னாடியே) ஆனா, உயிர்பிழைச்ச counterparty-க்கு முழு "Margin Period of Risk"-க்கும் uncollateralized இழப்பை விட்டுடும் — VM நேற்றைய close வரை மட்டும் பிடிக்கும், தினசரி VM சுழற்சி எதிர்வினை ஆற்றுவதை விட வேகமா நடக்கும் gap நகர்வுக்கு எதிரா அது ஒருபோதும் பாதுகாக்க முடியாது.</b></p>
+<p>Section 02-ஓட takeaway இதை துல்லியமா சொல்லுது: VM தற்போதைய exposure-ஐ நாளுக்கு நாள் பின்தொடருது, ஆனா ஒரு counterparty default எந்த நொடியிலும் நடக்கலாம், default ஆன position-ஐ மூடி/மாத்த உண்மையான நேரம் எடுக்கும் (Margin Period of Risk, விளக்கமா ~10 business days) — அந்த closeout window-ல சேரக்கூடிய இழப்புகளை cover பண்ணவே IM இருக்கு, VM எவ்வளவு விரைவா கொடுக்கப்பட்டாலும் கட்டமைப்பு ரீதியா சமாளிக்க முடியாத risk.</p>
+<p><b>4. கட்டாயம் உடைஞ்ச system-க்கு ஆதாரம் இல்ல — Section 07 வெளிப்படையா disputes "சாதாரணம், விதிவிலக்கு இல்ல"ன்னு சொல்லுது, குறிப்பா ரெண்டு counterparties-உம் உண்மையான model judgment-ஐ உள்ளடக்கிய valuations-ஐ சுயாதீனமா கணக்கிடற குறைவான liquid, Model-Based positions-க்கு (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §6-ஓட Level 2/3 கருத்து). பெரும்பாலும் அடிப்படைக் காரணம் அதே trade-ஓட exposure-ஐ Bank Of Toronto-ஓடும் Goldman Sachs-ஓடும் சொந்த சுயாதீன (IPV-பாணி, <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> §7) கணக்கீடுகளுக்கு இடையிலான valuation inputs அல்லது model assumptions வித்தியாசம்.</b></p>
+<p>Section 07-ஓட takeaway இந்த இணைப்பை நேரடியா வரையுது: margin-call dispute process தான் <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>-ஓட valuation-observability கருத்துகள் அருவமாக இல்லாம, தங்கள் சொந்த எண்ணை சுயாதீனமா கணக்கிடற ரெண்டு firms இடையிலான இயக்க reconciliation பிரச்சனையா மாறும் இடம்.</p>
+<p><b>5. Repo, Section 03 நிறுவின அதே collateral-haircut mechanic-ஐ (Market Value x (1 - Haircut) = Collateral Value) பயன்படுத்துது, ஆனா loan-ஓட சொந்த collateral-ஆ பரிமாறப்படற security மேல நேரடியா பொருத்தி, <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §3-ஓட repo வரையறையில முதல்ல நிறுவப்பட்டது — repo-வுக்கு margin போடக்கூடிய தனி "exposure" இல்ல, ஏன்னா post பண்ணப்பட்ட security தான் கொடுத்த cash-க்கான collateral, notional மேல உட்கார்ந்திருக்கும் ஒரு derivative-ஓட ஏற்ற இறக்க MTM இல்ல.</b></p>
+<p>Section 06-ஓட takeaway இதை வெளிப்படையா சொல்லுது: repo IM/VM framework-க்கு பொருந்தாததுக்கு காரணம் security-உம் collateral-உம் ஒரே transaction, ஒரு derivative-ஓட notional-உம் அதன் post பண்ணப்பட்ட margin-உம் போல ரெண்டு தனிக் கருத்துகள் இல்ல.</p>
+<p><b>6. ஆமா — Section 08 விளக்குது: UMR-ஓட phase-in AANA (Average Aggregate Notional Amount) அடிப்படையிலானது; AANA (அல்லது அதன் counterparty-ஓடது) பொருந்தும் phase-ஓட வரம்பைக் கடக்காத firm-க்கு UMR-ன் கீழ Initial Margin கடமையே இல்ல, bilateral-ஆ ஒத்துக்கிட்ட CSA-ஓட Variation Margin terms (Section 01-02) IM regulatory ரீதியா கட்டாயமாக்கப்பட்டதா இல்லையாங்கறதைச் சாராம முற்றிலும் சுயாதீனமா இன்னும் பொருந்தலாம்.</b></p>
+<p>Section 08-ஓட takeaway இதை நேரடியா சொல்லுது: "அதே VM mechanics... IM scope-ல இருந்தாலும் இல்லாட்டியும் இன்னும் பொருந்தும்" — IM-உம் VM-உம் ஒரு தொகுப்புச் சலுகை இல்ல; VM மிகப் பழைய, மிக உலகளாவிய CSA வழக்கம், கட்டாய IM குறிப்பா அதைப் பிடிக்கும் அளவு பெரிய firms-க்கு மேல அடுக்கப்பட்ட புதிய, AANA-வரம்பு-கட்டுப்பாட்டு regulatory தேவை.</p>
+<p><b>7. Bilateral custody-ல Bank Of Toronto-ஓட சொந்த systems collateral-ஐ value பண்ணி, haircuts பொருத்தி, Eligible Collateral விதிகளை சரிபார்த்து, substitutions-ஐ process பண்ணணும் — tri-party ஏற்பாட்டுக்கு பதிலா tri-party agent-உடன் (Euroclear, Clearstream, முதலியன) ஒரு DATA FEED integration தேவை; அது Bank Of Toronto சார்பா அந்த valuation/haircut/substitution logic எல்லாத்தையும் செய்யுது.</b></p>
+<p>Section 04 இதை உறுதியா சொல்லுது: tri-party custody பயன்படுத்தும் firm ஒரு வெளி agent-ஓட systems-உடன் integrate ஆகி அதன் கணக்கீடுகளை நம்பணும்; bilateral custody அந்த valuation/haircut/Eligible-Collateral logic-ஐ உள்ளுக்குள்ளயே கட்டி பராமரிக்க கோருது — ரெண்டு வெறும் வேறு manual workflows இல்ல, ஒரே Section 03 பிரச்சனையை தீர்க்கும் உண்மையிலயே ரெண்டு வேறு technical architectures.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 12 — Collateral & Margin (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

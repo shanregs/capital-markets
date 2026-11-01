@@ -1,0 +1,1009 @@
+<!doctype html>
+<title>Interest Rate Swap (IRS) — எளிய தமிழ் விளக்கம்</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Interest Rate Swap (IRS) — எளிய தமிழ் விளக்கம்</h1>
+    <p class="dek">Why a company enters an Interest Rate Swap, the fixed/floating legs, notional, MTM, valuation data, and the full IRS trade lifecycle — explained in Tamil.</p>
+    
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-abc-ஏன்-irs-செய்கிறது"><span class="toc-num">01</span>1. ABC ஏன் IRS செய்கிறது?</a></li>
+      <li><a href="#2-loan-irs-சேர்த்தால்-என்ன-நடக்கும்"><span class="toc-num">02</span>2. Loan + IRS சேர்த்தால் என்ன நடக்கும்?</a></li>
+      <li><a href="#3-irs-ல்-இருக்கும்-இரண்டு-legs"><span class="toc-num">03</span>3. IRS-ல் இருக்கும் இரண்டு Legs</a></li>
+      <li><a href="#4-notional-என்றால்-என்ன"><span class="toc-num">04</span>4. Notional என்றால் என்ன?</a></li>
+      <li><a href="#5-முதல்-quarterly-period"><span class="toc-num">05</span>5. முதல் Quarterly Period</a></li>
+      <li><a href="#6-floating-corra-leg"><span class="toc-num">06</span>6. Floating CORRA Leg</a></li>
+      <li><a href="#7-net-settlement"><span class="toc-num">07</span>7. Net Settlement</a></li>
+      <li><a href="#8-இதை-loan-உடன்-சேர்த்து-பார்ப்போம்"><span class="toc-num">08</span>8. இதை Loan-உடன் சேர்த்து பார்ப்போம்</a></li>
+      <li><a href="#9-corra-8-ஆக-உயர்ந்தால்"><span class="toc-num">09</span>9. CORRA 8% ஆக உயர்ந்தால்?</a></li>
+      <li><a href="#10-corra-4-ஆக-குறைந்தால்"><span class="toc-num">10</span>10. CORRA 4% ஆக குறைந்தால்?</a></li>
+      <li><a href="#11-ஆனால்-ஒரு-trade-off-இருக்கிறது"><span class="toc-num">11</span>11. ஆனால் ஒரு Trade-off இருக்கிறது</a></li>
+      <li><a href="#12-irs-ஒவ்வொரு-நாளும்-ஒரே-value-ல்-இருக்காது"><span class="toc-num">12</span>12. IRS ஒவ்வொரு நாளும் ஒரே Value-ல் இருக்காது</a></li>
+      <li><a href="#13-market-rate-உயர்ந்தால்-குறைந்தால்"><span class="toc-num">13</span>13. Market Rate உயர்ந்தால் / குறைந்தால்</a></li>
+      <li><a href="#14-mtm-என்றால்-என்ன"><span class="toc-num">14</span>14. MTM என்றால் என்ன?</a></li>
+      <li><a href="#15-irs-mtm-எப்படி-calculate-செய்கிறார்கள்"><span class="toc-num">15</span>15. IRS MTM எப்படி Calculate செய்கிறார்கள்?</a></li>
+      <li><a href="#16-valuation-engine-க்கு-என்ன-data-தேவை"><span class="toc-num">16</span>16. Valuation Engine-க்கு என்ன Data தேவை?</a></li>
+      <li><a href="#17-irs-trade-lifecycle"><span class="toc-num">17</span>17. IRS Trade Lifecycle</a></li>
+      <li><a href="#18-trade-capture"><span class="toc-num">18</span>18. Trade Capture</a></li>
+      <li><a href="#19-confirmation"><span class="toc-num">19</span>19. Confirmation</a></li>
+      <li><a href="#20-enrichment"><span class="toc-num">20</span>20. Enrichment</a></li>
+      <li><a href="#21-collateral"><span class="toc-num">21</span>21. Collateral</a></li>
+      <li><a href="#22-settlement"><span class="toc-num">22</span>22. Settlement</a></li>
+      <li><a href="#23-regulatory-reporting"><span class="toc-num">23</span>23. Regulatory Reporting</a></li>
+      <li><a href="#24-irs-ஏன்-fx-forward-ஐ-விட-complicated"><span class="toc-num">24</span>24. IRS ஏன் FX Forward-ஐ விட complicated?</a></li>
+      <li><a href="#25-corra-காரணமாக-இன்னும்-கொஞ்சம்-complexity"><span class="toc-num">25</span>25. CORRA காரணமாக இன்னும் கொஞ்சம் Complexity</a></li>
+      <li><a href="#26-irs-ல்-நினைவில்-வைத்துக்கொள்ள-வேண்டிய-3-முக்கிய-விஷயங்கள்"><span class="toc-num">26</span>26. IRS-ல் நினைவில் வைத்துக்கொள்ள வேண்டிய 3 முக்கிய விஷயங்கள்</a></li>
+      <li><a href="#27-irs-vs-fra-vs-cap-vs-floor"><span class="toc-num">27</span>27. IRS vs FRA vs Cap vs Floor</a></li>
+      <li><a href="#28-capital-markets-ல்-derivatives-ஐ-எப்படி-நினைத்துக்கொள்ளலாம்"><span class="toc-num">28</span>28. Capital Markets-ல் Derivatives-ஐ எப்படி நினைத்துக்கொள்ளலாம்?</a></li>
+      <li><a href="#29-ஒரு-simple-mental-model"><span class="toc-num">29</span>29. ஒரு Simple Mental Model</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-abc-ஏன்-irs-செய்கிறது">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. ABC ஏன் IRS செய்கிறது?</h2>
+      <p>முதலில் ஒரு simple example பார்ப்போம்.</p><p>ABC ஒரு loan எடுத்திருக்கிறது.</p><p>அந்த loan-க்கு interest:</p><p><b>CORRA + 1%</b></p><p>என்று இருக்கிறது.</p><p>உதாரணமாக CORRA தற்போது 5.2% என்றால்:</p><div class="ticket"><pre>Loan Interest
+= CORRA + 1%
+= 5.2% + 1%
+= 6.2%</pre></div><p>பிரச்சனை என்ன?</p><p>CORRA ஒரு fixed rate இல்லை. அது market நிலைமைக்கு ஏற்ப மாறிக்கொண்டே இருக்கும்.</p><p>இன்று CORRA 5.2% இருக்கலாம்.</p><p>நாளை அது 8% ஆகலாம்.</p><p>அப்படி ஆனால் ABC-யின் loan cost:</p><div class="ticket"><pre>8% + 1%
+= 9%</pre></div><p>ஆகிவிடும்.</p><p>அதனால் ABC-க்கு ஒரு uncertainty இருக்கிறது:</p><div class="callout">"எதிர்காலத்தில் நான் எவ்வளவு interest கட்ட வேண்டி வரும்?"</div><p>இந்த uncertainty-யை குறைக்க ABC ஒரு <b>Interest Rate Swap (IRS)</b> செய்கிறது.</p><p>IRS-ல் ABC:</p><div class="ticket"><pre>Pay     = 6% Fixed
+Receive = CORRA</pre></div><p>என்று agreement செய்கிறது.</p>
+    </section>
+    <section class="mod" id="2-loan-irs-சேர்த்தால்-என்ன-நடக்கும்">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Loan + IRS சேர்த்தால் என்ன நடக்கும்?</h2>
+      <p>ABC-யின் Loan:</p><div class="ticket"><pre>Pay CORRA + 1%</pre></div><p>IRS:</p><div class="ticket"><pre>Pay 6% Fixed
+
+Receive CORRA</pre></div><p>இரண்டையும் சேர்த்து பார்ப்போம்.</p><div class="ticket"><pre>LOAN
+
+Pay CORRA + 1%
+
+        +
+
+IRS
+
+Pay 6%
+Receive CORRA</pre></div><p>Loan-ல் ABC செலுத்தும் CORRA-வை IRS மூலம் பெறும் CORRA offset செய்கிறது.</p><p>அதனால்:</p><div class="ticket"><pre>CORRA + 1% + 6% - CORRA
+
+CORRA cancel ஆகிறது.
+
+= 7%</pre></div><p>அதாவது ABC-யின் effective interest cost:</p><p><b>சுமார் 7% fixed</b></p><p>ஆகிவிடுகிறது.</p><p>இதுதான் IRS-ன் basic economic purpose.</p>
+    </section>
+    <section class="mod" id="3-irs-ல்-இருக்கும்-இரண்டு-legs">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. IRS-ல் இருக்கும் இரண்டு Legs</h2>
+      <p>ஒரு standard IRS-ல் பொதுவாக இரண்டு legs இருக்கும்.</p><h3>Fixed Leg</h3><p>ABC:</p><p><b>6% Fixed Rate pay செய்கிறது.</b></p><h3>Floating Leg</h3><p>ABC:</p><p><b>CORRA receive செய்கிறது.</b></p><p>அதை இப்படி நினைத்துக்கொள்ளலாம்:</p><div class="ticket"><pre>                  IRS
+                   |
+          +--------+--------+
+          |                 |
+      Fixed Leg        Floating Leg
+          |                 |
+       Pay 6%          Receive CORRA</pre></div><p>அதாவது IRS என்பது:</p><div class="callout">"நான் Fixed rate கொடுக்கிறேன்; அதற்கு பதிலாக Floating rate பெறுகிறேன்"</div><p>என்ற arrangement.</p>
+    </section>
+    <section class="mod" id="4-notional-என்றால்-என்ன">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Notional என்றால் என்ன?</h2>
+      <p>இப்போது IRS-க்கு ஒரு amount தேவை.</p><p>உதாரணமாக:</p><div class="ticket"><pre>Notional = ₹100 crore</pre></div><p>இதன் அர்த்தம் ABC ₹100 crore-ஐ Bank-க்கு கொடுக்கிறது என்று இல்லை.</p><p><b>Notional என்பது interest calculation செய்ய பயன்படுத்தப்படும் reference amount.</b></p><p>உதாரணமாக:</p><div class="ticket"><pre>Notional = ₹100 crore
+Fixed Rate = 6%</pre></div><p>ஒரு வருடத்திற்கு:</p><div class="ticket"><pre>₹100 crore × 6%
+
+= ₹6 crore</pre></div><p>Fixed interest வரும்.</p><p>ஆனால் payment quarterly என்றால், actual calculation-ல் அந்த period-ன் <b>accrual factor</b> பயன்படுத்தப்படும்.</p>
+    </section>
+    <section class="mod" id="5-முதல்-quarterly-period">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. முதல் Quarterly Period</h2>
+      <p>ABC-யின் IRS:</p><div class="ticket"><pre>Effective Date = 01-Sep-2026
+Payment Date   = 01-Dec-2026</pre></div><p>என்று வைத்துக்கொள்வோம்.</p><p>அதாவது முதல் accrual period:</p><div class="ticket"><pre>01-Sep-2026 → 01-Dec-2026</pre></div><p>Assume:</p><div class="table-scroll"><table><thead><tr><th>Parameter</th><th>Value</th></tr></thead><tbody><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Fixed Rate</td><td>6%</td></tr><tr><td>Accrual Factor</td><td>90/365</td></tr></tbody></table></div><h3>Fixed Leg calculation</h3><div class="ticket"><pre>Fixed Interest
+= Notional × Fixed Rate × Accrual Factor
+
+= ₹100 crore × 6% × 90/365
+
+≈ ₹1.479 crore</pre></div><p>அதனால் ABC Fixed Leg-க்கு சுமார்:</p><p><b>₹1.479 crore</b></p><p>கொடுக்க வேண்டும்.</p>
+    </section>
+    <section class="mod" id="6-floating-corra-leg">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Floating CORRA Leg</h2>
+      <p>இப்போது Floating Leg பார்ப்போம்.</p><p>இந்த period-க்கு applicable compounded CORRA:</p><p><b>5.20%</b></p><p>என்று எடுத்துக்கொள்வோம்.</p><p>Simplified calculation:</p><div class="ticket"><pre>Floating Interest
+= ₹100 crore × 5.20% × 90/365
+
+≈ ₹1.282 crore</pre></div><p>அதனால் ABC Floating Leg-ல் சுமார்:</p><p><b>₹1.282 crore</b></p><p>பெறும்.</p>
+    </section>
+    <section class="mod" id="7-net-settlement">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Net Settlement</h2>
+      <p>பொதுவாக Fixed amount மற்றும் Floating amount-ஐ இரண்டு separate payments ஆக exchange செய்யாமல், இரண்டையும் net செய்து ஒரு payment செய்வார்கள்.</p><p>இங்கே:</p><div class="ticket"><pre>Fixed Payment    = ₹1.479 crore
+Floating Receipt = ₹1.282 crore</pre></div><p>Difference:</p><div class="ticket"><pre>₹1.479 crore - ₹1.282 crore
+
+= ₹0.197 crore</pre></div><p>அதாவது:</p><p><b>₹19.7 lakh</b></p><p>ABC Bank-க்கு செலுத்தும்.</p><div class="ticket"><pre>ABC
+ |
+ | ₹19.7 lakh
+ v
+Bank</pre></div><p>இது simplified example.</p>
+    </section>
+    <section class="mod" id="8-இதை-loan-உடன்-சேர்த்து-பார்ப்போம்">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. இதை Loan-உடன் சேர்த்து பார்ப்போம்</h2>
+      <p>ABC-யின் Loan:</p><div class="ticket"><pre>CORRA + 1%</pre></div><p>CORRA = 5.2% என்றால்:</p><div class="ticket"><pre>Loan Cost
+= 5.2% + 1%
+= 6.2%</pre></div><p>IRS:</p><div class="ticket"><pre>Pay    6%
+Receive 5.2%</pre></div><p>இப்போது இரண்டையும் சேர்ப்போம்:</p><div class="ticket"><pre>Loan:
+Pay 5.2% + 1%
+
+IRS:
+Pay 6%
+Receive 5.2%
+
+-----------------
+
+5.2% cancel
+
+Effective Cost ≈ 7%</pre></div><p>அதாவது ABC தனது floating-rate loan exposure-ஐ:</p><p><b>சுமார் 7% fixed cost</b></p><p>ஆக மாற்றிக்கொண்டது.</p>
+    </section>
+    <section class="mod" id="9-corra-8-ஆக-உயர்ந்தால்">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. CORRA 8% ஆக உயர்ந்தால்?</h2>
+      <p>இப்போது market rates உயர்கிறது என்று வைத்துக்கொள்வோம்.</p><div class="ticket"><pre>CORRA = 8%</pre></div><p>Loan:</p><div class="ticket"><pre>8% + 1%
+
+= 9%</pre></div><p>அதனால் Loan-ல் ABC 9% செலவு செய்கிறது.</p><p>IRS-ல்:</p><div class="ticket"><pre>Pay Fixed     = 6%
+Receive       = 8%</pre></div><p>IRS-ன் net benefit:</p><div class="ticket"><pre>Receive 8%
+Pay 6%
+
+= +2%</pre></div><p>இப்போது Loan + IRS:</p><div class="ticket"><pre>Loan = -9%
+IRS  = +2%
+
+----------------
+Net  = -7%</pre></div><p>அதாவது ABC-யின் effective cost மீண்டும்:</p><p><b>சுமார் 7%</b></p>
+    </section>
+    <section class="mod" id="10-corra-4-ஆக-குறைந்தால்">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. CORRA 4% ஆக குறைந்தால்?</h2>
+      <p>இப்போது CORRA குறைகிறது என்று வைத்துக்கொள்வோம்.</p><div class="ticket"><pre>CORRA = 4%</pre></div><p>Loan:</p><div class="ticket"><pre>4% + 1%
+= 5%</pre></div><p>IRS:</p><div class="ticket"><pre>Pay Fixed = 6%
+Receive    = 4%</pre></div><p>அதனால்:</p><div class="ticket"><pre>Loan = 5%
+IRS  = 6% - 4%
+
+Net = 5% + 2%
+
+= 7%</pre></div><p>மீண்டும்:</p><p><b>சுமார் 7%</b></p><p>அதுதான் IRS-ன் hedging benefit.</p>
+    </section>
+    <section class="mod" id="11-ஆனால்-ஒரு-trade-off-இருக்கிறது">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>11. ஆனால் ஒரு Trade-off இருக்கிறது</h2>
+      <p>ABC ஒரு விஷயத்தை புரிந்துகொள்ள வேண்டும்.</p><p>IRS மூலம்:</p><p><b>Uncertainty குறைகிறது.</b></p><p>ஆனால் market நல்ல direction-ல் சென்றால் கிடைக்கக்கூடிய benefit-ஐயும் ABC விட்டுக்கொடுக்கிறது.</p><p>உதாரணமாக CORRA மிகவும் குறைந்துவிட்டால், IRS இல்லாமல் இருந்தால் ABC குறைந்த interest கட்டியிருக்கும்.</p><p>ஆனால் IRS இருப்பதால் அது சுமார் 7% cost-ல் lock செய்யப்பட்டிருக்கிறது.</p><p>அதனால்:</p><div class="ticket"><pre>Without IRS:
+
+CORRA குறைந்தால்
+       ↓
+Loan cost குறையும்
+
+CORRA உயர்ந்தால்
+       ↓
+Loan cost உயரும்</pre></div><p>IRS உடன்:</p><div class="ticket"><pre>CORRA உயர்ந்தாலும்
+CORRA குறைந்தாலும்
+
+Effective cost ≈ 7%</pre></div><p>இதுதான் basic trade-off:</p><div class="callout"><b>Hedging uncertainty-யை குறைக்கிறது. ஆனால் favourable market movement-ன் முழு benefit கிடைக்காமல் போகலாம்.</b></div>
+    </section>
+    <section class="mod" id="12-irs-ஒவ்வொரு-நாளும்-ஒரே-value-ல்-இருக்காது">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>12. IRS ஒவ்வொரு நாளும் ஒரே Value-ல் இருக்காது</h2>
+      <p>இப்போது ஒரு முக்கியமான concept.</p><p>ABC 6% Fixed Rate pay செய்யும் IRS-ல் enter ஆகிறது.</p><p>அந்த நாளில் அதன் value zero-க்கு அருகில் இருக்கலாம்.</p><p>ஆனால் market rates தினமும் மாறுகின்றன.</p><p>உதாரணமாக சில மாதங்களுக்குப் பிறகு புதிய IRS-களுக்கான market fixed rate:</p><div class="ticket"><pre>7%</pre></div><p>ஆகிவிட்டது என்று வைத்துக்கொள்வோம்.</p><p>ABC-யிடம் ஏற்கனவே:</p><div class="ticket"><pre>Pay Fixed = 6%</pre></div><p>என்ற IRS இருக்கிறது.</p><p>இப்போது market-ல் மற்றவர்கள் 7% pay செய்ய வேண்டியிருக்கிறது.</p><p>ABC 6% மட்டுமே pay செய்கிறது.</p><p>அதனால் ABC-யிடம் இருக்கும் IRS valuable ஆகிறது.</p>
+    </section>
+    <section class="mod" id="13-market-rate-உயர்ந்தால்-குறைந்தால்">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>13. Market Rate உயர்ந்தால் / குறைந்தால்</h2>
+      <p>ABC:</p><div class="ticket"><pre>Pay Fixed = 6%</pre></div><p>என்று வைத்துக்கொள்வோம்.</p><p>Market swap rate:</p><div class="ticket"><pre>6% → 7%</pre></div><p>ஆக உயர்ந்தால்:</p><p><b>ABC-யின் existing pay-fixed swap value அதிகரிக்கும்.</b></p><p>ஏன்?</p><p>ABC 6% மட்டுமே pay செய்கிறது.</p><p>புதிய market participant 7% pay செய்ய வேண்டியிருக்கிறது.</p><p>மாறாக market rate:</p><div class="ticket"><pre>6% → 5%</pre></div><p>ஆக குறைந்தால்:</p><p>ABC-யின் 6% fixed obligation attractive ஆக இருக்காது.</p><p>அதனால்:</p><div class="ticket"><pre>Market Rates ↑
+       ↓
+Pay-Fixed IRS value ↑
+
+
+Market Rates ↓
+       ↓
+Pay-Fixed IRS value ↓</pre></div>
+    </section>
+    <section class="mod" id="14-mtm-என்றால்-என்ன">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>14. MTM என்றால் என்ன?</h2>
+      <p>இதுதான்:</p><p><b>Mark-to-Market — MTM</b></p><p>ஒரு குறிப்பிட்ட நாளில் IRS-ஐ market conditions அடிப்படையில் value செய்வதுதான் MTM.</p><p>உதாரணமாக valuation system:</p><div class="ticket"><pre>IRS Fair Value = +₹4.5 crore</pre></div><p>என்று calculate செய்தால், ABC perspective-ல் அந்த IRS-க்கு:</p><p><b>₹4.5 crore positive value</b></p><p>இருக்கிறது என்று அர்த்தம்.</p><p>Bank B perspective-ல் அதே position:</p><div class="ticket"><pre>MTM = -₹4.5 crore</pre></div><p>ஆக இருக்கும்.</p><p>இது simplified example.</p>
+    </section>
+    <section class="mod" id="15-irs-mtm-எப்படி-calculate-செய்கிறார்கள்">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>15. IRS MTM எப்படி Calculate செய்கிறார்கள்?</h2>
+      <p>இது மிகவும் முக்கியமான concept.</p><p>Valuation engine எதிர்காலத்தில் IRS மூலம் வரப்போகும் cash flows-ஐ forecast செய்கிறது.</p><div class="ticket"><pre>Future Fixed Cash Flows
+          +
+Future Floating Cash Flows
+          |
+          v
+    Net Cash Flows
+          |
+          v
+      Discounting
+          |
+          v
+         PV
+          |
+          v
+         MTM</pre></div><p>Basic concept:</p><div class="ticket"><pre>PV
+=
+Future Cash Flow × Discount Factor</pre></div><p>எல்லா future cash flows-க்கும் இதை calculate செய்து sum செய்வார்கள்.</p><p>ஒரு IRS-க்கு conceptually:</p><div class="ticket"><pre>PV(IRS)
+=
+PV(Floating Leg)
+-
+PV(Fixed Leg)</pre></div><p>எந்த party perspective-ல் பார்க்கிறோம் என்பதைப் பொறுத்து sign மாறும்.</p>
+    </section>
+    <section class="mod" id="16-valuation-engine-க்கு-என்ன-data-தேவை">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>16. Valuation Engine-க்கு என்ன Data தேவை?</h2>
+      <p>IRS-ஐ value செய்ய system-க்கு trade details மட்டும் போதாது.</p><p>உதாரணமாக:</p><div class="ticket"><pre>Trade ID
+Notional
+Fixed Rate
+Floating Index
+Trade Date
+Effective Date
+Maturity Date
+Payment Frequency
+Reset Frequency
+Day Count Convention
+Business Day Convention
+Holiday Calendar
+Payment Dates
+Reset Dates
+Market Curve
+Discount Curve
+CORRA Forward Curve
+Discount Factors</pre></div><p>அதாவது இரண்டு வகையான data முக்கியம்:</p><div class="ticket"><pre>Trade Data
+     +
+Market Data
+     ↓
+Valuation
+     ↓
+MTM</pre></div><p>இதுதான் Capital Markets systems-ல் முக்கியமான relationship.</p>
+    </section>
+    <section class="mod" id="17-irs-trade-lifecycle">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>17. IRS Trade Lifecycle</h2>
+      <p>இப்போது IRS ஒரு real Capital Markets system-ல் எப்படி travel செய்கிறது என்பதைப் பார்ப்போம்.</p><div class="ticket"><pre>Trade Capture
+      ↓
+Confirmation
+      ↓
+Enrichment
+      ↓
+Static Data
+      ↓
+Market Data
+      ↓
+Valuation
+      ↓
+MTM
+      ↓
+Risk / Exposure
+      ↓
+Collateral
+      ↓
+Interest Calculation
+      ↓
+Settlement
+      ↓
+Regulatory Reporting</pre></div><p>ஒவ்வொரு stage-க்கும் தனித்தனி system/process இருக்கலாம்.</p>
+    </section>
+    <section class="mod" id="18-trade-capture">
+      <p class="sec-eyebrow"><span class="n">18</span></p>
+      <h2>18. Trade Capture</h2>
+      <p>ABC ஒரு IRS trade செய்கிறது.</p><p>Example:</p><div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>IRS-20260830-00001</td></tr><tr><td>Product</td><td>IRS</td></tr><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Fixed Rate</td><td>6%</td></tr><tr><td>Floating Index</td><td>CORRA</td></tr><tr><td>Direction</td><td>Pay Fixed</td></tr><tr><td>Trade Date</td><td>30-Aug-2026</td></tr><tr><td>Effective Date</td><td>01-Sep-2026</td></tr><tr><td>Maturity Date</td><td>01-Sep-2029</td></tr><tr><td>Frequency</td><td>Quarterly</td></tr></tbody></table></div><p>இந்த information trade capture system-ல் record செய்யப்படும்.</p>
+    </section>
+    <section class="mod" id="19-confirmation">
+      <p class="sec-eyebrow"><span class="n">19</span></p>
+      <h2>19. Confirmation</h2>
+      <p>Trade execute ஆன பிறகு parties contractual terms-ஐ confirm செய்ய வேண்டும்.</p><p>Example:</p><div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Party A</td><td>ABC Corporation</td></tr><tr><td>Party B</td><td>Bank B</td></tr><tr><td>Party A</td><td>Pay Fixed 6%</td></tr><tr><td>Party B</td><td>Pay Floating CORRA</td></tr><tr><td>Notional</td><td>₹100 crore</td></tr><tr><td>Maturity</td><td>01-Sep-2029</td></tr></tbody></table></div><p>இதன் purpose:</p><div class="callout">"இரு parties-க்கும் trade terms ஒரே மாதிரி இருக்கிறதா?"</div><p>என்பதை உறுதி செய்வது.</p>
+    </section>
+    <section class="mod" id="20-enrichment">
+      <p class="sec-eyebrow"><span class="n">20</span></p>
+      <h2>20. Enrichment</h2>
+      <p>Trade capture-ல் இருக்கும் information மட்டும் regulatory processing-க்கு போதாது.</p><p>மேலும் சில information சேர்க்கப்படும்.</p><p>உதாரணமாக:</p><div class="ticket"><pre>ABC LEI
+Bank LEI
+UTI
+UPI
+Legal Entity
+Jurisdiction
+Trading Desk
+Book
+Counterparty Classification
+Collateral Agreement
+Clearing Status
+Reporting Obligation</pre></div><p>இதைத்தான் பொதுவாக:</p><p><b>Trade Enrichment</b></p><p>என்று சொல்லலாம்.</p><p>இங்கே ஒரு Regulatory Data Platform முக்கியமான role வகிக்கிறது.</p>
+    </section>
+    <section class="mod" id="21-collateral">
+      <p class="sec-eyebrow"><span class="n">21</span></p>
+      <h2>21. Collateral</h2>
+      <p>இப்போது IRS-ன் MTM:</p><div class="ticket"><pre>+₹4.5 crore</pre></div><p>என்று வைத்துக்கொள்வோம்.</p><p>இதனால் counterparty exposure உருவாகலாம்.</p><p>அப்போது parties இடையே இருக்கும் <b>CSA — Credit Support Annex</b> terms அடிப்படையில் collateral தேவைப்படலாம்.</p><p>Conceptually:</p><div class="ticket"><pre>MTM
+ ↓
+Exposure
+ ↓
+CSA Terms
+ ↓
+Margin Calculation
+ ↓
+Collateral Call</pre></div><p>Collateral ஆக பயன்படுத்தப்படக்கூடியவை:</p><div class="ticket"><pre>Cash
+Government Securities
+Other Eligible Assets</pre></div><p>எந்த assets acceptable என்பதெல்லாம் agreement-ஐ பொறுத்தது.</p>
+    </section>
+    <section class="mod" id="22-settlement">
+      <p class="sec-eyebrow"><span class="n">22</span></p>
+      <h2>22. Settlement</h2>
+      <p>ஒரு quarter-க்கான calculation:</p><div class="ticket"><pre>Fixed Amount    = ₹1.479 crore
+Floating Amount = ₹1.282 crore</pre></div><p>Net:</p><div class="ticket"><pre>₹1.479 crore - ₹1.282 crore
+
+= ₹19.7 lakh</pre></div><p>Settlement system-க்கு ஒரு payment instruction போகும்.</p><p>Example:</p><div class="table-scroll"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody><tr><td>Trade ID</td><td>IRS-20260830-00001</td></tr><tr><td>Payment Date</td><td>01-Dec-2026</td></tr><tr><td>Currency</td><td>CAD</td></tr><tr><td>Net Amount</td><td>₹19.7 lakh</td></tr><tr><td>Direction</td><td>ABC → Bank B</td></tr><tr><td>Status</td><td>PENDING</td></tr></tbody></table></div><p>Payment successful ஆன பிறகு:</p><div class="ticket"><pre>Settlement Status = SETTLED</pre></div><p>ஆகும்.</p>
+    </section>
+    <section class="mod" id="23-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">23</span></p>
+      <h2>23. Regulatory Reporting</h2>
+      <p>IRS போன்ற derivatives trades applicable regulatory regime-க்கு report செய்யப்பட வேண்டியிருக்கலாம்.</p><p>ஒரு conceptual regulatory record-ல்:</p><div class="ticket"><pre>UTI
+UPI
+Reporting Counterparty LEI
+Other Counterparty LEI
+Asset Class
+Product Type
+Notional
+Notional Currency
+Fixed Rate
+Floating Rate Index
+Trade Date
+Effective Date
+Maturity Date
+Payment Frequency
+Reset Frequency
+Clearing Status
+Collateralisation
+Valuation Amount
+Valuation Currency
+Action Type
+Event Type
+Reporting Timestamp</pre></div><p>போன்ற fields இருக்கலாம்.</p><p>முக்கியமான விஷயம்:</p><div class="callout">எந்த fields தேவை, அவற்றின் exact values என்ன என்பவை எந்த regulatory regime/jurisdiction-க்கு report செய்கிறோம் என்பதைக் பொறுத்து மாறும்.</div>
+    </section>
+    <section class="mod" id="24-irs-ஏன்-fx-forward-ஐ-விட-complicated">
+      <p class="sec-eyebrow"><span class="n">24</span></p>
+      <h2>24. IRS ஏன் FX Forward-ஐ விட complicated?</h2>
+      <p>FX Forward-ஐ எடுத்துக்கொள்வோம்.</p><p>ஒரு simple FX Forward:</p><div class="ticket"><pre>Future Date
+
+USD ↔ INR</pre></div><p>ஒரே future date-ல் exchange நடக்கும்.</p><p>ஆனால் IRS-ல் பல payment periods இருக்கும்.</p><p>உதாரணமாக:</p><div class="ticket"><pre>Period 1
+Fixed ↔ Floating
+
+Period 2
+Fixed ↔ Floating
+
+Period 3
+Fixed ↔ Floating
+
+...
+
+Period N
+Fixed ↔ Floating</pre></div><p>அதனால் IRS-ல் அதிகமான calculations மற்றும் dates இருக்கும்.</p><p>உதாரணமாக:</p><div class="ticket"><pre>Reset Dates
+Payment Dates
+Accrual Periods
+Day Count Convention
+Business Day Adjustments
+Reference Rate Observations
+Compounding
+Forward Curves
+Discount Curves
+Multiple Cash Flows</pre></div><p>இதனால் IRS valuation மற்றும் lifecycle processing அதிகம் complicated ஆகிறது.</p>
+    </section>
+    <section class="mod" id="25-corra-காரணமாக-இன்னும்-கொஞ்சம்-complexity">
+      <p class="sec-eyebrow"><span class="n">25</span></p>
+      <h2>25. CORRA காரணமாக இன்னும் கொஞ்சம் Complexity</h2>
+      <p>CORRA-based IRS-ல் floating rate ஒரு period-க்கு daily CORRA observations அடிப்படையில் determine செய்யப்படலாம்.</p><p>உதாரணமாக:</p><div class="ticket"><pre>Day 1  → CORRA
+Day 2  → CORRA
+Day 3  → CORRA
+Day 4  → CORRA
+...
+Day 90 → CORRA</pre></div><p>இந்த daily rates applicable methodology படி பயன்படுத்தப்பட்டு:</p><div class="ticket"><pre>Daily CORRA
+     ↓
+Compounding
+     ↓
+Compounded Rate
+     ↓
+Floating Interest</pre></div><p>என்று செல்லலாம்.</p><p>அதனால்:</p><div class="callout">CORRA-வை வெறுமனே எல்லா நாட்களுக்கும் average செய்து விட்டால் அதுதான் floating rate என்று நினைக்கக்கூடாது.</div><p>Contract-ல் குறிப்பிடப்பட்ட methodology முக்கியம்.</p><p>Compounded-in-arrears structure இருந்தால் daily CORRA observations applicable methodology படி compound செய்யப்படும்.</p>
+    </section>
+    <section class="mod" id="26-irs-ல்-நினைவில்-வைத்துக்கொள்ள-வேண்டிய-3-முக்கிய-விஷயங்கள்">
+      <p class="sec-eyebrow"><span class="n">26</span></p>
+      <h2>26. IRS-ல் நினைவில் வைத்துக்கொள்ள வேண்டிய 3 முக்கிய விஷயங்கள்</h2>
+      <p>IRS-ஐ இப்போதைக்கு மூன்று விஷயங்களாக மட்டும் நினைவில் வைத்துக்கொள்ளுங்கள்.</p><h3>1. Notional</h3><p>Interest calculate செய்ய பயன்படுத்தப்படும் reference amount.</p><p>உதாரணம்:</p><div class="ticket"><pre>₹100 crore</pre></div><p>பொதுவாக இந்த ₹100 crore-ஐ parties ஒருவருக்கொருவர் exchange செய்ய மாட்டார்கள்.</p><h3>2. Two Legs</h3><p>IRS-ல் இரண்டு legs:</p><div class="ticket"><pre>Fixed Leg
+    ↕
+Floating Leg</pre></div><p>உதாரணம்:</p><div class="ticket"><pre>Pay Fixed 6%
+Receive CORRA</pre></div><h3>3. Cash Flows</h3><p>IRS-ல் future-ல் பல cash flows வரும்.</p><p>Valuation engine:</p><div class="ticket"><pre>Future Cash Flows
+       ↓
+Discounting
+       ↓
+Present Value
+       ↓
+MTM</pre></div><p>என்று calculate செய்கிறது.</p>
+    </section>
+    <section class="mod" id="27-irs-vs-fra-vs-cap-vs-floor">
+      <p class="sec-eyebrow"><span class="n">27</span></p>
+      <h2>27. IRS vs FRA vs Cap vs Floor</h2>
+      <p>இந்த products-க்கு இடையிலான difference மிகவும் முக்கியம்.</p><div class="table-scroll"><table><thead><tr><th>Product</th><th>Simple Meaning</th></tr></thead><tbody><tr><td>FRA</td><td>ஒரு future interest-rate period-க்கு rate lock செய்கிறது</td></tr><tr><td>IRS</td><td>பல periods-ல் Fixed மற்றும் Floating rates exchange செய்கிறது</td></tr><tr><td>Cap</td><td>Interest rate ஒரு குறிப்பிட்ட level-க்கு மேல் போகாமல் protection</td></tr><tr><td>Floor</td><td>Interest rate ஒரு குறிப்பிட்ட level-க்கு கீழே போகாமல் protection</td></tr><tr><td>Collar</td><td>Cap + Floor combination</td></tr><tr><td>Swaption</td><td>எதிர்காலத்தில் IRS enter செய்யும் option</td></tr></tbody></table></div><p>Simple-ஆக நினைத்துக்கொள்ள:</p><div class="ticket"><pre>FRA
+→ One future rate period
+
+IRS
+→ Many future rate periods
+
+CAP
+→ Maximum rate protection
+
+FLOOR
+→ Minimum rate protection
+
+SWAPTION
+→ Option to enter an IRS</pre></div>
+    </section>
+    <section class="mod" id="28-capital-markets-ல்-derivatives-ஐ-எப்படி-நினைத்துக்கொள்ளலாம்">
+      <p class="sec-eyebrow"><span class="n">28</span></p>
+      <h2>28. Capital Markets-ல் Derivatives-ஐ எப்படி நினைத்துக்கொள்ளலாம்?</h2>
+      <p>இப்போது ஒரு பெரிய picture கிடைக்கும்.</p><p>Derivatives-ன் முக்கியமான purpose:</p><p><b>Risk-ஐ ஒரு form-லிருந்து இன்னொரு form-க்கு மாற்றுவது.</b></p><h3>Forward</h3><div class="ticket"><pre>Future Price Uncertainty
+          ↓
+       Forward
+          ↓
+     Locked Price</pre></div><p>அதாவது எதிர்கால price என்ன ஆகும் என்ற uncertainty-யை ஒரு fixed price-ஆக lock செய்கிறோம்.</p><h3>Option</h3><div class="ticket"><pre>Future Price Uncertainty
+          ↓
+        Option
+          ↓
+Protection + Flexibility</pre></div><p>Option-ல் protection கிடைக்கும்.</p><p>ஆனால் market favourable ஆக இருந்தால் அந்த benefit-ஐ பயன்படுத்தும் flexibility இருக்கும்.</p><h3>IRS</h3><div class="ticket"><pre>Floating Interest Rate Risk
+          ↓
+          IRS
+          ↓
+Fixed Interest Exposure</pre></div><p>அதாவது floating interest-rate uncertainty-யை fixed-rate exposure-ஆக மாற்றுகிறோம்.</p><h3>FX Forward</h3><div class="ticket"><pre>Future FX Uncertainty
+          ↓
+      FX Forward
+          ↓
+     Locked FX Rate</pre></div><p>எதிர்காலத்தில் USD/INR அல்லது USD/CAD exchange rate என்ன ஆகும் என்ற uncertainty-யை lock செய்கிறோம்.</p><h3>CDS</h3><div class="ticket"><pre>Credit / Default Risk
+          ↓
+          CDS
+          ↓
+   Credit Protection</pre></div><p>ஒரு borrower default செய்யும் risk-க்கு எதிராக protection பெற CDS பயன்படுத்தப்படுகிறது.</p>
+    </section>
+    <section class="mod" id="29-ஒரு-simple-mental-model">
+      <p class="sec-eyebrow"><span class="n">29</span></p>
+      <h2>29. ஒரு Simple Mental Model</h2>
+      <p>Derivatives-ஐ புரிந்துகொள்ள இந்த ஒரு idea மிகவும் useful:</p><div class="callout"><b>"நமக்கு பிடிக்காத risk-ஐ வேறு ஒரு financial contract மூலம் மாற்றிக்கொள்வது."</b></div><p>உதாரணமாக:</p><div class="ticket"><pre>Floating Interest Risk
+        ↓
+       IRS
+        ↓
+Fixed Interest Exposure</pre></div><div class="ticket"><pre>Future FX Risk
+        ↓
+    FX Forward
+        ↓
+    Fixed FX Rate</pre></div><div class="ticket"><pre>Future Price Risk
+        ↓
+      Option
+        ↓
+Protection + Flexibility</pre></div><p>அதனால் Capital Markets-ல் நீங்கள் ஒரு derivative-ஐ பார்க்கும்போது முதலில் இந்த கேள்வியைக் கேளுங்கள்:</p><p><b>"இந்த derivative எந்த risk-ஐ மாற்றுவதற்காக பயன்படுத்தப்படுகிறது?"</b></p><p>IRS-க்கு பதில்:</p><h3><b>Floating Interest Rate Risk-ஐ manage செய்ய.</b></h3>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Interest Rate Swap (IRS) — எளிய தமிழ் விளக்கம்</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,798 @@
+<!doctype html>
+<title>Module 21 — ISDA Product Taxonomy Deep Dive (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 21 — ISDA Product Taxonomy Deep Dive (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">The four-level ISDA taxonomy, worked paths for five asset classes, taxonomy vs CFI vs UPI, regulatory uses, governance and product-master configuration — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Reference module</b>, <b><a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR</a></b>, <b><a href="../docs/2-reporting/module-17-dmo-uk-reporting.html">UK DMO Reporting</a></b>, <b><a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB</a></b> குடும்பத்தை சேர்ந்தது. <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7–§8 ISDA Product Taxonomy-ஓட நாலு-level hierarchy-ஐ ஒரு master table-ஓட முதல்ல அறிமுகப்படுத்தியது; இந்த module ஆழமா போகுது — theory, ஒவ்வொரு asset class முழுக்க முழு worked paths, எந்த systems-உம் regimes-உம் இதை உண்மையில பயன்படுத்துது, இது UPI-க்கு எப்படி உணவளிக்குது, ஒரு trade-ல இந்த மதிப்புகள் உண்மையில எப்படி configure ஆகுது. <b>மூலம்:</b> English Module 21-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-isda-product-taxonomy-ன்னா-என்ன-தோற்றம்-நோக்கம்-isda-அர்த்தப்படுத்தும்-ரெண்டு-விஷயங்கள்"><span class="toc-num">01</span>1. ISDA Product Taxonomy-ன்னா என்ன? — தோற்றம், நோக்கம், &quot;ISDA&quot; அர்த்தப்படுத்தும் ரெண்டு விஷயங்கள்</a></li>
+      <li><a href="#2-taxonomy-hierarchy-நாலு-levels-ஐந்து-asset-classes"><span class="toc-num">02</span>2. Taxonomy Hierarchy — நாலு Levels, ஐந்து Asset Classes</a></li>
+      <li><a href="#3-worked-examples-asset-class-வாரியா-முழு-taxonomy-path"><span class="toc-num">03</span>3. Worked Examples — Asset Class வாரியா முழு Taxonomy Path</a></li>
+      <li><a href="#4-bonds-cash-securities-எப்போதாவது-isda-taxonomy-ஆல்-வகைப்படுத்தப்படுமா"><span class="toc-num">04</span>4. Bonds, Cash Securities எப்போதாவது ISDA Taxonomy-ஆல் வகைப்படுத்தப்படுமா?</a></li>
+      <li><a href="#5-taxonomy-upi-க்கு-எப்படி-உணவளிக்குது-dsb-ஓட-reference-data-schema"><span class="toc-num">05</span>5. Taxonomy UPI-க்கு எப்படி உணவளிக்குது — DSB-ஓட Reference-Data Schema</a></li>
+      <li><a href="#6-taxonomy-உண்மையில-எங்க-பயன்படுத்தப்படுது-upi-க்கு-அப்பால்"><span class="toc-num">06</span>6. Taxonomy உண்மையில எங்க பயன்படுத்தப்படுது — UPI-க்கு அப்பால்</a></li>
+      <li><a href="#7-governance-versioning"><span class="toc-num">07</span>7. Governance &amp; Versioning</a></li>
+      <li><a href="#8-நடைமுறைல-taxonomy-values-ஐ-configure-பண்றது-product-master-பார்வை"><span class="toc-num">08</span>8. நடைமுறைல Taxonomy Values-ஐ Configure பண்றது — Product-Master பார்வை</a></li>
+      <li><a href="#9-அதிகாரப்பூர்வ-மூலங்கள்-links"><span class="toc-num">09</span>9. அதிகாரப்பூர்வ மூலங்கள் &amp; Links</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz"><span class="toc-num">★</span>Recap Quiz</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-isda-product-taxonomy-ன்னா-என்ன-தோற்றம்-நோக்கம்-isda-அர்த்தப்படுத்தும்-ரெண்டு-விஷயங்கள்">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. ISDA Product Taxonomy-ன்னா என்ன? — தோற்றம், நோக்கம், &quot;ISDA&quot; அர்த்தப்படுத்தும் ரெண்டு விஷயங்கள்</h2>
+      <p><b>Definition:</b> <b>ISDA</b> (International Swaps and Derivatives Association) = OTC derivatives தொழில்துறையோட சொந்த trade body; அது தொடர்ந்து குழப்பிக்கொள்ளப்படும் ரெண்டு உண்மையிலயே தனி விஷயங்களை standardize பண்ணுது:</p>
+<div class="table-scroll"><table><thead><tr><th>ISDA எதை standardize பண்ணுது...</th><th>அது என்ன</th><th>எங்க உள்ளடக்கம்</th></tr></thead><tbody><tr><td><b>ISDA Master Agreement</b></td><td>ரெண்டு counterparties ஒரே ஒரு தடவை கையெழுத்து போடும் <i>legal contract template</i>; அவங்களுக்குள்ள ஒவ்வொரு OTC trade-யையும் ஆளும் (netting, default, collateral)</td><td><a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a></td></tr><tr><td><b>ISDA Product Taxonomy</b></td><td>ஒரு <i>classification scheme</i> — ஒரு trade <i>எந்த வகை</i> derivative-ன்னு label பண்ண ஒரு கட்டுப்படுத்தப்பட்ட சொல்லகராதி, அதனால ஒவ்வொரு firm, SDR, regulator-உம் அதே categories-ஐ பயன்படுத்தும்</td><td>இந்த module</td></tr></tbody></table></div>
+<p>Taxonomy-ஓட தோற்றம் குறிப்பிட்டது, regulatory: 2008 நெருக்கடிக்குப் பிறகு, <b>Dodd-Frank Act (2010)</b> முதல் தடவையா US-ல swap transactions-ஓட <b>நிகழ்நேர பொது reporting</b>-ஐ கோரியது — ஒவ்வொரு swap-உம் execution-க்கு சிறிது நேரத்துல பொதுவில பரப்பப்படணும் (விலை, notional-size bucket), பெரிய ("block") trades-க்கு அளவு-சார்ந்த masking-க்கு உட்பட்டு. அது ஒரு உடனடி நடைமுறைப் பிரச்சனையை உருவாக்கியது: ஒரு நியாயமான reporting தாமதத்தையும் notional-size வரம்பையும் நிர்ணயிக்க, regulators-உம் Swap Data Repositories (SDRs)-உம் swaps-ஐ ஒப்பிடக்கூடிய categories-ஆ bucket பண்ண வேண்டியிருந்தது — ஒரு 5Y USD interest rate swap-உம் ஒரு 5Y Brent crude oil swap-உம் ஒரே block-trade வரம்பை பகிரக்கூடாதுன்னு தெளிவு. CFTC-யும், ஒவ்வொரு SDR-உம், ஒவ்வொரு reporting firm-உம் தங்கள் சொந்த ஒத்துப்போகாத bucket scheme-களை உருவாக்குவதுக்குப் பதிலா, <b>ISDA — தொழில்துறையோட சொந்த standards body-ஆ — எல்லாரும் ஒன்றிணையக்கூடிய taxonomy-ஐ வெளியிட்டது</b>: இலவசமாக, proprietary இல்லாம, <a href="<a href="https://www.isda.org">isda.org">https://www.isda.org">isda.org</a></a> வழியா reference ஆவணங்கள்/spreadsheets-ஆ பகிரப்படுது.</p>
+<p><b>Takeaway:</b> taxonomy <b>classify பண்ணுது</b>, <b>identify பண்ணுது இல்ல</b> — <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI</a>-ஓட ஒப்பிட்டா இது மிக முக்கியமான வேறுபாடு; ரெண்டும் "product" அடுக்கில உட்காருறதால எளிதா குழப்பிக்கொள்ளப்படுது. ஒரு taxonomy path (உதா., <code>Interest Rate / IRSwap / FixedFloat / Swap</code>) அந்த வடிவத்தின் ஒவ்வொரு trade-ஆலும் பகிரப்படும் ஒரு <i>category label</i>; ஒரு UPI அந்த category-க்குள்ள குறிப்பிட்ட economic terms கலவைக்கு ஒரு <i>குறிப்பிட்ட வழங்கப்பட்ட code</i> (Section 5 ரெண்டையும் துல்லியமா இணைக்குது).</p>
+    </section>
+    <section class="mod" id="2-taxonomy-hierarchy-நாலு-levels-ஐந்து-asset-classes">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Taxonomy Hierarchy — நாலு Levels, ஐந்து Asset Classes</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7-ஐ மறுசொல்லி விரிவாக்கி — ISDA Product Taxonomy ஒரு <b>நாலு-level hierarchy</b>, இந்த curriculum-ஓட சொந்த Asset Class → Product → Instrument → Trade model-ல (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §1) உள்ள "Product" அடுக்கை விட வேணும்னே ஒரு படி நுணுக்கமானது:</p>
+<div class="ticket"><pre>ISDA PRODUCT TAXONOMY — FOUR LEVELS
+========================================================================
+
+  Asset Class  -&gt;  Base Product  -&gt;  Sub-Product  -&gt;  Transaction Type
+  ======================================================================
+
+  Interest Rate      -&gt; IRSwap     -&gt; FixedFloat   -&gt; Swap
+  Credit              -&gt; SingleName -&gt; Corporate    -&gt; CreditDefaultSwap
+  Foreign Exchange    -&gt; Forward    -&gt; Deliverable   -&gt; Forward
+  Equity              -&gt; Swap       -&gt; PriceReturn   -&gt; Swap
+  Commodity           -&gt; Energy     -&gt; Oil           -&gt; Swap
+
+  Each level narrows the category further left-to-right. A trade's
+  full "taxonomy path" is all four values read together -- none of
+  them alone is enough to identify the product.</pre></div>
+<p>Derivatives-க்கு <b>அதிகாரப்பூர்வமா சரியா ஐந்து ISDA Asset Classes</b> இருக்கு — cash instruments-உம் சேர்ந்தப்புறம் பார்க்கற திறந்த-முனை "Asset Class" values-ல இருந்து வேறுபட்ட, ஒரு குறுகிய, மூடிய பட்டியல் (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §11-ஓட பக்கம்-பக்கம் table):</p>
+<div class="table-scroll"><table><thead><tr><th>ISDA Asset Class</th><th>எளிய தமிழ்ல அர்த்தம்</th><th>Example Base Products</th></tr></thead><tbody><tr><td><b>Interest Rate</b></td><td>Cash flows interest rates-ஐ பொறுத்தது</td><td>IRSwap, FRA, Swaption, CapFloor, Cross-Currency Swap</td></tr><tr><td><b>Credit</b></td><td>Default/credit event-ஐ பொறுத்து payout</td><td>SingleName, Index (CDX/iTraxx), TotalReturnSwap</td></tr><tr><td><b>Foreign Exchange</b></td><td>Currency rates-ஐ பொறுத்து payout</td><td>Forward, Swap, Option, NDF</td></tr><tr><td><b>Equity</b></td><td>Stock/index விலையை பொறுத்து payout</td><td>Swap, Option, VarianceSwap, Future</td></tr><tr><td><b>Commodity</b></td><td>Physical commodity விலையை பொறுத்து payout</td><td>Swap, Forward, Option (Energy, Metals, Agriculture sub-classes)</td></tr></tbody></table></div>
+<div class="callout"><b>Callout — v1.0 vs v2.0.</b> ISDA ஒரு ஆரம்ப taxonomy-ஐ (<b>v1.0</b>, ~2012) வெளியிட்டது, குறிப்பா Dodd-Frank-ஓட நிகழ்நேர reporting categories-ஐ திருப்திப்படுத்த — கரடுமுரடான, CFTC block-size விதிகளுக்குத் தேவைப்பட்டதைச் சுற்றி. ஒரு இன்னும் நுணுக்கமான <b>v2.0</b> (~2016) தொடர்ந்தது, <b>FpML</b>-உடன் (derivatives தொழில்துறையோட சொந்த XML messaging standard) field-by-field ஒத்துப்போக மறுகட்டமைக்கப்பட்டது; சில இடங்கள்ல இன்னும் நுணுக்கமான உப-categories சேர்த்தது (asset class-ஐ பொறுத்து, Transaction Type-க்கு அப்பால் ஒரு கூடுதல் qualifier — உதா., ஒரு settlement-type அல்லது option-style flag). சரியான category பெயர்களையும், ஒரு குறிப்பிட்ட system எந்தப் பதிப்பை அமல்படுத்துதுன்னும் ஒவ்வொரு system-க்கும் உறுதிப்படுத்தப்பட வேண்டியதா நடத்துங்க — இந்த curriculum ஏற்கனவே <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UTI generation waterfall</a> §2-க்கும் <a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR</a> §7-ஓட specifics-க்கும் பயன்படுத்தற அதே hedge — இவை திருத்தப்படுது, ஒரு reporting record-ஓட taxonomy field ஒரு குறிப்பிட்ட பதிப்போடு சேர்ந்து மட்டுமே அர்த்தமுள்ளது.</div>
+<p><b>Takeaway:</b> taxonomy ஒரு <b>classification tree, ஒரு தட்டையான code பட்டியல் இல்ல</b> — அதனாலதான் ஒண்ணுக்குப் பதிலா நாலு levels தேவை: "Swap" மட்டும் (Transaction Type) ஐந்து asset classes முழுக்க தெளிவில்லாதது, ஆனா <code>Interest Rate / IRSwap / FixedFloat / Swap</code> அப்படியில்ல. <a href="../docs/2-reporting/module-16-sftr-reporting.html">SFTR</a> §2-ஓட சிறிய, மூடிய <code>Type of SFT</code> code set ஒரு levels-ல பயன்படுத்தும் அதே கொள்கை — ISDA taxonomy, "இது எந்த வகை product" என்ற அதே பிரச்சனையை OTC derivatives-ஓட மிகப் பெரிய, மிக வேறுபட்ட பிரபஞ்சத்துக்கு தீர்க்குது, அதனால தெளிவாக இருக்க இன்னும் அதிக levels தேவை.</p>
+    </section>
+    <section class="mod" id="3-worked-examples-asset-class-வாரியா-முழு-taxonomy-path">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Worked Examples — Asset Class வாரியா முழு Taxonomy Path</h2>
+      <p><b>Definition:</b> இந்த curriculum-ல வேறிடத்துல ஏற்கனவே கட்டப்பட்ட ஐந்து trades-ஐ முழு நாலு-level path வழியா இழுத்து, hierarchy-ஐ அருவமா இல்லாம, உண்மையான (விளக்க) trades-க்கு ஒதுக்கப்பட்டதா பார்க்கலாம்.</p>
+<div class="ticket"><pre>FIVE TRADES, FIVE FULL TAXONOMY PATHS
+========================================================================
+
+  INTEREST RATE  (Module 8's 5Y CAD IRS, Bank Of Toronto pays fixed)
+    Asset Class: Interest Rate | Base Product: IRSwap
+    Sub-Product: FixedFloat    | Transaction Type: Swap
+    -&gt; "Interest Rate / IRSwap / FixedFloat / Swap"
+
+  CREDIT  (Module 2 §9's 5Y CDS on Northern Rail Corp, Bank Of Toronto
+           buys protection from Goldman Sachs)
+    Asset Class: Credit        | Base Product: SingleName
+    Sub-Product: Corporate     | Transaction Type: CreditDefaultSwap
+    -&gt; "Credit / SingleName / Corporate / CreditDefaultSwap"
+    (Module 9 §4a's Northstar Resources Inc. CDS, used throughout the
+     UPI/UTI deep dive, carries this identical taxonomy path -- same
+     product shape, different reference entity and counterparty)
+
+  FOREIGN EXCHANGE  (Module 2 §10's 3M USD/CAD Forward, Bank Of
+                     Toronto buys USD from Goldman Sachs)
+    Asset Class: Foreign Exchange | Base Product: Forward
+    Sub-Product: Deliverable      | Transaction Type: Forward
+    -&gt; "Foreign Exchange / Forward / Deliverable / Forward"
+
+  EQUITY  (Module 2 §8's Total Return Swap on Apple Inc. shares)
+    Asset Class: Equity        | Base Product: Swap
+    Sub-Product: PriceReturn   | Transaction Type: Swap
+    -&gt; "Equity / Swap / PriceReturn / Swap"
+
+  COMMODITY  (Module 7's 1Y Brent Crude Oil Swap, notional
+             100,000 barrels)
+    Asset Class: Commodity     | Base Product: Energy
+    Sub-Product: Oil           | Transaction Type: Swap
+    -&gt; "Commodity / Energy / Oil / Swap"</pre></div>
+<p><b>Takeaway:</b> இந்த ஐந்து trades-ல <b>மூணுக்கு (Interest Rate, Equity, Commodity) Transaction Type "Swap"</b> என்பதை கவனிங்க — இந்த hierarchy-ஓட எந்த ஒரு level-உம் தனியா போதாது, "இது எந்த வகை product"ங்கறதுக்கு உண்மையிலயே நாலு levels-உம் சேர்ந்து படிக்கணும்ங்கறதுக்கு நிரூபணம். மேலும், Credit path-ஓட Sub-Product ("Corporate") <i>reference entity-யின் வகையை</i> (ஒரு corporate borrower, vs. உதா., ஒரு sovereign) விவரிக்குது, மற்ற ஒவ்வொரு asset class-ஓட Sub-Product-உம் <i>contract-ஓட ஒரு பொருளாதார அம்சத்தை</i> (Fixed vs. Floating, Deliverable vs. Non-Deliverable, Price vs. Total Return) விவரிக்குது — taxonomy-ஓட categories எதை வேறுபடுத்த தேர்ந்தெடுக்குதுங்கறதுல உண்மையிலயே asset-class-குறிப்பானவை, <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a> §3 UPI reference-data templates பத்தி சொல்லும் அதே புள்ளியை எதிரொலிச்சு.</p>
+    </section>
+    <section class="mod" id="4-bonds-cash-securities-எப்போதாவது-isda-taxonomy-ஆல்-வகைப்படுத்தப்படுமா">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Bonds, Cash Securities எப்போதாவது ISDA Taxonomy-ஆல் வகைப்படுத்தப்படுமா?</h2>
+      <p><b>Definition:</b> இல்ல — <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §6-ஓட புள்ளியை நேரடியா மறுசொல்லி விரிவாக்கி, ஏன்னா IT/data பின்னணியில இருந்து வர்ற யாருக்கும் "taxonomy" ஒரு security master-ல இருக்கற எல்லாத்தையும் உள்ளடக்கணும்னு தோணுறதால இது ஒரு பொதுவான category தவறு. ISDA Product Taxonomy <b>bilateral contracts</b>-ஐ — ரெண்டு counterparties ஒத்துக்கிட்டதால மட்டுமே இருக்கற, அந்த ஒப்பந்தத்தை சாராத தனி இருப்பு இல்லாத instruments-ஐ — classify பண்ணுது. ஒரு bond, ஒரு share, commercial paper-ஓட ஒரு unit — இவை எல்லாம் வெளியிடப்பட்ட நிமிஷமே, இப்போ யார் வெச்சிருந்தாலும் தனியா இருந்து, வெச்சிருக்கப்படக்கூடிய விஷயங்கள். அந்த கட்டமைப்பு வேறுபாடுதான் cash instruments ஏன் முற்றிலும் வேறு classification scheme-ஐ பயன்படுத்துதுங்கறதுக்கு காரணம்:</p>
+<div class="table-scroll"><table><thead><tr><th></th><th>Cash Instruments (bonds, equities, money market)</th><th>OTC Derivatives</th></tr></thead><tbody><tr><td><b>எது classify ஆகுது</b></td><td>Deliver பண்ணக்கூடிய <i>பொருள்</i></td><td>ஒரு bilateral <i>contract</i></td></tr><tr><td><b>Classification scheme</b></td><td><b>CFI Code</b> (ISO 10962 — <i>Classification of Financial Instruments</i>), பெரும்பாலான security masters-ல பதிக்கப்பட்ட 6-character code</td><td><b>ISDA Product Taxonomy</b> (இந்த module)</td></tr><tr><td><b>Instrument identifier</b></td><td>ISIN / CUSIP</td><td>ISIN இல்ல — அதுக்குப் பதிலா UPI (<a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a>)</td></tr><tr><td><b>நிர்வகிக்கும் அமைப்பு</b></td><td>ISO, National Numbering Agencies வழியா</td><td>ISDA (தொழில்துறை trade body, Section 7)</td></tr></tbody></table></div>
+<div class="ticket"><pre>A CDS ON NORTHERN RAIL CORP vs. A NORTHERN RAIL CORP BOND -- SAME
+COMPANY, TWO COMPLETELY DIFFERENT CLASSIFICATION WORLDS
+========================================================================
+
+  Northern Rail Corp 4.5% Bond 2030 (a cash instrument):
+    ISIN: (issued by a National Numbering Agency)
+    CFI Code: DBFUFR (illustrative -- debt, straight bond,
+              fixed rate, registered)
+    -&gt; NO ISDA taxonomy field. It's a deliverable security, full stop.
+
+  5Y CDS on Northern Rail Corp (Module 2 §9, a derivative CONTRACT
+  that merely references the same company):
+    Taxonomy path: Credit / SingleName / Corporate / CreditDefaultSwap
+    -&gt; NO CFI code, NO ISIN. It's a bilateral contract, classified
+       by ISDA taxonomy, identified by a UPI instead of an ISIN.</pre></div>
+<div class="callout"><b>நுணுக்கம் — ஒரு bond மேல derivative இன்னும் சாதாரணமா ISDA-classified ஆகும்.</b> ஒரு bond option அல்லது bond future (உதா., ஒரு குறிப்பிட்ட government bond-ஐ எதிர்கால தேதில நிலையான விலைல வாங்கும் option) தானே ஒரு derivative contract, வேறு எந்த OTC derivative போலவும் தன் சொந்த ISDA taxonomy path-ஐ (பொதுவா கட்டமைப்பை பொறுத்து Interest Rate அல்லது Credit-ன் கீழ) பெறுது — ISDA classification-ஐ ஒருபோதும் சுமக்காதது <i>அடிப்படை cash bond தானே</i>, "bond-உடன் தொடர்புடைய எதுவும்" இல்ல.</div>
+<p><b>Takeaway:</b> "இந்த reporting record-க்கு taxonomy field தேவையா"ங்கறதுக்கான வேகமான sanity சோதனை — record-ல ISIN-உம் CFI code-உம் இருந்தா, அது ஒரு cash instrument; ISDA taxonomy fields காலியா/இல்லாம இருக்கணும்; அதுல UPI இருந்து ISIN இல்லன்னா, அது ஒரு derivative; taxonomy fields கட்டாயம். ஒரே record-ல ரெண்டையும் நிரப்பறதோ, ரெண்டையும் நிரப்பாம விடறதோ செய்யும் rules engine-ல bug — <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §11-ஓட பக்கம்-பக்கம் table ஏற்கனவே இதை இந்த முழு curriculum-லயும் மிக வேகமான ஒற்றை instrument-type பாகுபாடா நிறுவியது.</p>
+    </section>
+    <section class="mod" id="5-taxonomy-upi-க்கு-எப்படி-உணவளிக்குது-dsb-ஓட-reference-data-schema">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Taxonomy UPI-க்கு எப்படி உணவளிக்குது — DSB-ஓட Reference-Data Schema</h2>
+      <p><b>Definition:</b> Section 1 ஒரு கடுமையான கோட்டை வரைந்தாலும், ISDA Product Taxonomy-யும் <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI</a>-உம் ஒரே விஷயம் போல உணர வைக்கற துண்டு இது — ஏன்னா <b>அவை உண்மையிலயே தொடர்புடையவை, ஒரே வம்சாவளியின் வேறு அடுக்குகள்ல மட்டும்</b>. CPMI-IOSCO தன் 2017 Technical Guidance-ஐ ஒரு உலகளாவிய UPI எதை classify பண்ணணும்னு வரையறுக்க உருவாக்கியபோது, முதல்ல இருந்து ஒரு புத்தம் புது classification சட்டகத்தை கண்டுபிடிக்கலை — ISDA-ஓட ஏற்கனவே தொழில்துறை-ஏற்ற taxonomy-ல (v2.0) இருந்து அடிப்படை classification logic-ஆ ஆரம்பிச்சு, அப்புறம் DSB-ஐ அதை ஒரு உயிருள்ள reference-data system-ஆ இயக்கவச்சது; அது உண்மையில codes-ஐ <i>வழங்க</i> முடியும்.</p>
+<div class="ticket"><pre>FROM INDUSTRY TAXONOMY TO ISSUED IDENTIFIER — THE FULL LINEAGE
+========================================================================
+
+  ISDA PRODUCT TAXONOMY (this module)
+    Industry-published classification scheme (v1.0 -&gt; v2.0).
+    A CONTROLLED VOCABULARY -- Asset Class / Base Product /
+    Sub-Product / Transaction Type. No codes issued, no lookup
+    system -- just the category definitions themselves.
+         |
+         v
+  CPMI-IOSCO TECHNICAL GUIDANCE (2017)
+    Global regulatory standard-setters adopt ISDA's taxonomy
+    structure as the BASIS for a harmonized product-classification
+    framework every G20 jurisdiction's regulators could converge on.
+         |
+         v
+  DSB UPI REFERENCE-DATA SCHEMA (operated by ANNA-DSB, since 2022)
+    Turns the taxonomy's categories into ACTUAL FIELDS on a live,
+    queryable reference-data template per asset class (Asset Class,
+    Instrument Type, Underlier, Notional Currency, Tenor, etc. --
+    UPI deep dive Section 3) -- and, critically, ISSUES A CODE
+    (the UPI itself) for each unique combination of those fields.
+         |
+         v
+  EMIR / DODD-FRANK / OTHER REGIMES' TRADE REPORTS
+    Consume the ISSUED UPI as a single mandatory field -- the
+    reporting firm never re-derives the taxonomy path by hand; it
+    looks up (or requests) the UPI that already encodes it.</pre></div>
+<p><b>Takeaway:</b> ISDA Product Taxonomy-ஐ <b>இலக்கணம்</b>ஆவும், UPI reference-data template-ஐ <b>அந்த இலக்கணத்திலிருந்து கட்டிய அகராதி</b>ஆவும் நினைங்க — taxonomy எந்த வகை categories-ஐ வெளிப்படுத்தவே முடியும்னு வரையறுக்குது (Asset Class, Base Product, Sub-Product, Transaction Type), DSB-ஓட UPI system என்பது அந்த categories-ஓட ஒரு குறிப்பிட்ட கலவைக்கு, கூடுதல் பொருளாதார fields-ஓட (Underlier, Notional Currency, Tenor) சேர்த்து, ஒரு நிரந்தர, lookup-able code-ஐ உண்மையில ஒதுக்கும் operational அடுக்கு. ஒரு reporting engineer, ஒரே trade-ல "ISDA Taxonomy"-ஐயும் "UPI"-ஐயும் ரெண்டு சுயாதீனமா derive செய்த fields-ஆ ஒருபோதும் நிரப்பாது — UPI-ஓட reference data taxonomy path-ஐ <i>ஏற்கனவே encode பண்ணியிருக்கு</i>; UPI-ஐ query பண்றது (Section 8-ஓட practical workflow) அதை மீட்டெடுக்கும் வழி.</p>
+    </section>
+    <section class="mod" id="6-taxonomy-உண்மையில-எங்க-பயன்படுத்தப்படுது-upi-க்கு-அப்பால்">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Taxonomy உண்மையில எங்க பயன்படுத்தப்படுது — UPI-க்கு அப்பால்</h2>
+      <p><b>Definition:</b> taxonomy UPI-க்கு சுமார் ஒரு தசாப்தம் முந்தியது; UPI reference data-வோடு எந்த சம்பந்தமும் இல்லாத பல பயன்பாடுகளைக் கொண்டிருக்கு — அது வெறுமனே புது identifier-க்கு ஒரு வரலாற்று படிக்கல்லா இல்ல, US swap regulation முழுக்க உண்மையிலயே அடிப்படையான plumbing.</p>
+<div class="table-scroll"><table><thead><tr><th>Use</th><th>How the taxonomy is actually consumed</th><th>Notes</th></tr></thead><tbody><tr><td><b>Dodd-Frank real-time public reporting</b> (CFTC Part 43)</td><td>Sets <b>which block-trade notional threshold applies</b> — the CFTC publishes separate large-notional thresholds per taxonomy category, since a "large" 5Y USD IRS and a "large" Brent crude swap are completely different sizes. A swap's taxonomy path literally determines its public-dissemination delay and masking rule.</td><td>The taxonomy's original reason for existing (Section 1)</td></tr><tr><td><b>Dodd-Frank swap data recordkeeping</b> (CFTC Part 45) &amp; CFTC's own published Swaps Report</td><td>SDRs (e.g. DTCC Data Repository) bucket submitted swap data by taxonomy category for the CFTC's own aggregate weekly/quarterly swaps market statistics</td><td>Same categories, different consumer (regulator's own market surveillance vs. public dissemination)</td></tr><tr><td><b>SEF / MAT determinations</b></td><td>A <b>Made-Available-to-Trade</b> determination is scoped in taxonomy terms — e.g. "this SEF's MAT determination covers Fixed-Float USD IRS in these tenor buckets" — so whether a given swap MUST trade on a SEF depends on matching its taxonomy path (plus tenor/currency) against a published MAT determination</td><td>Governs execution-venue obligations, not just reporting</td></tr><tr><td><b>CCP clearing-mandate determinations</b></td><td>Clearing mandates (which products a CCP like LCH SwapClear MUST clear, and which counterparties must clear through one) are published against taxonomy-shaped product descriptions</td><td>Complements — doesn't replace — <a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a> §5's clearing mechanics</td></tr><tr><td><b>UPI reference data</b> (Section 5)</td><td>Basis for the DSB's product classification fields</td><td>The newest, most recently added use</td></tr><tr><td><b>Internal bank product masters</b></td><td>Every OTC derivative product template gets tagged with a taxonomy path at onboarding, so risk/valuation/reporting systems can filter and aggregate consistently</td><td>Section 8's practical IT view</td></tr></tbody></table></div>
+<div class="callout"><b>Callout — EMIR உண்மையில "ISDA Taxonomy"ன்னு ஒரு field-ஐ பெயரிடுறதில்ல.</b> மேல உள்ள US விதிகளிலிருந்து அதிகமா பொதுமைப்படுத்துவது எளிது என்பதால இதை வெளிப்படையா flag பண்றது முக்கியம்: <b>EMIR-ஓட</b> சொந்த reporting technical standards (REFIT-ல ஒத்துப்போன CPMI-IOSCO CDE fields-உம்) "ISDA Taxonomy"ன்னு நேரடியா பெயரிடப்பட்ட field-க்குப் பதிலா தங்கள் சொந்த product-classification fields-ஐ பயன்படுத்துது — வரலாற்று ரீதியா ஒரு CFI-பாணி code, சமீபத்துல UPI தானே. கீழ உள்ள <i>category logic</i> இன்னும் ISDA-ஓட வேலைக்கு (Section 5-ஓட வம்சாவளி) திரும்புது, ஆனா நீங்க ஒரு EMIR-குறிப்பான reporting schema-வை கட்டறீங்கன்னா, regulatory template-ல ஒரு raw taxonomy-path field-ஐ தேடாதீங்க; அது ஒரு EU/UK report-ஐ அடையும்போது UPI-க்குள்ள உள்வாங்கப்பட்டிருக்கும். மேல உள்ள CFTC/Dodd-Frank வரிகள் தான் taxonomy இன்னும் தன் சொந்த உரிமையில நேரடியா பெயரிடப்பட்ட, சுமை சுமக்கும் regulatory கருத்தா இருக்கற இடம்.</div>
+<p><b>Takeaway:</b> taxonomy-ஓட regulatory தடம் <b>US Dodd-Frank/CFTC regime</b>-ல மிகப் பரந்தும் மிக வெளிப்படையாகவும் இருக்கு — அது முதல்ல அந்த regime-க்காகவே கட்டப்பட்டது, இன்னும் அங்க public-dissemination, MAT-determination scoping-ஐ நேரடியா ஆளுது — <b>EU/UK EMIR உலகத்துல</b> அது நேரடியா மேற்கோள் காட்டப்படும் field-ஆ இல்லாம, பெரும்பாலும் UPI-க்குப் பின்னாலுள்ள வம்சாவளியா (Section 5) மட்டும் நிக்குது. நீங்க எந்த regime-க்கு கட்டறீங்கன்னு தெரிஞ்சிருக்கறது, "ISDA Taxonomy" உங்க data model-ல ஒரு first-class field-ஆ இருக்கணுமா, அல்லது ஒரு product-ஐ அதன் UPI-க்கு map பண்ற விதத்தை மட்டும் தெரிவிக்கணுமான்னு சொல்லும்.</p>
+    </section>
+    <section class="mod" id="7-governance-versioning">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Governance &amp; Versioning</h2>
+      <p><b>Definition:</b> ISDA ஒரு <b>தொழில்துறை trade association</b>, ஒரு regulator-ஓ, <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">ANNA-DSB</a> §4 போன்ற market-infrastructure utility-ஓ இல்ல — அந்த curriculum DSB-க்கு ஏற்கனவே வரையற அதே வேறுபாடு இங்க இன்னும் நேரடியா பொருந்துது, ஏன்னா ISDA taxonomy-க்கு எந்த உயிருள்ள system-ஐயும் இயக்கறதில்ல; reference ஆவணங்களை வெளியிடுது.</p>
+<div class="ticket"><pre>WHO ACTUALLY CHANGES THE TAXONOMY, AND HOW
+========================================================================
+
+  ISDA's own asset-class-specific working groups/committees
+  (member firms -- dealers, buy-side, infrastructure providers --
+  volunteering expertise, the same governance model that maintains
+  the ISDA Master Agreement itself, Module 12) periodically:
+
+    -&gt; propose new Base Products / Sub-Products / Transaction Types
+       as new derivative structures emerge in the market
+    -&gt; consult industry members on proposed changes
+    -&gt; publish a revised taxonomy version (v1.0 -&gt; v2.0, and
+       incremental updates within a major version) as spreadsheets/
+       reference documents on isda.org -- free, not proprietary
+
+  -&gt; ISDA does NOT mandate that anyone use the taxonomy. It becomes
+     mandatory only where a REGULATOR (CFTC, under Dodd-Frank) or a
+     downstream STANDARD (CPMI-IOSCO's UPI guidance, Section 5)
+     requires its use -- ISDA supplies the vocabulary; regulators
+     and standard-setters decide when it's compulsory.</pre></div>
+<p><b>Takeaway:</b> <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a> §4 DSB-க்கு வரையற அதே infrastructure-vs-mandate வேறுபாடு இங்க ISDA-க்கு, ஒரு அடுக்கு மேல பொருந்துது — "ISDA இந்த trade-ஐ X-ஆ classify பண்ணுது"ங்கறது தொழில்துறை வழக்கத்தை பத்தின கூற்று, சட்டம் இல்ல; "CFTC இந்த trade-ஓட public report அதன் block வரம்பை தீர்மானிக்க taxonomy category X-ஐ பயன்படுத்தணும்னு கோருது"ங்கறது உண்மையில அதை முக்கியமாக்கும் regulatory mandate. ரெண்டையும் குழப்பிக்கறது, <a href="../docs/1-capital-markets/module-13-parties-leis.html">Module 13</a> §8 பொதுவா infrastructure providers-க்கு ஏற்கனவே எச்சரிக்கும் அதே category தவறு.</p>
+    </section>
+    <section class="mod" id="8-நடைமுறைல-taxonomy-values-ஐ-configure-பண்றது-product-master-பார்வை">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. நடைமுறைல Taxonomy Values-ஐ Configure பண்றது — Product-Master பார்வை</h2>
+      <p><b>Definition:</b> நடைமுறை IT கேள்வி — ஒரு bond-க்கோ, ஒரு swap-க்கோ, வேறெதுக்கோ ஒரு taxonomy path ஒரு உண்மையான trade-ல உண்மையில எப்படி set ஆகுது? பதில், <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a> §3 UPI-க்கே ஏற்கனவே நிறுவிய அதே <b>template vs. instance</b> pattern-ஐ பின்பற்றுது: <b>taxonomy path ஒரு product TEMPLATE-ஓட பண்பு, ஒவ்வொரு தனி trade-க்கும் மறுபடி derive ஆகவோ உள்ளிடப்படவோ ஒருபோதும் படாது.</b></p>
+<div class="ticket"><pre>WHERE THE TAXONOMY PATH ACTUALLY LIVES — PRODUCT MASTER, NOT TRADE RECORD
+========================================================================
+
+  BANK OF TORONTO'S PRODUCT MASTER (illustrative static reference
+  data table -- one row per tradable PRODUCT SHAPE, not per trade)
+
+  Product Name              | Asset Class | Base Product | Sub-Product | Txn Type
+  ---------------------------------------------------------------------------------
+  CAD Fixed-Float IRS       | Interest Rate | IRSwap     | FixedFloat  | Swap
+  Single-Name CDS (Corp)    | Credit        | SingleName | Corporate   | CreditDefaultSwap
+  USD/CAD Deliverable Fwd   | Foreign Exch. | Forward    | Deliverable | Forward
+  Equity TRS (Price Return) | Equity        | Swap       | PriceReturn | Swap
+  Brent Crude Swap          | Commodity     | Energy     | Oil         | Swap
+
+  WHEN A TRADER BOOKS A NEW TRADE:
+    1. Trade capture system asks "which product template?"
+    2. Trader selects "CAD Fixed-Float IRS" (an EXISTING template --
+       most trades reuse one)
+    3. Taxonomy path (all four fields) flows onto the trade record
+       AUTOMATICALLY from the product master row -- never manually
+       typed by the trader, never re-classified per trade
+    4. Trade-specific fields (notional, tenor, counterparty, rate)
+       get entered separately -- these do NOT affect the taxonomy
+       path at all (Section 1's classify-vs-identify distinction)
+
+  IF THE DESK WANTS TO TRADE SOMETHING GENUINELY NEW (no existing
+  template fits):
+    -&gt; Product Control / New Product Committee classifies it against
+       the taxonomy FIRST (Section 7's ISDA reference documents are
+       exactly what they'd consult), creates a NEW product-master row,
+       and only then can trades against that new template be booked
+    -&gt; This is also the trigger for requesting a new UPI reference-
+       data record from the DSB (Section 5) -- the taxonomy
+       classification decision and the UPI request are typically the
+       same new-product-onboarding event, not two separate ones</pre></div>
+<p>ஒரு <b>bond</b>-க்கு, சமமான product-master வரிக்கு taxonomy columns எதுவும் நிரப்பப்பட்டிருக்காது — அதுக்குப் பதிலா ஒரு <b>CFI code</b>-ஐ சுமக்கும் (Section 4), ஏன்னா அது ஒரு derivative product template இல்ல, ஒரு security master entry. சரியா கட்டப்பட்ட trade capture system, "இந்த instrument type-க்கு taxonomy fields இருக்கா"ங்கறதை <i>asset class-ஓட</i> (cash vs. derivative) ஒரு பண்பா நடத்துது, ஒவ்வொரு product template-உம் சுயாதீனமா முடிவு பண்ணும் ஒண்ணா இல்ல.</p>
+<p><b>Takeaway:</b> ஒரு data model-ஐ வடிவமைக்கறப்போ "Taxonomy Path Trade table-ல இருக்கணுமா Product table-ல இருக்கணுமா"ன்னு யோசிச்சா, பதில் <b>Product</b> — trades அதை reference வழியா inherit பண்ணுது, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §1-ஓட Asset Class → Product → Instrument → Trade hierarchy ஏற்கனவே product-defining attributes Trade layer-ல இல்ல, Product layer-ல இருக்குன்னு நிறுவியது போலவே. ஒரே product வடிவத்தோட trades-க்கு வேறு வேறு taxonomy path-ஐ சேமிக்கும் (அனுமதிக்கும்) system-ல ஒரு data-integrity bug இருக்கு, ஒரு நெகிழ்வான அம்சம் இல்ல.</p>
+    </section>
+    <section class="mod" id="9-அதிகாரப்பூர்வ-மூலங்கள்-links">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. அதிகாரப்பூர்வ மூலங்கள் &amp; Links</h2>
+      <p><b>Definition:</b> இந்த curriculum-ல மற்ற ஒவ்வொரு reference module போலவும், இது அவ்வப்போது திருத்தப்படும் விதிகளை மறுசொல்லாம, முதன்மை மூலங்களை சுட்டிக்காட்டுது.</p>
+<div class="table-scroll"><table><thead><tr><th>Source</th><th>What It Covers</th><th>Link</th></tr></thead><tbody><tr><td><b>ISDA (International Swaps and Derivatives Association)</b></td><td>Publishes the Product Taxonomy itself (v1.0, v2.0, and updates), the ISDA Master Agreement, and CSA documentation</td><td><a href="<a href="https://www.isda.org">www.isda.org">https://www.isda.org">www.isda.org</a></a></td></tr><tr><td><b>CFTC (Commodity Futures Trading Commission)</b></td><td>Dodd-Frank real-time public reporting rules (Part 43), swap data recordkeeping (Part 45), block-trade thresholds by taxonomy category, MAT determinations</td><td><a href="<a href="https://www.cftc.gov">www.cftc.gov">https://www.cftc.gov">www.cftc.gov</a></a></td></tr><tr><td><b>CPMI (Committee on Payments and Market Infrastructures) / IOSCO</b></td><td>2017 Technical Guidance on UPI, which adopted ISDA's taxonomy as its classification basis (Section 5)</td><td><a href="<a href="https://www.bis.org/cpmi">www.bis.org/cpmi">https://www.bis.org/cpmi">www.bis.org/cpmi</a></a>, <a href="<a href="https://www.iosco.org">www.iosco.org">https://www.iosco.org">www.iosco.org</a></a></td></tr><tr><td><b>ANNA-DSB</b></td><td>Operates the UPI reference-data system built on this taxonomy's lineage — see the <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI, UTI &amp; ANNA-DSB Deep Dive</a></td><td><a href="<a href="https://www.anna-dsb.com">www.anna-dsb.com">https://www.anna-dsb.com">www.anna-dsb.com</a></a></td></tr><tr><td><b>ESMA</b></td><td>EU/UK EMIR technical standards — where taxonomy-derived category logic reaches EU/UK reports via the UPI rather than a direct field (Section 6's callout)</td><td><a href="<a href="https://www.esma.europa.eu">www.esma.europa.eu">https://www.esma.europa.eu">www.esma.europa.eu</a></a></td></tr></tbody></table></div>
+<p><b>Takeaway:</b> ISDA-ஓட சொந்த வெளியிடப்பட்ட taxonomy ஆவணங்களை உண்மையான தற்போதைய category கட்டமைப்புக்கும் பதிப்புக்கும் source of truth-ஆவும்; CFTC-ஓட rulebook-ஐ அந்த categories US public-reporting கடமைகளை சரியா எப்படி இயக்குதுங்கறதுக்கு source of truth-ஆவும்; CPMI-IOSCO-ஓட Technical Guidance-ஐ அதே categories உலகளாவிய அளவு ஏற்கப்பட்ட UPI-க்கு அடிப்படையா எப்படி ஆனதுங்கறதை விளக்கும் பாலமாவும் நடத்துங்க — இந்த curriculum-ஓட மற்ற reference modules தங்கள் சொந்த regimes-க்கு ஏற்கனவே பயன்படுத்தற அதே மூன்று-வழி "standard, US mandate, global mandate" பிரிவு.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>ஒவ்வொரு worked taxonomy path முழுக்க counterparty (Section 3); விளக்க product master-ஓட உரிமையாளர் (Section 8)</td></tr><tr><td>Goldman Sachs</td><td>Credit, FX worked examples முழுக்க counterparty (Section 3)</td></tr><tr><td>Northern Rail Corp</td><td>Credit worked example-ஓட reference entity (Section 3, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §9)</td></tr><tr><td>ISDA</td><td>Product Taxonomy தானே, தனியா Master Agreement-ஐயும் வெளியிட்டு நிர்வகிக்குது (Section 1, Section 7)</td></tr><tr><td>CFTC</td><td>அதன் Dodd-Frank விதிகள் taxonomy-ஐ public reporting, MAT determinations-க்கு நேரடியா சுமை சுமக்கற US regulator (Section 6)</td></tr><tr><td>CPMI-IOSCO</td><td>ISDA-ஓட taxonomy-ஐ உலகளாவிய UPI-க்கான classification அடிப்படையா ஏற்ற standard-setters (Section 5)</td></tr><tr><td>ANNA-DSB</td><td>Taxonomy-ஓட வம்சாவளியில கட்டப்பட்ட UPI reference-data system-ஐ இயக்குது (Section 5, <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">UPI deep dive</a>-ல இருந்து cross-reference)</td></tr><tr><td>ESMA</td><td>UPI வழியா மறைமுகமா taxonomy-ஓட செல்வாக்கு reports-ஐ அடையும் EU/UK regulator (Section 6)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz</h2>
+      <ol><li>Section 1-ஐ பயன்படுத்தி, ரெண்டும் "product" அடுக்கில உட்கார்ந்தாலும், ISDA Product Taxonomy செய்யறதுக்கும் UPI செய்யறதுக்கும் உள்ள வித்தியாசம் என்ன?</li><li>Section 2-ஐ பயன்படுத்தி, ஒரு தட்டையான code-க்குப் பதிலா taxonomy-க்கு நாலு levels தேவை ஏன் — "Swap" போன்ற ஒரு Transaction Type மதிப்பு மட்டும் தனியா இருந்தா என்ன தப்பாகும்?</li><li>Section 3-ஐ பயன்படுத்தி, Bank Of Toronto-ஓட 5Y CAD IRS-க்கு முழு taxonomy path என்ன? IRS-க்கும் Equity TRS உதாரணத்துக்கும் இடையில அந்த path-ல எந்த ஒரு level வேறுபடுது?</li><li>Section 4-ஐ பயன்படுத்தி, ஒரு Northern Rail Corp bond எப்போதாவது ISDA taxonomy path-ஐ பெறுமா? Northern Rail Corp-ஐ reference பண்ற CDS பெறுமா? வேறுபாட்டை விளக்குங்க.</li><li>Section 5-ஐ பயன்படுத்தி, ISDA Product Taxonomy-ல இருந்து ஒரு உண்மையான வழங்கப்பட்ட UPI வரையிலான வம்சாவளியை விவரிங்க — ஒவ்வொரு அடுக்கும் அதுக்கு முந்தையதில் இல்லாத எதைச் சேர்க்குது?</li><li>Section 6-ஐ பயன்படுத்தி, UPI-உடன் எந்தச் சம்பந்தமும் இல்லாத, US Dodd-Frank/CFTC regulation-ல taxonomy-ஓட ஒரு பயன்பாட்டை பெயரிடுங்க.</li><li>Section 7-ஐ பயன்படுத்தி, ISDA ஒரு regulator-ஆ? ஒரு குறிப்பிட்ட trade-க்கு அதன் taxonomy-ஐ பயன்படுத்தறதை உண்மையில கட்டாயமாக்குறது எது?</li><li>Section 8-ஐ பயன்படுத்தி, நல்லா வடிவமைக்கப்பட்ட data model-ல taxonomy path எங்க இருக்கு — Trade record-லயா Product record-லயா — அது operational ரீதியா ஏன் முக்கியம்?</li></ol>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Taxonomy <i>classify</i> பண்ணுது — அது அந்த வடிவத்தின் ஒவ்வொரு trade-ஆலும் பகிரப்படும் ஒரு category label (உதா., <code>Interest Rate / IRSwap / FixedFloat / Swap</code>). UPI <i>identify</i> பண்ணுது — அது ஒரு குறிப்பிட்ட பொருளாதார terms கலவைக்கு வழங்கப்பட்ட குறிப்பிட்ட code, taxonomy-ஓட categories-ஐ அதன் அடிப்படை classification logic-ஆ பயன்படுத்தி கட்டப்பட்டது (Section 5), ஆனா taxonomy தானே பிடிக்காத Underlier, Notional Currency, Tenor போன்ற fields-ஐயும் சேர்க்க இன்னும் போகுது.</b></p>
+<p>Section 1-ஓட takeaway இதை நேரடியா பிடிச்சுக்க வேண்டிய மிக முக்கியமான வேறுபாடா சொல்லுது, சரியா ரெண்டும் "product" அடுக்கில உட்கார்ந்து குழப்பிக்கொள்ளப்படுறதாலதான்.</p>
+<p><b>2. ஏன்னா Transaction Type மட்டும் asset classes முழுக்க தெளிவில்லாதது — Section 3-ஓட Interest Rate, Equity, Commodity worked examples மூணுக்கும் Transaction Type "Swap"; மற்ற மூணு levels (Asset Class, Base Product, Sub-Product) இல்லாம, அந்த ஒரு field-ல இருந்து மட்டும் ஒரு 5Y CAD IRS-ஐயும் ஒரு Brent Crude Oil Swap-ஐயும் பிரிச்சுப் பார்க்க வழியே இருக்காது.</b></p>
+<p>Section 2-ஓட takeaway இதே புள்ளியை சொல்லுது, Section 3-ஓட worked examples உறுதியா நிரூபிக்குது — ஐந்து trades-ல மூணு ஒரே Transaction Type மதிப்பை பகிர்கின்றன.</p>
+<p><b>3. <code>Interest Rate / IRSwap / FixedFloat / Swap</code>. Equity TRS-ஓட <code>Equity / Swap / PriceReturn / Swap</code>-ஓட ஒப்பிட்டா, கட்டமைப்பு ரீதியா சுவாரஸ்யமா வேறுபடும் level Base Product — IRSwap vs. Swap — Transaction Type ரெண்டுக்கும் ஒரே மாதிரி ("Swap"), Transaction Type மட்டும் அவற்றை வேறுபடுத்த முடியாதுன்னு மறுபடி காட்டுது.</b></p>
+<p>Section 3-ஓட worked-examples block ரெண்டு paths-ஐயும் நேரடியா பட்டியலிடுது, அதன் takeaway பகிரப்பட்ட "Swap" Transaction Type-ஐ எந்த ஒரு level-உம் தனியா போதாததற்கான காரணமா flag பண்ணுது.</p>
+<p><b>4. இல்ல — ஒரு Northern Rail Corp bond ஒருபோதும் ISDA taxonomy path-ஐ பெறாது; அதுக்குப் பதிலா ஒரு CFI code-ஐ பெறும், ஏன்னா அது ஒரு deliver பண்ணக்கூடிய security, ஒரு bilateral contract இல்ல. Northern Rail Corp-ஐ reference பண்ற CDS ஒரு taxonomy path-ஐ பெறும் (<code>Credit / SingleName / Corporate / CreditDefaultSwap</code>), ஏன்னா CDS தானே classify ஆகும் bilateral contract — taxonomy contracts-ஐ classify பண்ணுது, ஒரு contract reference பண்ணக்கூடிய அடிப்படை பொருளை ஒருபோதும் இல்ல.</b></p>
+<p>Section 4-ஓட worked comparison சரியா இந்த ஜோடியை நடத்திக் காட்டுது — அதே company, ரெண்டு முற்றிலும் வேறு classification உலகங்கள்; அதன் நுணுக்க callout ஒரு bond <i>மேல</i> derivative-ம் (ஒரு bond option/future) இன்னும் சாதாரணமா ISDA-classified ஆகும்னு இன்னும் தெளிவாக்குது; அடிப்படை cash bond தானே ஒருபோதும் ஆகாது.</p>
+<p><b>5. ISDA-ஓட taxonomy (v1.0/v2.0) அடிப்படை classification சொல்லகராதியை வழங்குது — Asset Class/Base Product/Sub-Product/Transaction Type, codes வழங்கல் இல்ல, உயிருள்ள system இல்ல. CPMI-IOSCO-ஓட 2017 Technical Guidance அந்த சொல்லகராதியை ஒரு உலகளாவிய ஒத்திசைவான standard-ஓட கட்டமைப்பு அடிப்படையா ஏற்கும். DSB அப்புறம் அதை ஒரு உயிருள்ள, query செய்யக்கூடிய, asset class-க்கு reference-data schema-வா இயக்கி, fields-ஓட ஒவ்வொரு தனித்துவ கலவைக்கும் ஒரு code-ஐ (UPI) உண்மையில வழங்குது. கடைசியா, EMIR/Dodd-Frank/மற்ற regimes-ஓட trade reports அந்த ஏற்கனவே வழங்கப்பட்ட UPI-ஐ ஒரு கட்டாய field-ஆ எடுத்துக்கும், taxonomy path-ஐ கையால மறுபடி derive பண்ணாம.</b></p>
+<p>Section 5-ஓட வம்சாவளி diagram இந்த நாலு அடுக்குகள் ஒவ்வொண்ணையும் வெளிப்படையா சொல்லுது, அதன் takeaway-ல "இலக்கணம் vs. அந்த இலக்கணத்திலிருந்து கட்டிய அகராதி" ஒப்புமையை பயன்படுத்தி.</p>
+<p><b>6. இவற்றில் எதுவும்: Dodd-Frank நிகழ்நேர பொது reporting-க்கு (Part 43) block-trade notional வரம்பை நிர்ணயிக்கறது; CFTC-ஓட சொந்தமா வெளியிடப்பட்ட swaps market statistics-க்கு swaps-ஐ bucket பண்றது (Part 45 recordkeeping); அல்லது ஒரு SEF-ஓட MAT (Made-Available-to-Trade) determination-ஐ scope பண்றது.</b></p>
+<p>Section 6-ஓட table மூணையும் UPI-ஓட 2022 அறிமுகத்துக்கு முந்தைய, அதிலிருந்து சுயாதீனமான பயன்பாடுகளா பட்டியலிடுது — taxonomy-ஓட அசல் regulatory நோக்கம், இன்னிக்கும் US regime-ல நேரடியா சுமை சுமக்குது.</p>
+<p><b>7. இல்ல — ISDA ஒரு தொழில்துறை trade association, ஒரு regulator இல்ல; taxonomy-ஐ யாரும் பயன்படுத்தணும்னு அது கட்டாயப்படுத்தறதே இல்ல. அதன் பயன்பாடு ஒரு உண்மையான regulator (Dodd-Frank-ன் கீழ CFTC) அல்லது ஒரு downstream standard (CPMI-IOSCO-ஓட UPI வழிகாட்டுதல்) அதை கோரும் இடத்துல மட்டுமே கட்டாயமாகுது.</b></p>
+<p>Section 7-ஓட diagram, takeaway இதை நேரடியா சொல்லுது, UPI deep dive-ஓட Section 4 ஏற்கனவே DSB-க்கு நிறுவிய அதே infrastructure-vs-mandate வேறுபாட்டை, ஒரு அடுக்கு மேல வரைந்து.</p>
+<p><b>8. Product record-ல, Trade record-ல இல்ல — trades ஒரு ஏற்கனவே இருக்கற product template-ஐ தேர்ந்தெடுத்து அதன் taxonomy path-ஐ reference மூலம் inherit பண்ணுது; trade-குறிப்பான fields (notional, counterparty, rate) அதை ஒருபோதும் பாதிக்காது. இது operational ரீதியா முக்கியம், ஏன்னா ஒரே product வடிவத்தை வெவ்வேறு trades-ல வெவ்வேறு taxonomy paths-ஐ சுமக்க அனுமதிக்கும் system-ல data-integrity bug இருக்கு; மேலும் புது-product onboarding (ஒரு புது taxonomy classification-ஐ உருவாக்கறது) ஒவ்வொரு trade-க்கும் ஒரு தடவை இல்லாம, ஒவ்வொரு product வடிவத்துக்கும் ஒரு தடவை நடக்கும், தனியான, நிர்வகிக்கப்பட்ட நிகழ்வு.</b></p>
+<p>Section 8-ஓட product-master diagram, takeaway ரெண்டும் இதை நேரடியா சொல்லுது, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §1-ஓட அசல் புள்ளியோட இணைத்து: product-defining attributes hierarchy-ஓட Product layer-ல இருக்கு, Trade layer-ல இல்ல.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 21 — ISDA Product Taxonomy Deep Dive (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,873 @@
+<!doctype html>
+<title>Module 4 — Equity (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 4 — Equity (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Equity theory, common vs preferred, futures and options, trade lifecycle, identifiers, exchange vs OTC, regulation and the Canadian equity systems landscape — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Asset Class Roadmap 1 of 6</b> — Equity → Fixed Income → FX → Commodities → Rates → Credit. ஒவ்வொரு asset class-உம் அடுத்ததுக்குப் போறதுக்கு முன்னாடி கீழ இருக்கற எட்டு-பாகம் pattern வழியா படிக்கப்படுது. <b>மூலம்:</b> English Module 4-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-equity-ன்னா-என்ன-theory-terminology"><span class="toc-num">01</span>1. Equity-ன்னா என்ன? — Theory &amp; Terminology</a></li>
+      <li><a href="#2-products-என்னென்ன-cash-equity-vs-equity-derivatives"><span class="toc-num">02</span>2. Products என்னென்ன? — Cash Equity vs Equity Derivatives</a></li>
+      <li><a href="#3-உண்மையில-எது-trade-ஆகுது-security-vs-contract"><span class="toc-num">03</span>3. உண்மையில எது Trade ஆகுது? — Security vs Contract</a></li>
+      <li><a href="#4-நிஜ-உலக-trade-உதாரணங்கள்-buyer-seller-trade"><span class="toc-num">04</span>4. நிஜ உலக Trade உதாரணங்கள் — Buyer → Seller → Trade</a></li>
+      <li><a href="#5-trade-lifecycle-equity-க்குரிய-walkthrough"><span class="toc-num">05</span>5. Trade Lifecycle — Equity-க்குரிய Walkthrough</a></li>
+      <li><a href="#6-identifiers-isin-cusip-sedol-ticker-lei-upi-figi"><span class="toc-num">06</span>6. Identifiers — ISIN, CUSIP, SEDOL, Ticker, LEI, UPI, FIGI</a></li>
+      <li><a href="#7-exchange-vs-otc-vs-bilateral-vs-centrally-cleared"><span class="toc-num">07</span>7. Exchange vs OTC vs Bilateral vs Centrally Cleared</a></li>
+      <li><a href="#8-regulatory-perspective-mifid-emir-sftr-fca-ciro-hkma-dtcc-dmo"><span class="toc-num">08</span>8. Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</a></li>
+      <li><a href="#9-canadian-systems-landscape-equity-front-middle-back-office-ல-இருந்து-regulatory-reporting-வரை"><span class="toc-num">09</span>9. Canadian Systems Landscape — Equity Front, Middle &amp; Back Office-ல இருந்து Regulatory Reporting வரை</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-equity-ன்னா-என்ன-theory-terminology">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Equity-ன்னா என்ன? — Theory &amp; Terminology</h2>
+      <p><b>Definition:</b> Equity = ஒரு company-ல <b>பகுதி உரிமை (fractional ownership)</b>. Shareholder-க்கு company-ஓட assets மேலயும் எதிர்கால வருமானம் மேலயும் விகிதாசார உரிமை உண்டு; அதுக்கு ஆதாரம் shares. <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>-ல வர்ற Fixed Income instruments போல இல்லாம, equity-க்கு <b>maturity date இல்ல, fixed coupon இல்ல, அசல் திரும்பக் கொடுப்பேன்னு வாக்குறுதியும் இல்ல</b> — return முழுக்க price உயர்வு + dividends-ல இருந்து வரும்; ரெண்டுமே மாறக்கூடியவை, dividend தனிப்பட்ட முறையில board-ஓட விருப்பம் (contractual இல்ல).</p>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td>Share</td><td>ஒரு company-ல ஒரு unit உரிமை</td></tr><tr><td>Outstanding Shares</td><td>தற்போது எல்லா shareholders-உம் வெச்சிருக்கற மொத்த shares</td></tr><tr><td>Market Capitalization</td><td>Share Price × Outstanding Shares — மொத்த company-க்கும் market கொடுக்கற மதிப்பு</td></tr><tr><td>Dividend</td><td>Board அறிவிக்கற, shareholders-க்கு கொடுக்கற விருப்பப்படியான cash (அல்லது stock) — உத்தரவாதம் இல்ல</td></tr><tr><td>Voting Rights</td><td>Common shareholders-க்கு பொதுவா ஒரு share-க்கு ஒரு vote (board election, பெரிய முடிவுகள்)</td></tr><tr><td>Corporate Action</td><td>Share-ஐ மாற்றற issuer தொடங்கற நிகழ்வு (stock split, buyback, spin-off, rights issue)</td></tr></tbody></table></div>
+<h3>Equity vs Fixed Income — மிக முக்கியமான வித்தியாசம்</h3>
+<div class="table-scroll"><table><thead><tr><th></th><th>Equity</th><th>Fixed Income (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>)</th></tr></thead><tbody><tr><td>உரிமை</td><td>ஆமா — company மேல மீதி (residual) உரிமை</td><td>இல்ல — creditor உரிமை (issuer-க்கு கொடுத்த கடன்)</td></tr><tr><td>Maturity</td><td>இல்ல — காலவரையற்று வெச்சிருக்கலாம்</td><td>நிலையானது — bond குறிப்பிட்ட தேதில maturity ஆகும்</td></tr><tr><td>Return</td><td>Price உயர்வு + dividends (மாறக்கூடியது, உத்தரவாதம் இல்ல)</td><td>Coupon (நிலையானது, contractual) + maturity-ல அசல்</td></tr><tr><td>Bankruptcy-ல முன்னுரிமை</td><td><b>கடைசி</b> — எல்லா creditors-க்கும் அப்புறம்தான்</td><td>Equity-க்கு முன்னாடி — bondholders creditors</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> இந்த module-ஓட மற்ற எல்லா sections-உம் (products, trade lifecycle, identifiers, regulation) இந்த ஒரே உண்மைக்குத் திரும்பிப் போகும்: ஒரு share = company-ஓட ஒரு துண்டு, company கொடுத்த வாக்குறுதி இல்ல. இது bond-க்கு நேர் எதிர்; அதனாலதான் equity valuation (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>) bond valuation-ல இருந்து முழுசா வேறுபடுது.</p>
+<div class="callout"><b>Deep dive இருக்கு.</b> ஒரு share-ஓட சொந்த விலை நகர்வை Fixed Income, Rates மாதிரி equity basis points-ல விவரிக்காது — ஆனா <b>management/advisory fees</b>, <b>bid-ask trading spreads</b> இவற்றுல bps உண்மையிலயே வரும். ரெண்டு worked examples-உம் <a href="../docs/1-capital-markets/module-24-basis-points-deep-dive.html">Module 24 — Basis Points Deep Dive</a> §6-ல.</div>
+    </section>
+    <section class="mod" id="2-products-என்னென்ன-cash-equity-vs-equity-derivatives">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Products என்னென்ன? — Cash Equity vs Equity Derivatives</h2>
+      <div class="ticket"><pre>EQUITY
+│
+├── Cash Equity              (the actual security)
+│   ├── Common Stock
+│   └── Preferred Stock
+│
+└── Equity Derivatives       (contracts whose value derives from the security)
+    ├── Equity Futures
+    └── Equity Options</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Product</th><th>அது என்ன</th></tr></thead><tbody><tr><td>CASH</td><td><b>Common Stock</b></td><td>சாதாரண shares — (பொதுவா) ஒரு share-க்கு ஒரு vote, dividend board-ஓட முழு விருப்பம், company கலைக்கப்பட்டா assets மேல கடைசி உரிமை</td></tr><tr><td>CASH</td><td><b>Preferred Stock</b></td><td>கலப்பு instrument — bond coupon மாதிரி <i>நிலையான dividend rate</i> உண்டு, ஆனா board அறிவிச்சா மட்டும்தான் கொடுப்பாங்க; common-ஐ விட முன்னுரிமை, ஆனா எல்லா debt-க்கும் பின்னால்; பொதுவா voting rights இல்ல</td></tr><tr><td>DERIVATIVE</td><td><b>Equity Future</b></td><td>ஒரு stock அல்லது index-ஐ இன்னிக்கே ஒத்துக்கிட்ட விலைல எதிர்கால தேதில வாங்க/விற்க exchange-ல trade ஆகற contract; index futures பொதுவா cash-settled, physical delivery இல்ல</td></tr><tr><td>DERIVATIVE</td><td><b>Equity Option</b></td><td>Buyer-க்கு, expiry-க்குள்ள/அன்னிக்கு, fixed strike price-ல shares-ஐ வாங்க (call) அல்லது விற்க (put) <b>உரிமை, கடமை இல்ல</b> தரும் contract; முன்கூட்டியே premium கொடுக்கணும்</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Common-உம் Preferred-உம் ஒரே "Cash Equity" bucket-ல இருக்கு, ஏன்னா ரெண்டுமே உண்மையான, deliver பண்ணக்கூடிய securities — வித்தியாசம் முழுக்க உரிமையோட <i>economics</i>-ல (Preferred: கிட்டத்தட்ட நிலையான dividend, அதிக முன்னுரிமை, vote இல்ல; Common: மாறும் dividend, கடைசி முன்னுரிமை, vote உண்டு). Futures-உம் Options-உம் முற்றிலும் வேற bucket, ஏன்னா அவை stock <i>இல்ல</i> — Section 3 இதை உறுதியா காட்டுது.</p>
+    </section>
+    <section class="mod" id="3-உண்மையில-எது-trade-ஆகுது-security-vs-contract">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. உண்மையில எது Trade ஆகுது? — Security vs Contract</h2>
+      <p><b>Definition:</b> Common அல்லது Preferred Stock-ல நீங்க ஒரு <b>உண்மையான security</b>-ஐ trade பண்றீங்க — எந்த ஒரு குறிப்பிட்ட trade-ஐயும் சாராம இருக்கற, CSD-ல book-entry-ஆ பதிவான (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7) transfer பண்ணக்கூடிய ownership உரிமை. Equity Futures அல்லது Options-ல நீங்க ஒரு <b>contract</b>-ஐ trade பண்றீங்க — அதோட மதிப்பு அந்த underlying security-ஓட விலையில இருந்து derive ஆகுது; contract execution-ல உருவாகி, பொதுவா expiry அல்லது exercise-ல முடிஞ்சுடும்.</p>
+<div class="ticket"><pre>SECURITY vs CONTRACT
+========================================================================
+
+Common Stock (SECURITY):
+  Coca-Cola Company issued a fixed number of shares, years ago.
+  Every trade just transfers ownership of EXISTING shares between
+  two parties -- nothing new is created or destroyed by trading it.
+
+Equity Option (CONTRACT):
+  "AAPL 15-Jan-2027 250 Call" doesn't exist until two parties agree
+  to create it (the same principle as Module 1 §8's notional, applied
+  to options) -- and it disappears entirely at expiry/exercise.
+  Trading it doesn't move any Apple shares; it creates or transfers
+  a CLAIM on Apple shares.</pre></div>
+<p><b>Takeaway:</b> இது <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §3-ல பார்த்த "Quantity vs Notional" வித்தியாசம்தான், equity-க்காக மறுபடி சொல்றது. Cash equity trade-ஓட Quantity (shares) உண்மையான, deliver பண்ணக்கூடிய அளவு. Equity derivative-ஓட underlying share count, contract-ஓட payoff-ஐ size பண்ண பயன்படற reference அளவு மாதிரி — அது உண்மையான shares நகர வைக்குமா இல்லையாங்கறது contract physically settle ஆகுதா, உண்மையில exercise ஆகுதாங்கறதை (Section 5) முழுசா பொறுத்தது.</p>
+    </section>
+    <section class="mod" id="4-நிஜ-உலக-trade-உதாரணங்கள்-buyer-seller-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. நிஜ உலக Trade உதாரணங்கள் — Buyer → Seller → Trade</h2>
+      <div class="callout"><b>Complete worked examples இருக்கு.</b> கீழ உள்ள cash equity trade-க்கு <a href="../examples/Cash_Equity_Trade_Complete_Example.html">Cash Equity Trade — Complete Example</a> பாருங்க. இந்த asset class-ஓட derivative பக்கத்துக்கு <a href="../examples/Equity_Total_Return_Swap_Complete_Example.html">Equity Total Return Swap — Complete Example</a> — ரெண்டுமே உண்மையான எண்களோட முழு trade lifecycle-ஐ நடத்திக் காட்டுது.</div>
+<h3>4a. Common Stock</h3>
+<div class="ticket"><pre>COMMON STOCK  —  Coca-Cola Company (NYSE: KO)
+========================================================================
+
+  Buyer:  Maple Leaf Pension Fund
+  Seller: Goldman Sachs
+  Dealer: Bank Of Toronto (takes the trade onto its own book briefly,
+          per Module 1 §3's dealer/principal mechanics)
+
+  Trade: 10,000 shares @ USD 68.40
+  Trade Value = 10,000 x 68.40 = USD 684,000</pre></div>
+<div class="ticket"><pre>ONE "TRADE," TWO LEGS — WHAT "DEALER" ACTUALLY MEANS HERE
+========================================================================
+
+  Leg 1:  Goldman Sachs  ---- sells 10,000 KO @ 68.40 ----&gt;  Bank Of Toronto
+  Leg 2:  Bank Of Toronto ---- sells 10,000 KO @ 68.40 ----&gt;  Maple Leaf Pension Fund
+
+  Both legs settle at the SAME price -- Bank Of Toronto takes no
+  spread and ends the day flat (bought 10,000, sold 10,000) -- but
+  it is a REAL counterparty on each leg, not a pass-through broker.</pre></div>
+<div class="callout">Bank Of Toronto இங்க <b>ரெண்டு பக்கத்துக்கும்</b> உண்மையான counterparty — <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §3-ல பார்த்த dealer/principal mechanics-படி. அதாவது மேல உள்ள ஒரே "Trade:" வரி உண்மையில <b>ரெண்டு தனி settlement கடமைகள்</b>: Bank Of Toronto, Goldman Sachs-க்கு cash-ம் Maple Leaf Pension Fund-க்கு shares-ம் கொடுக்கணும்; அதே நேரம் Goldman Sachs-ல இருந்து shares-ஐயும் Maple Leaf Pension Fund-ல இருந்து cash-ஐயும் வாங்க வேண்டியிருக்கு. Bank Of Toronto, title எடுக்காத riskless broker-ஆ இருந்திருந்தா, கடமை ஒண்ணே ஒண்ணுதான், Goldman Sachs-க்கும் Maple Leaf Pension Fund-க்கும் நேரடியா — ஆனா இந்த உதாரணத்துல நடக்கறது அது இல்ல.</div>
+<h3>4b. Preferred Stock</h3>
+<div class="ticket"><pre>PREFERRED STOCK  —  Bank Of Toronto Preferred Shares, Series A
+========================================================================
+
+  Issuer: Bank Of Toronto (primary issuance, per Module 1 §1's
+          primary-market mechanics)
+  Buyer:  Goldman Sachs
+
+  Issue: 2,000,000 shares @ Par CAD 25.00, Dividend Rate 4.50%
+         Non-Cumulative
+  Cash Raised = 2,000,000 x 25.00 = CAD 50,000,000
+
+  Annual Dividend / share = 25.00 x 4.50% = CAD 1.125
+  Total Annual Dividend    = 2,000,000 x 1.125 = CAD 2,250,000
+  Paid Quarterly           = 2,250,000 / 4 = CAD 562,500 / quarter
+
+  "Non-Cumulative" means: if Bank Of Toronto's board skips a
+  quarter's dividend, Goldman Sachs does NOT get it later -- it is
+  simply gone. Contrast a bond coupon (Module 1 §1), where missing
+  a payment is a DEFAULT. A preferred dividend, even on a fixed-rate
+  instrument, is never a legal obligation the way a bond coupon is.</pre></div>
+<h3>4c. Equity Future</h3>
+<div class="ticket"><pre>EQUITY FUTURE  —  E-mini S&amp;P 500 Future (CME)
+========================================================================
+
+  Buyer: Maple Leaf Pension Fund
+  Seller/Counterparty: CME Clearing (the CCP — see Section 7; on an
+        exchange, buyer and seller are matched anonymously and each
+        ends up facing the CCP, not each other, from day one)
+
+  Trade: BUY 20 contracts @ 5,920.00 (index points)
+         Multiplier: USD 50 per index point
+  Notional = 20 x 50 x 5,920.00 = USD 5,920,000
+
+  Initial Margin (illustrative, ~USD 12,000/contract):
+    20 x 12,000 = USD 240,000 posted to CME Clearing
+
+  Next business day, index moves to 5,935.00:
+    Variation Margin = (5,935.00 - 5,920.00) x 50 x 20 = USD 15,000
+    -&gt; credited to Maple Leaf Pension Fund's margin account THAT DAY
+       (daily mark-to-market, not a wait until maturity like an OTC
+       swap's quarterly cash flow — Module 1 §8)</pre></div>
+<h3>4d. Equity Option</h3>
+<div class="ticket"><pre>EQUITY OPTION  —  AAPL 15-Jan-2027 250 Call
+========================================================================
+
+  Buyer: Maple Leaf Pension Fund
+  Seller (writer): Bank Of Toronto (dealer)
+
+  Trade: BUY 100 contracts, Strike USD 250, Expiry 15-Jan-2027
+         Premium: USD 18.50 / share, 100 shares / contract
+  Premium Paid = 100 x 100 x 18.50 = USD 185,000 (paid T+1)
+
+  AT EXPIRY -- Scenario A: AAPL trades at USD 270
+    Intrinsic Value = (270 - 250) x 10,000 shares = USD 200,000
+    Option exercised; Net Profit = 200,000 - 185,000 = USD 15,000
+
+  AT EXPIRY -- Scenario B: AAPL trades at USD 240
+    Option expires WORTHLESS (strike above market price)
+    Maple Leaf Pension Fund loses the full USD 185,000 premium
+    -&gt; this is the maximum possible loss for a long option buyer,
+       ever — never more than the premium paid.</pre></div>
+<div class="callout">Section 4c-ஓட future-ல இருந்த அதே clearing உறவு: இந்த option OCC வழியா clear ஆனவுடனே, Maple Leaf Pension Fund-உம் Bank Of Toronto-வும் ஒருத்தருக்கொருத்தர் இல்ல, உண்மையில <b>OCC</b>-ஐத்தான் எதிர்கொள்றாங்க — மேல இருக்கற "Buyer"/"Seller (writer)" labels trade-ஓட அசல் இருதரப்பு economics-ஐ சொல்லுது, novation-க்கு அப்புறம் யார் யாருக்கு counterparty-exposed-ங்கறதை இல்ல.</div>
+<h3>கூடுதல் உதாரணம் — Futures vs Options: ஒரே 10 நாள்ல யாருக்கு என்ன நடக்கும்?</h3>
+<p>Maple Leaf Pension Fund-ஓட ரெண்டு positions-ஐ ஒப்பிடுவோம்:</p>
+<div class="table-scroll"><table><thead><tr><th></th><th>E-mini S&amp;P 500 Future (long 20)</th><th>AAPL Call (long 100 contracts)</th></tr></thead><tbody><tr><td>ஆரம்பத்துல கொடுத்தது</td><td>Initial Margin USD 240,000 (திரும்பக் கிடைக்கும் collateral)</td><td>Premium USD 185,000 (திரும்பாது, செலவு)</td></tr><tr><td>Index/AAPL சாதகமா நகர்ந்தா</td><td>தினமும் Variation Margin credit</td><td>Expiry-ல intrinsic value</td></tr><tr><td>பாதகமா நகர்ந்தா</td><td>தினமும் Variation Margin debit — அதிகம் போகலாம்</td><td>அதிகபட்ச இழப்பு = premium (USD 185,000)</td></tr><tr><td>நகர்வு எப்போ cash ஆகுது</td><td>தினமும்</td><td>Expiry/exercise-ல</td></tr></tbody></table></div>
+<p>Futures-ல நஷ்டம் வரம்பில்லாம போகலாம்; long option-ல நஷ்டம் premium-ல நிக்கும். இதனால margin mechanics-உம் வேற.</p>
+<p><b>Takeaway:</b> இந்த நாலு உதாரணங்கள்ல buyer/seller உறவு எப்படி வடிவம் மாறுதுன்னு கவனிங்க — bilateral dealer trade (4a), primary issuance (4b), CCP-க்கு எதிரான exchange trade (4c), dealer எழுதின bilateral option (4d). நாலுமே "Equity" தான், ஆனா Section 5 lifecycle-க்கு வர்றதுக்கு முன்னாடியே actors-உம் settlement mechanics-உம் வேறுபடத் தொடங்கிடுது.</p>
+    </section>
+    <section class="mod" id="5-trade-lifecycle-equity-க்குரிய-walkthrough">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Trade Lifecycle — Equity-க்குரிய Walkthrough</h2>
+      <p>Asset Class Roadmap pattern-ஐ — <b>Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting</b> — Section 4a-ல வந்த Coca-Cola common stock trade மேல பொருத்தறோம். இது <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a>-ஓட அதே ஒன்பது-stage முதுகெலும்பு தான், ஆனா Module 3-ஓட "Settlement"-க்கும் "Reconciliation/Reporting"-க்கும் நடுவுல இருக்கற ரெண்டு கூடுதல் stages (<b>Position</b>, <b>Valuation/P&amp;L</b>) வெளிப்படையா காட்டப்பட்டிருக்கு.</p>
+<div class="ticket"><pre>COCA-COLA COMMON STOCK  —  FULL LIFECYCLE
+========================================================================
+
+  09:31:00  ORDER — Maple Leaf Pension Fund instructs Bank Of Toronto:
+            "BUY 10,000 shares Coca-Cola Company (NYSE: KO)"
+
+  09:31:04  EXECUTION @ USD 68.40 on NYSE
+
+  09:31:04  TRADE CAPTURE — Trade ID BOT-EQ-2026-011203
+
+  09:45:00  CONFIRMATION/MATCHING via DTCC CTM -&gt; MATCHED
+
+  Trade submitted to NSCC for CLEARING (multilateral netting,
+  per systems-landscape §05 — this trade may net against other
+  KO trades Bank Of Toronto did that day)
+
+  Settlement Date = T+1
+            DTC performs DvP: shares move in DTC's book-entry
+            system; cash settles via Fedwire.
+
+  POSITION — Maple Leaf Pension Fund's holding of KO increases by
+            10,000 shares in the position-keeping system (this is
+            what Module 3 §08's reconciliation checks against the
+            custodian and CSD records)
+
+  VALUATION / P&amp;L — each day after settlement, the position is
+            marked to the current market price:
+              Day of purchase:  10,000 x 68.40 = USD 684,000 (cost)
+              One week later:   10,000 x 71.10 = USD 711,000 (market value)
+              Unrealized P&amp;L =  711,000 - 684,000 = +USD 27,000
+
+  REPORTING — trade reported to the relevant Trade Repository/
+            regulator by T+1 (Module 3 §09); the ongoing POSITION
+            is separately subject to periodic position reporting
+            requirements in some jurisdictions (Module 14)</pre></div>
+<div class="callout"><b>Deep dive இருக்கு.</b> Position உண்மையில என்ன, எல்லா asset classes-லயும் அது எப்படி கட்டப்படுது, எவ்வளவு அடிக்கடி மாறுதுங்கறதை முழுசா: <a href="../docs/1-capital-markets/module-25-position-deep-dive.html">Module 25 — Position Deep Dive</a> §3.</div>
+<h3>Derivative products-க்கு Clearing எப்படி வேறுபடுது</h3>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Product</th><th>CCP</th><th>"Clearing" என்ன கூடுதலா சேர்க்குது</th></tr></thead><tbody><tr><td>CASH</td><td>Common/Preferred Stock</td><td>NSCC (மேல US உதாரணம்) / CDCC / LCH / Eurex, நாட்டுக்கு ஏற்ப (<a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §04–07)</td><td>ஒரே T+1/T+2 DvP settlement-க்கு முன்னாடி multilateral netting</td></tr><tr><td>DERIVATIVE</td><td>Equity Future</td><td>CME Clearing</td><td>Novation (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §06) + contract-ஓட வாழ்நாள் முழுக்க <b>தினசரி</b> Variation Margin — Position, Valuation/P&amp;L ஒரு தடவை check இல்ல, ஒவ்வொரு business day-யும் ஓடும்</td></tr><tr><td>DERIVATIVE</td><td>Listed Equity Option</td><td><b>OCC (Options Clearing Corporation)</b></td><td>Option contract-ஓட novation; premium T+1-ல settle; exercise ஆனா, exercise-க்கு T+1 அப்புறம் <i>தனி</i> physical stock settlement</td></tr></tbody></table></div>
+<div class="callout"><b>கவனிக்க வேண்டிய பெயர்க் குழப்பம்:</b> "OCC" அமெரிக்க capital markets-ல முற்றிலும் ரெண்டு வேற விஷயங்களை குறிக்கும். இங்க equities/derivatives context-ல இது <b>Options Clearing Corporation</b> — US-listed equity options அனைத்துக்குமான CCP. Banking/prudential context-ல (<a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §10) "OCC" என்பது <b>Office of the Comptroller of the Currency</b> — national banks-ஐ charter பண்ணி மேற்பார்வை செய்யும் regulator. ஒரே acronym, ஒரே நாடு, சம்பந்தமில்லாத அமைப்புகள் — எப்பவும் context-ஐ பாருங்க.</div>
+<p><b>Takeaway:</b> "Position", "Valuation/P&amp;L" stages புது concepts இல்ல — அவை <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §08 (Reconciliation), <a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a> (Valuation)-ஓட முன்னோட்டம்; equity-ல இவற்றை எளிதா பார்க்க முடியுங்கறதால இங்க வெளிப்படையா காட்டியிருக்கு: ஒரு stock position பொது, தொடர்ந்து நகரும் market விலைக்கு mark ஆகி சும்மா உட்கார்ந்திருக்கும், coupon-உம் இல்ல, notional கணக்கும் இல்ல, எதையும் மறைக்க.</p>
+    </section>
+    <section class="mod" id="6-identifiers-isin-cusip-sedol-ticker-lei-upi-figi">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Identifiers — ISIN, CUSIP, SEDOL, Ticker, LEI, UPI, FIGI</h2>
+      <p><a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §2 ISIN, CUSIP, Ticker-ஐ அறிமுகப்படுத்திச்சு. மீதி நாலு — SEDOL, LEI, UPI, FIGI — equity-ல தங்க இடத்தைப் பிடிக்குது.</p>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Identifies</th><th>Scope</th><th>Example (Coca-Cola / Apple, unless noted)</th></tr></thead><tbody><tr><td><b>ISIN</b></td><td>The instrument</td><td>Global</td><td><code>US1912161007</code> (Coca-Cola)</td></tr><tr><td><b>CUSIP</b></td><td>The instrument</td><td>North America</td><td><code>191216100</code> (Coca-Cola)</td></tr><tr><td><b>Ticker</b></td><td>The instrument, on one venue</td><td>Exchange-specific</td><td><code>KO</code> (NYSE)</td></tr><tr><td><b>SEDOL</b></td><td>The instrument</td><td>Historically UK/Ireland-specific (7 characters); still embedded inside most UK ISINs the same way a CUSIP is embedded in a US/CA ISIN</td><td><code>0008373</code> (Tesco PLC on LSE, illustrative)</td></tr><tr><td><b>FIGI</b></td><td>The instrument — but at <i>multiple levels</i> (share class, or a specific trading venue/exchange line)</td><td>Global, open-source (Bloomberg-originated, now an industry standard)</td><td><code>BBG000B9XRY4</code> (Apple Inc., Composite Global FIGI — commonly published reference data)</td></tr><tr><td><b>LEI</b></td><td>The <b>legal entity</b> itself — not an instrument at all</td><td>Global</td><td><code>5493001KJTIIGC8Y1R12</code> (illustrative — Bank Of Toronto)</td></tr><tr><td><b>UPI</b></td><td>An OTC derivative <i>product template</i> (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §12)</td><td>Global</td><td>Relevant only for an OTC equity derivative (e.g. a Total Return Swap on KO) — a listed Equity Future or Option instead gets an exchange-specific contract code, not a UPI</td></tr></tbody></table></div>
+<div class="ticket"><pre>INSTRUMENT IDENTIFIERS  vs  ENTITY IDENTIFIER
+========================================================================
+
+  ISIN, CUSIP, Ticker, SEDOL, FIGI   -&gt;  answer "WHAT is being traded?"
+  LEI                                 -&gt;  answers "WHO is trading it?"
+  UPI                                 -&gt;  answers "WHAT PRODUCT TEMPLATE
+                                             does this OTC derivative
+                                             belong to?" (Module 2 §12)
+
+  On a single trade record for the Coca-Cola trade (Section 4a):
+    Instrument  : ISIN US1912161007 / CUSIP 191216100 / Ticker KO
+    Buyer LEI   : identifies Maple Leaf Pension Fund
+    Seller LEI  : identifies Goldman Sachs
+    Dealer LEI  : identifies Bank Of Toronto
+  -&gt; four completely different identifiers on one trade record,
+     answering two completely different questions.</pre></div>
+<p><b>Takeaway:</b> ISIN-ஓட ஒப்பிட்டா FIGI-ஓட தனித்துவம், அது ஒரு security-ஐ ஒன்றுக்கு மேற்பட்ட level-ல identify பண்ண முடியும்ங்கறது — security-க்கு உலகளவுல ஒரு "Composite" FIGI, ஒவ்வொரு exchange listing-க்கும் தனி FIGI. NYSE-லயும் ஒரு ஐரோப்பிய exchange-லயும் dual-listed ஆன stock-க்கு இது பயன்படும்; அங்க ISIN மட்டும், ஒரு trade record <i>எந்த</i> venue-ஓட விலை/liquidity-ஐ குறிக்குதுன்னு சொல்லாது.</p>
+    </section>
+    <section class="mod" id="7-exchange-vs-otc-vs-bilateral-vs-centrally-cleared">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p><b>Definition:</b> இவை <b>ரெண்டு தனிக் கேள்விகள்</b>, குழப்பிக்கறது எளிது. "Exchange vs OTC" = <i>trade எங்கே பேரம் பேசப்பட்டது</i> (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §5). "Bilateral vs Centrally Cleared" = <i>execution-க்கு அப்புறம் counterparty risk எப்படி இருக்கு</i> (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6) — OTC-ல பேசப்பட்ட trade-உம் அப்புறம் CCP-க்கு novate ஆனா centrally cleared ஆகலாம்.</p>
+<div class="ticket"><pre>TWO AXES, NOT ONE
+========================================================================
+
+                    BILATERAL                 CENTRALLY CLEARED
+                    (stays between the         (novated to a CCP,
+                    two original parties)      Module 3 §06)
+   ------------------------------------------------------------------
+   EXCHANGE-        Effectively never for      Common/Preferred Stock,
+   TRADED            equity — exchange rules     Equity Futures (CME
+                     typically require            Clearing), Listed
+                     clearing                     Options (OCC)
+   ------------------------------------------------------------------
+   OTC               Uncleared equity swaps/     A growing share of
+                      options between two          equity index swaps
+                      dealers, subject to           now clear via a CCP
+                      bilateral collateral          (LCH, Eurex) even
+                      (Uncleared Margin Rules,      though negotiated
+                      Module 2 §7)                  OTC</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Equity product</th><th>Exchange ஆ OTC ஆ?</th><th>Bilateral ஆ Centrally Cleared ஆ?</th></tr></thead><tbody><tr><td>Common/Preferred Stock</td><td>Exchange-traded</td><td>Centrally cleared (நாட்டுக்கு ஏற்ப NSCC/CDCC/LCH/Eurex)</td></tr><tr><td>Equity Future</td><td>Exchange-traded</td><td>Centrally cleared (CME Clearing)</td></tr><tr><td>Listed Equity Option</td><td>Exchange-traded</td><td>Centrally cleared (OCC)</td></tr><tr><td>OTC Equity Option / Total Return Swap</td><td>OTC</td><td>(பொதுவா) Bilateral — அல்லது அந்த product clearing-க்கு கட்டாயமாக்கப்பட்டிருந்தா/தேர்ந்தெடுக்கப்பட்டிருந்தா centrally cleared</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Cash equity, listed derivatives-க்கு "exchange-traded"-உம் "centrally cleared"-உம் ஒண்ணா பயணிக்கறதால, மக்கள் அவற்றை ஒரே அர்த்தம்னு நினைப்பாங்க — ஆனா Section 8-ல வர்ற regulatory reporting கடமைகள் (EMIR, SFTR) இருக்கறதே, அந்த table-ஓட கீழ்-வலது cell (bilateral OTC) தான் ஒரு trade regulator-ஓட பார்வையில இருந்து முழுசா மறைஞ்சு போக வாய்ப்பிருக்கற இடம்ங்கறதுக்காகத்தான் — <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §5 OTC products-க்கு பொதுவா முதல்ல நிறுவினது போலவே.</p>
+    </section>
+    <section class="mod" id="8-regulatory-perspective-mifid-emir-sftr-fca-ciro-hkma-dtcc-dmo">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <p>Products, trade mechanics, identifiers எல்லாம் உறுதியா புரிஞ்சப்புறம் மட்டும்தான் acronyms-ஐ ஒரு உண்மையான விஷயத்தோட இணைக்கறோம்.</p>
+<div class="table-scroll"><table><thead><tr><th>Regulation / Body</th><th>Equity-ஐ குறிப்பா எப்படித் தொடுது</th></tr></thead><tbody><tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Equity trading-க்கான pre-/post-trade transparency, best-execution கடமைகள், exchange-க்கு வெளியே OTC-போல equity trading செய்யும் Systematic Internalizer regime, T+1 transaction reporting (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §09, <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §07)</td></tr><tr><td><b>EMIR</b></td><td>Equity derivative OTC-ஆ இருந்தா மட்டும் (உதா., KO மேல Total Return Swap) — Trade Repository-க்கு report (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §07). Common/Preferred Stock-க்கோ listed Futures/Options-க்கோ <b>பொருந்தாது</b>, ஏன்னா அவை OTC இல்ல</td></tr><tr><td><b>SFTR</b></td><td>Equity shares கடனாக கொடுக்கப்படும்/வாங்கப்படும்போது, அல்லது repo collateral-ஆ பயன்படும்போது குறிப்பா பொருந்தும் — உதா., Bank Of Toronto தன் Coca-Cola position-ஐ short-seller-க்கு கடன் கொடுக்கறது (<a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §12)</td></tr><tr><td><b>FCA</b> (UK)</td><td>UK equity trading-ஓட conduct regulator — UK MiFIR equity transaction reporting-ஐ நிர்வகிக்குது</td></tr><tr><td><b>CIRO</b> (Canada)</td><td>Canadian equity dealer conduct, trading activity-ஐ மேற்பார்வை பண்ற SRO</td></tr><tr><td><b>HKMA / SFC</b> (Hong Kong)</td><td>கவனமான வேறுபாடு: <b>HKMA</b> = Hong Kong-ஓட central-bank-equivalent (வங்கி மேற்பார்வை, monetary policy; Bank of England மாதிரி). <b>SFC</b> = Hong Kong-ஓட உண்மையான securities/equities market-conduct regulator — equity trading-க்கு FCA அல்லது SEC-க்கு நெருக்கமான ஒப்புமை</td></tr><tr><td><b>DTCC</b> (US)</td><td>அதன் subsidiaries NSCC, DTC US cash equities-ஐ clear/settle பண்ணுது (மேல Section 5)</td></tr><tr><td><b>DMO</b> (UK Debt Management Office)</td><td>UK government bonds (Gilts)-ஐ வெளியிடுது — equity-க்கு <b>சம்பந்தமில்ல</b>; நீங்க பட்டியலிட்டதால இங்க சேர்த்திருக்கு, முழு விளக்கம் <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>-ல</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> மேல உள்ள ஒவ்வொரு regulation-உம் Sections 1–7-ல ஏற்கனவே சொன்ன ஒரு <i>குறிப்பிட்ட mechanic</i>-உடன் இணையுது — MiFID: trade எங்கே/எப்படி execute ஆச்சு; EMIR: derivative OTC-ஆ இல்லையா; SFTR: derivative மட்டுமில்ல, shares-ஏ கடன் கொடுக்கப்பட்டதா அல்லது collateral-ஆ பயன்படுத்தப்பட்டதா. இவற்றில் எதுவும் "Equity" முழுமைக்கும் ஒரே மாதிரி பொருந்தாது; ஒவ்வொண்ணும் இந்த module நடந்து காட்டின ஒரு குறிப்பிட்ட பகுதிக்கு மட்டும் எல்லை வகுக்கப்பட்டிருக்கு.</p>
+    </section>
+    <section class="mod" id="9-canadian-systems-landscape-equity-front-middle-back-office-ல-இருந்து-regulatory-reporting-வரை">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Canadian Systems Landscape — Equity Front, Middle &amp; Back Office-ல இருந்து Regulatory Reporting வரை</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §4 ஏற்கனவே Canada-ஓட பொதுவான Front/Middle/Back Office architecture-ஐயும் market infrastructure-ஐயும் (CDS/CDSX, CDCC) பெயரிட்டிருக்கு. இந்த section அந்தப் பொதுப் படத்தை <b>Equity</b>-க்கு மட்டும் குறிப்பா சுருக்குது — ஒரு Canadian equity order front office-ல இருந்து settlement வரை, மேற்பார்வை வரை, முழுசா கடக்கற உண்மையான systems.</p>
+<div class="callout"><b>Callout — illustrative vendor பெயர்கள்.</b> கீழ இருக்கற OMS/EMS product பெயர்கள் (Bloomberg AIM, FlexTrade, Charles River IMS, Eze OMS) ஒரு Canadian dealing desk பொதுவா பயன்படுத்தறதன் பிரதிநிதிகள் — Bank Of Toronto-ஓட உண்மையான internal system தேர்வுகள் பத்தின கூற்று இல்ல. Market infrastructure பெயர்கள் (TSX, ATSs, CDS/CDSX, CIRO, Lynx, Bank of Canada) உண்மையான, பெயரிடப்பட்ட Canadian அமைப்புகள்.</div>
+<div class="table-scroll"><table><thead><tr><th>Layer</th><th>System(s)</th><th>Role</th></tr></thead><tbody><tr><td><b>Front Office</b></td><td>OMS/EMS (e.g. Bloomberg AIM, Charles River IMS, or Eze OMS — illustrative), FIX-connected smart order router</td><td>Captures the order, routes it to whichever Canadian venue offers the best price</td></tr><tr><td><b>Trading Venues</b></td><td><b>TSX</b> &amp; <b>TSX Venture Exchange</b> (TMX Group); Canadian <b>ATSs</b> — Nasdaq CXC/CX2, Cboe Canada (formerly NEO Exchange), Omega ATS</td><td>Multiple competing venues execute the trade — Canada's equity market is multi-venue, not single-exchange, so a smart order router genuinely matters</td></tr><tr><td><b>Middle Office</b></td><td>Trade capture/confirmation; CIRO market-surveillance feed under <b>UMIR</b> (Universal Market Integrity Rules); Murex/Calypso for any equity-derivative overlay</td><td>Confirms the match, feeds Canada's consolidated tape, surfaces trading-conduct issues to CIRO</td></tr><tr><td><b>Back Office / CSD</b></td><td><b>CDS Clearing and Depository Services Inc.</b> (CDS, a TMX Group subsidiary) — <b>CDSX</b>, Continuous Net Settlement (CNS), DvP book-entry settlement</td><td>Nets and settles the trade, <b>T+1</b></td></tr><tr><td><b>Cash Leg</b></td><td><b>Lynx</b> (Payments Canada's large-value payment system, successor to the old LVTS)</td><td>Settles the CAD cash leg</td></tr><tr><td><b>Oversight</b></td><td><b>CIRO</b> (SRO — dealer conduct &amp; UMIR trade reporting/surveillance); <b>CSA</b> (national rule-setting, e.g. the OSC); <b>Bank of Canada</b> (oversees CDSX as a designated systemically important Financial Market Infrastructure)</td><td>A plain cash equity trade does <b>not</b> go to an OTC-derivatives-style Trade Repository the way an IRS or CDS does (<a href="../2-reporting/module-14-regulatory-reporting.html">Module 14</a> §1) — this is CIRO/UMIR surveillance plus CDSX settlement, not TR reporting</td></tr></tbody></table></div>
+<div class="ticket"><pre>CANADA — EQUITY TRADE, FRONT OFFICE TO REGULATOR
+========================================================================
+
+  Maple Leaf Pension Fund instructs Bank Of Toronto:
+  BUY 50,000 shares Loblaw Companies Ltd. (TSX: L)
+  (the same trade worked through in systems-landscape §4, §9)
+
+  FRONT OFFICE
+    Bloomberg AIM (OMS) captures the order
+      -&gt; FlexTrade (EMS) routes it via FIX 4.4
+      -&gt; smart order router selects the venue
+
+  TRADING VENUE
+    Executed on TSX @ CAD 178.40
+    (could equally have routed to an ATS -- Nasdaq CXC/CX2,
+    Cboe Canada, Omega ATS -- Canada is multi-venue)
+    Trade Value = 50,000 x 178.40 = CAD 8,920,000
+
+  MIDDLE OFFICE
+    Trade captured, Trade ID BOT-CA-2026-004471
+    Confirmed/matched via CDSX's matching module
+    Execution data feeds Canada's consolidated tape and
+    CIRO's UMIR-based market surveillance
+
+  BACK OFFICE / CSD
+    CDS Clearing and Depository Services Inc. -- CDSX
+    Continuous Net Settlement (CNS) nets this trade against
+    Bank Of Toronto's other Loblaw activity that day
+    Settlement Date = T+1 = Tue 18-Aug-2026
+    DvP: shares move book-entry inside CDSX;
+    CAD cash leg settles via Lynx (Payments Canada)
+
+  OVERSIGHT (NOT a Trade Repository report)
+    CIRO   -- dealer conduct &amp; UMIR trade reporting/surveillance
+    CSA / OSC -- national and provincial rule-setting
+    Bank of Canada -- oversees CDSX as a designated
+    systemically important Financial Market Infrastructure (FMI)</pre></div>
+<p><b>Takeaway:</b> இந்த trade எந்த இடத்துலயும் OTC-derivatives பாணி Trade Repository-ஐத் தொடலைங்கறதை கவனிங்க — plain cash equity trade-ஓட regulatory தடம் முழுக்க CIRO-ஓட UMIR surveillance, CDSX-ஓட settlement records வழியா ஓடுது; <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §1-ஓட IRS உதாரணம் இதுக்கு மாறா, EMIR/Dodd-Frank-ல கூடுதலா Trade Repository-க்கும் போகணும். Product definition மட்டுமில்ல, system stack-ஏ எந்த regulatory regime உண்மையில பொருந்தும்ங்கறதை சொல்லுது.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Maple Leaf Pension Fund</td><td>Buy-side client — Coca-Cola stock, E-mini future, AAPL call option-ஓட buyer</td></tr><tr><td>Goldman Sachs</td><td>Coca-Cola stock-ஓட seller; Bank Of Toronto-ஓட preferred share issuance-ஓட buyer</td></tr><tr><td>Bank Of Toronto</td><td>Coca-Cola trade-ல dealer; தன் சொந்த Preferred Shares-ஓட issuer; AAPL call-ல option writer</td></tr><tr><td>CME Clearing</td><td>E-mini S&amp;P 500 future-க்கான CCP</td></tr><tr><td>OCC (Options Clearing Corporation)</td><td>Listed AAPL option-க்கான CCP</td></tr><tr><td>NSCC / DTC</td><td>US cash equity trade-க்கான clearing (netting), settlement (DvP)</td></tr><tr><td>CDS (CDSX)</td><td>Canada-ஓட central securities depository — Loblaw trade-ஐ CNS வழியா, T+1-ல clear/settle பண்ணுது (Section 9)</td></tr><tr><td>CIRO</td><td>Canadian SRO — Loblaw trade-ஓட UMIR-சார்ந்த market surveillance, dealer-conduct மேற்பார்வை (Section 9)</td></tr><tr><td>Bank of Canada</td><td>CDSX-ஐ designated systemically important Financial Market Infrastructure-ஆ மேற்பார்வை பண்ணுது (Section 9)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Bank Of Toronto-ஓட Preferred Shares Series A, CAD 25.00 par மேல 4.50% non-cumulative dividend கொடுக்குது. Board தொடர்ந்து ரெண்டு quarters-ஐ skip பண்ணி, மூணாவதுல மறுபடி தொடங்கினா, Goldman Sachs skip ஆன dividends-ல இறுதில எவ்வளவு பெறும்? இவை <i>cumulative</i> preferred shares-ஆ இருந்திருந்தா பதில் எப்படி வேறுபடும்?</li><li>E-mini S&amp;P 500 future-ல (Section 4c), அடுத்த business day-ல index 5,900.00-க்கு இறங்கினா, Variation Margin தொகை என்ன, எந்த account-ல இருந்து எந்த account-க்கு நகரும்?</li><li>AAPL 15-Jan-2027 250 Call-ல (Section 4d), AAPL விலை எங்க முடிஞ்சாலும் Maple Leaf Pension Fund-ஓட அதிகபட்ச இழப்பு என்ன — அந்தத் தொகை trade date-லயே fix ஆகறது ஏன், அதிகபட்ச <i>லாபம்</i> அப்படி இல்லாதது ஏன்?</li><li>Listed equity option-ஓட Clearing stage OCC-க்கும், US cash equity trade-ஓட Clearing stage NSCC-க்கும் போறது ஏன் — இவை ரெண்டு தொப்பி போட்ட ஒரே அமைப்பா, முற்றிலும் தனி CCPs ஆ?</li><li>Section 6 table-ஐ பயன்படுத்தி, Coca-Cola trade record-ல Bank Of Toronto-வையே identify பண்றது எந்த identifier? trade ஆகற instrument-ஐ identify பண்ற மூணு எவை?</li><li>Coca-Cola shares மேல Total Return Swap, ரெண்டு dealers இடையே bilateral-ஆ பேசப்பட்டு, பின்னாடி தானாக முன்வந்து central clearing-க்கு submit ஆகுது. அதனால அது "OTC"-ல இருந்து "Exchange-Traded" ஆகி மாறுமா? Section 7-ஓட இரண்டு-axis model-ஐ வெச்சு விளக்குங்க.</li><li>Bank Of Toronto தன் Coca-Cola shares-ஐ short-sell பண்ண விரும்பற வேற firm-க்கு கடன் கொடுத்தா, அந்த குறிப்பிட்ட transaction-ஓட reporting-ஐ Section 8-ல இருந்து எந்த regulation ஆளுது — MiFID, EMIR, இல்ல SFTR — மற்ற ரெண்டும் ஏன் பொருந்தாது?</li><li>Section 9-ஐ வெச்சு, Bank Of Toronto-ஓட Toronto desk TSX-ல 50,000 Loblaw shares வாங்கினா, EMIR-ல ஒரு interest rate swap-க்கு நடக்கற மாதிரி, OTC-derivatives பாணி Trade Repository-க்கு ஒரு report உருவாகுமா? இல்லன்னா, அதை உண்மையில பிடிச்சு மேற்பார்வை பண்ணும் ரெண்டு Canadian mechanisms என்ன?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் Asset Class Roadmap-ஓட அடுத்த நிறுத்தம் <b><a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>: Fixed Income</b>.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. ரெண்டு skip ஆன quarters-க்கு Goldman Sachs CAD 0 பெறும் — non-cumulative-னா அவை நிரந்தரமா இழக்கப்பட்டவை, அப்புறம் கொடுக்கப்படாது. Cumulative-ஆ இருந்திருந்தா, மூணாவது quarter-ஓட வழக்கமான CAD 562,500-க்கு மேல skip ஆன ரெண்டு quarters-ஓட dividends-ஐயும் (2 x CAD 562,500 = CAD 1,125,000) பெறும் — மொத்தம் CAD 1,687,500 catch-up payment.</b></p>
+<p>Section 4b இதை நேரடியா வரையறுக்குது: "non-cumulative" = skip ஆன dividend அப்படியே போயிடும்; cumulative preferred share-ல (அல்லது தவறினா default ஆகற bond coupon-ல) கொடுக்கப்படாத தொகை சேர்ந்துட்டே இருக்கும், common shareholders-க்கு எந்த dividend-ம் மறுபடி தொடங்கறதுக்கு முன்னாடி கொடுக்கப்படணும்.</p>
+<p><b>2. Variation Margin = -USD 20,000, Maple Leaf Pension Fund-ஓட margin account-ல இருந்து counterparty பக்கத்துக்கு (CME Clearing வழியா) நகரும்.</b></p>
+<div class="ticket"><pre>Variation Margin = (5,900.00 - 5,920.00) x 50 x 20 = -USD 20,000</pre></div>
+<p>Maple Leaf Pension Fund future-ஐ வாங்கி (long) வெச்சிருக்கறதால, index இறங்கினதும் position மதிப்பு இழந்துச்சு — Section 4c-ஓட தினசரி mark-to-market mechanic திசை எதுவா இருந்தாலும் ஒரே மாதிரி ஓடும்; விலை position-ஐ எதிர்த்து நகர்ந்தா பணம் எதிர்த்திசைல நகரும், அவ்வளவுதான்.</p>
+<p><b>3. அதிகபட்ச இழப்பு = USD 185,000, கொடுத்த முழு premium — trade date-லயே fix, ஏன்னா அது முன்கூட்டியே கொடுத்த விலை; அதிகபட்ச <i>லாபம்</i> கோட்பாட்டளவில் வரம்பற்றது (அல்லது ரொம்பப் பெரியது) — expiry-க்குள்ள AAPL விலை எவ்வளவு உயரலாம்ங்கறதைப் பொறுத்தது, அது trade date-ல தெரியாது.</b></p>
+<p>Section 4d-ஓட Scenario B இதே முடிவைக் காட்டுது — option பயனற்று expire ஆகறது, AAPL strike-க்குக் கீழ எவ்வளவு இறங்கினாலும், இழப்பை கொடுத்த premium-ல நிறுத்துது. நிலையான, தெரிஞ்ச அதிகபட்ச இழப்பு vs திறந்த-முனை சாத்திய லாபம் என்ற இந்த சமச்சீரற்ற தன்மை, long option-ஓட வரையறுக்கும் economic அம்சம்; Section 4c-ஓட future-ல லாபம்/இழப்பு ரெண்டும் எந்தத் திசையிலயும் கோட்பாட்டளவில் வரம்பற்றது.</p>
+<p><b>4. முற்றிலும் தனி CCPs — ஒரே அமைப்பு இல்ல.</b></p>
+<p>Section 5-ஓட table-உம் disambiguation callout-உம் இதை வெளிப்படையா சொல்லுது: NSCC (DTCC-யோட subsidiary) cash equity trades-ஐ clear பண்ணுது; OCC (Options Clearing Corporation) US-listed options-க்கு மட்டுமே அர்ப்பணிக்கப்பட்ட முற்றிலும் வேற, சுதந்திரமான CCP. Option exercise ஆகும்போது ரெண்டும் கடைசில underlying shares-ஐ DTC வழியா settle பண்ணுது; ஆனா <i>clearing</i> செயல்பாடு ரெண்டு வேற அமைப்புகள்ல இருக்கு.</p>
+<p><b>5. Bank Of Toronto-வை (dealer-ஆ) அதன் LEI identify பண்ணுது. Instrument-ஐ ISIN (US1912161007), CUSIP (191216100), Ticker (KO) identify பண்ணுது.</b></p>
+<p>Section 6-ஓட diagram இதை நேரடியா சொல்லுது — LEI "யார்"-ங்கறதுக்கு பதில்; ISIN/CUSIP/Ticker (தேவைப்படும் இடத்துல SEDOL/FIGI-உம்) "எது"-ங்கறதுக்கு. Maple Leaf Pension Fund-உம் Goldman Sachs-உம் அதே trade record-ல buyer/seller-ஆ தங்கள் சொந்த தனி LEIs-ஐ சுமக்கும்.</p>
+<p><b>6. இல்ல — அது OTC-யாவே இருக்கும். Central clearing "Bilateral vs Centrally Cleared" axis-ஐ மட்டும் மாத்தும், "Exchange vs OTC" axis-ஐ இல்ல.</b></p>
+<p>Section 7-ஓட இரண்டு-axis model இதை துல்லியமா வரையுது: "trade எங்க பேசப்பட்டது" (OTC, ஏன்னா அது ஒரு bilateral dealer பேச்சுவார்த்தை) அது எப்படி உருவாச்சுங்கறதால நிரந்தரமா fix ஆனது, அதுக்கப்புறம் என்ன நடந்தாலும். Clearing-க்கு submit பண்றது Section 7 table-ல "OTC + Bilateral" cell-ல இருந்து "OTC + Centrally Cleared" cell-க்கு மட்டும்தான் நகர்த்தும் — அது ஒருபோதும் exchange-ல execute ஆனதில்லை என்பதால் "Exchange-Traded" ஆகவே ஆகாது.</p>
+<p><b>7. SFTR ஆளுது — ஏன்னா shares-ஐ நேரடியா கடன் கொடுக்கறது (அவற்றை reference பண்ற derivative இல்ல) ஒரு Securities Financing Transaction, SFTR இருக்கறதே இந்த product குடும்பத்துக்காகத்தான் (<a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §12). MiFID பொருந்தாது, ஏன்னா இது shares மேல MiFID-scope "executed transaction" இல்ல — விற்பனை/வாங்குதல் நடக்கலை. EMIR பொருந்தாது, ஏன்னா securities lending transaction ஒரு OTC <i>derivative</i> இல்ல — notional-ஐ reference பண்ற contract இல்ல, shares-தான் தற்காலிகமா கை மாறுது.</b></p>
+<p>Section 8-ஓட table இந்த scenario-வை SFTR உள்ளடக்குதுன்னு குறிக்குது. <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a>-ஓட asset-class hierarchy-ஓட இணைஞ்ச முக்கிய சோதனை: இது security-லயே trade ஆ (financing-வகை transaction — lending/repo — என்றால் SFTR; நேரடி buy/sell என்றால் சாதாரண MiFID transaction reporting) அல்லது security-ஐ reference பண்ற contract ஆ (OTC என்றால் EMIR)? Securities lending முழுக்க முதல் வகை, குறிப்பா SFTR கட்டப்பட்ட financing உப-வகை.</p>
+<p><b>8. இல்ல — plain cash equity trade Trade Repository-க்கே போகாது; TR reporting OTC-derivatives-க்கு மட்டுமான mechanism. அதுக்குப் பதிலா, trade ரெண்டு தனி Canadian mechanisms வழியா பிடிக்கப்பட்டு settle ஆகுது: (1) CIRO-ஓட UMIR-சார்ந்த market surveillance, (2) CDS-ல CDSX-ஓட Continuous Net Settlement (CNS) process.</b></p>
+<p>Section 9-ஓட table இதை நேரடியா சொல்லுது; <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7, <a href="../docs/2-reporting/module-14-regulatory-reporting.html">Module 14</a> §1-ஓட, TR reporting OTC derivatives-க்கு மட்டுமே என்ற கருத்துடன் இணையுது. Trade நடந்த venue-ல இருந்து execution data-வை CIRO conduct/surveillance நோக்கத்துக்காக எடுத்துக்கும்; CDSX trade-ஐ DvP-ஆ, T+1-ல net பண்ணி settle பண்ணும்; Bank of Canada CDSX-ஐ designated Financial Market Infrastructure-ஆ முறைமை மேற்பார்வை செய்யும்.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 4 — Equity (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

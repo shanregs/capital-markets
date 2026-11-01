@@ -1,0 +1,1507 @@
+<!doctype html>
+<title>Module 26 — USD/CAD FX Forward முழு Lifecycle (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 26 — USD/CAD FX Forward முழு Lifecycle (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">ஒரே OTC FX Forward trade — Capture முதல் Regulatory Reporting வரை, systems & architecture</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி). <b>Reference module — முழு end-to-end architecture walkthrough.</b> <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>, <a href="../docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a>, <a href="../docs/1-capital-markets/module-22-hedging-deep-dive.html">Module 22</a>, <a href="../docs/1-capital-markets/module-23-otc-forward-swap-option-deep-dive.html">Module 23</a> ஒவ்வொண்ணும் FX Forward-ஓட ஒரு துண்டை மட்டும் சொன்னுச்சு. இந்த module <b>ஒரே ஒரு trade-ஐ</b> — Bank Of Toronto-ஓட USD/CAD FX Forward, ABC Canada Inc.-உடன் — அதோட <b>முழு operational lifecycle</b> வழியா, system-by-system, field-by-field கூட்டிட்டுப் போகுது: Trade Capture → Confirmation → Enrichment → Valuation → MTM → Collateral → Settlement → Regulatory Reporting; கடைசியில இதை ஒரு platform-ஆ கட்ட microservices / event-driven architecture. <b>மூலம்:</b> English Module 26-ஐ பேச்சுத் தமிழ்ல சொல்றது; சில கூடுதல் எளிய உதாரணங்களும் உண்டு.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-நோக்கம்-purpose"><span class="toc-num">01</span>1. நோக்கம் (Purpose)</a></li>
+      <li><a href="#2-business-scenario"><span class="toc-num">02</span>2. Business Scenario</a></li>
+      <li><a href="#3-trade-economics"><span class="toc-num">03</span>3. Trade Economics</a></li>
+      <li><a href="#4-high-level-lifecycle"><span class="toc-num">04</span>4. High-Level Lifecycle</a></li>
+      <li><a href="#5-stage-1-trade-capture"><span class="toc-num">05</span>5. Stage 1 — Trade Capture</a></li>
+      <li><a href="#6-stage-2-confirmation"><span class="toc-num">06</span>6. Stage 2 — Confirmation</a></li>
+      <li><a href="#7-stage-3-enrichment"><span class="toc-num">07</span>7. Stage 3 — Enrichment</a></li>
+      <li><a href="#8-example-enriched-trade"><span class="toc-num">08</span>8. Example Enriched Trade</a></li>
+      <li><a href="#9-stage-4-valuation"><span class="toc-num">09</span>9. Stage 4 — Valuation</a></li>
+      <li><a href="#10-fx-forward-valuation-concept"><span class="toc-num">10</span>10. FX Forward Valuation Concept</a></li>
+      <li><a href="#11-இன்னும்-துல்லியமான-valuation"><span class="toc-num">11</span>11. இன்னும் துல்லியமான Valuation</a></li>
+      <li><a href="#12-valuation-data-fields"><span class="toc-num">12</span>12. Valuation Data Fields</a></li>
+      <li><a href="#13-stage-5-mtm"><span class="toc-num">13</span>13. Stage 5 — MTM</a></li>
+      <li><a href="#14-காலப்போக்கில்-mtm"><span class="toc-num">14</span>14. காலப்போக்கில் MTM</a></li>
+      <li><a href="#15-stage-6-collateral"><span class="toc-num">15</span>15. Stage 6 — Collateral</a></li>
+      <li><a href="#16-margin-concepts"><span class="toc-num">16</span>16. Margin Concepts</a></li>
+      <li><a href="#17-example-collateral-calculation"><span class="toc-num">17</span>17. Example Collateral Calculation</a></li>
+      <li><a href="#18-collateral-data-fields"><span class="toc-num">18</span>18. Collateral Data Fields</a></li>
+      <li><a href="#19-stage-7-settlement"><span class="toc-num">19</span>19. Stage 7 — Settlement</a></li>
+      <li><a href="#20-settlement-instructions"><span class="toc-num">20</span>20. Settlement Instructions</a></li>
+      <li><a href="#21-settlement-data-fields"><span class="toc-num">21</span>21. Settlement Data Fields</a></li>
+      <li><a href="#22-settlement-risk"><span class="toc-num">22</span>22. Settlement Risk</a></li>
+      <li><a href="#23-stage-8-regulatory-reporting"><span class="toc-num">23</span>23. Stage 8 — Regulatory Reporting</a></li>
+      <li><a href="#24-regulatory-trade-data"><span class="toc-num">24</span>24. Regulatory Trade Data</a></li>
+      <li><a href="#25-example-regulatory-record"><span class="toc-num">25</span>25. Example Regulatory Record</a></li>
+      <li><a href="#26-trade-lifecycle-events"><span class="toc-num">26</span>26. Trade Lifecycle Events</a></li>
+      <li><a href="#27-end-to-end-data-flow"><span class="toc-num">27</span>27. End-to-End Data Flow</a></li>
+      <li><a href="#28-முக்கியமான-system-of-record-concepts"><span class="toc-num">28</span>28. முக்கியமான System-of-Record Concepts</a></li>
+      <li><a href="#29-key-identifiers"><span class="toc-num">29</span>29. Key Identifiers</a></li>
+      <li><a href="#30-trade-vs-product-vs-counterparty"><span class="toc-num">30</span>30. Trade vs Product vs Counterparty</a></li>
+      <li><a href="#31-example-canonical-trade-model"><span class="toc-num">31</span>31. Example Canonical Trade Model</a></li>
+      <li><a href="#32-event-based-model"><span class="toc-num">32</span>32. Event-Based Model</a></li>
+      <li><a href="#33-suggested-microservices"><span class="toc-num">33</span>33. Suggested Microservices</a></li>
+      <li><a href="#34-example-kafka-event-flow"><span class="toc-num">34</span>34. Example Kafka Event Flow</a></li>
+      <li><a href="#35-lifecycle-முழுக்க-என்ன-மாறுது"><span class="toc-num">35</span>35. Lifecycle முழுக்க என்ன மாறுது?</a></li>
+      <li><a href="#36-முழு-example-timeline"><span class="toc-num">36</span>36. முழு Example Timeline</a></li>
+      <li><a href="#37-lifecycle-stage-வாரியா-மிக-முக்கிய-fields"><span class="toc-num">37</span>37. Lifecycle Stage வாரியா மிக முக்கிய Fields</a></li>
+      <li><a href="#38-பெரிய-படம்-the-big-picture"><span class="toc-num">38</span>38. பெரிய படம் (The Big Picture)</a></li>
+      <li><a href="#39-நினைவில்-வைக்க-வேண்டிய-capital-markets-vocabulary"><span class="toc-num">39</span>39. நினைவில் வைக்க வேண்டிய Capital Markets Vocabulary</a></li>
+      <li><a href="#40-அடுத்த-படி-பரிந்துரை"><span class="toc-num">40</span>40. அடுத்த படி — பரிந்துரை</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz"><span class="toc-num">★</span>Recap Quiz</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-நோக்கம்-purpose">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. நோக்கம் (Purpose)</h2>
+      <p>இந்த document ஒரு முழு OTC derivative trade-ஐ — <b>USD/CAD FX Forward</b> — இப்படி கூட்டிட்டுப் போகுது:</p>
+<p><b>Trade Capture → Confirmation → Enrichment → Valuation → MTM → Collateral → Settlement → Regulatory Reporting</b></p>
+<p>ரெண்டு விஷயம் புரிஞ்சுக்கணும்:</p>
+<ol><li>OTC derivative-ஓட <b>business lifecycle</b>.</li><li>ஒவ்வொரு stage-லயும் systems உருவாக்கற / பயன்படுத்தற <b>data / fields</b>.</li></ol>
+    </section>
+    <section class="mod" id="2-business-scenario">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Business Scenario</h2>
+      <h3>2.1 Parties</h3>
+<div class="table-scroll"><table><thead><tr><th>Role</th><th>Party</th></tr></thead><tbody><tr><td>Bank</td><td>Bank Of Toronto</td></tr><tr><td>Client / Counterparty</td><td>ABC Canada Inc.</td></tr><tr><td>Trade</td><td>USD/CAD FX Forward</td></tr><tr><td>Product</td><td>FX Forward</td></tr><tr><td>நோக்கம்</td><td>எதிர்கால USD payment-ஐ hedge பண்ணுறது</td></tr></tbody></table></div>
+<p>ABC Canada, ஒரு US supplier-க்கு <b>30-Nov-2026</b>-ல <b>USD 10,000,000</b> கட்டணும்.</p>
+<p>USD/CAD உயர்ந்துட்டா, அந்த USD payment CAD-ல இன்னும் costly ஆகிடுமேன்னு ABC கவலைப்படுது.</p>
+<p>அதனால Bank Of Toronto-வோட ஒரு OTC FX Forward பண்ணுது.</p>
+<h3>எளிய உதாரணம் (கடைக்காரர் analogy)</h3>
+<p>உங்களுக்கு 3 மாசம் கழிச்சு ஒரு USD பொருள் வாங்கணும்னு வெச்சுக்கோங்க. இன்னிக்கே "3 மாசம் கழிச்சு நான் உங்ககிட்ட டாலரை 1.3545-க்கு வாங்குவேன்"னு ஒரு bank-கிட்ட விலையை பூட்டிடறீங்க. 3 மாசத்துல டாலர் 1.39 ஆனாலும், நீங்க 1.3545-க்கே வாங்குவீங்க; 1.30 ஆச்சுன்னா — நீங்க இழப்பீங்க (ஏன்னா மலிவா வாங்கிருக்கலாம்). Forward-ஓட தன்மையே இதுதான்: <b>உறுதி கிடைக்கும், ஆனா வாய்ப்பை விட்டுக்கொடுக்கணும்</b>.</p>
+    </section>
+    <section class="mod" id="3-trade-economics">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. Trade Economics</h2>
+      <p>Trade <b>30-Aug-2026</b>-ல execute ஆச்சுன்னு வெச்சுக்குவோம்.</p>
+<div class="table-scroll"><table><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Trade Date</td><td>30-Aug-2026</td></tr><tr><td>Value Date / Maturity</td><td>30-Nov-2026</td></tr><tr><td>Product</td><td>FX Forward</td></tr><tr><td>Currency Pair</td><td>USD/CAD</td></tr><tr><td>Buy Currency</td><td>USD</td></tr><tr><td>Sell Currency</td><td>CAD</td></tr><tr><td>USD Notional</td><td>USD 10,000,000</td></tr><tr><td>Forward Rate</td><td>CAD 1.3545 per USD</td></tr><tr><td>CAD Notional</td><td>CAD 13,545,000</td></tr><tr><td>Client</td><td>ABC Canada Inc.</td></tr><tr><td>Bank</td><td>Bank Of Toronto</td></tr><tr><td>Settlement</td><td>Physical (Deliverable Forward)</td></tr><tr><td>Business Purpose</td><td>Hedge</td></tr><tr><td>Direction from ABC perspective</td><td>Buy USD / Sell CAD</td></tr><tr><td>Governing Agreement</td><td>ISDA Master Agreement + CSA between Bank Of Toronto and ABC Canada Inc. (<a href="../docs/1-capital-markets/module-12-collateral-margin.html">Module 12</a>)</td></tr><tr><td>ISDA Taxonomy Path</td><td>Foreign Exchange / Forward / Deliverable / Forward (<a href="../docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a> §3's identical worked example)</td></tr><tr><td>Hedge Designation</td><td>Yes — hedges a known future USD payable (<a href="../docs/1-capital-markets/module-22-hedging-deep-dive.html">Module 22</a> §9's formal hedge-designation flag, not just an economic observation)</td></tr></tbody></table></div>
+<p>ABC பூட்டிவெச்சது:</p>
+<div class="ticket"><pre>USD 10,000,000 × CAD 1.3545
+= CAD 13,545,000</pre></div>
+<div class="callout"><b>Callout — USD/CAD ஒரு G10, முழுசா convertible pair; அதனால Deliverable தான் default.</b> ஒவ்வொரு FX Forward-க்கும் Deliverable-vs-NDF தீர்மானம் தேவையில்ல — emerging-market currency-க்கு மட்டும்தான். CAD, மற்ற G10 currencies மாதிரியே, capital-account restrictions இல்லாதது; அதனால USD/CAD forward — இந்த trade மாதிரி — கிட்டத்தட்ட எப்பவும் physically settle ஆகும்: maturity-ல ரெண்டு currencies-உம் உண்மையில பரிமாறப்படும் (Section 19), எந்த dealer authorization-உம் residency test-உம் தேவையில்ல. இதை இந்த module முதல்ல கட்டப்பட்ட <b>INR</b> example-ஓட ஒப்பிடுங்க: INR முழுசா convertible இல்லாததால USD/INR forwards ரெண்டாப் பிரியுது — onshore <b>Deliverable Forward</b> (RBI-authorized dealer bank வழியா, இந்திய resident counterparty-உடன்) vs offshore <b>Non-Deliverable Forward (NDF)</b> — இது USD-ல ஒரு cash வித்தியாசம் மட்டும் settle பண்ணும், ஏன்னா offshore counterparty-ஆல INR-ஐ deliver பண்ணவே முடியாது. இந்த trade-ஓட data model-ல (Section 8) இருக்கும் <code>NDF Flag</code> field-ஐ எல்லா FX Forward record-லயும் வெச்சிருக்கறது மதிப்பு — G10 trade-ல கிட்டத்தட்ட எப்பவும் <code>N</code>, ஆனா ஒரு EM currency pair வந்தா அதே schema தயாரா இருக்கணும்.</div>
+    </section>
+    <section class="mod" id="4-high-level-lifecycle">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. High-Level Lifecycle</h2>
+      <div class="ticket"><pre>                    OTC FX FORWARD
+                          |
+                          v
+                  1. Trade Capture
+                          |
+                          v
+                  2. Confirmation
+                          |
+                          v
+                  3. Enrichment
+                          |
+                          v
+                  4. Valuation
+                          |
+                          v
+                     5. MTM
+                          |
+                          v
+                  6. Collateral
+                          |
+                          v
+                  7. Settlement
+                          |
+                          v
+               8. Regulatory Reporting</pre></div>
+<p>ஒரே trade identifier, downstream systems எல்லாம் lifecycle முழுக்க அந்த trade-ஐ trace பண்ண உதவணும்.</p>
+    </section>
+    <section class="mod" id="5-stage-1-trade-capture">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Stage 1 — Trade Capture</h2>
+      <h3>5.1 என்ன நடக்குது?</h3>
+<p>Trader-உம் ABC-யும் trade-ஐ agree பண்றாங்க.</p>
+<p>Front-office trading system economic terms-ஐ capture பண்ணுது.</p>
+<p>ஒரு unique trade identifier உருவாக்கப்படுது.</p>
+<p>உதாரணம்:</p>
+<div class="ticket"><pre>Trade ID = BOT-FX-20260830-00012345</pre></div>
+<p>அப்புறம் trade downstream systems-க்கு அனுப்பப்படுது.</p>
+<h3>5.2 Trade Capture Data</h3>
+<div class="table-scroll"><table><thead><tr><th>Field</th><th>Example</th></tr></thead><tbody><tr><td>Trade ID</td><td>BOT-FX-20260830-00012345</td></tr><tr><td>Product Type</td><td>FX_FORWARD</td></tr><tr><td>Trade Date</td><td>2026-08-30</td></tr><tr><td>Effective Date</td><td>2026-08-30</td></tr><tr><td>Maturity Date</td><td>2026-11-30</td></tr><tr><td>Currency Pair</td><td>USD/CAD</td></tr><tr><td>Buy Currency</td><td>USD</td></tr><tr><td>Sell Currency</td><td>CAD</td></tr><tr><td>Buy Amount</td><td>10,000,000 USD</td></tr><tr><td>Sell Amount</td><td>13,545,000 CAD</td></tr><tr><td>Forward Rate</td><td>1.3545</td></tr><tr><td>Client</td><td>ABC Canada Inc.</td></tr><tr><td>Counterparty ID</td><td>ABC12345</td></tr><tr><td>Trader</td><td>TRADER001</td></tr><tr><td>Trading Desk</td><td>FX-CANADA</td></tr><tr><td>Legal Entity</td><td>Bank Of Toronto</td></tr><tr><td>Book</td><td>FX_HEDGE_BOOK</td></tr><tr><td>Settlement Type</td><td>PHYSICAL</td></tr><tr><td>Execution Timestamp</td><td>2026-08-30 10:32:15 ET</td></tr><tr><td>Trade Status</td><td>NEW</td></tr></tbody></table></div>
+<div class="callout"><b>IT பார்வை:</b> Trade Status = <code>NEW</code> — இது ஒரு state machine-ஓட முதல் state (NEW → CONFIRMED → ENRICHED → ... → MATURED). <code>Execution Timestamp</code> timezone-ஓட சேர்த்து store பண்ணுங்க (ET); Counterparty ID இங்க இன்னும் internal ID தான், LEI அல்ல — அது Enrichment-ல வரும்.</div>
+    </section>
+    <section class="mod" id="6-stage-2-confirmation">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Stage 2 — Confirmation</h2>
+      <h3>6.1 என்ன நடக்குது?</h3>
+<p>Bank Of Toronto capture பண்ணின trade economics-ஐ counterparty-ஓட புரிதலோட ஒப்பிடுறாங்க.</p>
+<p>ஒரு confirmation document / message உருவாக்கப்படுது.</p>
+<p>ரெண்டு பேரும் confirm பண்றாங்க:</p>
+<div class="callout">"இதுதான் நாம செஞ்ச trade-னு நாங்க ஒத்துக்கறோம்."</div>
+<p>Confirmation சட்டப்படி முக்கியமான economic, settlement terms-ஐ கொண்டிருக்கு.</p>
+<h3>6.2 Example Confirmation</h3>
+<div class="ticket"><pre>Confirmation Number:
+CONF-FX-20260830-00012345
+
+Trade:
+USD/CAD FX Forward
+
+Trade Date:
+30-Aug-2026
+
+Value Date:
+30-Nov-2026
+
+Party A:
+Bank Of Toronto
+
+Party B:
+ABC Canada Inc.
+
+Party A sells:
+USD 10,000,000
+
+Party A buys:
+CAD 13,545,000
+
+Forward Rate:
+CAD 1.3545 per USD
+
+Settlement:
+Physical</pre></div>
+<div class="callout"><b>கவனிக்க:</b> English மூலத்துல இந்த confirmation example-ல "Party A (Bank Of Toronto) buys USD 10,000,000" ன்னு இருக்கு. ஆனா trade-ஓட மற்ற பகுதிகள் (Section 2, 19, Actors table) எல்லாம் *ABC USD வாங்குது, Bank Of Toronto USD விற்குது*ன்னு சொல்லுது. அதனால இங்க நான் Bank-ஓட பார்வையில சரியா எழுதியிருக்கேன்: <b>Bank sells USD / buys CAD</b>. உண்மையான confirmation-ல buy/sell பக்கங்கள் தலைகீழா போனா அது மிகப்பெரிய break — Confirmation matching-ல இதுதான் முதல்ல பிடிபடும்.</div>
+<h3>6.3 முக்கியமான Confirmation Fields</h3>
+<div class="table-scroll"><table><thead><tr><th>Category</th><th>Fields</th></tr></thead><tbody><tr><td>Identification</td><td>Trade ID, Confirmation ID</td></tr><tr><td>Parties</td><td>Party A, Party B</td></tr><tr><td>Product</td><td>FX Forward</td></tr><tr><td>Dates</td><td>Trade Date, Value Date</td></tr><tr><td>Currency</td><td>Currency Pair</td></tr><tr><td>Amounts</td><td>Buy Amount, Sell Amount</td></tr><tr><td>Rate</td><td>Forward Rate</td></tr><tr><td>Settlement</td><td>Physical/Cash</td></tr><tr><td>Legal</td><td>Master Agreement</td></tr><tr><td>Documentation</td><td>Confirmation Status</td></tr><tr><td>Operations</td><td>Settlement Instructions</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="7-stage-3-enrichment">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Stage 3 — Enrichment</h2>
+      <h3>7.1 Enrichment ஏன் தேவை?</h3>
+<p>முதல்ல capture ஆன trade-ல business economics தான் இருக்கு. ஆனா downstream systems-க்கு கூடுதல், standardized தகவல் வேணும்.</p>
+<p>Enrichment சேர்க்கக்கூடியவை:</p>
+<ul><li>LEIs</li><li>Legal entity identifiers</li><li>UTI</li><li>Product classification</li><li>UPI</li><li>Booking entity</li><li>Jurisdiction</li><li>Settlement instructions</li><li>Counterparty classification</li><li>Regulatory attributes</li><li>Risk attributes</li></ul>
+<p>இது regulatory reporting-க்கு ரொம்ப முக்கியம்.</p>
+<p><b>ஒரு எளிய ஒப்பீடு:</b> Trade capture = ஒரு பார்சல்ல இருக்கற பொருள். Enrichment = அந்த பார்சல்ல முகவரி, பின் கோடு, barcode, customs form எல்லாம் ஒட்டறது — பொருள் மாறல, ஆனா இப்போ உலகம் முழுக்க எந்த system-ஆலயும் கையாள முடியும்.</p>
+    </section>
+    <section class="mod" id="8-example-enriched-trade">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Example Enriched Trade</h2>
+      <div class="ticket"><pre>Trade ID:
+BOT-FX-20260830-00012345
+
+Product:
+FX Forward
+
+Currency Pair:
+USD/CAD
+
+Buy Currency:
+USD
+
+Sell Currency:
+CAD
+
+Buy Amount:
+10,000,000
+
+Sell Amount:
+13,545,000
+
+Forward Rate:
+1.3545
+
+Trade Date:
+2026-08-30
+
+Maturity Date:
+2026-11-30
+
+Bank LEI:
+5493001KJTIIGC8Y1R12
+
+Counterparty LEI:
+549300ABCEXAMPLE45
+
+UTI:
+5493001KJTIIGC8Y1R1220260830FX00012345
+
+UPI:
+FX9M3RXQ2K18
+
+ISDA Taxonomy Path:
+Foreign Exchange / Forward / Deliverable / Forward
+
+Underlier:
+USD/CAD
+
+NDF Flag:
+N (Deliverable Forward — Section 3's callout)
+
+Hedge Designation:
+Y — hedges ABC's forecasted USD payable
+
+Counterparty Country:
+CA
+
+Counterparty Classification:
+Non-Financial Counterparty (NFC), per EMIR-style classification — see
+Module 22 §9's hedging-exemption discussion for why this classification
+matters for clearing obligations
+
+Booking Entity:
+Bank Of Toronto
+
+Jurisdiction:
+Canada / Other applicable regimes (e.g. if either party is US-connected)
+
+Settlement Type:
+Physical</pre></div>
+<div class="callout">Note: மேலுள்ள LEI, UTI, UPI illustrative placeholders — <a href="../docs/2-reporting/module-18-upi-uti-dsb-deep-dive.html">Module 18</a> (20-character LEI-prefixed UTI), <a href="../docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a> (12-character UPI) format மாதிரி. உண்மையான implementation-ல இவை authoritative sources / processes-ல இருந்து வரணும், booking system தானே assign பண்ணக்கூடாது.</div>
+    </section>
+    <section class="mod" id="9-stage-4-valuation">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Stage 4 — Valuation</h2>
+      <h3>9.1 Valuation ஏன் தேவை?</h3>
+<p>Trade book ஆனப்புறம், bank தெரிஞ்சுக்கணும்:</p>
+<div class="callout">"இந்த trade இன்னிக்கு எவ்வளவு மதிப்புள்ளது?"</div>
+<p>Trade agree ஆன forward rate:</p>
+<p><b>1.3545 CAD/USD</b></p>
+<p>ஆனா market forward rate தினமும் மாறுது.</p>
+<p>கொஞ்ச நாள் கழிச்சு, நடப்பு market 3-month USD/CAD forward rate இப்படி இருக்குன்னு வெச்சுக்கோங்க:</p>
+<p><b>1.3650</b></p>
+<p>1.3545-ல USD வாங்கற party-க்கு, இந்த original trade இப்போ மதிப்புள்ளதா மாறிடுச்சு. (1.3650-ல தான் market-ல வாங்கணும்; இவங்க 1.3545-லயே வாங்கறாங்க — மலிவு.)</p>
+    </section>
+    <section class="mod" id="10-fx-forward-valuation-concept">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. FX Forward Valuation Concept</h2>
+      <p>ஒரு எளிமையான economic கணக்கு:</p>
+<div class="ticket"><pre>MTM ≈ Notional × (Current Forward Rate - Contract Forward Rate)</pre></div>
+<p>USD வாங்குபவருக்கு, discounting மற்றும் மற்ற market conventions-ஐ விட்டுட்டு.</p>
+<p>வெச்சுக்குவோம்:</p>
+<div class="ticket"><pre>Notional = USD 10,000,000
+
+Contract Rate = CAD 1.3545
+
+Current Forward Rate = CAD 1.3650</pre></div>
+<p>அப்புறம்:</p>
+<div class="ticket"><pre>Difference
+= 1.3650 - 1.3545
+= CAD 0.0105/USD</pre></div>
+<p>தோராய மதிப்பு:</p>
+<div class="ticket"><pre>USD 10,000,000 × CAD 0.0105
+= CAD 105,000</pre></div>
+<p>ABC-ஓட position பொருளாதார ரீதியா சாதகமா இருக்கு.</p>
+    </section>
+    <section class="mod" id="11-இன்னும்-துல்லியமான-valuation">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>11. இன்னும் துல்லியமான Valuation</h2>
+      <p>ஒரு production valuation engine பொதுவா வெறுமனே இதை பயன்படுத்தாது:</p>
+<div class="ticket"><pre>Notional × rate difference</pre></div>
+<p>அது கணக்கில எடுக்கறது:</p>
+<ul><li>நடப்பு spot FX rate</li><li>Forward FX points / forward curve</li><li>மீதமுள்ள maturity</li><li>Interest-rate curves</li><li>Discount factors</li><li>Currency</li><li>Settlement convention</li><li>Market data timestamp</li><li>தேவையான இடத்தில Credit valuation adjustments</li><li>Bank-ஓட framework பொறுத்து Funding / valuation adjustments</li></ul>
+<p>ஒரு எளிமையான conceptual formula:</p>
+<div class="ticket"><pre>PV =
+Expected future cash-flow difference
+× Discount Factor</pre></div>
+<p>FX-forward pricing முறை, bank-ஓட valuation framework-ஐ பொறுத்தது.</p>
+<h3>கூடுதல் உதாரணம் — Section 12-ஓட Present Value எப்படி வந்தது?</h3>
+<p>Section 10-ல undiscounted MTM = CAD 105,000. அதை 90 நாள் discount factor 0.985-ஆல பெருக்கணும்:</p>
+<div class="ticket"><pre>PV = 105,000 × 0.985
+   = CAD 103,425</pre></div>
+<p>அதாவது 90 நாள் கழிச்சு கிடைக்கப்போற CAD 105,000-ஓட <i>இன்றைய மதிப்பு</i> 103,425. (நாளைய ரூபாய் இன்றைய ரூபாயை விட குறைவு — அதான் discount.) Section 12 table-லயும், Section 25 regulatory record-லயும் வர "Valuation Amount 103,425" இந்த PV தான்; 105,000 அல்ல.</p>
+    </section>
+    <section class="mod" id="12-valuation-data-fields">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>12. Valuation Data Fields</h2>
+      <div class="table-scroll"><table><thead><tr><th>Field</th><th>Example</th></tr></thead><tbody><tr><td>Trade ID</td><td>BOT-FX-20260830-00012345</td></tr><tr><td>Valuation Date</td><td>2026-09-01</td></tr><tr><td>Spot USD/CAD</td><td>1.3490</td></tr><tr><td>Forward USD/CAD</td><td>1.3650</td></tr><tr><td>Contract Rate</td><td>1.3545</td></tr><tr><td>USD Notional</td><td>10,000,000</td></tr><tr><td>Remaining Days</td><td>90</td></tr><tr><td>Discount Factor</td><td>0.985</td></tr><tr><td>Base Currency</td><td>CAD</td></tr><tr><td>Present Value</td><td>103,425</td></tr><tr><td>Valuation Currency</td><td>CAD</td></tr><tr><td>Valuation Timestamp</td><td>2026-09-01 18:00:00 ET</td></tr><tr><td>Pricing Source</td><td>Market Data Service</td></tr><tr><td>Valuation Model</td><td>FX Forward PV</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="13-stage-5-mtm">
+      <p class="sec-eyebrow"><span class="n">13</span></p>
+      <h2>13. Stage 5 — MTM</h2>
+      <h3>13.1 MTM-ன்னா என்ன?</h3>
+<p><b>MTM = Mark-to-Market</b></p>
+<p>இது பதில் சொல்லுது:</p>
+<div class="callout">"இன்னிக்கு market விலைல இந்த trade-ஐ value பண்ணா, நாம எவ்வளவு லாபம் / நஷ்டம் அடைவோம்?"</div>
+<p>வெச்சுக்குவோம்:</p>
+<div class="ticket"><pre>Trade Rate = 1.3545
+Market Forward Rate = 1.3650
+Notional = USD 10M</pre></div>
+<p>எளிய MTM:</p>
+<div class="ticket"><pre>(1.3650 - 1.3545) × 10M
+= CAD 105,000</pre></div>
+<p>அதனால:</p>
+<div class="ticket"><pre>ABC perspective: +CAD 105,000
+Bank Of Toronto perspective: -CAD 105,000</pre></div>
+<p>ரெண்டு counterparties-க்கும் position எதிர்மறையா இருக்கறதால signs தலைகீழாகுது. (ஒருத்தர் லாபம் = இன்னொருத்தர் நஷ்டம் — zero-sum.)</p>
+    </section>
+    <section class="mod" id="14-காலப்போக்கில்-mtm">
+      <p class="sec-eyebrow"><span class="n">14</span></p>
+      <h2>14. காலப்போக்கில் MTM</h2>
+      <p>இப்படி இருக்குன்னு வெச்சுக்குவோம்:</p>
+<div class="table-scroll"><table><thead><tr><th>Date</th><th>Market Forward Rate</th><th>USD வாங்குபவருக்கு தோராய MTM</th></tr></thead><tbody><tr><td>---</td><td>---:</td><td>---:</td></tr><tr><td>30-Aug</td><td>1.3545</td><td>0</td></tr><tr><td>01-Sep</td><td>1.3650</td><td>+105,000 CAD</td></tr><tr><td>30-Sep</td><td>1.3400</td><td>-145,000 CAD</td></tr><tr><td>31-Oct</td><td>1.3750</td><td>+205,000 CAD</td></tr><tr><td>30-Nov</td><td>1.3900</td><td>+355,000 CAD</td></tr></tbody></table></div>
+<p>(ஒவ்வொரு வரிசையும் (market rate − 1.3545) × 10,000,000.) இதனாலதான் தினசரி valuation முக்கியம்.</p>
+<p>ஒரு trade தன் வாழ்நாள்ல positive-ல இருந்து negative-க்கு மாற முடியும் — 30-Sep-ல ABC-க்கு −145,000 (அப்போ Bank Of Toronto-க்கு +145,000).</p>
+    </section>
+    <section class="mod" id="15-stage-6-collateral">
+      <p class="sec-eyebrow"><span class="n">15</span></p>
+      <h2>15. Stage 6 — Collateral</h2>
+      <h3>15.1 Collateral ஏன்?</h3>
+<p>OTC derivatives <b>counterparty credit risk</b>-ஐ உருவாக்குது.</p>
+<p>Bank Of Toronto default ஆனா, அது ABC-க்கு பெரிய தொகை கொடுக்கணும்னு வெச்சுக்குவோம்.</p>
+<p>இந்த risk-ஐ குறைக்க, parties ஒரு <b>CSA — Credit Support Annex</b>-ன் கீழ collateral பரிமாறலாம்.</p>
+<p>Collateral இப்படி வரலாம்:</p>
+<ul><li>Cash</li><li>Government securities</li><li>மற்ற eligible collateral</li></ul>
+<p>agreement-ஐ பொறுத்து.</p>
+    </section>
+    <section class="mod" id="16-margin-concepts">
+      <p class="sec-eyebrow"><span class="n">16</span></p>
+      <h2>16. Margin Concepts</h2>
+      <p>ரெண்டு முக்கிய concepts:</p>
+<h3>Variation Margin — VM</h3>
+<p>positions-ஓட நடப்பு மதிப்பு மாறுவதை பிரதிபலிக்கும்.</p>
+<p>Conceptually:</p>
+<div class="ticket"><pre>MTM increases
+      ↓
+Collateral requirement may increase</pre></div>
+<h3>Initial Margin — IM</h3>
+<p>Default ஆனப்புறம் positions-ஐ close / replace பண்ண தேவையான காலத்துல வரக்கூடிய எதிர்கால exposure-க்கு எதிரான பாதுகாப்பு.</p>
+<p>உண்மையான பொருந்துதல் counterparties, regulatory requirements, documentation-ஐ பொறுத்தது.</p>
+    </section>
+    <section class="mod" id="17-example-collateral-calculation">
+      <p class="sec-eyebrow"><span class="n">17</span></p>
+      <h2>17. Example Collateral Calculation</h2>
+      <p>வெச்சுக்குவோம்:</p>
+<div class="ticket"><pre>Portfolio MTM = +CAD 105,000 to ABC
+Threshold = CAD 50,000
+Minimum Transfer Amount = CAD 10,000</pre></div>
+<p>எளிமைப்படுத்தப்பட்ட collateral requirement:</p>
+<div class="ticket"><pre>105,000 - 50,000
+= CAD 55,000</pre></div>
+<p>CSA-வில் வரையறுத்த திசையையும் party-ஓட பார்வையையும் பொறுத்து, ABC collateral பெற / post பண்ண உரிமை பெறலாம். (இங்க ABC-க்கு MTM +105,000, அதாவது Bank Of Toronto தான் ABC-க்கு கடன்பட்டிருக்கு — அதனால பொதுவா Bank collateral <i>post</i> பண்ணும், ABC <i>பெறும்</i>.)</p>
+<p><b>MTA படி என்ன நடக்கும்?</b> Requirement 55,000 &gt; MTA 10,000, அதனால call உண்மையிலயே தூண்டப்படுது. இதே requirement 8,000 மட்டும் இருந்திருந்தா (MTA-க்கு கீழ), எந்த transfer-உம் நடந்திருக்காது — சின்ன சின்ன தொகைக்கு தினமும் payment ஓடாம இருக்க தான் MTA.</p>
+<p>Collateral processing பொதுவா portfolio / CSA அடிப்படையிலானது, ஒரு தனி trade கணக்கு அல்ல.</p>
+    </section>
+    <section class="mod" id="18-collateral-data-fields">
+      <p class="sec-eyebrow"><span class="n">18</span></p>
+      <h2>18. Collateral Data Fields</h2>
+      <div class="table-scroll"><table><thead><tr><th>Field</th><th>Example</th></tr></thead><tbody><tr><td>CSA ID</td><td>CSA-BOT-ABC-001</td></tr><tr><td>Counterparty</td><td>ABC12345</td></tr><tr><td>Valuation Date</td><td>2026-09-01</td></tr><tr><td>Portfolio Value</td><td>CAD 105,000</td></tr><tr><td>Threshold</td><td>CAD 50,000</td></tr><tr><td>MTA</td><td>CAD 10,000</td></tr><tr><td>Collateral Requirement</td><td>CAD 55,000</td></tr><tr><td>Collateral Type</td><td>Cash</td></tr><tr><td>Collateral Currency</td><td>CAD</td></tr><tr><td>Margin Type</td><td>VM</td></tr><tr><td>Call Date</td><td>2026-09-01</td></tr><tr><td>Settlement Date</td><td>2026-09-02</td></tr><tr><td>Collateral Status</td><td>CALLED</td></tr><tr><td>Dispute Status</td><td>NONE</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="19-stage-7-settlement">
+      <p class="sec-eyebrow"><span class="n">19</span></p>
+      <h2>19. Stage 7 — Settlement</h2>
+      <p>Trade maturity-க்கு வருது:</p>
+<p><b>30-Nov-2026</b></p>
+<p>Contract சொல்றது:</p>
+<div class="ticket"><pre>ABC buys USD 10M
+ABC pays CAD 13,545,000</pre></div>
+<p>அதனால:</p>
+<div class="ticket"><pre>ABC Canada Inc.                      Bank Of Toronto
+       |                                   |
+       |---------- CAD 13,545,000 --------&gt;|
+       |                                   |
+       |&lt;----------- USD 10M --------------|</pre></div>
+<p>FX forward physically settle ஆகுது. (CAD 13,545,000 → Bank; USD 10M → ABC. இந்த USD-ஐ ABC தன் US supplier-க்கு அனுப்பிடும்.)</p>
+    </section>
+    <section class="mod" id="20-settlement-instructions">
+      <p class="sec-eyebrow"><span class="n">20</span></p>
+      <h2>20. Settlement Instructions</h2>
+      <p>Settlement system-க்கு ரெண்டு currencies-க்கும் instructions வேணும்.</p>
+<p>உதாரணம்:</p>
+<h3>USD</h3>
+<div class="ticket"><pre>Currency: USD
+Amount: 10,000,000
+Settlement Account: USD account
+SSI: ABC-USD-SSI-001</pre></div>
+<h3>CAD</h3>
+<div class="ticket"><pre>Currency: CAD
+Amount: 13,545,000
+Settlement Account: CAD account
+SSI: ABC-CAD-SSI-001</pre></div>
+<p>SSI-ன்னா:</p>
+<p><b>Standard Settlement Instructions</b></p>
+<p>(அதாவது "எந்த bank account-க்கு, எந்த correspondent வழியா பணம் போகணும்"ன்னு முன்கூட்டியே ஒப்புக்கொண்ட நிலையான முகவரி.)</p>
+    </section>
+    <section class="mod" id="21-settlement-data-fields">
+      <p class="sec-eyebrow"><span class="n">21</span></p>
+      <h2>21. Settlement Data Fields</h2>
+      <div class="table-scroll"><table><thead><tr><th>Field</th><th>Example</th></tr></thead><tbody><tr><td>Trade ID</td><td>BOT-FX-20260830-00012345</td></tr><tr><td>Settlement ID</td><td>SET-FX-20261130-00012345</td></tr><tr><td>Value Date</td><td>2026-11-30</td></tr><tr><td>Buy Currency</td><td>USD</td></tr><tr><td>Buy Amount</td><td>10,000,000</td></tr><tr><td>Sell Currency</td><td>CAD</td></tr><tr><td>Sell Amount</td><td>13,545,000</td></tr><tr><td>USD SSI</td><td>ABC-USD-SSI-001</td></tr><tr><td>CAD SSI</td><td>ABC-CAD-SSI-001</td></tr><tr><td>Settlement Status</td><td>PENDING</td></tr><tr><td>Payment Status</td><td>RELEASED</td></tr><tr><td>USD Settlement Status</td><td>SETTLED</td></tr><tr><td>CAD Settlement Status</td><td>SETTLED</td></tr><tr><td>Final Status</td><td>COMPLETE</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="22-settlement-risk">
+      <p class="sec-eyebrow"><span class="n">22</span></p>
+      <h2>22. Settlement Risk</h2>
+      <p>FX transactions settlement risk-ஐ கொண்டுவருது.</p>
+<p>உதாரணமா:</p>
+<div class="ticket"><pre>Bank Of Toronto sends USD
+      ↓
+ABC does not deliver CAD</pre></div>
+<p>இல்லன்னா:</p>
+<div class="ticket"><pre>ABC sends CAD
+      ↓
+Bank Of Toronto does not deliver USD</pre></div>
+<p>அதனாலதான் FX settlement infrastructure, payment controls, settlement-risk management முக்கியம். (இதை "Herstatt risk"ன்னும் சொல்வாங்க — ஒரு பக்கம் பணம் போயிடுச்சு, மறுபக்கம் வரல. CLS போன்ற payment-versus-payment அமைப்புகள் இந்த risk-ஐ குறைக்கவே.)</p>
+    </section>
+    <section class="mod" id="23-stage-8-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">23</span></p>
+      <h2>23. Stage 8 — Regulatory Reporting</h2>
+      <p>OTC derivatives பெரும்பாலும் இவற்றை பொறுத்து regulatory reporting தேவைகளுக்கு உட்படும்:</p>
+<ul><li>Jurisdiction</li><li>Counterparty type</li><li>Product</li><li>Trading location</li><li>Legal entity</li><li>Reporting regime</li></ul>
+<p>Capital Markets / RDP வேலைல நீங்க சந்திக்கக்கூடிய regimes:</p>
+<ul><li>EMIR</li><li>UK EMIR</li><li>CFTC reporting</li><li>Canadian derivatives reporting</li><li>ASIC reporting</li><li>MAS reporting</li><li>HKMA reporting</li></ul>
+<p>சரியான fields-உம் rules-உம் jurisdiction, reporting regime-ஐ பொறுத்து மாறும்.</p>
+    </section>
+    <section class="mod" id="24-regulatory-trade-data">
+      <p class="sec-eyebrow"><span class="n">24</span></p>
+      <h2>24. Regulatory Trade Data</h2>
+      <p>ஒரு reporting record conceptually இதை கொண்டிருக்கலாம்:</p>
+<div class="ticket"><pre>UTI
+UPI
+LEI of Reporting Counterparty
+LEI of Other Counterparty
+Trade ID
+Product Classification
+Asset Class
+Notional
+Notional Currency
+Price
+Price Currency
+Trade Date
+Effective Date
+Maturity Date
+Settlement Type
+Direction
+Execution Timestamp
+Clearing Status
+Collateralisation
+Valuation Amount
+Valuation Currency
+Action Type
+Event Type
+Reporting Timestamp</pre></div>
+    </section>
+    <section class="mod" id="25-example-regulatory-record">
+      <p class="sec-eyebrow"><span class="n">25</span></p>
+      <h2>25. Example Regulatory Record</h2>
+      <p>Illustrative மட்டும்:</p>
+<div class="table-scroll"><table><thead><tr><th>Regulatory Field</th><th>Example</th></tr></thead><tbody><tr><td>UTI</td><td>5493001KJTIIGC8Y1R1220260830FX00012345</td></tr><tr><td>UPI</td><td>FX9M3RXQ2K18</td></tr><tr><td>ISDA Taxonomy Path</td><td>Foreign Exchange / Forward / Deliverable / Forward</td></tr><tr><td>Reporting Counterparty LEI</td><td>5493001KJTIIGC8Y1R12</td></tr><tr><td>Other Counterparty LEI</td><td>549300ABCEXAMPLE45</td></tr><tr><td>Product</td><td>FX Forward</td></tr><tr><td>Asset Class</td><td>Foreign Exchange</td></tr><tr><td>Currency Pair</td><td>USD/CAD</td></tr><tr><td>Notional</td><td>10,000,000</td></tr><tr><td>Notional Currency</td><td>USD</td></tr><tr><td>Price</td><td>1.3545</td></tr><tr><td>Price Currency</td><td>CAD</td></tr><tr><td>Trade Date</td><td>2026-08-30</td></tr><tr><td>Effective Date</td><td>2026-08-30</td></tr><tr><td>Maturity Date</td><td>2026-11-30</td></tr><tr><td>Settlement Type</td><td>Physical (Deliverable)</td></tr><tr><td>NDF Flag</td><td>N</td></tr><tr><td>Clearing Status</td><td>Not Cleared</td></tr><tr><td>Collateralisation</td><td>Bilateral</td></tr><tr><td>Hedging Exemption Claimed</td><td>Y — NFC hedging a commercial FX exposure</td></tr><tr><td>Valuation Amount</td><td>103,425</td></tr><tr><td>Valuation Currency</td><td>CAD</td></tr><tr><td>Action Type</td><td>NEW</td></tr><tr><td>Event Type</td><td>NEW_TRADE</td></tr><tr><td>Reporting Timestamp</td><td>2026-08-30 10:35:00 ET</td></tr></tbody></table></div>
+<p>மறுபடியும், இது ஒரு <b>conceptual example</b>, jurisdiction-specific reporting template அல்ல.</p>
+    </section>
+    <section class="mod" id="26-trade-lifecycle-events">
+      <p class="sec-eyebrow"><span class="n">26</span></p>
+      <h2>26. Trade Lifecycle Events</h2>
+      <p>ஒரு trade-க்கு ஒரே ஒரு regulatory event மட்டும் இருக்கணும்னு இல்ல.</p>
+<p>அதன் வாழ்நாள்ல events இவை:</p>
+<div class="ticket"><pre>NEW
+ |
+ +---- AMENDMENT
+ |
+ +---- VALUATION UPDATE
+ |
+ +---- COLLATERAL UPDATE
+ |
+ +---- PARTIAL TERMINATION
+ |
+ +---- NOVATION
+ |
+ +---- EARLY TERMINATION
+ |
+ +---- MATURITY
+ |
+ +---- CANCEL / ERROR CORRECTION</pre></div>
+<p>அதனால ஒரு regulatory reporting platform இவற்றை வேறுபடுத்தணும்:</p>
+<p><b>Trade-level data</b> மற்றும் <b>event-level changes</b>.</p>
+<p><b>ஒரு எளிய உதாரணம்:</b> ABC ஒரு மாசம் கழிச்சு maturity-ஐ 30-Nov-ல இருந்து 15-Dec-க்கு மாத்தினா — அது புதுசா ஒரு trade அல்ல; அதே UTI-யோட <code>Action Type = MODIFY</code>, <code>Event Type = AMENDMENT</code> ஆக ஒரு புது report போகும். "புது trade"ன்னு தவறா அனுப்பினா, trade repository-ல duplicate ஆகிடும்.</p>
+    </section>
+    <section class="mod" id="27-end-to-end-data-flow">
+      <p class="sec-eyebrow"><span class="n">27</span></p>
+      <h2>27. End-to-End Data Flow</h2>
+      <p>ஒரு typical architecture இப்படி இருக்கலாம்:</p>
+<div class="ticket"><pre>             FRONT OFFICE
+                  |
+                  | Trade
+                  v
+          +---------------+
+          | Trade Capture |
+          +---------------+
+                  |
+                  v
+          +---------------+
+          | Confirmation  |
+          +---------------+
+                  |
+                  v
+          +---------------+
+          |  Enrichment   |
+          +---------------+
+                  |
+          +-------+-------+
+          |               |
+          v               v
+   +-------------+   +-------------+
+   | Valuation   |   | Regulatory  |
+   | / Risk      |   | Enrichment  |
+   +-------------+   +-------------+
+          |               |
+          v               v
+        MTM          Regulatory
+          |            Report
+          v               |
+      Collateral          v
+          |          Trade Repository
+          v
+      Settlement
+          |
+          v
+      Accounting</pre></div>
+    </section>
+    <section class="mod" id="28-முக்கியமான-system-of-record-concepts">
+      <p class="sec-eyebrow"><span class="n">28</span></p>
+      <h2>28. முக்கியமான System-of-Record Concepts</h2>
+      <p>ஒரு பெரிய OTC derivatives platform-ல பொதுவா பல systems இருக்கும்.</p>
+<div class="table-scroll"><table><thead><tr><th>System</th><th>Primary Responsibility</th></tr></thead><tbody><tr><td>Front Office</td><td>Execute/capture trade</td></tr><tr><td>Trade Store</td><td>Persist trade</td></tr><tr><td>Confirmation System</td><td>Confirm economics</td></tr><tr><td>Static Data</td><td>Counterparty/entity data</td></tr><tr><td>Reference Data</td><td>Product/instrument data</td></tr><tr><td>Market Data</td><td>Spot/forward curves</td></tr><tr><td>Valuation Engine</td><td>Calculate PV/MTM</td></tr><tr><td>Risk Engine</td><td>Exposure/risk</td></tr><tr><td>Collateral System</td><td>Margin/collateral</td></tr><tr><td>Settlement System</td><td>Payments</td></tr><tr><td>Regulatory Platform</td><td>Regulatory reporting</td></tr><tr><td>Trade Repository</td><td>Receive regulatory reports</td></tr><tr><td>Accounting</td><td>P&amp;L/accounting</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="29-key-identifiers">
+      <p class="sec-eyebrow"><span class="n">29</span></p>
+      <h2>29. Key Identifiers</h2>
+      <p>RDP design பண்ணும்போது identifiers ரொம்ப முக்கியம்.</p>
+<h3>Trade ID</h3>
+<p>Internal identifier:</p>
+<div class="ticket"><pre>BOT-FX-20260830-00012345</pre></div>
+<h3>UTI</h3>
+<p><b>Unique Transaction Identifier</b></p>
+<p>Regulatory reporting-க்கு ஒரு derivative transaction-ஐ நிலையா அடையாளம் காண.</p>
+<h3>UPI</h3>
+<p><b>Unique Product Identifier</b></p>
+<p>Derivative-ஓட வகை / product-ஐ அடையாளம் காண.</p>
+<h3>LEI</h3>
+<p><b>Legal Entity Identifier</b></p>
+<p>Legal entity-ஐ அடையாளம் காண.</p>
+<p>ஒரு எளிமையான உறவு:</p>
+<div class="ticket"><pre>LEI
+ |
+ +---- identifies Counterparty
+ |
+ +---- identifies Reporting Entity
+
+
+UTI
+ |
+ +---- identifies Transaction
+
+
+UPI
+ |
+ +---- identifies Product</pre></div>
+    </section>
+    <section class="mod" id="30-trade-vs-product-vs-counterparty">
+      <p class="sec-eyebrow"><span class="n">30</span></p>
+      <h2>30. Trade vs Product vs Counterparty</h2>
+      <p>இந்த வேறுபாடு மிக முக்கியம்.</p>
+<h3>Product</h3>
+<p>"எது trade ஆகுது?"</p>
+<div class="ticket"><pre>FX Forward</pre></div>
+<h3>Counterparty</h3>
+<p>"யாரெல்லாம் involved?"</p>
+<div class="ticket"><pre>Bank Of Toronto
+ABC Canada Inc.</pre></div>
+<h3>Trade</h3>
+<p>"எந்த குறிப்பிட்ட transaction நடந்தது?"</p>
+<div class="ticket"><pre>Trade ID:
+BOT-FX-20260830-00012345</pre></div>
+<h3>Position</h3>
+<p>"Transactions-ஐ எல்லாம் கணக்கில் எடுத்தப்புறம் என்ன exposure மிச்சமிருக்கு?"</p>
+<p>Data models design பண்ணும்போது இந்த வேறுபாடு படிப்படியா முக்கியமாகும். (Position பற்றி விரிவா: <a href="../docs/1-capital-markets/module-25-position-deep-dive.html">Module 25 — Position</a>.)</p>
+    </section>
+    <section class="mod" id="31-example-canonical-trade-model">
+      <p class="sec-eyebrow"><span class="n">31</span></p>
+      <h2>31. Example Canonical Trade Model</h2>
+      <p>ஒரு normalized internal trade representation conceptually இப்படி இருக்கலாம்:</p>
+<div class="ticket"><pre>{
+  "tradeId": "BOT-FX-20260830-00012345",
+  "productType": "FX_FORWARD",
+  "assetClass": "FX",
+  "tradeDate": "2026-08-30",
+  "effectiveDate": "2026-08-30",
+  "maturityDate": "2026-11-30",
+  "buyCurrency": "USD",
+  "buyAmount": 10000000,
+  "sellCurrency": "CAD",
+  "sellAmount": 13545000,
+  "contractRate": 1.3545,
+  "settlementType": "PHYSICAL",
+  "ndfFlag": false,
+  "isdaTaxonomy": {
+    "assetClass": "FOREIGN_EXCHANGE",
+    "baseProduct": "FORWARD",
+    "subProduct": "DELIVERABLE",
+    "transactionType": "FORWARD"
+  },
+  "hedge": {
+    "isHedge": true,
+    "hedgedExposure": "FORECASTED_USD_PAYABLE_2026_11_30"
+  },
+  "counterparty": {
+    "lei": "549300ABCEXAMPLE45",
+    "classification": "NFC"
+  },
+  "reportingEntity": {
+    "lei": "5493001KJTIIGC8Y1R12"
+  },
+  "regulatory": {
+    "uti": "5493001KJTIIGC8Y1R1220260830FX00012345",
+    "upi": "FX9M3RXQ2K18"
+  }
+}</pre></div>
+<p>இது illustrative தான்; prescribed regulatory schema-வாக எடுக்கக்கூடாது.</p>
+<div class="callout"><b>Java architect-க்கு குறிப்பு:</b> இதை ஒரு <code>record TradeCanonical(...)</code> அல்லது immutable POJO-வா map பண்ணலாம்; <code>isdaTaxonomy</code>, <code>hedge</code>, <code>counterparty</code>, <code>regulatory</code> ஆகியவை nested value objects. Static contractual data-வை (Section 35) இதுல வைங்க; MTM, collateral status போன்ற dynamic data-வை தனி tables / events-ல.</div>
+    </section>
+    <section class="mod" id="32-event-based-model">
+      <p class="sec-eyebrow"><span class="n">32</span></p>
+      <h2>32. Event-Based Model</h2>
+      <p>RDP architecture-க்கு, event-oriented model பெரும்பாலும் பயனுள்ளது.</p>
+<p>உதாரணம்:</p>
+<div class="ticket"><pre>TradeCreated
+     |
+     v
+TradeConfirmed
+     |
+     v
+TradeEnriched
+     |
+     v
+TradeValued
+     |
+     v
+MTMUpdated
+     |
+     v
+CollateralUpdated
+     |
+     v
+SettlementInitiated
+     |
+     v
+SettlementCompleted
+     |
+     v
+RegulatoryReported</pre></div>
+<p>ஒவ்வொரு event-உம் இவற்றை கொண்டிருக்கலாம்:</p>
+<div class="ticket"><pre>Event ID
+Trade ID
+UTI
+Event Type
+Event Timestamp
+Source System
+Previous State
+New State
+Version
+Correlation ID
+Payload</pre></div>
+<p>Distributed microservices architectures-ல இது குறிப்பா பயனுள்ளது.</p>
+    </section>
+    <section class="mod" id="33-suggested-microservices">
+      <p class="sec-eyebrow"><span class="n">33</span></p>
+      <h2>33. Suggested Microservices</h2>
+      <p>ஒரு நவீன microservices implementation-க்கு, lifecycle-ஐ இப்படி பிரிக்கலாம்:</p>
+<div class="ticket"><pre>trade-service
+      |
+      +--&gt; confirmation-service
+      |
+      +--&gt; enrichment-service
+      |
+      +--&gt; valuation-service
+      |
+      +--&gt; risk-service
+      |
+      +--&gt; collateral-service
+      |
+      +--&gt; settlement-service
+      |
+      +--&gt; regulatory-service</pre></div>
+<p>Supporting services:</p>
+<div class="ticket"><pre>reference-data-service
+counterparty-service
+market-data-service
+identifier-service
+audit-service
+notification-service</pre></div>
+<p>Kafka போன்ற ஒரு event bus trade lifecycle events-ஐ distribute பண்ணலாம்.</p>
+    </section>
+    <section class="mod" id="34-example-kafka-event-flow">
+      <p class="sec-eyebrow"><span class="n">34</span></p>
+      <h2>34. Example Kafka Event Flow</h2>
+      <div class="ticket"><pre>trade.created
+      |
+      +----&gt; confirmation-service
+      |
+      +----&gt; enrichment-service
+      |
+      +----&gt; risk-service
+      |
+      +----&gt; regulatory-service</pre></div>
+<p>பின்னர்:</p>
+<div class="ticket"><pre>valuation.updated
+      |
+      +----&gt; risk-service
+      +----&gt; collateral-service
+      +----&gt; regulatory-service</pre></div>
+<p>அப்புறம்:</p>
+<div class="ticket"><pre>settlement.completed
+      |
+      +----&gt; accounting-service
+      +----&gt; regulatory-service
+      +----&gt; audit-service</pre></div>
+<p><b>ஏன் இந்த fan-out நல்லது?</b> <code>valuation.updated</code> ஒரு தடவை publish ஆனா, risk-service, collateral-service, regulatory-service மூணும் தனித்தனியா, தங்கள் வேகத்தில் consume பண்ணும். collateral-service கொஞ்சம் மெதுவா இருந்தாலும் regulatory-service-ஐ தடுக்காது. ஒரு synchronous <code>updateTrade()</code> call-ஆ இருந்தா, ஒண்ணு fail ஆனா எல்லாமே நிக்கும்.</p>
+    </section>
+    <section class="mod" id="35-lifecycle-முழுக்க-என்ன-மாறுது">
+      <p class="sec-eyebrow"><span class="n">35</span></p>
+      <h2>35. Lifecycle முழுக்க என்ன மாறுது?</h2>
+      <p>Original trade-ஐ பாருங்க:</p>
+<div class="ticket"><pre>USD 10M
+@ CAD 1.3545
+Maturity 30-Nov-2026</pre></div>
+<p>Core economics பொதுவா அப்படியே இருக்கும்.</p>
+<p>ஆனா dynamic fields மாறும்:</p>
+<div class="ticket"><pre>Market Spot
+Forward Curve
+PV
+MTM
+Exposure
+Collateral
+Settlement Status
+Reporting Status</pre></div>
+<p>அதனால, ஒரு RDP இவற்றை வேறுபடுத்தணும்:</p>
+<h3>Static / contractual data</h3>
+<div class="ticket"><pre>Trade ID
+Product
+Notional
+Currency
+Contract Rate
+Trade Date
+Maturity Date
+Counterparties</pre></div>
+<p>இதுல இருந்து:</p>
+<h3>Dynamic data</h3>
+<div class="ticket"><pre>Valuation
+MTM
+Market Data
+Exposure
+Collateral
+Settlement Status
+Reporting Status</pre></div>
+    </section>
+    <section class="mod" id="36-முழு-example-timeline">
+      <p class="sec-eyebrow"><span class="n">36</span></p>
+      <h2>36. முழு Example Timeline</h2>
+      <h3>30-Aug-2026</h3>
+<div class="ticket"><pre>10:32
+Trade executed
+
+10:33
+Trade captured
+
+10:34
+Trade confirmed
+
+10:35
+Counterparty / product enrichment completed
+
+10:36
+Regulatory identifiers generated
+
+End of day
+Trade valued
+MTM calculated</pre></div>
+<h3>01-Sep-2026</h3>
+<div class="ticket"><pre>Market moves
+      ↓
+Forward curve changes
+      ↓
+Trade revalued
+      ↓
+MTM changes
+      ↓
+Collateral requirement recalculated
+      ↓
+Collateral call generated if required</pre></div>
+<h3>30-Nov-2026</h3>
+<div class="ticket"><pre>Maturity
+    ↓
+Settlement instructions validated
+    ↓
+USD payment
+    +
+CAD payment
+    ↓
+Settlement completed
+    ↓
+Trade closed
+    ↓
+Final regulatory lifecycle event</pre></div>
+<h3>கூடுதல் உதாரணம் — ஒரே trade, எல்லா systems-ல ஒரே நாள் (01-Sep) பார்வை</h3>
+<div class="table-scroll"><table><thead><tr><th>நேரம்</th><th>System</th><th>என்ன நடக்குது</th><th>எண்</th></tr></thead><tbody><tr><td>17:00</td><td>Market Data Service</td><td>3M forward 1.3650, spot 1.3490 snapshot</td><td>—</td></tr><tr><td>18:00</td><td>Valuation Engine</td><td>PV கணக்கு</td><td>105,000 × 0.985 = <b>103,425 CAD</b></td></tr><tr><td>18:05</td><td>Risk / MTM</td><td>Bank-க்கு நஷ்டம், ABC-க்கு லாபம்</td><td>Bank: −103,425</td></tr><tr><td>18:10</td><td>Collateral System</td><td>Threshold 50,000 கழிச்சு requirement</td><td>≈ 53,425 <i>(valuation 103,425 அடிப்படையில்; Section 17-ல் எளிமைக்கு 105,000 → 55,000)</i></td></tr><tr><td>18:15</td><td>Collateral System</td><td>Call உருவாக்கம் (MTA 10,000-ஐ தாண்டியதால்)</td><td>Status = CALLED</td></tr><tr><td>19:00</td><td>Regulatory Platform</td><td>Valuation update report (Action = VALU)</td><td>Valuation Amount 103,425</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="37-lifecycle-stage-வாரியா-மிக-முக்கிய-fields">
+      <p class="sec-eyebrow"><span class="n">37</span></p>
+      <h2>37. Lifecycle Stage வாரியா மிக முக்கிய Fields</h2>
+      <div class="table-scroll"><table><thead><tr><th>Stage</th><th>Key Data</th></tr></thead><tbody><tr><td>Trade Capture</td><td>Trade ID, product, notional, currencies, rate, dates</td></tr><tr><td>Confirmation</td><td>Confirmation ID, contractual terms, parties</td></tr><tr><td>Enrichment</td><td>LEI, UTI, UPI, classification, jurisdiction</td></tr><tr><td>Valuation</td><td>Spot, forward curve, discount factor, PV</td></tr><tr><td>MTM</td><td>Market value, valuation currency, P&amp;L</td></tr><tr><td>Collateral</td><td>CSA, VM/IM, threshold, MTA, collateral</td></tr><tr><td>Settlement</td><td>SSI, payment amount, value date, settlement status</td></tr><tr><td>Regulatory</td><td>UTI, UPI, LEIs, action/event, valuation, reporting fields</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="38-பெரிய-படம்-the-big-picture">
+      <p class="sec-eyebrow"><span class="n">38</span></p>
+      <h2>38. பெரிய படம் (The Big Picture)</h2>
+      <p>மிக முக்கியமான mental model:</p>
+<div class="ticket"><pre>                  TRADE
+                    |
+                    v
+             What did we do?
+                    |
+                    v
+             CONFIRMATION
+                    |
+                    v
+             What did both
+             parties agree?
+                    |
+                    v
+              ENRICHMENT
+                    |
+                    v
+             Who/what/how
+             for downstream
+             processing?
+                    |
+                    v
+              VALUATION
+                    |
+                    v
+             What is it
+             worth today?
+                    |
+                    v
+                 MTM
+                    |
+                    v
+             Who is gaining
+             or losing?
+                    |
+                    v
+              COLLATERAL
+                    |
+                    v
+             How much credit
+             protection?
+                    |
+                    v
+              SETTLEMENT
+                    |
+                    v
+             What actually
+             gets exchanged?
+                    |
+                    v
+        REGULATORY REPORTING
+                    |
+                    v
+             What must be
+             reported to the
+             regulator/repository?</pre></div>
+    </section>
+    <section class="mod" id="39-நினைவில்-வைக்க-வேண்டிய-capital-markets-vocabulary">
+      <p class="sec-eyebrow"><span class="n">39</span></p>
+      <h2>39. நினைவில் வைக்க வேண்டிய Capital Markets Vocabulary</h2>
+      <div class="table-scroll"><table><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody><tr><td>OTC</td><td>Over The Counter</td></tr><tr><td>Derivative</td><td>Contract whose value derives from underlying</td></tr><tr><td>Forward</td><td>Obligation to transact in future at agreed price</td></tr><tr><td>Option</td><td>Right, not obligation</td></tr><tr><td>Call</td><td>Right to buy</td></tr><tr><td>Put</td><td>Right to sell</td></tr><tr><td>Strike</td><td>Option exercise price</td></tr><tr><td>Premium</td><td>Price paid for option</td></tr><tr><td>Spot</td><td>Current market price</td></tr><tr><td>Forward Rate</td><td>Agreed/market future FX rate</td></tr><tr><td>Notional</td><td>Reference amount used for calculation</td></tr><tr><td>Maturity</td><td>Contract end date</td></tr><tr><td>MTM</td><td>Current market value</td></tr><tr><td>PV</td><td>Present value</td></tr><tr><td>VM</td><td>Variation Margin</td></tr><tr><td>IM</td><td>Initial Margin</td></tr><tr><td>CSA</td><td>Credit Support Annex</td></tr><tr><td>SSI</td><td>Standard Settlement Instructions</td></tr><tr><td>LEI</td><td>Legal Entity Identifier</td></tr><tr><td>UTI</td><td>Unique Transaction Identifier</td></tr><tr><td>UPI</td><td>Unique Product Identifier</td></tr><tr><td>Trade Repository</td><td>Infrastructure receiving regulatory reports</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="40-அடுத்த-படி-பரிந்துரை">
+      <p class="sec-eyebrow"><span class="n">40</span></p>
+      <h2>40. அடுத்த படி — பரிந்துரை</h2>
+      <p>இந்த FX Forward example புரிஞ்சப்புறம், இதே lifecycle-ஐ ஒரு <b>Interest Rate Swap (IRS)</b>-க்கு படிங்க — <a href="../docs/1-capital-markets/module-19-interest-rate-swap-deep-dive.html">Module 19</a>, இது ஏற்கனவே ஒரு 5Y CAD IRS-ஐ 20 quarterly settlements வழியா இதே அளவு field-by-field விவரத்தோட கூட்டிட்டுப் போகுது.</p>
+<p>IRS lifecycle, இந்த module சொன்னவற்றுக்கு மேல கூடுதல் concepts-ஐ கொண்டுவருது:</p>
+<div class="ticket"><pre>IRS
+ |
+ +--&gt; Fixed Rate
+ |
+ +--&gt; Floating Rate
+ |
+ +--&gt; Reference Rate
+ |       |
+ |       +--&gt; CORRA
+ |       +--&gt; SOFR
+ |       +--&gt; SONIA
+ |
+ +--&gt; Reset Dates
+ |
+ +--&gt; Payment Dates
+ |
+ +--&gt; Accrual Period
+ |
+ +--&gt; Day Count Convention
+ |
+ +--&gt; Compounding
+ |
+ +--&gt; Discounting
+ |
+ +--&gt; MTM
+ |
+ +--&gt; Collateral
+ |
+ +--&gt; Settlement
+ |
+ +--&gt; Regulatory Reporting</pre></div>
+<p>IRS example <b>CORRA</b>-வோட நேரடியா இணையும், இது பொதுவா Rates-desk regulatory data platform (RDP) வேலைக்கு மையமானது.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>ABC Canada Inc.-க்கு USD விற்று CAD வாங்கும் forward; booking / reporting entity — இதன் systems வழியா module முழுக்க walkthrough</td></tr><tr><td>ABC Canada Inc.</td><td>Buy-side client — 30-Nov-2026-ல கட்டவேண்டிய உண்மையான USD 10,000,000 payable-ஐ hedge பண்ணும் ஒரு Canadian resident (Section 2)</td></tr><tr><td>ஒரு US supplier</td><td>ABC இறுதியா USD 10,000,000 கடன்பட்டிருக்கற (பெயரிடப்படாத) தரப்பு — இந்த trade-க்கு வெளியே; ABC-க்கு hedge ஏன் தேவைன்னு காட்டும் வணிக காரணம்</td></tr><tr><td>Trade Repository / Regulatory Platform</td><td>செறிவூட்டப்பட்ட, valuation செய்யப்பட்ட, event-tag செய்யப்பட்ட trade record-ஐ பெறும் downstream systems (Sections 23–28)</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz</h2>
+      <ol><li>Section 3-ஓட callout-ஐ பயன்படுத்தி: USD/CAD forward ஏன் கிட்டத்தட்ட எப்பவும் NDF இல்லாம Deliverable Forward? அந்த வேறுபாட்டை trade record-ல எந்த field capture பண்ணுது?</li><li>Section 8-ஐ பயன்படுத்தி: இந்த module-ஓட enrichment சேர்க்கும், ஆனா raw trade-capture record-ல (Section 5.2) இல்லாத ரெண்டு fields-ஐ சொல்லி, ஒவ்வொண்ணும் எதுக்கு பதில்னு விளக்குங்க.</li><li>Sections 9–12-ஐ பயன்படுத்தி: execution-க்கு பிறகு contractual terms (rate, notional, dates) மாறவே மாறாதப்பவும் trade-ஓட MTM ஏன் மாறுது?</li><li>Section 15-ஐ பயன்படுத்தி: CSA-ன் கீழ collateral post பண்றது எந்த குறிப்பிட்ட risk-ஐ குறைக்குது? inception-ல MTM பூஜ்யமா இருக்கற trade-க்கு கூட அந்த risk ஏன் இருக்கு?</li><li>Section 19 vs Section 3 callout-ஐ பயன்படுத்தி: இதே trade ஒரு currency-pair NDF-ஆ book ஆகியிருந்தா, settlement எப்படி இருக்கும்?</li><li>Sections 27–34-ஐ பயன்படுத்தி: ஒரே monolithic "trade-ஐ update பண்ணு" service call-ஐ விட, இந்த lifecycle-க்கு event-based (Kafka-style) architecture ஏன் பொருத்தம்?</li><li>Section 8-ல இருக்கும் enriched trade-ஐ பயன்படுத்தி: ISDA Taxonomy Path field, UPI field மட்டும் சொல்லாத என்ன ஒரு downstream system-க்கு சொல்லுது?</li></ol>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. CAD, மற்ற G10 currencies மாதிரியே முழுசா convertible, capital-account restrictions இல்லை; அதனால maturity-ல ரெண்டு currencies-உம் எந்த சிறப்பு dealer authorization-உம் residency test-உம் இல்லாம physically பரிமாறப்படும். <code>NDF Flag</code> field (Section 8-ஓட enriched trade-ல <code>N</code>) இதை நேரடியா capture பண்ணுது — INR போன்ற முழுசா convertible இல்லாத currency-க்கு அதே field <code>Y</code>-ஆ மாறும்.</b></p>
+<p>Section 3-ஓட callout இதை வெளிப்படையா சொல்லுது — G10 default (CAD) vs INR example, onshore/offshore நிலை Deliverable vs NDF-ஐ தீர்மானிக்குது.</p>
+<p><b>2. இவற்றில் ஏதாவது ரெண்டு: LEIs ("ரெண்டு parties-உம் எந்த legal entities"), UTI ("regulatory pairing-க்கு இது எந்த குறிப்பிட்ட transaction"), UPI ("இது எந்த product template-ஐ சேர்ந்தது"), ISDA Taxonomy Path ("இந்த product எப்படி classify ஆகுது"), அல்லது Hedge Designation ("இந்த trade ஒரு ஈடு செய்யும் commercial exposure-ஓட முறையா இணைக்கப்பட்டதா"). இவற்றில் எதுவும் raw Section 5.2 trade-capture record-ல இல்லை — trade-ஓட அடிப்படை economics தெரிஞ்சப்புறம் downstream-ல சேர்க்கப்படுது.</b></p>
+<p>Section 7-ஓட list-உம் Section 8-ஓட enriched-trade example-உம், இந்த fields enrichment-க்கு பிறகுதான் தோன்றுது, capture-ல இல்லைன்னு காட்டுது.</p>
+<p><b>3. ஏன்னா MTM, trade-ஓட சொந்த contract rate-க்கு எதிராக இல்லாம, <i>இன்றைய</i> market forward rate-க்கு எதிரா value-வை அளக்குது — contract rate (1.3545) trade date-ல என்றென்றைக்கும் fix; ஆனா market-ஓட சொந்த 3-month forward rate தினமும் மாறுது (Section 14-ஓட table trade-ஓட வாழ்நாள்ல அது 1.3400 முதல் 1.3900 வரை போவதைக் காட்டுது). அதனால MTM ரெண்டு விஷயங்களின் function: fixed contract terms, எப்பவும் மாறும் வெளிப்புற market — ரெண்டாவது மட்டும் தான் நகருது.</b></p>
+<p>Section 10-ஓட formula (<code>MTM ≈ Notional × (Current Forward Rate − Contract Forward Rate)</code>) இதை தெளிவாக்குது — Contract Forward Rate அதுல ஒரு constant, Current Forward Rate தான் ஒரே variable.</p>
+<p><b>4. CSA-ன் கீழ collateral, counterparty credit risk-ஐ குறைக்குது — trade-ஓட MTM-ல தற்போது கடன்பட்டிருக்கற party default ஆனா பணம் கட்டாம போகும் risk. Inception-ல MTM zero-வா இருந்தாலும் இந்த risk இருக்கு, ஏன்னா trade-ஓட value அதன் 3 மாச வாழ்க்கையில (Section 14-ஓட timeline) எந்த திசைலயும் கணிசமா ஊசலாடலாம் — இன்னிக்கு பூஜ்ய மதிப்புள்ள trade maturity-க்குள் ஒரு தரப்புக்கு CAD 355,000 மதிப்பாகலாம்; collateral இன்றைய snapshot-ஐ அல்ல, இந்த எதிர்கால ஊசலாட்டத்தை பாதுகாக்குது.</b></p>
+<p>Section 15-ஓட framing-உம் Section 16-ஓட Variation Margin concept-உம் collateral-ஐ ஒரு static day-one எண்ணுடன் அல்ல, காலப்போக்கில் MTM இயக்கத்திலிருந்து பாதுகாப்போடு இணைக்குது.</p>
+<p><b>5. maturity-ல ஒரே ஒரு net USD cash payment மட்டும் நகரும் — contract rate (1.3545)-க்கும் fixing date-ல வெளியிடப்பட்ட reference fixing rate-க்கும் இடையிலான வித்தியாசத்தை USD notional-ஆல பெருக்கி — CAD எதுவும் பரிமாறப்படாது. Section 19-ஓட ரெண்டு-பக்க physical exchange (ஒரு பக்கம் CAD 13,545,000, மறுபக்கம் USD 10M) NDF structure-ல நடக்கவே நடக்காது.</b></p>
+<p>Section 3-ஓட callout-உம் Section 19-ஓட physical settlement diagram-உம் சேர்த்து படிச்சா சரியா இந்த வேறுபாட்டை சொல்லுது — நடைமுறையில CAD-ஓட full convertibility காரணமா USD/CAD trade இப்படி book ஆகவே ஆகாதுன்னாலும்.</p>
+<p><b>6. ஏன்னா வெவ்வேறு downstream consumers (risk, collateral, regulatory reporting, accounting) ஒரே underlying மாற்றத்துக்கு (எ.கா. ஒரு valuation update) ஒவ்வொண்ணும் தனித்தனியா, தங்கள் சொந்த வேகத்தில், ஒன்றுக்கொண்று காத்திருக்காம, ஒரு ஒற்றை "trade service"-உடன் இறுக்கமா இணையாம எதிர்வினையாற்றணும் — Section 34-ஓட Kafka flow, ஒரு <code>valuation.updated</code> event risk-service, collateral-service, regulatory-service ஆகியவற்றுக்கு ஒரே நேரத்துல fan-out ஆவதைக் காட்டுது; ஒரு synchronous update call இவற்றை ஒரே blocking chain-க்குள் தள்ளிடும்.</b></p>
+<p>Section 33-ஓட microservices decomposition-உம் Section 34-ஓட event-fan-out diagram-உம் இதை நேரடியா விளக்குது.</p>
+<p><b>7. UPI, இந்த trade பொருந்தும் குறிப்பிட்ட வெளியிடப்பட்ட product-reference-data record எது என்பதை மட்டும் அடையாளம் காட்டுது (DSB-ல இருந்து பெறப்படும் அல்லது கோரப்படும் 12-character code) — classification structure-ஐ தானே சொல்லாது. ISDA Taxonomy Path (<code>Foreign Exchange / Forward / Deliverable / Forward</code>) என்பது UPI-ஓட reference data கட்டப்பட்ட மனிதர் படிக்கக்கூடிய classification — ஒரு downstream system அல்லது வாசகருக்கு lookup இல்லாமலே asset class, base product, sub-product, transaction type என்னன்னு உடனே சொல்லுது.</b></p>
+<p><a href="../docs/2-reporting/module-21-isda-product-taxonomy-deep-dive.html">Module 21</a> §5 இதே வம்சாவளியை சொல்லுது — taxonomy "grammar", UPI reference data அதிலிருந்து கட்டப்பட்ட "dictionary".</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 26 — USD/CAD FX Forward முழு Lifecycle (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

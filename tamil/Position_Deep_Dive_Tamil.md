@@ -1,0 +1,362 @@
+# Position Deep Dive --- தமிழ் விளக்கம்
+
+> **யாருக்காக?** Finance / Capital Markets-ஐ புதிதாகக் கற்கும் Java Software Architect.\
+> **முக்கிய குறிப்பு:** Bank of Toronto ஒரு கற்பனை வங்கி; உதாரணங்கள் கற்றலுக்காக மட்டுமே.
+
+## 1. Position என்றால் என்ன?
+
+Capital Markets-ல் **Trade** என்பது ஒரு நிகழ்வு (Event); **Position** என்பது அந்த நிகழ்வுகளின் அடிப்படையில் உருவாகும் தற்போதைய நிலை (State).
+
+ஒரு வங்கி ஒரு குறிப்பிட்ட பங்கையோ, Bond-ஐயோ வாங்கும்போது Trade உருவாகிறது. அந்த Trade-ன் விளைவாக வங்கியிடம் எவ்வளவு பங்கு அல்லது Bond உள்ளது என்பதுதான் Position.
+
+### உதாரணம்: மூன்று Trades
+
+Bank of Toronto என்ற கற்பனை வங்கி பின்வரும் Trades செய்கிறது.
+
+| நாள் | Trade | Quantity |
+|---|---|---|
+| Day 1 | 1,000 shares வாங்குகிறது | +1,000 |
+| Day 2 | மேலும் 500 shares வாங்குகிறது | +500 |
+| Day 3 | 200 shares விற்கிறது | -200 |
+| Day 3 முடிவில் | மொத்த Position | 1,300 shares |
+
+கணக்கீடு:
+
+``` text
+Position = Previous Position + Buy Quantity - Sell Quantity
+
+Position = 0 + 1,000 + 500 - 200 = 1,300 shares
+```
+
+இங்கு மூன்று Trades நடைபெற்றுள்ளன. ஆனால் Day 3 முடிவில் இருக்கும் Position என்பது 1,300 shares.
+
+**முக்கியமான வேறுபாடு:**
+
+-   Trade என்பது வரலாற்றில் நடந்த ஒரு நிகழ்வு.
+-   Position என்பது அந்த நிகழ்வுகளுக்குப் பிறகு தற்போது இருக்கும் நிலை.
+-   புதிய Trade இல்லாவிட்டாலும் Position-ன் Market Value மாறலாம்.
+-   Position Quantity பொதுவாக புதிய Trade அல்லது corporate/contractual event காரணமாக மாறும்.
+
+### Java application-ல் இதை எப்படிப் புரிந்துகொள்வது?
+
+ஒரு Trade-ஐ immutable business event ஆகவும், Position-ஐ அந்த events-ன் அடிப்படையில் கணக்கிடப்படும் தற்போதைய state ஆகவும் வடிவமைக்கலாம்.
+
+``` text
+public record Trade(
+    String tradeId,
+    String instrumentId,
+    String side,
+    double quantity,
+    double executionPrice
+) {}
+```
+
+Position-ஐ தனியாகப் பராமரிக்கலாம்:
+
+``` text
+public record Position(
+    String instrumentId,
+    double quantity,
+    double averageCost
+) {}
+```
+
+இது கருத்தை விளக்குவதற்கான எளிய உதாரணம் மட்டுமே. உண்மையான வங்கி அமைப்பில் BigDecimal, currency, trade status, settlement status, trade date, accounting rules மற்றும் instrument-specific position logic போன்றவற்றைச் சேர்க்க வேண்டும்.
+
+மேலும், எல்லா Asset Classes-க்கும் ஒரே quantity கணக்கீட்டு முறை பொருந்தாது.
+
+------------------------------------------------------------------------
+
+## 2. Position, Valuation, MTM, YTM --- இவற்றுக்கு இடையிலான தொடர்பு
+
+இந்த நான்கு சொற்களையும் முதலில் தெளிவாகப் புரிந்துகொள்ள வேண்டும்.
+
+| சொல் | பொருள் | உதாரணம் |
+|---|---|---|
+| Position | தற்போது வைத்திருக்கும் அளவு அல்லது contract exposure | CAD 10 மில்லியன் Bond |
+| Valuation | தற்போதைய சந்தை மதிப்பு | Bond-ன் தற்போதைய மதிப்பு CAD 9.9 மில்லியன் |
+| MTM | தற்போதைய சந்தை மதிப்புக்கும் முந்தைய மதிப்பீட்டு அடிப்படைக்கும் இடையிலான மாற்றம் | CAD 50,000 இழப்பு |
+| YTM | Bond-ஐ maturity வரை வைத்திருப்பதற்கான cash flows அடிப்படையிலான annualized yield | 5.21% |
+
+இவை ஒன்றுக்கொன்று தொடர்புடையவை. ஆனால் ஒன்றுக்கொன்று மாற்றாகப் பயன்படுத்தக்கூடிய சொற்கள் அல்ல.
+
+### 2.1 Valuation கணக்கீடு
+
+எளிமையான Equity உதாரணத்தில், ஒரு வங்கி 10,000 shares-ஐ USD 68.40 விலையில் வாங்குகிறது.
+
+``` text
+Cost = 10,000 × 68.40
+Cost = USD 684,000
+```
+
+ஒரு வாரத்திற்குப் பிறகு சந்தை விலை USD 71.10 ஆக உயர்கிறது.
+
+``` text
+Market Value = 10,000 × 71.10
+Market Value = USD 711,000
+
+Unrealized P&L = Market Value - Cost Basis
+Unrealized P&L = 711,000 - 684,000
+Unrealized Gain = USD 27,000
+```
+
+இந்த உதாரணத்தில் shares எண்ணிக்கை 10,000 என்றே உள்ளது. மாறியது Market Price மட்டுமே.
+
+**கவனிக்கவும்:** இது எளிமைப்படுத்தப்பட்ட கணக்கீடு. உண்மையான accounting P&L-ல் transaction costs, fees, corporate actions, FX conversion மற்றும் accounting policy ஆகியவையும் தாக்கத்தை ஏற்படுத்தலாம்.
+
+### 2.2 MTM என்றால் என்ன?
+
+MTM என்பதன் விரிவாக்கம் **Mark-to-Market**.
+
+ஒரு financial instrument-ன் தற்போதைய சந்தை நிலையைப் பயன்படுத்தி அதன் மதிப்பைக் கணக்கிடுவது MTM valuation.
+
+| விவரம் | Day 1 | Day 2 |
+|---|---|---|
+| Shares | 10,000 | 10,000 |
+| Market Price | USD 100 | USD 105 |
+| Market Value | USD 1,000,000 | USD 1,050,000 |
+
+Position Quantity மாறவில்லை. ஆனால் Market Value USD 50,000 உயர்ந்துள்ளது.
+
+``` text
+MTM Change = Current Market Value - Previous Market Value
+MTM Change = 1,050,000 - 1,000,000
+MTM Change = USD 50,000
+```
+
+இது பொதுவான விளக்கமாகும். ஒரு instrument-ன் மொத்த MTM மற்றும் ஒரு நாளின் MTM Change ஆகியவை வேறுபட்ட அளவீடுகள் என்பதை நினைவில் கொள்ள வேண்டும்.
+
+### 2.3 YTM ஏன் Position Size-ஐப் பொறுத்தது இல்லை?
+
+ஒரே Bond-ஐ இரண்டு வங்கிகள் வைத்திருப்பதாகக் கொள்வோம்.
+
+| விவரம் | Bank A | Bank B |
+|---|---|---|
+| Bond | Canada 5% Bond 2035 | Canada 5% Bond 2035 |
+| Face Value | CAD 10 மில்லியன் | CAD 100 மில்லியன் |
+| YTM | 5.21% | 5.21% |
+
+ஒரே Bond-ன் ஒரே cash-flow assumptions மற்றும் ஒரே market price இருந்தால், இரு வங்கிகளுக்கும் YTM ஒரே அளவாக இருக்கலாம். ஆனால் அவற்றின் முதலீட்டு அளவு வேறுபடுகிறது.
+
+இதன் விளைவாக, ஒரே yield movement காரணமாக ஏற்படும் Dollar P&L பொதுவாக Position Size-க்கு ஏற்ப மாறும்.
+
+> **நினைவில் வைத்துக்கொள்ள வேண்டிய விதி:** YTM என்பது Bond-ன் yield-ஐக் குறிக்கும் rate. DV01 போன்ற dollar sensitivity-கள் Position Size-ஐயும் பிரதிபலிக்கின்றன.
+
+------------------------------------------------------------------------
+
+## 3. DV01 மற்றும் Basis Points
+
+Bond Valuation மற்றும் Risk Management-ல் DV01 மிக முக்கியமானது.
+
+**DV01** என்பது Yield ஒரு Basis Point (0.01 percentage point) மாறும்போது Bond-ன் Market Value-ல் ஏற்படும் தோராயமான Dollar மாற்றம்.
+
+ஒரு Bond-ன் DV01 CAD 7,092 என்று வைத்துக்கொள்வோம். இதன் பொருள், Yield 1 basis point உயர்ந்தால் Bond-ன் மதிப்பு சுமார் CAD 7,092 குறையலாம்; இது வழக்கமான fixed-rate bond-க்கான தோராயமான விளக்கம். Yield குறைந்தால் எதிர்திசையில் மாற்றம் ஏற்படலாம்.
+
+### Worked Example
+
+கொடுக்கப்பட்டவை:
+
+-   Face Value = CAD 10,000,000
+-   DV01 = CAD 7,092 per basis point
+-   Yield Change = +25 basis points
+
+தோராயமான MTM Change:
+
+``` text
+MTM Change ≈ -DV01 × Yield Change in bps
+MTM Change ≈ -7,092 × 25
+MTM Change ≈ -CAD 177,300
+```
+
+இங்கு minus sign என்பது Bond Value குறைவதைக் குறிக்கிறது. இது duration-based linear approximation. பெரிய yield movements-ல் Convexity காரணமாக உண்மையான மதிப்பு மாற்றம் இதிலிருந்து வேறுபடலாம்.
+
+### Position Size ஏன் முக்கியம்?
+
+Face Value CAD 20 மில்லியனாக இரட்டிப்பானால், மற்ற assumptions மாறாமல் இருந்தால் DV01 சுமார் CAD 14,184 ஆக இரட்டிப்பாகும். அதே 25 bp yield rise-க்கு:
+
+``` text
+MTM Change ≈ -14,184 × 25
+MTM Change ≈ -CAD 354,600
+```
+
+அதாவது, Position Size இரட்டிப்பானதால் தோராயமான Dollar Impact-ம் இரட்டிப்பாகிறது.
+
+------------------------------------------------------------------------
+
+## 4. வெவ்வேறு Asset Classes-ல் Position எப்படி மாறுகிறது?
+
+எல்லா Financial Instruments-க்கும் ஒரே Position Model பயன்படுத்த முடியாது.
+
+| Asset Class | Position எதைக் குறிக்கிறது? | முக்கியமான வேறுபாடு |
+|---|---|---|
+| Equity | Shares எண்ணிக்கை | உண்மையில் வைத்திருக்கும் அல்லது short செய்யப்பட்ட shares |
+| Fixed Income | Bond Face Value | Principal exposure மற்றும் accrued interest |
+| FX | இரண்டு Currency Balances | ஒரு Trade இரண்டு currencies-ஐ மாற்றுகிறது |
+| Interest Rate Swap | Contract Notional மற்றும் Terms | Notional என்பது வைத்திருக்கும் பணத்தின் அளவு என்று பொருளல்ல |
+| Credit Default Swap | Protection Notional மற்றும் Contract Terms | Protection வாங்கப்பட்டதா அல்லது விற்கப்பட்டதா என்பது முக்கியம் |
+| Commodities Futures | Contracts அல்லது Lots எண்ணிக்கை | Daily Settlement மற்றும் Variation Margin முக்கியம் |
+
+### FX Position உதாரணம்
+
+Bank of Toronto USD 10 மில்லியனை வாங்குகிறது. Spot Rate: USD/CAD = 1.3500
+
+``` text
+CAD Amount = USD 10,000,000 × 1.3500
+CAD Amount = CAD 13,500,000
+```
+
+இதனால் இரண்டு Position Balances மாறுகின்றன:
+
+-   USD Position: +USD 10,000,000
+-   CAD Position: -CAD 13,500,000
+
+ஒரு Trade இரண்டு currency balances-ஐ மாற்றுகிறது.
+
+ஒரு வாரத்திற்குப் பிறகு USD/CAD விகிதம் 1.3550 ஆகிறது என்று வைத்துக்கொள்வோம்.
+
+``` text
+USD Value in CAD = 10,000,000 × 1.3550
+USD Value in CAD = CAD 13,550,000
+```
+
+ஆரம்ப விகிதத்துடன் ஒப்பிடும்போது USD leg-ன் CAD மதிப்பு CAD 50,000 உயர்ந்துள்ளது.
+
+இது எளிமைப்படுத்தப்பட்ட விளக்கம். முழுமையான FX P&L-ல் CAD liability leg, settlement, funding மற்றும் valuation conventions ஆகியவற்றையும் கணக்கில் எடுத்துக்கொள்ள வேண்டும்.
+
+------------------------------------------------------------------------
+
+## 5. Position-க்கு மூன்று வேறுபட்ட Clocks
+
+ஒரு Financial System-ல் Position தொடர்பான எல்லா தரவுகளும் ஒரே நேரத்தில் மாறுவதில்லை.
+
+| Clock | எது மாறுகிறது? | எதனால்? |
+|---|---|---|
+| Trade Clock | Position Quantity அல்லது Notional | புதிய Trade அல்லது அதன் மாற்றம் |
+| Market Clock | Valuation / MTM | Market Price, Yield, FX Rate அல்லது Spread மாற்றம் |
+| Event Clock | Contract அல்லது Security நிலை | Stock Split, Coupon, Reset, Maturity போன்ற நிகழ்வுகள் |
+
+### உதாரணம்
+
+ஒரு வங்கியிடம் 10,000 shares உள்ளன. காலை 10 மணிக்கு Share Price ₹100. மதியம் 12 மணிக்கு Share Price ₹105. வங்கி புதிய Trade எதுவும் செய்யவில்லை. அப்போது:
+
+-   Position Quantity = 10,000 shares
+-   Market Value = ₹10,50,000
+-   முந்தைய ₹10,00,000 மதிப்புடன் ஒப்பிடும்போது அதிகரிப்பு = ₹50,000
+
+Quantity மாறவில்லை; Valuation மாறியுள்ளது.
+
+ஆனால் Stock Split ஏற்பட்டால், புதிய Trade இல்லாமலேயே Position Quantity மாறக்கூடும்.
+
+எனவே, Production System-ல் ஒவ்வொரு Position-க்கும் asOfTimestamp, valuationTimestamp, businessDate போன்ற கால அடையாளங்கள் தேவைப்படலாம். Intraday Position மற்றும் End-of-Day Position ஆகியவற்றுக்கும் இடையிலான வேறுபாட்டையும் கவனத்தில் கொள்ள வேண்டும்.
+
+------------------------------------------------------------------------
+
+## 6. Position மற்றும் Regulatory Reporting
+
+Financial Institutions-ல் Position-ஐச் சரியாகப் பராமரிப்பது Valuation மற்றும் Risk Management-க்கு மட்டுமல்ல; Regulatory Reporting-க்கும் முக்கியம்.
+
+தொடர்புடைய reporting regimes:
+
+-   EMIR / Dodd-Frank
+-   SFTR
+-   MiFID II Position Reporting
+-   CFTC Large Trader Reporting
+-   Exchange Futures Margining
+
+இவற்றின் reporting scope மற்றும் frequency ஒரே மாதிரியானவை அல்ல. OTC derivatives மற்றும் Securities Financing Transactions-க்கு daily valuation updates, commodity position reporting மற்றும் futures margining ஆகியவை தனித்தனியாகப் பொருந்தும்.
+
+### எளிய உதாரணம்
+
+ஒரு வங்கியிடம் OTC Interest Rate Swap உள்ளது. Day 1-ல் Swap-ன் MTM மதிப்பு கணக்கிடப்படுகிறது. Day 2-ல் சந்தை விகிதங்கள் மாறுகின்றன. புதிய Trade எதுவும் நடைபெறவில்லை என்றாலும் Swap-ன் MTM மாறலாம்.
+
+எனவே, அந்த instrument-க்கு பொருந்தும் regulatory rules அடிப்படையில் valuation data மீண்டும் தயாரிக்கப்பட வேண்டியிருக்கலாம்.
+
+> **முக்கிய குறிப்பு:** உண்மையான reporting obligation என்பது instrument, counterparty, jurisdiction, applicable regulation மற்றும் reporting rules ஆகியவற்றைப் பொறுத்தது. அனைத்து Positions-க்கும் ஒரே reporting rule பொருந்தும் என்று கருதக்கூடாது.
+
+------------------------------------------------------------------------
+
+## 7. Java Software Architect பார்வையில் முக்கியமான System Design
+
+ஒரு Capital Markets Position Management System-ல் பின்வரும் components இருக்கலாம்:
+
+``` text
+Trade Capture
+     |
+     v
+Trade Validation
+     |
+     v
+Position Engine
+     |
+     +------> Position Store
+     |
+     +------> Market Data Service
+                    |
+                    v
+              Valuation Engine
+                    |
+          +---------+---------+
+          |                   |
+          v                   v
+       MTM / P&L          Risk Engine
+          |                   |
+          +---------+---------+
+                    |
+                    v
+            Regulatory Reporting
+```
+
+இது ஒரு conceptual architecture மட்டுமே.
+
+### பரிந்துரைக்கப்படும் முக்கியமான Data Entities
+
+| Entity | பொறுப்பு |
+|---|---|
+| Trade | ஒவ்வொரு வர்த்தக நிகழ்வையும் பதிவு செய்தல் |
+| Instrument | Security அல்லது Contract விவரங்கள் |
+| Position | தற்போதைய Position நிலை |
+| MarketData | Price, Yield, FX Rate, Spread |
+| Valuation | குறிப்பிட்ட நேரத்திற்கான Market Value |
+| PnLRecord | P&L மற்றும் அதன் மாற்றங்கள் |
+| RiskMeasure | DV01, VaR போன்ற அளவீடுகள் |
+| RegulatoryReport | Reporting தேவைகளுக்கான தரவு |
+
+### Production-ல் கவனிக்க வேண்டியவை
+
+1.  ஒரே Trade இரண்டு முறை process செய்யப்பட்டால் Position தவறாக அதிகரிக்கக்கூடாது.
+2.  Cancel அல்லது Correct செய்யப்பட்ட Trade-கள் சரியான முறையில் கையாளப்பட வேண்டும்.
+3.  Position கணக்கீடுகள் மீண்டும் இயக்கக்கூடியதாக இருக்க வேண்டும்.
+4.  Position மற்றும் Valuation எந்த Business Date-ஐச் சேர்ந்தவை என்பது தெளிவாக இருக்க வேண்டும்.
+5.  Market Data மாற்றங்களையும் Trade மாற்றங்களையும் தனித்தனியாகக் கையாள வேண்டும்.
+6.  End-of-Day Position-ஐ Trade Records மற்றும் Settlement Records உடன் reconcile செய்ய வேண்டும்.
+7.  Asset-Class-specific rules-ஐ ஒரே generic formula-வாகச் சுருக்கக் கூடாது.
+
+------------------------------------------------------------------------
+
+## 8. Recap Quiz
+
+**Q1.** Trade மற்றும் Position இடையிலான அடிப்படை வேறுபாடு என்ன?
+
+**Q2.** Position Quantity மாறாமல் Market Value மாறுவதற்கு என்ன காரணம்?
+
+**Q3.** ஒரே Bond-ன் YTM இரண்டு வங்கிகளுக்கும் ஒரே மாதிரியாக இருந்தாலும் Dollar P&L ஏன் வேறுபடலாம்?
+
+**Q4.** FX Position-ஐ இரண்டு Currency Balances என்று ஏன் குறிப்பிடுகிறோம்?
+
+**Q5.** Bond-ன் DV01 Position Size-க்கு ஏற்ப ஏன் மாறுகிறது?
+
+**Q6.** Trade Clock, Market Clock மற்றும் Event Clock ஆகியவற்றுக்கு இடையிலான வேறுபாடு என்ன?
+
+**Q7.** Position தவறாக இருந்தால் Valuation, VaR மற்றும் Regulatory Reporting-ல் என்ன தாக்கம் ஏற்படும்?
+
+------------------------------------------------------------------------
+
+## 9. விடைகள்
+
+1.  Trade என்பது ஒரு நிகழ்வு; Position என்பது அந்த நிகழ்வுகளின் அடிப்படையில் உருவாகும் தற்போதைய நிலை.
+2.  Market Price, Yield, FX Rate அல்லது Spread மாறுவதால்.
+3.  Position Size வேறுபடுவதால் Dollar Sensitivity மற்றும் Dollar P&L மாறும்.
+4.  ஒரு FX Trade ஒரு Currency-ஐ வாங்கி மற்றொரு Currency-ஐ விற்பதால் இரண்டு balances மாறுகின்றன.
+5.  மற்ற assumptions மாறாமல் இருந்தால், Position Size இரட்டிப்பானால் Dollar DV01-ம் தோராயமாக இரட்டிப்பாகும்.
+6.  Trade Clock என்பது Position Quantity மாற்றத்தையும், Market Clock என்பது Valuation மாற்றத்தையும், Event Clock என்பது Corporate அல்லது Contractual Event-களால் ஏற்படும் மாற்றத்தையும் குறிக்கிறது.
+7.  தவறான Position downstream Valuation, P&L, Risk மற்றும் Regulatory Reporting ஆகிய அனைத்தையும் பாதிக்கக்கூடும்.

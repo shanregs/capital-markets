@@ -1,0 +1,734 @@
+<!doctype html>
+<title>Position Deep Dive — தமிழ் விளக்கம்</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Position Deep Dive — தமிழ் விளக்கம்</h1>
+    <p class="dek">Trade vs Position, Valuation / MTM / YTM, DV01 and basis points, position models across asset classes, the three clocks, regulatory reporting and Java system design — explained in Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets-ஐ புதிதாகக் கற்கும் Java Software Architect.<br><b>முக்கிய குறிப்பு:</b> Bank of Toronto ஒரு கற்பனை வங்கி; உதாரணங்கள் கற்றலுக்காக மட்டுமே.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-position-என்றால்-என்ன"><span class="toc-num">01</span>1. Position என்றால் என்ன?</a></li>
+      <li><a href="#2-position-valuation-mtm-ytm-இவற்றுக்கு-இடையிலான-தொடர்பு"><span class="toc-num">02</span>2. Position, Valuation, MTM, YTM --- இவற்றுக்கு இடையிலான தொடர்பு</a></li>
+      <li><a href="#3-dv01-மற்றும்-basis-points"><span class="toc-num">03</span>3. DV01 மற்றும் Basis Points</a></li>
+      <li><a href="#4-வெவ்வேறு-asset-classes-ல்-position-எப்படி-மாறுகிறது"><span class="toc-num">04</span>4. வெவ்வேறு Asset Classes-ல் Position எப்படி மாறுகிறது?</a></li>
+      <li><a href="#5-position-க்கு-மூன்று-வேறுபட்ட-clocks"><span class="toc-num">05</span>5. Position-க்கு மூன்று வேறுபட்ட Clocks</a></li>
+      <li><a href="#6-position-மற்றும்-regulatory-reporting"><span class="toc-num">06</span>6. Position மற்றும் Regulatory Reporting</a></li>
+      <li><a href="#7-java-software-architect-பார்வையில்-முக்கியமான-system-design"><span class="toc-num">07</span>7. Java Software Architect பார்வையில் முக்கியமான System Design</a></li>
+      <li><a href="#8-recap-quiz"><span class="toc-num">08</span>8. Recap Quiz</a></li>
+      <li><a href="#9-விடைகள்"><span class="toc-num">09</span>9. விடைகள்</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-position-என்றால்-என்ன">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Position என்றால் என்ன?</h2>
+      <p>Capital Markets-ல் <b>Trade</b> என்பது ஒரு நிகழ்வு (Event); <b>Position</b> என்பது அந்த நிகழ்வுகளின் அடிப்படையில் உருவாகும் தற்போதைய நிலை (State).</p>
+<p>ஒரு வங்கி ஒரு குறிப்பிட்ட பங்கையோ, Bond-ஐயோ வாங்கும்போது Trade உருவாகிறது. அந்த Trade-ன் விளைவாக வங்கியிடம் எவ்வளவு பங்கு அல்லது Bond உள்ளது என்பதுதான் Position.</p>
+<h3>உதாரணம்: மூன்று Trades</h3>
+<p>Bank of Toronto என்ற கற்பனை வங்கி பின்வரும் Trades செய்கிறது.</p>
+<div class="table-scroll"><table><thead><tr><th>நாள்</th><th>Trade</th><th>Quantity</th></tr></thead><tbody><tr><td>Day 1</td><td>1,000 shares வாங்குகிறது</td><td>+1,000</td></tr><tr><td>Day 2</td><td>மேலும் 500 shares வாங்குகிறது</td><td>+500</td></tr><tr><td>Day 3</td><td>200 shares விற்கிறது</td><td>-200</td></tr><tr><td>Day 3 முடிவில்</td><td>மொத்த Position</td><td>1,300 shares</td></tr></tbody></table></div>
+<p>கணக்கீடு:</p>
+<div class="ticket"><pre>Position = Previous Position + Buy Quantity - Sell Quantity
+
+Position = 0 + 1,000 + 500 - 200 = 1,300 shares</pre></div>
+<p>இங்கு மூன்று Trades நடைபெற்றுள்ளன. ஆனால் Day 3 முடிவில் இருக்கும் Position என்பது 1,300 shares.</p>
+<p><b>முக்கியமான வேறுபாடு:</b></p>
+<ul><li>Trade என்பது வரலாற்றில் நடந்த ஒரு நிகழ்வு.</li><li>Position என்பது அந்த நிகழ்வுகளுக்குப் பிறகு தற்போது இருக்கும் நிலை.</li><li>புதிய Trade இல்லாவிட்டாலும் Position-ன் Market Value மாறலாம்.</li><li>Position Quantity பொதுவாக புதிய Trade அல்லது corporate/contractual event காரணமாக மாறும்.</li></ul>
+<h3>Java application-ல் இதை எப்படிப் புரிந்துகொள்வது?</h3>
+<p>ஒரு Trade-ஐ immutable business event ஆகவும், Position-ஐ அந்த events-ன் அடிப்படையில் கணக்கிடப்படும் தற்போதைய state ஆகவும் வடிவமைக்கலாம்.</p>
+<div class="ticket"><pre>public record Trade(
+    String tradeId,
+    String instrumentId,
+    String side,
+    double quantity,
+    double executionPrice
+) {}</pre></div>
+<p>Position-ஐ தனியாகப் பராமரிக்கலாம்:</p>
+<div class="ticket"><pre>public record Position(
+    String instrumentId,
+    double quantity,
+    double averageCost
+) {}</pre></div>
+<p>இது கருத்தை விளக்குவதற்கான எளிய உதாரணம் மட்டுமே. உண்மையான வங்கி அமைப்பில் BigDecimal, currency, trade status, settlement status, trade date, accounting rules மற்றும் instrument-specific position logic போன்றவற்றைச் சேர்க்க வேண்டும்.</p>
+<p>மேலும், எல்லா Asset Classes-க்கும் ஒரே quantity கணக்கீட்டு முறை பொருந்தாது.</p>
+    </section>
+    <section class="mod" id="2-position-valuation-mtm-ytm-இவற்றுக்கு-இடையிலான-தொடர்பு">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Position, Valuation, MTM, YTM --- இவற்றுக்கு இடையிலான தொடர்பு</h2>
+      <p>இந்த நான்கு சொற்களையும் முதலில் தெளிவாகப் புரிந்துகொள்ள வேண்டும்.</p>
+<div class="table-scroll"><table><thead><tr><th>சொல்</th><th>பொருள்</th><th>உதாரணம்</th></tr></thead><tbody><tr><td>Position</td><td>தற்போது வைத்திருக்கும் அளவு அல்லது contract exposure</td><td>CAD 10 மில்லியன் Bond</td></tr><tr><td>Valuation</td><td>தற்போதைய சந்தை மதிப்பு</td><td>Bond-ன் தற்போதைய மதிப்பு CAD 9.9 மில்லியன்</td></tr><tr><td>MTM</td><td>தற்போதைய சந்தை மதிப்புக்கும் முந்தைய மதிப்பீட்டு அடிப்படைக்கும் இடையிலான மாற்றம்</td><td>CAD 50,000 இழப்பு</td></tr><tr><td>YTM</td><td>Bond-ஐ maturity வரை வைத்திருப்பதற்கான cash flows அடிப்படையிலான annualized yield</td><td>5.21%</td></tr></tbody></table></div>
+<p>இவை ஒன்றுக்கொன்று தொடர்புடையவை. ஆனால் ஒன்றுக்கொன்று மாற்றாகப் பயன்படுத்தக்கூடிய சொற்கள் அல்ல.</p>
+<h3>2.1 Valuation கணக்கீடு</h3>
+<p>எளிமையான Equity உதாரணத்தில், ஒரு வங்கி 10,000 shares-ஐ USD 68.40 விலையில் வாங்குகிறது.</p>
+<div class="ticket"><pre>Cost = 10,000 × 68.40
+Cost = USD 684,000</pre></div>
+<p>ஒரு வாரத்திற்குப் பிறகு சந்தை விலை USD 71.10 ஆக உயர்கிறது.</p>
+<div class="ticket"><pre>Market Value = 10,000 × 71.10
+Market Value = USD 711,000
+
+Unrealized P&amp;L = Market Value - Cost Basis
+Unrealized P&amp;L = 711,000 - 684,000
+Unrealized Gain = USD 27,000</pre></div>
+<p>இந்த உதாரணத்தில் shares எண்ணிக்கை 10,000 என்றே உள்ளது. மாறியது Market Price மட்டுமே.</p>
+<p><b>கவனிக்கவும்:</b> இது எளிமைப்படுத்தப்பட்ட கணக்கீடு. உண்மையான accounting P&amp;L-ல் transaction costs, fees, corporate actions, FX conversion மற்றும் accounting policy ஆகியவையும் தாக்கத்தை ஏற்படுத்தலாம்.</p>
+<h3>2.2 MTM என்றால் என்ன?</h3>
+<p>MTM என்பதன் விரிவாக்கம் <b>Mark-to-Market</b>.</p>
+<p>ஒரு financial instrument-ன் தற்போதைய சந்தை நிலையைப் பயன்படுத்தி அதன் மதிப்பைக் கணக்கிடுவது MTM valuation.</p>
+<div class="table-scroll"><table><thead><tr><th>விவரம்</th><th>Day 1</th><th>Day 2</th></tr></thead><tbody><tr><td>Shares</td><td>10,000</td><td>10,000</td></tr><tr><td>Market Price</td><td>USD 100</td><td>USD 105</td></tr><tr><td>Market Value</td><td>USD 1,000,000</td><td>USD 1,050,000</td></tr></tbody></table></div>
+<p>Position Quantity மாறவில்லை. ஆனால் Market Value USD 50,000 உயர்ந்துள்ளது.</p>
+<div class="ticket"><pre>MTM Change = Current Market Value - Previous Market Value
+MTM Change = 1,050,000 - 1,000,000
+MTM Change = USD 50,000</pre></div>
+<p>இது பொதுவான விளக்கமாகும். ஒரு instrument-ன் மொத்த MTM மற்றும் ஒரு நாளின் MTM Change ஆகியவை வேறுபட்ட அளவீடுகள் என்பதை நினைவில் கொள்ள வேண்டும்.</p>
+<h3>2.3 YTM ஏன் Position Size-ஐப் பொறுத்தது இல்லை?</h3>
+<p>ஒரே Bond-ஐ இரண்டு வங்கிகள் வைத்திருப்பதாகக் கொள்வோம்.</p>
+<div class="table-scroll"><table><thead><tr><th>விவரம்</th><th>Bank A</th><th>Bank B</th></tr></thead><tbody><tr><td>Bond</td><td>Canada 5% Bond 2035</td><td>Canada 5% Bond 2035</td></tr><tr><td>Face Value</td><td>CAD 10 மில்லியன்</td><td>CAD 100 மில்லியன்</td></tr><tr><td>YTM</td><td>5.21%</td><td>5.21%</td></tr></tbody></table></div>
+<p>ஒரே Bond-ன் ஒரே cash-flow assumptions மற்றும் ஒரே market price இருந்தால், இரு வங்கிகளுக்கும் YTM ஒரே அளவாக இருக்கலாம். ஆனால் அவற்றின் முதலீட்டு அளவு வேறுபடுகிறது.</p>
+<p>இதன் விளைவாக, ஒரே yield movement காரணமாக ஏற்படும் Dollar P&amp;L பொதுவாக Position Size-க்கு ஏற்ப மாறும்.</p>
+<div class="callout"><b>நினைவில் வைத்துக்கொள்ள வேண்டிய விதி:</b> YTM என்பது Bond-ன் yield-ஐக் குறிக்கும் rate. DV01 போன்ற dollar sensitivity-கள் Position Size-ஐயும் பிரதிபலிக்கின்றன.</div>
+    </section>
+    <section class="mod" id="3-dv01-மற்றும்-basis-points">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. DV01 மற்றும் Basis Points</h2>
+      <p>Bond Valuation மற்றும் Risk Management-ல் DV01 மிக முக்கியமானது.</p>
+<p><b>DV01</b> என்பது Yield ஒரு Basis Point (0.01 percentage point) மாறும்போது Bond-ன் Market Value-ல் ஏற்படும் தோராயமான Dollar மாற்றம்.</p>
+<p>ஒரு Bond-ன் DV01 CAD 7,092 என்று வைத்துக்கொள்வோம். இதன் பொருள், Yield 1 basis point உயர்ந்தால் Bond-ன் மதிப்பு சுமார் CAD 7,092 குறையலாம்; இது வழக்கமான fixed-rate bond-க்கான தோராயமான விளக்கம். Yield குறைந்தால் எதிர்திசையில் மாற்றம் ஏற்படலாம்.</p>
+<h3>Worked Example</h3>
+<p>கொடுக்கப்பட்டவை:</p>
+<ul><li>Face Value = CAD 10,000,000</li><li>DV01 = CAD 7,092 per basis point</li><li>Yield Change = +25 basis points</li></ul>
+<p>தோராயமான MTM Change:</p>
+<div class="ticket"><pre>MTM Change ≈ -DV01 × Yield Change in bps
+MTM Change ≈ -7,092 × 25
+MTM Change ≈ -CAD 177,300</pre></div>
+<p>இங்கு minus sign என்பது Bond Value குறைவதைக் குறிக்கிறது. இது duration-based linear approximation. பெரிய yield movements-ல் Convexity காரணமாக உண்மையான மதிப்பு மாற்றம் இதிலிருந்து வேறுபடலாம்.</p>
+<h3>Position Size ஏன் முக்கியம்?</h3>
+<p>Face Value CAD 20 மில்லியனாக இரட்டிப்பானால், மற்ற assumptions மாறாமல் இருந்தால் DV01 சுமார் CAD 14,184 ஆக இரட்டிப்பாகும். அதே 25 bp yield rise-க்கு:</p>
+<div class="ticket"><pre>MTM Change ≈ -14,184 × 25
+MTM Change ≈ -CAD 354,600</pre></div>
+<p>அதாவது, Position Size இரட்டிப்பானதால் தோராயமான Dollar Impact-ம் இரட்டிப்பாகிறது.</p>
+    </section>
+    <section class="mod" id="4-வெவ்வேறு-asset-classes-ல்-position-எப்படி-மாறுகிறது">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. வெவ்வேறு Asset Classes-ல் Position எப்படி மாறுகிறது?</h2>
+      <p>எல்லா Financial Instruments-க்கும் ஒரே Position Model பயன்படுத்த முடியாது.</p>
+<div class="table-scroll"><table><thead><tr><th>Asset Class</th><th>Position எதைக் குறிக்கிறது?</th><th>முக்கியமான வேறுபாடு</th></tr></thead><tbody><tr><td>Equity</td><td>Shares எண்ணிக்கை</td><td>உண்மையில் வைத்திருக்கும் அல்லது short செய்யப்பட்ட shares</td></tr><tr><td>Fixed Income</td><td>Bond Face Value</td><td>Principal exposure மற்றும் accrued interest</td></tr><tr><td>FX</td><td>இரண்டு Currency Balances</td><td>ஒரு Trade இரண்டு currencies-ஐ மாற்றுகிறது</td></tr><tr><td>Interest Rate Swap</td><td>Contract Notional மற்றும் Terms</td><td>Notional என்பது வைத்திருக்கும் பணத்தின் அளவு என்று பொருளல்ல</td></tr><tr><td>Credit Default Swap</td><td>Protection Notional மற்றும் Contract Terms</td><td>Protection வாங்கப்பட்டதா அல்லது விற்கப்பட்டதா என்பது முக்கியம்</td></tr><tr><td>Commodities Futures</td><td>Contracts அல்லது Lots எண்ணிக்கை</td><td>Daily Settlement மற்றும் Variation Margin முக்கியம்</td></tr></tbody></table></div>
+<h3>FX Position உதாரணம்</h3>
+<p>Bank of Toronto USD 10 மில்லியனை வாங்குகிறது. Spot Rate: USD/CAD = 1.3500</p>
+<div class="ticket"><pre>CAD Amount = USD 10,000,000 × 1.3500
+CAD Amount = CAD 13,500,000</pre></div>
+<p>இதனால் இரண்டு Position Balances மாறுகின்றன:</p>
+<ul><li>USD Position: +USD 10,000,000</li><li>CAD Position: -CAD 13,500,000</li></ul>
+<p>ஒரு Trade இரண்டு currency balances-ஐ மாற்றுகிறது.</p>
+<p>ஒரு வாரத்திற்குப் பிறகு USD/CAD விகிதம் 1.3550 ஆகிறது என்று வைத்துக்கொள்வோம்.</p>
+<div class="ticket"><pre>USD Value in CAD = 10,000,000 × 1.3550
+USD Value in CAD = CAD 13,550,000</pre></div>
+<p>ஆரம்ப விகிதத்துடன் ஒப்பிடும்போது USD leg-ன் CAD மதிப்பு CAD 50,000 உயர்ந்துள்ளது.</p>
+<p>இது எளிமைப்படுத்தப்பட்ட விளக்கம். முழுமையான FX P&amp;L-ல் CAD liability leg, settlement, funding மற்றும் valuation conventions ஆகியவற்றையும் கணக்கில் எடுத்துக்கொள்ள வேண்டும்.</p>
+    </section>
+    <section class="mod" id="5-position-க்கு-மூன்று-வேறுபட்ட-clocks">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Position-க்கு மூன்று வேறுபட்ட Clocks</h2>
+      <p>ஒரு Financial System-ல் Position தொடர்பான எல்லா தரவுகளும் ஒரே நேரத்தில் மாறுவதில்லை.</p>
+<div class="table-scroll"><table><thead><tr><th>Clock</th><th>எது மாறுகிறது?</th><th>எதனால்?</th></tr></thead><tbody><tr><td>Trade Clock</td><td>Position Quantity அல்லது Notional</td><td>புதிய Trade அல்லது அதன் மாற்றம்</td></tr><tr><td>Market Clock</td><td>Valuation / MTM</td><td>Market Price, Yield, FX Rate அல்லது Spread மாற்றம்</td></tr><tr><td>Event Clock</td><td>Contract அல்லது Security நிலை</td><td>Stock Split, Coupon, Reset, Maturity போன்ற நிகழ்வுகள்</td></tr></tbody></table></div>
+<h3>உதாரணம்</h3>
+<p>ஒரு வங்கியிடம் 10,000 shares உள்ளன. காலை 10 மணிக்கு Share Price ₹100. மதியம் 12 மணிக்கு Share Price ₹105. வங்கி புதிய Trade எதுவும் செய்யவில்லை. அப்போது:</p>
+<ul><li>Position Quantity = 10,000 shares</li><li>Market Value = ₹10,50,000</li><li>முந்தைய ₹10,00,000 மதிப்புடன் ஒப்பிடும்போது அதிகரிப்பு = ₹50,000</li></ul>
+<p>Quantity மாறவில்லை; Valuation மாறியுள்ளது.</p>
+<p>ஆனால் Stock Split ஏற்பட்டால், புதிய Trade இல்லாமலேயே Position Quantity மாறக்கூடும்.</p>
+<p>எனவே, Production System-ல் ஒவ்வொரு Position-க்கும் asOfTimestamp, valuationTimestamp, businessDate போன்ற கால அடையாளங்கள் தேவைப்படலாம். Intraday Position மற்றும் End-of-Day Position ஆகியவற்றுக்கும் இடையிலான வேறுபாட்டையும் கவனத்தில் கொள்ள வேண்டும்.</p>
+    </section>
+    <section class="mod" id="6-position-மற்றும்-regulatory-reporting">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Position மற்றும் Regulatory Reporting</h2>
+      <p>Financial Institutions-ல் Position-ஐச் சரியாகப் பராமரிப்பது Valuation மற்றும் Risk Management-க்கு மட்டுமல்ல; Regulatory Reporting-க்கும் முக்கியம்.</p>
+<p>தொடர்புடைய reporting regimes:</p>
+<ul><li>EMIR / Dodd-Frank</li><li>SFTR</li><li>MiFID II Position Reporting</li><li>CFTC Large Trader Reporting</li><li>Exchange Futures Margining</li></ul>
+<p>இவற்றின் reporting scope மற்றும் frequency ஒரே மாதிரியானவை அல்ல. OTC derivatives மற்றும் Securities Financing Transactions-க்கு daily valuation updates, commodity position reporting மற்றும் futures margining ஆகியவை தனித்தனியாகப் பொருந்தும்.</p>
+<h3>எளிய உதாரணம்</h3>
+<p>ஒரு வங்கியிடம் OTC Interest Rate Swap உள்ளது. Day 1-ல் Swap-ன் MTM மதிப்பு கணக்கிடப்படுகிறது. Day 2-ல் சந்தை விகிதங்கள் மாறுகின்றன. புதிய Trade எதுவும் நடைபெறவில்லை என்றாலும் Swap-ன் MTM மாறலாம்.</p>
+<p>எனவே, அந்த instrument-க்கு பொருந்தும் regulatory rules அடிப்படையில் valuation data மீண்டும் தயாரிக்கப்பட வேண்டியிருக்கலாம்.</p>
+<div class="callout"><b>முக்கிய குறிப்பு:</b> உண்மையான reporting obligation என்பது instrument, counterparty, jurisdiction, applicable regulation மற்றும் reporting rules ஆகியவற்றைப் பொறுத்தது. அனைத்து Positions-க்கும் ஒரே reporting rule பொருந்தும் என்று கருதக்கூடாது.</div>
+    </section>
+    <section class="mod" id="7-java-software-architect-பார்வையில்-முக்கியமான-system-design">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Java Software Architect பார்வையில் முக்கியமான System Design</h2>
+      <p>ஒரு Capital Markets Position Management System-ல் பின்வரும் components இருக்கலாம்:</p>
+<div class="ticket"><pre>Trade Capture
+     |
+     v
+Trade Validation
+     |
+     v
+Position Engine
+     |
+     +------&gt; Position Store
+     |
+     +------&gt; Market Data Service
+                    |
+                    v
+              Valuation Engine
+                    |
+          +---------+---------+
+          |                   |
+          v                   v
+       MTM / P&amp;L          Risk Engine
+          |                   |
+          +---------+---------+
+                    |
+                    v
+            Regulatory Reporting</pre></div>
+<p>இது ஒரு conceptual architecture மட்டுமே.</p>
+<h3>பரிந்துரைக்கப்படும் முக்கியமான Data Entities</h3>
+<div class="table-scroll"><table><thead><tr><th>Entity</th><th>பொறுப்பு</th></tr></thead><tbody><tr><td>Trade</td><td>ஒவ்வொரு வர்த்தக நிகழ்வையும் பதிவு செய்தல்</td></tr><tr><td>Instrument</td><td>Security அல்லது Contract விவரங்கள்</td></tr><tr><td>Position</td><td>தற்போதைய Position நிலை</td></tr><tr><td>MarketData</td><td>Price, Yield, FX Rate, Spread</td></tr><tr><td>Valuation</td><td>குறிப்பிட்ட நேரத்திற்கான Market Value</td></tr><tr><td>PnLRecord</td><td>P&amp;L மற்றும் அதன் மாற்றங்கள்</td></tr><tr><td>RiskMeasure</td><td>DV01, VaR போன்ற அளவீடுகள்</td></tr><tr><td>RegulatoryReport</td><td>Reporting தேவைகளுக்கான தரவு</td></tr></tbody></table></div>
+<h3>Production-ல் கவனிக்க வேண்டியவை</h3>
+<ol><li>ஒரே Trade இரண்டு முறை process செய்யப்பட்டால் Position தவறாக அதிகரிக்கக்கூடாது.</li><li>Cancel அல்லது Correct செய்யப்பட்ட Trade-கள் சரியான முறையில் கையாளப்பட வேண்டும்.</li><li>Position கணக்கீடுகள் மீண்டும் இயக்கக்கூடியதாக இருக்க வேண்டும்.</li><li>Position மற்றும் Valuation எந்த Business Date-ஐச் சேர்ந்தவை என்பது தெளிவாக இருக்க வேண்டும்.</li><li>Market Data மாற்றங்களையும் Trade மாற்றங்களையும் தனித்தனியாகக் கையாள வேண்டும்.</li><li>End-of-Day Position-ஐ Trade Records மற்றும் Settlement Records உடன் reconcile செய்ய வேண்டும்.</li><li>Asset-Class-specific rules-ஐ ஒரே generic formula-வாகச் சுருக்கக் கூடாது.</li></ol>
+    </section>
+    <section class="mod" id="8-recap-quiz">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Recap Quiz</h2>
+      <p><b>Q1.</b> Trade மற்றும் Position இடையிலான அடிப்படை வேறுபாடு என்ன?</p>
+<p><b>Q2.</b> Position Quantity மாறாமல் Market Value மாறுவதற்கு என்ன காரணம்?</p>
+<p><b>Q3.</b> ஒரே Bond-ன் YTM இரண்டு வங்கிகளுக்கும் ஒரே மாதிரியாக இருந்தாலும் Dollar P&amp;L ஏன் வேறுபடலாம்?</p>
+<p><b>Q4.</b> FX Position-ஐ இரண்டு Currency Balances என்று ஏன் குறிப்பிடுகிறோம்?</p>
+<p><b>Q5.</b> Bond-ன் DV01 Position Size-க்கு ஏற்ப ஏன் மாறுகிறது?</p>
+<p><b>Q6.</b> Trade Clock, Market Clock மற்றும் Event Clock ஆகியவற்றுக்கு இடையிலான வேறுபாடு என்ன?</p>
+<p><b>Q7.</b> Position தவறாக இருந்தால் Valuation, VaR மற்றும் Regulatory Reporting-ல் என்ன தாக்கம் ஏற்படும்?</p>
+    </section>
+    <section class="mod" id="9-விடைகள்">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. விடைகள்</h2>
+      <ol><li>Trade என்பது ஒரு நிகழ்வு; Position என்பது அந்த நிகழ்வுகளின் அடிப்படையில் உருவாகும் தற்போதைய நிலை.</li><li>Market Price, Yield, FX Rate அல்லது Spread மாறுவதால்.</li><li>Position Size வேறுபடுவதால் Dollar Sensitivity மற்றும் Dollar P&amp;L மாறும்.</li><li>ஒரு FX Trade ஒரு Currency-ஐ வாங்கி மற்றொரு Currency-ஐ விற்பதால் இரண்டு balances மாறுகின்றன.</li><li>மற்ற assumptions மாறாமல் இருந்தால், Position Size இரட்டிப்பானால் Dollar DV01-ம் தோராயமாக இரட்டிப்பாகும்.</li><li>Trade Clock என்பது Position Quantity மாற்றத்தையும், Market Clock என்பது Valuation மாற்றத்தையும், Event Clock என்பது Corporate அல்லது Contractual Event-களால் ஏற்படும் மாற்றத்தையும் குறிக்கிறது.</li><li>தவறான Position downstream Valuation, P&amp;L, Risk மற்றும் Regulatory Reporting ஆகிய அனைத்தையும் பாதிக்கக்கூடும்.</li></ol>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Position Deep Dive — தமிழ் விளக்கம்</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

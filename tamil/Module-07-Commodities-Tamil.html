@@ -1,0 +1,880 @@
+<!doctype html>
+<title>Module 7 — Commodities (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Module 7 — Commodities (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Contango and backwardation, physical vs futures vs swaps vs options, daily variation margin, identifiers, CFTC and the Canadian commodities systems landscape — in spoken Tamil.</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி, புரிய வைக்க மட்டும்). <b>Asset Class Roadmap 4 of 6</b> — Equity → Fixed Income → FX → <b>Commodities</b> → Rates → Credit. <b>மூலம்:</b> English Module 7-ஐ பேச்சுத் தமிழ்ல சொல்றது; கூடுதலா சில எளிய உதாரணங்கள் சேர்த்திருக்கேன்.</div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-commodities-ன்னா-என்ன-theory-terminology"><span class="toc-num">01</span>1. Commodities-ன்னா என்ன? — Theory &amp; Terminology</a></li>
+      <li><a href="#2-products-என்னென்ன-physical-futures-options-swaps"><span class="toc-num">02</span>2. Products என்னென்ன? — Physical, Futures, Options &amp; Swaps</a></li>
+      <li><a href="#3-உண்மையில-எது-trade-ஆகுது-physical-பொருள்-vs-விலையை-reference-பண்ற-contract"><span class="toc-num">03</span>3. உண்மையில எது Trade ஆகுது? — Physical பொருள் vs விலையை Reference பண்ற Contract</a></li>
+      <li><a href="#4-நிஜ-உலக-trade-உதாரணங்கள்-buyer-seller-trade"><span class="toc-num">04</span>4. நிஜ உலக Trade உதாரணங்கள் — Buyer → Seller → Trade</a></li>
+      <li><a href="#5-trade-lifecycle-commodity-க்குரிய-walkthrough"><span class="toc-num">05</span>5. Trade Lifecycle — Commodity-க்குரிய Walkthrough</a></li>
+      <li><a href="#6-identifiers-commodity-codes-exchange-contracts-upi-uti"><span class="toc-num">06</span>6. Identifiers — Commodity Codes, Exchange Contracts, UPI &amp; UTI</a></li>
+      <li><a href="#7-exchange-vs-otc-vs-bilateral-vs-centrally-cleared"><span class="toc-num">07</span>7. Exchange vs OTC vs Bilateral vs Centrally Cleared</a></li>
+      <li><a href="#8-regulatory-perspective-mifid-emir-sftr-fca-ciro-hkma-dtcc-dmo"><span class="toc-num">08</span>8. Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</a></li>
+      <li><a href="#9-canadian-systems-landscape-commodities-front-middle-back-office-ல-இருந்து-regulatory-reporting-வரை"><span class="toc-num">09</span>9. Canadian Systems Landscape — Commodities Front, Middle &amp; Back Office-ல இருந்து Regulatory Reporting வரை</a></li>
+      <li><a href="#actors-முழு-cast-reference"><span class="toc-num">★</span>Actors — முழு Cast Reference</a></li>
+      <li><a href="#recap-quiz-numbers-edition"><span class="toc-num">★</span>Recap Quiz — Numbers Edition</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-commodities-ன்னா-என்ன-theory-terminology">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. Commodities-ன்னா என்ன? — Theory &amp; Terminology</h2>
+      <p><b>Definition:</b> Commodity = ஒரு physical, fungible பொருள் — ஒரு barrel WTI crude, அதே grade-ஓட வேற எந்த barrel-உடனும் interchangeable; ஒரு CAD, வேற எந்த CAD-உடனும் interchangeable (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §1) இருக்கற மாதிரி. ஆனா share-ஓட (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §1) மாதிரி இல்ல; அங்க ஒவ்வொரு certificate-உம் ஒரு குறிப்பிட்ட company மேல ஒரு குறிப்பிட்ட உரிமையை குறிக்கும். Commodities மூணு வகை: <b>Energy</b> (oil, gas, power), <b>Metals</b> (gold, silver, copper — <i>Precious</i>, *Base*ன்னு பிரியும்), <b>Agriculture</b> (wheat, corn, coffee). இதுவரை படிச்ச எல்லா asset classes-ல இருந்தும் Commodities-ஐ உண்மையிலயே வேறுபடுத்துறது: அடிப்படைப் பொருள் <b>physical</b> — கெடலாம், சேமிக்கணும், insure பண்ணணும், கொண்டு போகணும் — ஆனா capital markets-ல கிட்டத்தட்ட யாருக்கும் அந்த physical பொருள் வேண்டாம். அவங்களுக்கு <i>விலை exposure</i> மட்டும் வேணும்.</p>
+<div class="table-scroll"><table><thead><tr><th>Term</th><th>அர்த்தம்</th></tr></thead><tbody><tr><td>Spot Price</td><td>கிட்டத்தட்ட உடனடி physical delivery-க்கான இன்னிக்கு விலை — FX Spot (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §1) அதே கருத்து, ஒரு barrel oil அல்லது ஒரு ounce gold-க்கு</td></tr><tr><td>Futures Curve</td><td>ஒரே commodity-க்கு வெவ்வேறு delivery மாதங்களுக்கான futures விலைகளோட தொகுப்பு — வரைஞ்சா சந்தையோட term structure தெரியும்</td></tr><tr><td>Contango</td><td>Futures curve <i>மேல்நோக்கி</i> சரியுது — தாமதமான delivery மாதங்கள் spot-ஐ விட அதிகம், பொதுவா storage + financing செலவு convenience yield-ஐ விட அதிகம்ங்கறதால</td></tr><tr><td>Backwardation</td><td>Futures curve <i>கீழ்நோக்கி</i> சரியுது — தாமதமான delivery மாதங்கள் spot-ஐ விட குறைவு, பொதுவா commodity இப்போ பற்றாக்குறையா இருந்து, உடனடி supply-க்கு வெச்சிருக்கறவங்க premium கொடுக்கும்போது</td></tr><tr><td>Convenience Yield</td><td>இப்போ commodity-ஐ physically வெச்சிருக்கறதால கிடைக்கற பணமில்லா நன்மை (உதா., production நடுவுல oil தீர்ந்துபோகாம இருப்பது) — contango/backwardation கணக்குல storage செலவை ஈடுகட்டுது</td></tr><tr><td>Roll</td><td>Expiry நெருங்கற futures position-ஐ மூடி, பிற்கால contract-ல அதே position-ஐ திறக்கறது — physical delivery எடுக்காம இருக்க</td></tr></tbody></table></div>
+<div class="ticket"><pre>CONTANGO vs BACKWARDATION — same mental model as FX Forward Points (Module 6 §1)
+========================================================================
+
+  CONTANGO (upward-sloping curve):
+    Spot: USD 75.00/bbl   1M Future: USD 75.60   3M Future: USD 76.90
+    -&gt; storage + financing cost dominates; later delivery costs more
+
+  BACKWARDATION (downward-sloping curve):
+    Spot: USD 75.00/bbl   1M Future: USD 74.30   3M Future: USD 72.80
+    -&gt; near-term scarcity dominates; later delivery costs less
+
+  -&gt; Exactly the FX forward-points mechanic from Module 6 §1, just
+     driven by storage/convenience yield instead of an interest
+     rate differential between two currencies.</pre></div>
+<p><b>Takeaway:</b> Equity அல்லது Fixed Income-ல இருந்து வரும்போது மறக்க வேண்டிய மிகக் கடினமான பழக்கம் — commodity விலையை stock விலை போல நடத்துவது. Stock-ஓட forward விலை கிட்டத்தட்ட முழுக்க risk-free rate-ஆல் (<a href="../docs/1-capital-markets/module-10-valuation.html">Module 10</a>: Valuation) இயக்கப்படுது; commodity-ஓட forward விலை storage செலவு, financing செலவு, convenience yield — share-க்கும் bond-க்கும் இல்லாத மூணு காரணிகளால் இயக்கப்படுது.</p>
+<h3>கூடுதல் உதாரணம் — Contango-ல ஏன் roll செலவாகுது? (எளிய கணக்கு)</h3>
+<p>Spot USD 75.00/bbl. ஒரு வருஷம் கழிச்சு delivery-க்கு வாங்கணும்னு வெச்சுக்கோங்க. Spot-ல வாங்கி ஒரு வருஷம் சேமிச்சா:</p>
+<div class="table-scroll"><table><thead><tr><th>செலவு</th><th>USD/bbl</th></tr></thead><tbody><tr><td>Spot விலை</td><td>75.00</td></tr><tr><td>Storage + insurance (வருடம்)</td><td>2.50</td></tr><tr><td>Financing (75 × 4% வட்டி)</td><td>3.00</td></tr><tr><td>Convenience yield (நன்மை)</td><td>-1.00</td></tr><tr><td><b>நியாயமான 1Y forward</b></td><td><b>79.50</b></td></tr></tbody></table></div>
+<p>இதுதான் contango: forward (79.50) &gt; spot (75.00). நீங்க முன்கூட்டியே வாங்கற பதிலா futures-ல இருந்து roll பண்ணிட்டே இருந்தா, ஒவ்வொரு roll-லயும் இந்த வித்தியாசத்தை "செலவா" கொடுக்கறீங்க.</p>
+    </section>
+    <section class="mod" id="2-products-என்னென்ன-physical-futures-options-swaps">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. Products என்னென்ன? — Physical, Futures, Options &amp; Swaps</h2>
+      <div class="ticket"><pre>COMMODITIES
+│
+├── Physical Commodities   (the actual barrel, bar, or bushel — rare in a bank's own book)
+├── Commodity Futures      (exchange-traded, standardized, obligation to buy/sell at a future date)
+├── Commodity Options      (the RIGHT, not obligation, on a commodity future or physical price)
+└── Commodity Swaps        (periodic net cash flows referencing a commodity price index — Module 2 §7)</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Product</th><th>அது என்ன</th></tr></thead><tbody><tr><td>CASH</td><td><b>Physical Commodity</b></td><td>உண்மையான உடல் பொருள் — 100oz Gold Bar, ஒரு barrel crude, ஒரு டன் wheat — physical delivery, storage, title transfer-ஓட வாங்கி விக்கப்படுது</td></tr><tr><td>DERIVATIVE</td><td><b>Commodity Future</b></td><td>ஒரு commodity-ஓட நிர்ணயிக்கப்பட்ட அளவை, நிர்ணயிக்கப்பட்ட எதிர்கால தேதில, நிலையான விலைல வாங்க/விற்க standardized, exchange-traded contract — கிட்டத்தட்ட எப்பவும் delivery-க்கு முன்னாடி மூடப்படும் அல்லது roll ஆகும் (Section 1)</td></tr><tr><td>DERIVATIVE</td><td><b>Commodity Option</b></td><td>ஒரு commodity future-ஐ fixed strike-ல வாங்க (call) அல்லது விற்க (put) buyer-க்கு உரிமை (கடமை இல்ல) தரும் contract, premium-க்கு — <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §4d, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §2-ஓட அதே சமச்சீரற்ற payoff</td></tr><tr><td>DERIVATIVE</td><td><b>Commodity Swap</b></td><td>ரெண்டு counterparties ஒரு காலத்துல cash flows மாத்திக்கறாங்க — ஒரு பக்கம் பொதுவா <b>fixed</b> விலை, மறுபக்கம் வெளியிடப்பட்ட index-ஐ (உதா., ICE Brent) reference பண்ற <b>floating</b> விலை — <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7-ஓட 1Y Brent Crude Oil Swap-ஓட அதே structure</td></tr></tbody></table></div>
+<div class="callout"><b>ஐந்தாவது product, சுருக்கமா:</b> commodities-ல <b>Commodity Warrant</b>-உம் உண்டு — <i>ஒரு வங்கி</i> வெளியிடற (Section 4d-ல இருக்கற மாதிரி bilateral-ஆ எழுதப்படாத) exchange-listed, நீண்ட கால call option; பொருளாதார ரீதியா Section 2-ஓட Option-க்கு நெருக்கம், ஆனா security மாதிரி வெளியிடப்பட்டு விநியோகிக்கப்படுது. மற்ற நாலோட ஒப்பிட்டா இது ஒரு niche product, இங்க தனி worked example இல்ல.</div>
+<p><b>Takeaway:</b> இப்போ மூணு asset classes-ல ஏற்கனவே நிறுவப்பட்ட pattern-ஐ கவனிங்க (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §2 Equity, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §2 FX): ஒரு "உண்மையான பொருள்" (இங்க Physical), அதன் விலையை reference பண்ற contracts குடும்பம் (Future, Option, Swap). Commodities-ல புதுசு, "உண்மையான பொருளே" வெச்சிருக்க நிஜமாவே சிரமமானது — அதனாலதான் Section 3 எந்த முந்தைய module-ஐ விடவும், ஏன் கிட்டத்தட்ட எல்லாரும் contract-ஐ trade பண்றாங்க, barrel-ஐ ஒருபோதும் இல்லைன்னு விளக்க அதிக நேரம் எடுக்குது.</p>
+    </section>
+    <section class="mod" id="3-உண்மையில-எது-trade-ஆகுது-physical-பொருள்-vs-விலையை-reference-பண்ற-contract">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. உண்மையில எது Trade ஆகுது? — Physical பொருள் vs விலையை Reference பண்ற Contract</h2>
+      <p><b>Definition:</b> Equity (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a>: security vs contract), FX (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>: contracts, security-ஏ இல்ல) போல இல்லாம, Commodities <b>மூன்றாவது</b> pattern-ல இருக்கு: underlying (Physical) உண்மையானது, உடல் ரீதியானது, security போல — ஆனா அது ஒரு <i>பொருள்</i>, நிதி உரிமை இல்ல, ஒரு வங்கியோட trading book-ல கிட்டத்தட்ட ஒருபோதும் உண்மையில கை மாறாது. Contracts (Future, Option, Swap) எல்லாமே யாரும் ஒரு barrel-ஐத் தொடாமலே அந்தப் பொருளோட <i>விலையை</i> reference பண்ணுது.</p>
+<div class="ticket"><pre>PHYSICAL COMMODITY (TANGIBLE GOOD)  vs  DERIVATIVE (PRICE-REFERENCING CONTRACT)
+========================================================================
+
+  Physical Gold (TANGIBLE GOOD):
+    A 100oz Gold Bar, LBMA "Good Delivery" standard, sitting in a
+    vault. It exists independently of any trade, like Coca-Cola
+    stock (Module 4 §3) -- but unlike a share, it has WEIGHT,
+    PURITY, a physical LOCATION, and costs money just to store
+    and insure.
+
+  Commodity Future / Swap (CONTRACT):
+    Bank Of Toronto enters a 1Y Brent Crude Oil Swap, notional
+    100,000 barrels (the exact trade from Module 2 §7) -- no oil
+    is bought, stored, or shipped. Only the DIFFERENCE between a
+    fixed price and the floating ICE Brent index settles in cash,
+    once a month, for the life of the swap.
+
+  -&gt; Section 1's takeaway already flagged this: almost nobody in
+     capital markets wants the physical commodity. A bank's own
+     book is overwhelmingly Futures, Swaps, and Options; physical
+     trading is a specialist activity (a metals desk, an energy
+     trading arm) sitting apart from the rest of the derivatives book.</pre></div>
+<p><b>Takeaway:</b> அதனாலதான் <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7-ஓட ISDA classification table, Commodity-ஐ "underlying-ஓட physical settlement விதிவிலக்கு, வழக்கம் இல்ல" என்ற asset class-ஆ குறிச்சது — <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> FX பத்தி சொன்னதை விட (அங்க Spot வழக்கமா physically settle ஆகும்) அல்லது <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> bonds பத்தி சொன்னதை விட (அவை எப்பவும் physically settle ஆகும், book-entry வழியா மட்டும்) வலுவான கூற்று. Commodities தான் physical settlement-ஐ சுற்றியே வடிவமைக்கப்படற asset class.</p>
+    </section>
+    <section class="mod" id="4-நிஜ-உலக-trade-உதாரணங்கள்-buyer-seller-trade">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. நிஜ உலக Trade உதாரணங்கள் — Buyer → Seller → Trade</h2>
+      <div class="callout"><b>Complete worked examples இருக்கு.</b> <a href="../examples/Commodity_Physical_Complete_Example.html">Physical Commodity Trade — Complete Example</a>, <a href="../examples/Commodity_Swap_Complete_Example.html">Commodity Swap — Complete Example</a> — இந்த asset class-ஓட cash பக்கத்தையும் derivative பக்கத்தையும் உண்மையான எண்களோட முழு trade lifecycle வழியா நடத்திக் காட்டுது.</div>
+<h3>4a. Physical Commodity</h3>
+<div class="ticket"><pre>PHYSICAL GOLD  —  100oz Gold Bar, LBMA Good Delivery
+========================================================================
+
+  Buyer:  Bank Of Toronto (precious metals desk)
+  Seller: A LBMA-accredited refiner
+
+  Trade: 100 oz @ Spot Price USD 2,650.00/oz
+  Trade Value = 100 x 2,650.00 = USD 265,000
+  Settlement: physical delivery into an LBMA-approved vault +
+              cash payment, T+2 (standard for the London gold
+              market)
+
+  -&gt; This IS one of the genuinely rare cases (Section 3) where a
+     bank actually takes physical delivery -- precious metals
+     desks are one of the few areas of a bank that routinely does.</pre></div>
+<h3>4b. Commodity Future</h3>
+<div class="ticket"><pre>COMMODITY FUTURE  —  CME WTI Crude Oil Future (CL), 1,000 bbl/contract
+========================================================================
+
+  Buyer:  Bank Of Toronto (proprietary energy desk)
+  Seller: Counterparty on the CME order book (anonymous, novated
+          to the CCP at execution -- Section 07)
+
+  Trade: BUY 50 contracts @ USD 75.50/bbl, front-month expiry
+  Notional = 50 x 1,000 x 75.50 = USD 3,775,000
+
+  ONE MONTH LATER, before expiry -- Bank Of Toronto ROLLS:
+    SELLS 50 front-month contracts @ USD 76.10/bbl
+      Realized P&amp;L = 50 x 1,000 x (76.10 - 75.50) = +USD 30,000
+    BUYS 50 next-month contracts @ USD 76.90/bbl (contango,
+      Section 01 -- next month costs more)
+
+  -&gt; Bank Of Toronto never took delivery of a single barrel --
+     exactly the "roll" mechanic Section 01 defined, and the
+     reason futures desks watch the contango/backwardation shape
+     of the curve as closely as an FX desk watches forward points.</pre></div>
+<h3>4c. Commodity Swap</h3>
+<p><a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §7-ஓட worked structure-ஐ அப்படியே மறுபயன்படுத்தி:</p>
+<div class="ticket"><pre>COMMODITY SWAP  —  1Y Brent Crude Oil Swap, notional 100,000 barrels
+========================================================================
+
+  Bank Of Toronto:  pays FIXED, receives FLOATING (ICE Brent index)
+  Counterparty:      Shell Trading
+
+  Fixed Price agreed today: USD 78.00/bbl
+  Monthly notional: 100,000 barrels / 12 = 8,333 barrels per month
+
+  MONTH 1 SETTLEMENT -- ICE Brent monthly average settles at USD 81.20/bbl
+    Floating leg owed to Bank Of Toronto = 8,333 x 81.20 = USD 676,640
+    Fixed leg owed by Bank Of Toronto    = 8,333 x 78.00 = USD 649,974
+    Net cash flow: Bank Of Toronto RECEIVES USD 26,666
+    (81.20 - 78.00) x 8,333 = USD 26,666 -- only the NET amount
+    moves, exactly the IRS netting mechanic from Module 1 §8
+
+  -&gt; No oil changes hands at any point across the full 12 months --
+     this is Module 2 §7's "Commodity / Energy / Oil / Swap" entry
+     made concrete with real monthly cash flows.</pre></div>
+<h3>4d. Commodity Option</h3>
+<div class="ticket"><pre>COMMODITY OPTION  —  Call on CME WTI Crude Oil Future
+========================================================================
+
+  Buyer:  Bank Of Toronto's client (an airline hedging jet fuel cost,
+          using WTI as a proxy hedge)
+  Seller (writer): Bank Of Toronto
+
+  Trade: WTI Call, Strike USD 80.00/bbl, Notional 100,000 bbl
+         (100 contracts x 1,000 bbl), Expiry 6 months
+         Premium: USD 3.20/bbl
+  Premium Paid = 100,000 x 3.20 = USD 320,000
+
+  AT EXPIRY -- Scenario A: WTI Future settles at USD 88.00/bbl
+    Option is in-the-money: exercising saves
+      (88.00 - 80.00) x 100,000 = USD 800,000 vs. buying at market
+    Net Benefit = 800,000 - 320,000 (premium) = USD 480,000
+
+  AT EXPIRY -- Scenario B: WTI Future settles at USD 74.00/bbl
+    Option expires WORTHLESS -- buying at market (74.00) is
+    cheaper than exercising at strike (80.00)
+    Maximum Loss = the USD 320,000 premium, exactly as Module 4
+    §4d and Module 6 §4d established -- never more than premium paid.</pre></div>
+<p><b>Takeaway:</b> நாலு trades, நாலு மிக வேறுபட்ட settlement நிஜங்கள் — 4a ஒரு physical பொருளை உண்மையில நகர்த்தும் அரிதான சந்தர்ப்பம்; 4b, 4c, 4d ஒருபோதும் நகர்த்தாது. Commodities-க்கு reporting system சரியா encode பண்ண வேண்டிய மிக முக்கியமான operational உண்மை இது: product வகை மட்டுமே "settlement"-னா vault delivery-யா, cash netting-ஆன்னு தீர்மானிக்குது; அந்த field தப்பா இருந்தா உண்மையான operational விளைவுகள் உண்டு (தேவையில்லாத vault booking, அல்லது யாரும் தயாரிக்காத physical delivery கடமை).</p>
+    </section>
+    <section class="mod" id="5-trade-lifecycle-commodity-க்குரிய-walkthrough">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. Trade Lifecycle — Commodity-க்குரிய Walkthrough</h2>
+      <p><b>Order → Execution → Trade Capture → Confirmation → Clearing → Settlement → Position → Valuation/P&amp;L → Reporting</b> pattern-ஐ, Section 4b-ஓட Commodity Future trade மேல பொருத்தறோம்.</p>
+<div class="ticket"><pre>CME WTI CRUDE FUTURE  —  FULL LIFECYCLE
+========================================================================
+
+  09:31:00  ORDER — Bank Of Toronto's energy desk instructed to buy
+            50 front-month WTI contracts
+
+  09:31:04  EXECUTION @ USD 75.50/bbl on CME's order book
+
+  09:31:04  TRADE CAPTURE — Trade ID BOT-CMD-2026-027715
+
+  09:31:05  CLEARING — trade NOVATED to CME Clearing (the CCP)
+            immediately at execution -- unlike Module 6's bilateral
+            FX or Module 5's bilateral bonds, an exchange-traded
+            future is centrally cleared from the moment it trades
+            (Section 07)
+
+  DAILY     VARIATION MARGIN — CME Clearing marks the position to
+            the daily settlement price and moves cash EVERY DAY,
+            not just at expiry:
+              Day 1 settle USD 76.00: Bank Of Toronto receives
+                50 x 1,000 x (76.00 - 75.50) = USD 25,000
+              Day 2 settle USD 75.20: Bank Of Toronto pays
+                50 x 1,000 x (76.00 - 75.20) = USD 40,000
+            -&gt; this daily cash movement (Module 11: Risk &amp; Exposure)
+               is a structural feature of exchange-traded futures
+               that OTC swaps (Section 4c) don't have unless a CSA
+               requires daily variation margin too (Module 12)
+
+  POSITION — Bank Of Toronto's Commodity book shows 50 WTI
+            contracts, front-month, until rolled or closed
+
+  VALUATION / P&amp;L — mark-to-market daily against the CME
+            settlement price; because variation margin already
+            moved the cash, P&amp;L and cash flow are the SAME number
+            every day for an exchange-traded future -- a genuine
+            simplification versus Fixed Income's split between
+            price P&amp;L and accrual (Module 5 §5)
+
+  REPORTING — exchange-traded futures are reported to the CFTC
+            (Section 08) via the exchange/clearing house itself,
+            not via a bilateral UTI/UPI the way an OTC Commodity
+            Swap (Section 4c) would be</pre></div>
+<p><b>Takeaway:</b> முந்தைய எல்லா modules-ல இருந்தும் lifecycle-ல இருக்கற மிகப்பெரிய வித்தியாசம் clearing <i>எப்போ</i> நடக்குதுங்கறது. Equity (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a>), Fixed Income (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>) CCP வழியா clear ஆகுது, ஆனா பொதுவா execution-க்கு ஒரு படி அப்புறம்; FX (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>) பெரும்பாலும் CCP வழியா clear ஆகவே ஆகாது. Exchange-traded Commodity Future கிட்டத்தட்ட உடனடியா CCP-க்கு novate ஆகுது; அந்த CCP உறவுதான் தினசரி variation margin-ஐ இயக்குது — இந்த module முழுசா காட்டற முதல் cash-flow pattern.</p>
+<div class="callout"><b>Deep dive இருக்கு.</b> Futures position தான் இந்த curriculum-ல, valuation மாற்றம் ஒவ்வொரு நாளும் CASH-ஆ realize ஆகுற (காகிதத்துல மட்டும் track ஆகாத) position-க்கு மிகக் கூர்மையான உதாரணம் — <a href="../docs/1-capital-markets/module-25-position-deep-dive.html">Module 25 — Position Deep Dive</a> §7 பாருங்க.</div>
+<h3>கூடுதல் உதாரணம் — 5 நாள் Variation Margin கணக்கு (50 contracts)</h3>
+<div class="table-scroll"><table><thead><tr><th>நாள்</th><th>Settlement விலை (USD/bbl)</th><th>முந்தைய நாளை விட மாற்றம்</th><th>Variation Margin (USD) = மாற்றம் × 1,000 × 50</th><th>திசை</th></tr></thead><tbody><tr><td>Trade நாள் (entry 75.50)</td><td>76.00</td><td>+0.50</td><td>+25,000</td><td>Bank Of Toronto பெறுது</td></tr><tr><td>Day 2</td><td>75.20</td><td>-0.80</td><td>-40,000</td><td>Bank Of Toronto கொடுக்குது</td></tr><tr><td>Day 3</td><td>75.20</td><td>0.00</td><td>0</td><td>எதுவும் நகராது</td></tr><tr><td>Day 4</td><td>75.90</td><td>+0.70</td><td>+35,000</td><td>Bank Of Toronto பெறுது</td></tr><tr><td>Day 5</td><td>76.10</td><td>+0.20</td><td>+10,000</td><td>Bank Of Toronto பெறுது</td></tr><tr><td><b>மொத்தம்</b></td><td></td><td><b>+0.60</b></td><td><b>+30,000</b></td><td>= 50 × 1,000 × (76.10 - 75.50)</td></tr></tbody></table></div>
+<p>ஐந்து நாள்ல ஐந்து தனி cash movements — ஆனா மொத்தம் entry-ல இருந்து இறுதி விலை வரையிலான லாபத்துக்கு (USD 30,000) சரியா சமம். அதாவது futures-ல "P&amp;L" உம் "cash flow" உம் ஒரே எண்.</p>
+    </section>
+    <section class="mod" id="6-identifiers-commodity-codes-exchange-contracts-upi-uti">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. Identifiers — Commodity Codes, Exchange Contracts, UPI &amp; UTI</h2>
+      <p>Commodities, Section 3-ல உள்ள physical/contract கோட்டுல தெளிவா பிரியுது: physical பொருட்களுக்கு securities identifiers இல்ல, commodity codes; exchange-traded futures-க்கு exchange contract codes; OTC swaps, options-க்கு <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>-ஓட FX derivatives மாதிரியே UPI/UTI.</p>
+<div class="table-scroll"><table><thead><tr><th>Identifier</th><th>Commodities-க்கு பொருந்துமா?</th><th>Example</th></tr></thead><tbody><tr><td>ISIN / CUSIP / SEDOL / Ticker / FIGI</td><td>Physical அல்லது OTC Swaps-க்கு <b>இல்ல</b> — இவை securities-ஐ identify பண்ணும், ரெண்டுமே அது இல்ல (Section 3)</td><td>—</td></tr><tr><td>Commodity Code</td><td>ஆமா, physical trades-க்கு — internal/தொழில்துறை classification, security identifier இல்ல</td><td><code>XAU</code> (gold, ISO 4217-பாணி commodity code)</td></tr><tr><td>Exchange Contract Code</td><td>ஆமா, exchange-traded Futures/Options-க்கு — குறிப்பிட்ட contract-ஐயும் delivery month-ஐயும் identify பண்ணும்</td><td><code>CLZ26</code> (CME WTI Crude, December 2026 expiry)</td></tr><tr><td><b>UPI</b></td><td>ஆமா, OTC derivatives-ஆ report ஆகும் OTC Commodity Swaps, Options-க்கு (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §12)</td><td>"Brent Crude, Swap, Cash-Settled"-க்கு ஒரு UPI — பல swap trades-ல மறுபயன்பாடு, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §6-ஓட FX Forward UPI-ஓட அதே logic</td></tr><tr><td><b>UTI</b></td><td>ஆமா — ஒவ்வொரு தனி OTC Commodity Swap/Option trade-க்கும் தனி UTI</td><td>ஒவ்வொரு trade-க்கும் புது UTI, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §6 மாதிரி</td></tr><tr><td><b>LEI</b></td><td>ஆமா — Bank Of Toronto, Shell Trading, எந்த client-ஐயும் counterparties-ஆ identify பண்ணும்</td><td>Entity, instrument இல்ல (<a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> §6)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Exchange contract code (<code>CLZ26</code> போல) இருந்து UPI/UTI இல்லாத Commodity trade record ஒரு Future — centrally cleared, exchange-identified, bilateral reporting IDs தேவையில்ல. UPI/UTI இருந்து exchange contract code இல்லாத record OTC Swap அல்லது Option. ஒரே trade-ல <i>ரெண்டும்</i> நிரம்பியிருந்தாலோ, ரெண்டுமே இல்லாட்டியோ, அது <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §6, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §6 bonds, FX-க்கு ஏற்கனவே நிறுவின diagnostic சோதனைகளோட Commodities-குறிப்பான பதிப்பு.</p>
+    </section>
+    <section class="mod" id="7-exchange-vs-otc-vs-bilateral-vs-centrally-cleared">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. Exchange vs OTC vs Bilateral vs Centrally Cleared</h2>
+      <p><b>Definition:</b> இந்த roadmap-ல, exchange-traded, centrally-cleared product (Futures) பெரும்பாலான பங்கேற்பாளர்கள் commodity exposure பெறும் உண்மையிலேயே ஆதிக்க, அதிக liquid வழியா இருக்கற முதல் asset class Commodities — <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> Fixed Income, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> FX defaults-ஐ விட <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a>-ஓட Equity default-க்கு நெருக்கம். Physical trades, OTC Swaps/Options bilateral-ஆவே இருக்கு.</p>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Product</th><th>Exchange ஆ OTC ஆ?</th><th>Bilateral ஆ Centrally Cleared ஆ?</th></tr></thead><tbody><tr><td>CASH</td><td>Physical Commodity</td><td>OTC (dealer-to-dealer, அல்லது dealer-to-refiner/producer)</td><td>Bilateral (வழக்கம் — Section 4a)</td></tr><tr><td>DERIVATIVE</td><td>Commodity Future</td><td><b>Exchange-traded</b> (CME, ICE, LME)</td><td>Execution-ல இருந்தே centrally cleared (Section 05)</td></tr><tr><td>DERIVATIVE</td><td>Commodity Option</td><td>பெரும்பாலும் exchange-traded (futures மேல options); சில bespoke OTC</td><td>Exchange-listed என்றா centrally cleared; OTC என்றா bilateral (Section 4d-ஓட airline hedge OTC-பாணி, bespoke strike/expiry)</td></tr><tr><td>DERIVATIVE</td><td>Commodity Swap</td><td>OTC</td><td>பெரும்பாலும் bilateral; standardized benchmarks-க்கு (உதா., Brent, WTI) ICE Clear அல்லது LCH வழியா clear ஆகும் பங்கு வளருது</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> மற்ற ஒவ்வொரு module-ஓட ஒற்றை ஆதிக்க default போல இல்லாம, Commodities product வாரியா நடுவுல உண்மையிலயே பிரியுது — Futures <a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a> Equity போல நடந்துக்கும் (exchange, centrally cleared, உடனே novate); Physical, பெரும்பாலான Swaps <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> Fixed Income அல்லது <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> FX போல (OTC, bilateral). ஒரு trade record <i>எந்த</i> Commodity product-ஐ குறிக்குதுன்னு தெரிஞ்சுக்கறது, அதன் முழு downstream lifecycle-ஐயும் முன்கூட்டியே கணிக்கற மிக வேகமான வழி.</p>
+    </section>
+    <section class="mod" id="8-regulatory-perspective-mifid-emir-sftr-fca-ciro-hkma-dtcc-dmo">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Regulatory Perspective — MiFID, EMIR, SFTR, FCA, CIRO, HKMA, DTCC, DMO</h2>
+      <div class="table-scroll"><table><thead><tr><th>Regulation / Body</th><th>Commodities-ஐ குறிப்பா எப்படித் தொடுது</th></tr></thead><tbody><tr><td><b>MiFID II / MiFIR</b> (EU)</td><td>Commodity derivatives-ஐ நேரடியா உள்ளடக்கும், சில commodity derivative contracts மேல <b>position limits்-உம்</b> (ஒரு பங்கேற்பாளரின் position எவ்வளவு பெருசாகலாம்னு வரம்பு) — இந்த roadmap-ல இதுவரை Equity, Fixed Income, FX-க்கு இல்லாத கட்டுப்பாட்டு mechanism</td></tr><tr><td><b>EMIR</b></td><td>OTC Commodity Swaps, Options-க்கு derivatives-ஆ பொருந்தும் (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §07) — ஆனா உண்மையான commercial delivery நோக்கத்துக்கு பயன்படும் physical forward-க்கு பொதுவா <b>பொருந்தாது</b> ("ancillary activity" விலக்கு, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §8-ஓட FX Spot/Forward எல்லை போல இருந்தாலும் வேற மாதிரி வரையறுக்கப்பட்டது)</td></tr><tr><td><b>SFTR</b></td><td>Repo-வுக்கு பொருந்தற மாதிரி (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §08) Commodities-க்கு பொருந்தாது — commodities lending இருக்கு, ஆனா Fixed Income-க்கு repo போல Commodities module-ஐ வரையறுக்கும் product இல்ல, குறுகிய, specialist niche</td></tr><tr><td><b>FCA</b> (UK)</td><td>UK commodity derivatives trading-ஓட conduct regulator, MiFIR-சமமான transaction reporting; London <b>LME (London Metal Exchange)</b>-ஓட இல்லமும் — metals trading-ஓட FCA மேற்பார்வையை குறிப்பா முக்கியமாக்குது, <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §08-ஓட FX-volume புள்ளி போல</td></tr><tr><td><b>CIRO</b> (Canada)</td><td>Canadian commodity derivatives dealer conduct-ஐ மேற்பார்வை பண்ற SRO</td></tr><tr><td><b>HKMA</b> (Hong Kong)</td><td>FX (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §08), Fixed Income (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §08)-ஐ விட இங்க உண்மையிலயே footnote — Hong Kong-ஓட commodities சந்தை சிறியது; இந்த asset class-க்கு <b>SFC</b>, <b>HKEX</b> (2012-ல LME-ஐ உள்வாங்கியது) தான் Hong Kong-சார்ந்த பொருத்தமான அமைப்புகள்</td></tr><tr><td><b>CFTC</b> (US)</td><td>இந்த module-க்கு மிக விளைவுள்ள ஒற்றை regulator — <b>Commodity Futures Trading Commission</b> பெயரே இந்த asset class-ஐ வெச்சுத்தான்; Dodd-Frank-ன் கீழ swap data reporting, clearing, SEF trading விதிகளை வகுக்குது, MiFID-உம் EU-ல பயன்படுத்தற position limits-ஐ அமல்படுத்துது</td></tr><tr><td><b>DTCC</b></td><td>அதன் <b>ICE Trade Vault</b> (<a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §10-ல Swap Data Repository-ஆ நேரடியா பெயரிடப்பட்டது) interest rate, credit products-உடன் commodity derivative reports-ஐ ஏற்கும், CFTC reporting தேவைகளுக்கு உணவளிக்கும்</td></tr><tr><td><b>DMO</b> (UK Debt Management Office)</td><td>Commodities-க்கு சம்பந்தமில்ல — Gilts வெளியிடுது (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §08), முழுமைக்காக மட்டும் இங்க</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> Commodities, CFTC — ஐரோப்பிய அல்லது UK அமைப்பு இல்ல — தெளிவா headline regulator-ஆ இருக்கற முதல் module; Section 7-ஓட findings-இன் நேரடி விளைவு: Futures தான் ஆதிக்க product, மிகப்பெரிய commodity futures exchanges (CME, ICE) CFTC அதிகார எல்லைக்குள்ள. <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §08, London-ஓட FX volume-ஆல FCA-வை FX-க்கு outsized-ஆ குறிச்ச அதே pattern — வேற regulator, வேற asset class.</p>
+    </section>
+    <section class="mod" id="9-canadian-systems-landscape-commodities-front-middle-back-office-ல-இருந்து-regulatory-reporting-வரை">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Canadian Systems Landscape — Commodities Front, Middle &amp; Back Office-ல இருந்து Regulatory Reporting வரை</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> §2 <i>பொதுவான</i> Canadian Front/Middle/Back Office architecture-ஐ ஏற்கனவே வகுத்திருக்கு. இந்த section அதை Commodities-க்கு மட்டும் சுருக்குது — இந்த roadmap-ல, Canada-வில் அமைந்த (NGX, CDCC) market infrastructure, Section 4-ஓட worked examples சாயற <b>உலகளாவிய benchmark venues</b> (CME, ICE)-க்கு அடுத்து ஒப்பீட்டளவில் குறுகிய பங்கு வகிக்கற ஒரே asset class Commodities. ரெண்டு பாதைகளும் கீழே.</p>
+<div class="callout"><b>Callout — illustrative, பரிந்துரை இல்ல.</b> கீழ உள்ள vendor/platform பெயர்கள் (Murex, Calypso, ICE eConfirm, etc.) உண்மையான Canadian market infrastructure, பொதுவா பயன்படற vendor categories-ஓட பிரதிநிதிகள் — Bank Of Toronto (கற்பனை) உள்ளுக்குள்ள எந்த systems-ஐ ஓட்டுதுங்கறதைப் பத்தின கூற்று இல்ல. இந்தப் பகுதியை <a href="../docs/1-capital-markets/systems-landscape.html">systems-landscape</a> தன்னோட platform பட்டியல்களை நடத்தற மாதிரியே நடத்துங்க: system-ஓட *வகை*யின் illustrative; ஒரு உண்மையான firm-ஓட stack-க்கு எதிராக கட்டறீங்கன்னா மட்டும் உறுதிப்படுத்துங்க.</div>
+<h3>9a. Venue-ஐ பொறுத்து உண்மையிலயே வேற ரெண்டு பாதைகள்</h3>
+<div class="table-scroll"><table><thead><tr><th>Layer</th><th>Path A — Domestic: NGX (Alberta energy)</th><th>Path B — Global benchmark: CME/ICE (Sections 4b–4c)</th></tr></thead><tbody><tr><td><b>Front Office</b></td><td>NGX's own electronic trading platform (Calgary) — physical &amp; financial AECO natural gas, power, crude</td><td>CME Globex / ICE platform, accessed by Bank Of Toronto via a Futures Commission Merchant (FCM) relationship — not a Canadian venue at all</td></tr><tr><td><b>Middle Office</b></td><td>Commodity risk/confirmation system (Murex/Calypso-class) booking the trade; ICE eConfirm-style electronic confirmation</td><td>Same risk/confirmation system class, booking a US-cleared position instead of a Canadian one</td></tr><tr><td><b>Back Office / Clearing</b></td><td><b>NGX Clearing</b> (part of ICE) clears the trade directly</td><td><b>CME Clearing</b> (Section 5's worked example) or ICE Clear — neither is CDS nor CDCC</td></tr><tr><td><b>Regulator</b></td><td><b>Alberta Securities Commission (ASC)</b> — NGX's primary securities regulator, since NGX is Calgary-based (a genuine exception to the Ontario/CSA-centric pattern other modules lean on)</td><td><b>CFTC</b> (Section 8) for the venue itself; <b>CIRO</b> for Bank Of Toronto's own dealer conduct as a Canadian participant</td></tr><tr><td><b>OTC reporting?</b></td><td>Generally <b>no</b> — exchange-traded/cleared, same Future-vs-OTC boundary Section 6's takeaway already draws</td><td><b>No</b>, for the same reason — Section 4b's WTI Future is exchange-cleared, not OTC</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> எது Canadian infrastructure-ஐ தொடுது, எது தொடவே இல்லைன்னு கவனிங்க. CME/ICE-listed Futures (Section 4b) trading bank எந்த நாட்டுல தலைமையகம் கொண்டிருந்தாலும் முழுக்க US ecosystem-க்குள்ள clear ஆகுது — அங்க Canadian ஈடுபாடு Bank Of Toronto-ஓட dealer-ஆ CIRO conduct மேற்பார்வைக்கு மட்டும், எந்த Canadian settlement system-க்கும் இல்ல. Canadian venue-ல (NGX) உண்மையில execute ஆன trades மட்டுமே உண்மையான Canadian back-office infrastructure-ஐயும் (NGX Clearing) Canadian regulator-ஐயும் (ASC) நேரடியா தொடுது.</p>
+<h3>9b. Worked example — NGX AECO natural gas swap, ஆரம்பம் முதல் முடிவு வரை</h3>
+<div class="ticket"><pre>NGX FINANCIAL SWAP — AECO 5A NATURAL GAS, DECEMBER 2026
+========================================================================
+
+  Bank Of Toronto's Calgary energy desk: pays FIXED, receives
+  FLOATING (NGX's AECO Daily Index) -- same fixed/floating
+  structure as Section 4c's Brent swap, just Canadian-domiciled
+
+  Fixed price: CAD 3.10/GJ    Volume: 10,000 GJ/day x 31 days
+  = 310,000 GJ notional for December
+
+  MONTH-END SETTLEMENT -- AECO index averages CAD 3.45/GJ
+    Floating leg owed to Bank Of Toronto = 310,000 x 3.45
+      = CAD 1,069,500
+    Fixed leg owed by Bank Of Toronto    = 310,000 x 3.10
+      = CAD 961,000
+    Net cash flow: Bank Of Toronto RECEIVES CAD 108,500
+
+  FRONT OFFICE   -&gt; executed on NGX's own electronic platform
+  MIDDLE OFFICE  -&gt; booked and risk-managed in Bank Of Toronto's
+                    commodity risk system; confirmed electronically
+  BACK OFFICE    -&gt; cleared by NGX CLEARING (part of ICE) --
+                    financial leg only; no physical gas moves
+                    (Section 3's physical-vs-contract distinction,
+                    restated for a genuinely Canadian venue)
+  CASH SETTLEMENT-&gt; CAD 108,500 moves via Lynx (Canada's large-value
+                    payment system, systems-landscape §2)
+  REGULATOR      -&gt; Alberta Securities Commission (ASC), NOT the
+                    Ontario-centric CSA path other Canadian examples
+                    in this roadmap default to
+  OTC REPORTING  -&gt; NOT required under CSA Multilateral Instrument
+                    96-101 -- this is exchange-cleared (NGX Clearing),
+                    the same Future/OTC boundary Section 6 already
+                    established, just for a Canadian exchange instead
+                    of CME/OCC</pre></div>
+<h3>9c. MI 96-101 reporting உண்மையில பொருந்தற இடம் — மறுபடி Brent swap</h3>
+<p>Section 4c-ஓட Shell Trading-உடனான Brent Crude Oil Swap bilateral OTC — 9b-க்கு எதிர் நிலை. ஏதாவது ஒரு counterparty-க்கு தேவையான Canadian nexus இருந்தா, அந்த swap (NGX உதாரணம் போல இல்லாம) <b>CSA Multilateral Instrument 96-101</b> (Trade Repositories and Derivatives Data Reporting), Canada-ஓட OTC derivatives trade-reporting விதியின் scope-க்குள்ள; CSA-designated Trade Repository-க்கு report ஆகும் — பொதுவா <b>DTCC Data Repository (Canada) Ltd</b> அல்லது <b>ICE Trade Vault Canada</b> (ரெண்டும் வகையின் illustrative; உண்மையான designated-TR பட்டியலை கட்டறதுக்கு முன்னாடி CSA-ஓட சொந்த வெளியிடப்பட்ட விதிகளுக்கு எதிராக உறுதிப்படுத்துங்க).</p>
+<div class="ticket"><pre>FRONT OFFICE   -&gt; bilateral voice/electronic negotiation with
+                  Shell Trading, no exchange involved
+MIDDLE OFFICE  -&gt; risk system booking; confirmation via an
+                  OTC-confirmation platform (ICE eConfirm-class)
+BACK OFFICE    -&gt; NO CCP at all -- Section 7 already flagged most
+                  Commodity Swaps as bilateral, not centrally cleared
+REGULATOR/TR   -&gt; CSA Multilateral Instrument 96-101 reporting to a
+                  CSA-designated Trade Repository (DTCC Data
+                  Repository (Canada) Ltd / ICE Trade Vault Canada,
+                  illustrative) -- squarely the OTC-reporting path
+                  Section 9a's NGX example explicitly does NOT take</pre></div>
+<p><b>Takeaway:</b> ஒரு Commodity trade எந்த Canadian systems-ஐ உண்மையில தொடுதுன்னு கணிக்கற மிக வேகமான வழி, Section 7-ஓட சொந்த Exchange-vs-OTC கண்டுபிடிப்பை ஒரு நிலை ஆழமா பொருத்தறது — exchange-cleared trade (NGX அல்லது CME/ICE) Canadian OTC Trade Repository-ஐ ஒருபோதும் அடையாது; bilateral OTC trade (Brent swap) Canadian ஆனாலும் வேற ஆனாலும் clearing house-ஐ ஒருபோதும் தொடாது, ஆனா MI 96-101-ன் கீழ Trade Repository-ஐ அடையும். Section 2-ல இருந்து product வகை தெரிஞ்சா, ஒரு குறிப்பிட்ட trade இந்த section-ஓட systems சங்கிலியின் எந்த முழு பாதிவழியா ஓடும்னு தெரிஞ்சிடும்.</p>
+    </section>
+    <section class="mod" id="actors-முழு-cast-reference">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Actors — முழு Cast Reference</h2>
+      <div class="table-scroll"><table><thead><tr><th>Actor</th><th>இந்த module-ல Role</th></tr></thead><tbody><tr><td>Bank Of Toronto</td><td>Physical gold buyer; WTI futures buyer/roller; Brent swap-ல fixed-rate payer; தன் client-க்கு option writer</td></tr><tr><td>An LBMA-accredited refiner</td><td>Physical gold bar-ஓட seller</td></tr><tr><td>CME (Chicago Mercantile Exchange)</td><td>WTI Crude Oil future-க்கான exchange, CCP</td></tr><tr><td>Shell Trading</td><td>Brent Crude Oil Swap-ல floating-rate payer counterparty</td></tr><tr><td>Bank Of Toronto's client (airline)</td><td>Crude oil proxy மூலம் jet fuel செலவு exposure-ஐ hedge பண்ணும் WTI Call option-ஓட buyer</td></tr><tr><td>CFTC</td><td>Commodity futures, swaps-க்கான முதன்மை US regulator</td></tr><tr><td>LME / ICE</td><td>முறையே metals, energy-க்கான முக்கிய commodity exchanges</td></tr><tr><td>NGX (Natural Gas Exchange)</td><td>Physical/financial natural gas, power-க்கான Calgary-based Canadian exchange; Section 9b-ஓட AECO swap-ஓட venue</td></tr><tr><td>Alberta Securities Commission (ASC)</td><td>NGX-ஐ மேற்பார்வை பண்ற முதன்மை securities regulator (Section 9)</td></tr><tr><td>CSA (Canadian Securities Administrators)</td><td>Section 9c-ஓட Brent swap-க்கு பொருந்தும் OTC derivatives trade-reporting விதியான Multilateral Instrument 96-101-ஐ வகுக்கும்</td></tr></tbody></table></div>
+    </section>
+    <section class="mod" id="recap-quiz-numbers-edition">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — Numbers Edition</h2>
+      <ol><li>Section 4b-ஓட WTI Future roll-ல, Bank Of Toronto <i>backwardation</i>-ல roll பண்ணியிருந்தா (next-month front-month-ஐ விட மலிவு, உதா., USD 76.90-க்குப் பதிலா USD 74.80), மற்ற எல்லாம் சமமா இருக்க, contango உதாரணத்தை விட roll-ஏ Bank Of Toronto-க்கு அதிகம் செலவாகுமா குறைவா?</li><li>Section 5-ஓட variation margin walkthrough-ஐ வெச்சு, Day 3-ஓட settlement விலை மறுபடி USD 75.20 (Day 2-ல இருந்து மாறாம) ஆக வந்தா, என்ன cash flow நகரும், ஏன்?</li><li>Section 3, Commodities-ல physical settlement "actively designed around"-ன்னு விவரிக்கறது ஏன்? <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §3 Fixed Income settlement பத்தி சொன்னதோட இது எப்படி ஒப்பிடுது?</li><li>ஒரு trade record-ல exchange contract code (<code>CLZ26</code> பாணி)-உம் அதே trade-ல UTI-உம் நிரம்பியிருக்கு. Section 6-ஐ வெச்சு, இந்தக் கலவை பெரும்பாலும் எதைக் குறிக்குது?</li><li>Section 4c-ஓட Brent Crude Oil Swap-ல, ICE Brent monthly average USD 78.00 fixed விலைக்குக் கீழே USD 76.50-ல settle ஆகியிருந்தா, Month 1 net cash flow என்ன? யார் யாருக்கு கொடுக்கறாங்க?</li><li>Section 08-ல CFTC "இந்த module-க்கு மிக விளைவுள்ள ஒற்றை regulator"-ன்னு விவரிக்கப்படுது ஏன் — Section 07-ஓட findings-க்கு காரண இணைப்பு என்ன?</li><li>Commodity Futures "கிட்டத்தட்ட உடனடியா" clear ஆவதையும் (Section 05), FX trades (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §05) பெரும்பாலும் CCP வழியா clear ஆகவே ஆகாததையும் ஒப்பிடுங்க.</li><li>Section 9-ஐ வெச்சு, Bank Of Toronto-ஓட CME WTI Crude Oil Future (Section 4b) CDS (CDSX)-ஐயோ CDCC-யையோ தொடவே தொடாது, ஆனா அதன் NGX AECO natural gas swap (Section 9b) NGX Clearing-ஐ தொடுது — ஒரு Canadian வங்கியோட commodity trade, Canadian market infrastructure-ஐ உண்மையில எப்போ பயன்படுத்துதுங்கறதுக்கு இது காட்டும் பொது விதி என்ன?</li></ol>
+<p>தயாரா இருக்கும்போது பதில் சொல்லுங்க — அப்புறம் Asset Class Roadmap-ஓட அடுத்த நிறுத்தம் <b><a href="../docs/1-capital-markets/module-08-rates.html">Module 8</a>: Rates</b>.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Backwardation-ல roll Bank Of Toronto-க்கு குறைவா செலவாகும் (அல்லது ஒரு credit-ஐயும் உருவாக்கும்), contango-ல உண்மையான செலவுக்கு எதிரா.</b></p>
+<div class="ticket"><pre>Contango roll (worked example): sell front-month at 76.10, buy
+next-month at 76.90 -&gt; pay an extra 0.80/bbl to roll forward
+
+Backwardation roll (this question): sell front-month at 76.10,
+buy next-month at 74.80 -&gt; RECEIVE an extra 1.30/bbl to roll forward</pre></div>
+<p>Contango-ல முன்னோக்கி roll பண்றது எப்பவும் அதிக விலையுள்ள பிற்கால contract-ஐ வாங்குவதா இருக்கும் — futures வழியா long-ஆ இருக்கறதுக்கு தொடர் செலவு. Backwardation-ல முன்னோக்கி roll பண்றது <i>மலிவான</i> பிற்கால contract-ஐ வாங்குவதா — தொடர் நன்மை. Delivery எடுக்காம futures-ஐ நீண்ட காலம் வெச்சிருக்கற யாருக்கும் "roll yield" ஒரு உண்மையான, நெருக்கமா கவனிக்கப்படற P&amp;L இயக்கி ஏன்னு இது தான், நேரடியா Section 1-ஓட contango/backwardation வரையறைகளுக்கு திரும்புது.</p>
+<p><b>2. எந்த cash flow-உம் நகராது — variation margin, settlement விலை முந்தைய நாள் settlement விலையில இருந்து <i>மாறும்போது</i> மட்டும்தான் நகரும்.</b></p>
+<p>Section 5-ஓட mechanic நாளுக்கு நாள் ஒப்பீடு: Day 2 ஏற்கனவே position-ஐ USD 75.20-க்கு mark பண்ணி அந்த வித்தியாசத்தை cash-ல settle பண்ணிடுச்சு. Day 3 அதே USD 75.20-ல settle ஆனா, கூடுதல் mark-to-market நகர்வு பூஜ்யம், அதனால அன்னிக்கு variation margin எதுவும் கை மாறாது — முழு trading நாள் கடந்து போனாலும், position-ஓட மொத்த மதிப்பு நகரலை.</p>
+<p><b>3. ஏன்னா கிட்டத்தட்ட ஒவ்வொரு Commodity product-உம் (Future, Swap, Option) physical delivery ஒருபோதும் நடக்க வேண்டியதில்லைன்னு கட்டமைப்பு ரீதியா உருவாக்கப்பட்டிருக்கு — rolling futures, cash-settling swaps, futures மேல options எல்லாம் Section 1 விவரிச்ச storage/insurance/transport சுமை இல்லாம விலை exposure தரவே இருக்கு; <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §3, இதற்கு மாறா, Fixed Income settlement-ஐ எப்பவும் physical-ஆ (CSD-ல book-entry வடிவத்துல dematerialize ஆனதாக மட்டும்) விவரிச்சது, ஒருபோதும் அதைச் சுத்தி வடிவமைக்கப்படலை.</b></p>
+<p>Section 3 இதை நேரடியா சொல்லுது: Commodities-க்கு physical settlement "விதிவிலக்கு, வழக்கம் இல்ல"; <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §3 ஒரு bond trade உண்மையான (book-entry) security-ஐ நகர்த்தாம இருக்கலாம்னு ஒருபோதும் சொல்லலை — bond trade-ஓட DvP settlement (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7) எப்பவும் உண்மையான security-ஐ transfer பண்ணும், அது இனி காகித certificate இல்லை அவ்வளவுதான்.</p>
+<p><b>4. இந்தக் கலவை ஆரோக்கியமான pattern இல்ல, red flag — பெரும்பாலும் data-quality error; ஏன்னா Section 6, exchange contract codes centrally-cleared Futures-ஐ identify பண்ணும் (bilateral UTI/UPI reporting தேவையில்ல), UPI/UTI bilaterally report ஆகும் OTC derivatives-ஐ identify பண்ணும்னு நிறுவுது.</b></p>
+<p>Section 6-ஓட takeaway இதை வெளிப்படையா சொல்லுது: ஒரு record-ல exchange contract code (Future) <i>அல்லது</i> UPI/UTI (OTC Swap/Option) இருக்கணும், ரெண்டுமல்ல — ரெண்டும் நிரம்பியிருக்கறது, bonds-ல UPI-க்காக <a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a> §6 எச்சரிச்ச, FX-ல எதிர்த்திசைக்காக (ISIN இல்லாம UPI/UTI இருப்பது ஆரோக்கியம், உடைஞ்சதில்ல) <a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §6 எச்சரிச்ச அதே diagnostic pattern-ஓட Commodities-குறிப்பான பதிப்பு.</p>
+<p><b>5. Bank Of Toronto net தொகையை <i>கொடுக்கும்</i>, பெறாது — worked example-ல இருந்து ஒரு தலைகீழ்.</b></p>
+<div class="ticket"><pre>Floating leg owed to Bank Of Toronto = 8,333 x 76.50 = USD 637,575
+Fixed leg owed by Bank Of Toronto    = 8,333 x 78.00 = USD 649,974
+Net cash flow: Bank Of Toronto PAYS USD 12,399
+(78.00 - 76.50) x 8,333 = USD 12,399</pre></div>
+<p>Bank Of Toronto fixed-ஐ கொடுத்து floating-ஐ பெறுவதால (Section 4c), floating index fixed விலைக்கு <i>கீழே</i> settle ஆகும்போதெல்லாம் Bank Of Toronto net payer — அதிக floating settlement Bank Of Toronto-வை net receiver ஆக்கின worked example-ஓட mirror image. <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8 interest rate swaps-க்கு நிறுவின அதே fixed-vs-floating netting logic.</p>
+<p><b>6. ஏன்னா Section 07, CFTC அதிகார எல்லையில இருக்கற exchange-traded Futures-தான் ஆதிக்க, அதிக liquid Commodity product-ன்னு கண்டுபிடிச்சது — இந்த roadmap-ல மற்ற எல்லா module-லயும் ஆதிக்க product OTC, bilateral-ஆ (Fixed Income, FX) இருந்தது, அல்லது CCP மேற்பார்வை அதிகார எல்லைகளுக்கு நடுவுல சமமா பிரிஞ்சிருந்தது (Equity).</b></p>
+<p>Section 08-ஓட takeaway இந்த இணைப்பை வெளிப்படையா வரையுது: CFTC-ஓட outsized பொருத்தம், Commodities-ல centrally-cleared, exchange-traded product விதிவிலக்கா இல்லாம வழக்கமா இருக்கற முதல் asset class என்பதன் நேரடி விளைவு — மிகப்பெரிய commodity futures exchanges (CME, ICE) US-regulated.</p>
+<p><b>7. Commodity Future உடனடியா clear ஆகுது, ஏன்னா execution-ல இருந்தே அது exchange-traded; exchange-ஓட சொந்த CCP ஒவ்வொரு trade-க்கு பின்னாலும் வடிவமைப்பிலேயே நிக்குது (Section 05) — FX trade பெரும்பாலும் CCP வழியா clear ஆகவே ஆகாது, ஏன்னா FX பெரும்பாலும் OTC, bilateral (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a> §05, §07); அது CLS-ஓட PvP mechanism வழியா settle ஆகுது, அது trade-ஐ ஒரு central counterparty-க்கு novate பண்ணாமலே settlement risk-ஐ குறைக்குது.</b></p>
+<p>இதே கட்டமைப்பு பிளவைத்தான் Section 07 Commodities-க்குள்ளேயே (Futures vs Physical/Swaps) வரையுது, asset classes முழுக்க பொருத்தப்பட்டு: ஒரு trade மைய clear ஆகுதா, எவ்வளவு வேகமா என்பது, ஏதோ asset-class-முழுமையான விதியை சார்ந்ததில்ல, <i>product</i> வடிவமைப்பிலேயே exchange-traded-ஆ என்பதை சார்ந்தது — Commodities-ல ரெண்டு pattern-உம் ஒரே asset class-க்குள்ள சேர்ந்து இருக்கு; FX (<a href="../docs/1-capital-markets/module-06-fx.html">Module 6</a>), Fixed Income (<a href="../docs/1-capital-markets/module-05-fixed-income.html">Module 5</a>) கிட்டத்தட்ட முழுக்க ஒவ்வொண்ணுக்கும் ஒரு pattern.</p>
+<p><b>8. CDS/CDCC உண்மையிலயே Canada-வில் அமைந்த infrastructure; Canadian venues-ல உண்மையில trade ஆன products-ஐ மட்டும்தான் clear/settle பண்ணும் — CME-listed WTI future, trading bank எந்த நாட்டுல தலைமையகம் கொண்டிருந்தாலும், முழுக்க US CME/CME Clearing ecosystem-க்குள்ள execute ஆகி clear ஆகுது; Bank Of Toronto-ஓட Canadian entity FCM உறவு வழியா ஒரு remote participant மட்டும், Canadian ஈடுபாடு CIRO-ஓட conduct மேற்பார்வைக்கு மட்டும், settlement infrastructure இல்ல. NGX swap, இதற்கு மாறா, Canada-வில் அமைந்த infrastructure-ல (NGX / NGX Clearing) trade-உம் ஆகுது clear-உம் ஆகுது, அதனால அதுதான் உண்மையான "Canadian-system" பாதை.</b></p>
+<p>Section 9a-ஓட table பொது விதியை நேரடியா சொல்லுது: trading bank Canadian-ஆ இருக்கறதால மட்டும் இல்ல, <b>venue தானே</b> Canadian-ஆ இருக்கும்போது மட்டும்தான் Canadian market infrastructure செயல்படுது — counterparty-ஓட nationality-யும், clearing/settlement சங்கிலியின் nationality-யும் ஒரு trade பத்தின ரெண்டு முற்றிலும் சுயாதீன உண்மைகள்.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Module 7 — Commodities (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>

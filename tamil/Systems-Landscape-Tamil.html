@@ -1,0 +1,912 @@
+<!doctype html>
+<title>Systems Landscape (பேச்சுத் தமிழில்)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #eef1f4;
+    --paper-raised: #ffffff;
+    --paper-sunken: #e4e8ec;
+    --ink: #1a2233;
+    --ink-soft: #55606e;
+    --ink-faint: #7d8794;
+    --line: #ccd2d9;
+    --line-strong: #aab2bb;
+    --accent: #0f6b5c;
+    --accent-soft: #0f6b5c1a;
+    --accent-2: #a9762f;
+    --accent-2-soft: #a9762f1a;
+    --shadow: 0 1px 2px rgba(26, 34, 51, 0.06), 0 8px 24px rgba(26, 34, 51, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #10141a;
+      --paper-raised: #171c24;
+      --paper-sunken: #0c0f14;
+      --ink: #e8ebf0;
+      --ink-soft: #9aa7b4;
+      --ink-faint: #6c7784;
+      --line: #2a323c;
+      --line-strong: #3a4450;
+      --accent: #45c4a4;
+      --accent-soft: #45c4a41f;
+      --accent-2: #dcae56;
+      --accent-2-soft: #dcae561f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #10141a;
+    --paper-raised: #171c24;
+    --paper-sunken: #0c0f14;
+    --ink: #e8ebf0;
+    --ink-soft: #9aa7b4;
+    --ink-faint: #6c7784;
+    --line: #2a323c;
+    --line-strong: #3a4450;
+    --accent: #45c4a4;
+    --accent-soft: #45c4a41f;
+    --accent-2: #dcae56;
+    --accent-2-soft: #dcae561f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 600;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  code, .mono, pre, .figure, .tabnum {
+    font-family: "Cascadia Code", "SF Mono", "Consolas", "Roboto Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 760px);
+    gap: 56px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 32px 96px;
+    justify-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: minmax(0, 1fr); padding: 40px 20px 72px; }
+    .toc { display: none; }
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Cascadia Code", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .masthead h1 {
+    font-size: 2.3rem;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  .masthead .dek {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+    margin: 0 0 18px;
+  }
+
+  .audience-note {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+
+  .audience-note b { color: var(--ink); }
+  .audience-note .bank-tag {
+    color: var(--accent-2);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+
+  .roadmap-note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 8px 12px;
+  }
+  .roadmap-note b { color: var(--accent); }
+
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .masthead-top .eyebrow { margin-bottom: 0; }
+
+  .theme-switch {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .theme-switch button {
+    appearance: none;
+    border: none;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .theme-switch button + button { border-left: 1px solid var(--line); }
+  .theme-switch button:hover { color: var(--ink); }
+  .theme-switch button[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  /* ---------- toc rail ---------- */
+
+  .toc {
+    position: sticky;
+    top: 56px;
+    align-self: start;
+    font-size: 0.85rem;
+  }
+
+  .toc-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 12px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .toc li { margin: 0; }
+
+  .toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
+
+  .toc .toc-num { color: var(--accent-2); margin-right: 6px; }
+
+  /* ---------- main column ---------- */
+
+  main { min-width: 0; }
+
+  section.mod {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section.mod:last-of-type { border-bottom: none; }
+
+  .sec-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+  .sec-eyebrow .n { color: var(--accent-2); font-weight: 700; }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 62ch;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    margin: 28px 0 10px;
+  }
+
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--ink); }
+
+  .takeaway {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .takeaway b { color: var(--accent); }
+
+  .explainer {
+    margin: 20px 0 4px;
+    padding: 20px 22px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+  }
+  .explainer > h4 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .explainer h5 {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 22px 0 8px;
+  }
+  .explainer h5:first-of-type { margin-top: 0; }
+  .explainer .ticket { margin: 12px 0 4px; }
+
+  .callout {
+    margin: 16px 0;
+    padding: 12px 15px;
+    background: var(--accent-2-soft);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .callout b { color: var(--accent-2); }
+
+  /* ---------- reference table ---------- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 4px 0 18px;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 10px 8px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  td {
+    padding: 9px 10px 9px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  td:first-child, th:first-child { padding-left: 0; }
+  tr:last-child td { border-bottom: none; }
+  td b, td strong { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; margin: 4px 0 18px; }
+  .table-scroll table { min-width: 720px; margin: 0; }
+
+  .side-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .side-tag.buy { color: var(--accent-2); background: var(--accent-2-soft); }
+  .side-tag.sell { color: var(--accent); background: var(--accent-soft); }
+  .side-tag.infra { color: var(--ink-faint); background: var(--paper-sunken); }
+
+  /* ---------- ticket / diagram cards ---------- */
+
+  .ticket {
+    margin: 16px 0 24px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ticket.gold { border-top-color: var(--accent-2); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px dashed var(--line);
+    background: var(--paper-sunken);
+  }
+
+  .ticket-head .t-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ticket-head .t-id {
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 0.72rem;
+    color: var(--accent-2);
+  }
+
+  .ticket pre {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: transparent;
+    white-space: pre;
+  }
+
+  .ticket .result {
+    padding: 12px 20px 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--paper-sunken);
+  }
+  .ticket .result b { color: var(--ink); }
+
+  /* ---------- quiz ---------- */
+
+  .quiz {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 28px 28px 8px;
+  }
+
+  .quiz ol { margin: 0; padding-left: 22px; }
+  .quiz li {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    max-width: 64ch;
+  }
+  .quiz li:last-child { border-bottom: none; margin-bottom: 8px; }
+  .quiz li::marker { color: var(--accent-2); font-weight: 700; font-family: "Cascadia Code", monospace; }
+
+  .quiz-cta {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  footer {
+    grid-column: 1 / -1;
+    max-width: 760px;
+    justify-self: center;
+    padding-top: 32px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    section.mod { animation: rise 0.4s ease-out both; }
+    body { transition: background-color 0.2s ease, color 0.2s ease; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
+</style>
+
+<div class="shell">
+  <div class="masthead">
+    <div class="masthead-top">
+      <div class="eyebrow">Capital Markets Tamil Notes</div>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button type="button" data-mode="system" aria-pressed="true">System</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <h1>Systems Landscape (பேச்சுத் தமிழில்)</h1>
+    <p class="dek">Canada, US, UK, EU — Front/Middle/Back Office systems, settlement cycles, regulators</p>
+    
+  
+    <div class="audience-note"><b>யாருக்காக?</b> Finance / Capital Markets புதுசா கத்துக்கற Java Software Architect-க்கு. <b>Example bank:</b> <b>Bank Of Toronto</b> (கற்பனை வங்கி). இது ஒரு <b>reference module</b> — Modules 1–3-க்கு பக்கத்துல நிக்குது. Trade lifecycle-ஐ (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a>) நிஜமா ஓட்டுற <b>systems, message formats, market infrastructure</b> பேரை நான்கு jurisdictions-ல சொல்லுது: <b>Canada, United States, United Kingdom, European Union</b>. English மூலம்: <a href="../docs/1-capital-markets/systems-landscape.html">Systems Landscape</a></div>
+  </div>
+
+  <nav class="toc" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      <li><a href="#1-இந்த-module-ஏன்-modules-1-3-க்கு-பின்னாடி-இருக்கும்-systems"><span class="toc-num">01</span>1. இந்த Module ஏன்? — Modules 1–3-க்கு பின்னாடி இருக்கும் Systems</a></li>
+      <li><a href="#2-பொதுவான-front-middle-back-office-architecture"><span class="toc-num">02</span>2. பொதுவான Front / Middle / Back Office Architecture</a></li>
+      <li><a href="#3-t-t-1-t-2-இந்த-systems-முழுக்க-கடிகாரம்-எங்க-இருக்கு"><span class="toc-num">03</span>3. T, T+1, T+2 — இந்த Systems முழுக்க கடிகாரம் எங்க இருக்கு</a></li>
+      <li><a href="#4-canada-systems-data-flow"><span class="toc-num">04</span>4. Canada — Systems &amp; Data Flow</a></li>
+      <li><a href="#5-united-states-systems-data-flow"><span class="toc-num">05</span>5. United States — Systems &amp; Data Flow</a></li>
+      <li><a href="#6-united-kingdom-systems-data-flow"><span class="toc-num">06</span>6. United Kingdom — Systems &amp; Data Flow</a></li>
+      <li><a href="#7-european-union-systems-data-flow"><span class="toc-num">07</span>7. European Union — Systems &amp; Data Flow</a></li>
+      <li><a href="#8-side-by-side-settlement-cycles-csds-ccps-trade-repositories"><span class="toc-num">08</span>8. Side-by-Side — Settlement Cycles, CSDs, CCPs &amp; Trade Repositories</a></li>
+      <li><a href="#9-cross-border-worked-example-ஒரே-trade-date-நாலு-markets"><span class="toc-num">09</span>9. Cross-Border Worked Example — ஒரே Trade Date, நாலு Markets</a></li>
+      <li><a href="#10-regulatory-bodies-நாடு-வாரியா"><span class="toc-num">10</span>10. Regulatory Bodies — நாடு வாரியா</a></li>
+      <li><a href="#11-otc-derivatives-cash-equities-system-stacks"><span class="toc-num">11</span>11. OTC Derivatives &amp; Cash Equities — System Stacks</a></li>
+      <li><a href="#12-securities-financing-transaction-reporting-sftr-நாடு-வாரியா-இணைகள்"><span class="toc-num">12</span>12. Securities Financing Transaction Reporting — SFTR &amp; நாடு வாரியா இணைகள்</a></li>
+      <li><a href="#recap-quiz-எண்கள்-பதிப்பு"><span class="toc-num">★</span>Recap Quiz — எண்கள் பதிப்பு</a></li>
+      <li><a href="#answers-recap-quiz-விளக்கத்தோட"><span class="toc-num">★</span>Answers — Recap Quiz, விளக்கத்தோட</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="mod" id="1-இந்த-module-ஏன்-modules-1-3-க்கு-பின்னாடி-இருக்கும்-systems">
+      <p class="sec-eyebrow"><span class="n">01</span></p>
+      <h2>1. இந்த Module ஏன்? — Modules 1–3-க்கு பின்னாடி இருக்கும் Systems</h2>
+      <p><a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> Front/Middle/Back Office-ஐ மூணு <i>role</i>-ஆ சொன்னுச்சு. <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> ஒன்பது-stage trade lifecycle-ஐ ஒரு <i>process</i>-ஆ சொன்னுச்சு. ஆனா அந்த process-ஐ உண்மையில ஓட்டுற <b>systems</b> பேரை ரெண்டும் சொல்லல; "T+2"ங்கறது ஒரே உலகளாவிய விதி இல்ல — அது ஒவ்வொரு நாட்டுலயும், ஒவ்வொரு asset class-லயும் வேற வேற market infrastructure அமல்படுத்தும் *convention்*ன்னும் சொல்லல. இந்த module அந்த இடைவெளியை நிரப்புது: Canada, US, UK, EU ஒவ்வொண்ணுக்கும், ஒரு trade உண்மையில எந்த systems வழியா போகுது, அவற்றை இணைக்கும் message formats என்ன, அந்த market இப்போ எந்த settlement cycle-ல ஓடுது.</p>
+<div class="ticket"><pre>WHERE THIS MODULE SITS
+========================================================================
+
+Module 1  -&gt;  Front/Middle/Back Office as ROLES  (who does what)
+Module 3  -&gt;  The nine-stage trade lifecycle as a PROCESS (what happens, in order)
+THIS MODULE -&gt; The actual SYSTEMS + MARKET INFRASTRUCTURE that process runs on,
+               country by country, plus who regulates each one</pre></div>
+<p><b>Takeaway:</b> <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> "Settlement"-ல <i>என்ன</i> நடக்குதுன்னு சொன்னா, இந்த module ஒவ்வொரு market-லயும் <i>எந்த system</i> அதை செய்யுதுன்னு சொல்லுது — Canada-ல CDSX, US-ல DTC, UK-ல CREST, EU-ல T2S மேல Euroclear/Clearstream — இவை ஒண்ணுக்கொண்ணு மாத்தக்கூடிய ஒரே பொருளின் வேறு பெயர்கள் இல்ல; உண்மையிலயே வேறு platforms, வேறு rulebooks, வேறு regulators, (Section 8 காட்டுறபடி) வேறு settlement cycles.</p>
+    </section>
+    <section class="mod" id="2-பொதுவான-front-middle-back-office-architecture">
+      <p class="sec-eyebrow"><span class="n">02</span></p>
+      <h2>2. பொதுவான Front / Middle / Back Office Architecture</h2>
+      <p><b>Definition:</b> எந்த நாடா இருந்தாலும், ஒவ்வொரு dealing bank-உம் அதே மூன்று-அடுக்கு system architecture-ஐ ஓட்டுது. நாடு நாடா மாறுவது (Sections 4–7) — ஒவ்வொரு பெட்டில எந்த vendor/platform உட்காருது, Back Office அடுக்கு எந்த market infrastructure-ல இணையுது என்பது.</p>
+<div class="ticket"><pre>GENERIC SYSTEMS ARCHITECTURE  —  same shape everywhere
+========================================================================
+
+FRONT OFFICE
+  +-------------------+        +-------------------+
+  |   OMS              |  FIX   |   EMS               |
+  |  (Order Mgmt Sys)   |-------&gt;|  (Execution Mgmt Sys)|----&gt; Exchange / Venue /
+  |  captures the ORDER |        |  routes the EXECUTION |     Interbank market
+  +-------------------+        +-------------------+
+            |
+            | Trade Capture (Module 3 §3)
+            v
+MIDDLE OFFICE
+  +---------------------+      +----------------------+
+  |  Confirmation/Matching|&lt;----&gt;|  Risk &amp; Valuation Engine|
+  |  platform (Module 3 §4-5)|  |  (Murex, Calypso, etc.)  |
+  +---------------------+      +----------------------+
+            |
+            | Clearing instruction, if applicable (Module 3 §6)
+            v
+BACK OFFICE
+  +-----------+     +-----------+     +------------------+
+  |    CCP     |----&gt;|    CSD     |----&gt;|  Custodian /       |
+  | (clearing) |     |(settlement)|     |  Cash correspondent|
+  +-----------+     +-----------+     +------------------+
+            |
+            v
+  +---------------------------+
+  |  Regulatory Reporting Engine |----&gt; Trade Repository / Regulator (Module 3 §9)
+  +---------------------------+</pre></div>
+<div class="table-scroll"><table><thead><tr><th>அடுக்கு</th><th>System வகை</th><th>வழக்கமான message formats</th><th>உருவாக்குவது</th></tr></thead><tbody><tr><td>Front Office</td><td>OMS, EMS</td><td>FIX (Financial Information eXchange)</td><td>Order, பின்னர் Execution</td></tr><tr><td>Middle Office</td><td>Confirmation/Matching platform, Risk &amp; Valuation engine</td><td>FpML (derivatives), proprietary / ISO 20022 (cash)</td><td>Confirm ஆன, match ஆன trade; MTM / risk எண்கள்</td></tr><tr><td>Back Office</td><td>CCP, CSD, Custodian systems, Regulatory reporting engine</td><td>SWIFT MT5xx / ISO 20022 MX, proprietary CSD protocols</td><td>Settle ஆன position, reconcile ஆன books, file பண்ணின regulatory report</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> கீழே Sections 4–7-ல நாம பார்க்கப்போற ஒவ்வொரு system-உம் இந்த ஐந்து பெட்டிகளில ஒண்ணோட நாடு-குறிப்பிட்ட implementation. ஒரு system <i>எந்த பெட்டில</i> இருக்குன்னு தெரிஞ்சா, அதன் documentation படிக்கறதுக்கு முன்னாடியே அது கிட்டத்தட்ட என்ன செய்யும்னு ஊகிக்கலாம்.</p>
+<p><b>Java architect-க்கு ஒப்பீடு:</b> இது ஒரு web app-ஓட Controller → Service → Repository அடுக்கு மாதிரி — framework (Spring/Quarkus) வேறா இருந்தாலும் shape ஒண்ணுதான். இங்க OMS/EMS = controller, Murex/Calypso = service layer, CCP/CSD = persistence + ledger.</p>
+    </section>
+    <section class="mod" id="3-t-t-1-t-2-இந்த-systems-முழுக்க-கடிகாரம்-எங்க-இருக்கு">
+      <p class="sec-eyebrow"><span class="n">03</span></p>
+      <h2>3. T, T+1, T+2 — இந்த Systems முழுக்க கடிகாரம் எங்க இருக்கு</h2>
+      <p><b>Definition:</b> <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §6, T+n = Trade Date-ல இருந்து Settlement Date வரை business days எண்ணிக்கைன்னு சொன்னுச்சு. அது சொல்லாதது: <b>எந்த system உண்மையில அந்த கடிகாரத்தை அமல்படுத்துது</b>, மேலும் நாட்களின் எண்ணிக்கை ஒரு <i>market / product convention</i>, இயற்பியல் விதி இல்ல — நாடுகள், ஒரே நாட்டுக்குள்ள வேறு asset classes வேறு cycles ஓட்டுது.</p>
+<div class="ticket"><pre>WHO OWNS THE CLOCK, AT EACH STAGE
+========================================================================
+
+  Trade Date (T)                                    Settlement Date (T+n)
+       |                                                      |
+       v                                                      v
+  FRONT OFFICE          MIDDLE OFFICE           BACK OFFICE (the CSD)
+  records T at             confirms/matches         is the system that
+  Execution Time            same day, T                ENFORCES T+n — it
+  (Module 3 §2)              (Module 3 §4-5)             will not release
+                                                          securities/cash
+                                                          before T+n, and
+                                                          flags a FAIL
+                                                          (Module 3 §13)
+                                                          if T+n passes
+                                                          without completion</pre></div>
+<div class="table-scroll"><table><thead><tr><th>Cash / Derivative</th><th>Market</th><th>Product</th><th>Settlement cycle (as of 2026)</th></tr></thead><tbody><tr><td>CASH</td><td>Canada</td><td>Equities</td><td><b>T+1</b> (aligned with the US, since 27 May 2024)</td></tr><tr><td>CASH</td><td>Canada</td><td>Government / corporate bonds</td><td><b>T+1</b> or <b>T+2</b>, depending on the specific bond</td></tr><tr><td>CASH</td><td>United States</td><td>Equities</td><td><b>T+1</b> (since 28 May 2024)</td></tr><tr><td>CASH</td><td>United States</td><td>US Treasuries</td><td><b>T+1</b></td></tr><tr><td>CASH</td><td>United Kingdom</td><td>Gilts (government bonds)</td><td><b>T+1</b> (gilts have long settled faster than equities)</td></tr><tr><td>CASH</td><td>United Kingdom</td><td>Equities</td><td><b>T+2</b> (a move to T+1 is targeted for <b>October 2027</b>)</td></tr><tr><td>CASH</td><td>European Union</td><td>Equities &amp; bonds</td><td><b>T+2</b> (a coordinated EU/UK/Switzerland move to <b>T+1 is targeted for October 2027</b>)</td></tr><tr><td>DERIVATIVE</td><td>OTC derivatives (any market)</td><td>Interest Rate Swaps, CDS, etc.</td><td>No notional settlement at all — only margin/cash flows (<a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §8, <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §11)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> "T+2" என்பது அப்பப்போ விதிவிலக்குகளோட உலகளாவிய default இல்ல — 2026-ல equities-க்கு அது ஏற்கனவே <i>சிறுபான்மை</i> நிலை (Canada, US ரெண்டும் 2024-ல T+1-க்கு போயிடுச்சு), UK/EU 2027-க்கு T+1-ஐ நோக்கி நகருது. "settlement = trade date + 2"ன்னு hard-code பண்ற reporting system, உண்மையான trades-ல பெரும்பகுதிக்கு ஏற்கனவே தவறு.</p>
+<p><b>Java குறிப்பு:</b> <code>tradeDate.plusDays(2)</code> எழுதாதீங்க. <code>SettlementCalendar.settlementDate(market, assetClass, tradeDate)</code> மாதிரி (market, product)-ஐ key-ஆ கொண்ட lookup + holiday calendar தான் சரியான வடிவம்.</p>
+    </section>
+    <section class="mod" id="4-canada-systems-data-flow">
+      <p class="sec-eyebrow"><span class="n">04</span></p>
+      <h2>4. Canada — Systems &amp; Data Flow</h2>
+      <h3>Front &amp; Middle Office</h3>
+<div class="table-scroll"><table><thead><tr><th>Function</th><th>வழக்கமான systems</th></tr></thead><tbody><tr><td>Order Management (OMS)</td><td>Bloomberg AIM, Charles River IMS, Eze OMS</td></tr><tr><td>Execution Management (EMS)</td><td>FlexTrade, Bloomberg EMSX, Charles River</td></tr><tr><td>Middle Office risk/valuation</td><td>Murex, Calypso (Adenza), GMI (SS&amp;C)</td></tr><tr><td>Confirmation/matching (cash securities)</td><td>CDS-ன் <b>CDSX</b> trade-matching module, DTCC-ன் <b>CTM</b></td></tr></tbody></table></div>
+<h3>Back Office — Market Infrastructure</h3>
+<ul><li><b>CDS (Canadian Depository for Securities)</b> <b>CDSX</b>-ஐ நடத்துது — Canada-ன் central securities depository, settlement system; <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7-ல சொன்ன CSD role-ன் Canadian இணை. CDS, <b>TMX Group</b>-ஓட subsidiary.</li><li><b>CDCC (Canadian Derivatives Clearing Corporation)</b> — இதுவும் TMX Group subsidiary — exchange-traded derivatives-க்கும், 2012-ல இருந்து fixed income repo market-க்கும் CCP.</li><li>Custodians (எ.கா. RBC Investor Services, CIBC Mellon) client positions-ஐ வெச்சிருந்து, clients சார்பா CDSX-ல இணையுறாங்க — <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7-ல பொதுவா சொன்னது போலவே.</li></ul>
+<h3>Worked example — Bank Of Toronto Canadian equity வாங்குது, T+1</h3>
+<div class="ticket"><pre>CANADA  —  DATA FLOW FOR ONE EQUITY TRADE
+========================================================================
+
+  09:31:05  ORDER captured in Bloomberg AIM (OMS)
+              Client: Maple Leaf Pension Fund
+              BUY 50,000 shares, Loblaw Companies Ltd. (TSX: L)
+
+  09:31:07  Routed via FIX 4.4 to FlexTrade (EMS)
+              Order sent to the Toronto Stock Exchange (TSX)
+
+  09:31:09  EXECUTION on TSX @ CAD 178.40
+              Trade Value = 50,000 x 178.40 = CAD 8,920,000
+
+  09:31:09  TRADE CAPTURE — Trade ID BOT-CA-2026-004471
+
+  09:45:00  CONFIRMATION/MATCHING via CDSX matching module
+              -&gt; Status: MATCHED
+
+  Settlement Date = T+1 = next business day
+              CDSX performs DvP: shares move from Bank Of Toronto's
+              CDS participant account to the client's custodian
+              account; cash (CAD 8,920,000) moves simultaneously.
+
+  Trade Repository reporting (if OTC derivative — not applicable
+  here, this is an exchange-traded equity, so the TSX's own trade
+  feed is the record, per Module 1 §5)</pre></div>
+<p><b>Takeaway:</b> Canada-வும் US-உம் ஒரே T+1 equity cycle-ஐ ஓட்டுது; 2024 May-ல ஒண்ணா மாறியதே காரணம் — Canadian order flow-ல பெரும்பகுதியும் dual-listed stocks-உம் US markets-ஓட தொடர்புடையது; T+1/T+2 பொருந்தாமை ஒவ்வொரு cross-border trade-லயும் settlement உராய்வை உருவாக்கியிருக்கும்.</p>
+<h3>கூடுதல் உதாரணம் — அதே trade, அடுத்த நாள் காலை என்ன நடக்கும்?</h3>
+<p>மேலுள்ள Loblaw trade (Trade Date Monday) Tuesday காலை எப்படி முடியுது:</p>
+<div class="table-scroll"><table><thead><tr><th>நேரம்</th><th>System</th><th>என்ன நடக்குது</th><th>எண்</th></tr></thead><tbody><tr><td>Mon 09:45</td><td>CDSX matching</td><td>Trade MATCHED</td><td>Trade Value CAD 8,920,000</td></tr><tr><td>Mon இரவு</td><td>Back Office</td><td>Settlement instruction தயார்</td><td>50,000 shares ↔ CAD 8,920,000</td></tr><tr><td>Tue காலை</td><td>CDSX</td><td>DvP — shares + cash ஒரே நேரத்துல</td><td>Bank-ஓட CDS participant account → custodian account</td></tr><tr><td>Tue மதியம்</td><td>Reconciliation</td><td>Books vs CDSX vs custodian பொருந்துதா?</td><td>Break = 0</td></tr><tr><td>Tue</td><td>Regulatory</td><td>Exchange-traded equity, அதனால TR report இல்ல (TSX feed தான் record)</td><td>—</td></tr></tbody></table></div>
+<p>எதாவது ஒரு படியில fail ஆனா (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §13) CDSX அதை "FAIL"ன்னு flag பண்ணும் — அதான் "கடிகாரத்தை அமல்படுத்தும் system".</p>
+    </section>
+    <section class="mod" id="5-united-states-systems-data-flow">
+      <p class="sec-eyebrow"><span class="n">05</span></p>
+      <h2>5. United States — Systems &amp; Data Flow</h2>
+      <h3>Front &amp; Middle Office</h3>
+<div class="table-scroll"><table><thead><tr><th>Function</th><th>Typical systems</th></tr></thead><tbody><tr><td>Order Management (OMS)</td><td>Charles River IMS, Bloomberg AIM, Eze OMS</td></tr><tr><td>Execution Management (EMS)</td><td>Bloomberg EMSX, FlexTrade, Instinet</td></tr><tr><td>Middle Office risk/valuation</td><td>Murex, Calypso, Numerix (derivatives pricing)</td></tr></tbody></table></div>
+<h3>Back Office — Market Infrastructure</h3>
+<ul><li><b>DTCC (Depository Trust &amp; Clearing Corporation)</b> — US post-trade infrastructure-ஓட குடை parent:</li></ul>
+<p>- <b>NSCC (National Securities Clearing Corporation)</b> — equity, corporate bond trades-ஐ clear பண்ணி net பண்ணும் CCP. - <b>FICC (Fixed Income Clearing Corporation)</b> — US Treasuries, repo market-க்கான CCP (பெரும்பாலான Treasury cash, repo trades-க்கு கட்டாய central clearing 2025–2026 வழியா படிப்படியா அமலுக்கு வந்தது). - <b>DTC (Depository Trust Company)</b> — securities-ஐ book-entry வடிவில வெச்சிருந்து இறுதி DvP settlement செய்யும் CSD; <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §7-ன் CSD role-க்கு US இணை.</p>
+<ul><li><b>Fedwire</b> (Federal Reserve நடத்துவது) — பெரிய தொகை, அதே-நாள் payments-க்கான real-time gross settlement system — DTC-ஓட securities-பக்க settlement-க்கு கீழே இருக்கும் "cash rail".</li><li><b>Swap Data Repositories (SDRs)</b> — எ.கா. <b>DTCC GTR</b>, <b>ICE Trade Vault</b> — CFTC விதிகளின் கீழ OTC derivatives report ஆகும் US trade repositories (Trade Repository concept-ன் US அமலாக்கம்; <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §5, <a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §12).</li></ul>
+<h3>Worked example — Bank Of Toronto-வின் US desk Apple shares வாங்குது, T+1</h3>
+<div class="ticket"><pre>UNITED STATES  —  DATA FLOW FOR ONE EQUITY TRADE
+========================================================================
+
+  10:02:00  ORDER captured in Charles River IMS (OMS)
+              BUY 5,000 shares, Apple Inc. (NASDAQ: AAPL)
+
+  10:02:03  Routed via FIX to Bloomberg EMSX (EMS) -&gt; NASDAQ
+
+  10:02:05  EXECUTION @ USD 227.15
+              Trade Value = 5,000 x 227.15 = USD 1,135,750
+
+  10:02:05  TRADE CAPTURE — Trade ID BOT-US-2026-009213
+
+  10:15:00  CONFIRMATION/MATCHING via DTCC CTM -&gt; MATCHED
+
+  Trade submitted to NSCC for CLEARING (novation + multilateral
+  netting across all of Bank Of Toronto's trades that day —
+  NSCC nets thousands of trades down to one net settlement
+  obligation per security, per participant, per day)
+
+  Settlement Date = T+1
+              DTC performs DvP: shares move in DTC's book-entry
+              system; cash leg settles via the DTCC/Fedwire cash
+              settlement process.</pre></div>
+<p><b>Takeaway:</b> இந்த நாலு markets-ல, ஒரு நாள் முழுக்க ஒரே security-ல ஒரு firm-ஓட trades-ஐ எதுவும் settle ஆகுறதுக்கு முன்னாடி ஒரு CCP (NSCC) <i>net</i> பண்ணுவது US மட்டும்தான் — மேலே Bank Of Toronto-ஓட 5,000-share buy, அன்னிக்கு desk செய்த மற்ற Apple trades-ஓட net ஆகலாம்; அதனால உண்மையான DTC settlement instruction எந்த ஒரு execution-ஐ விடவும் வேறு, சிறிய quantity-ஆ இருக்கலாம். அதனாலதான் "ஒரு trade = ஒரு settlement instruction"ன்னு எதிர்பார்க்கும் reporting system US market-ல குறிப்பா உடையுது.</p>
+<h3>கூடுதல் உதாரணம் — Netting எண்களில்</h3>
+<p>அதே நாள் Bank Of Toronto-ஓட US desk Apple-ல இப்படி செஞ்சதா வெச்சுக்குவோம்:</p>
+<div class="table-scroll"><table><thead><tr><th>Trade</th><th>Side</th><th>Quantity</th><th>Price (USD)</th></tr></thead><tbody><tr><td>A1</td><td>Buy</td><td>5,000</td><td>227.15</td></tr><tr><td>A2</td><td>Sell</td><td>2,000</td><td>227.50</td></tr><tr><td>A3</td><td>Buy</td><td>1,000</td><td>227.30</td></tr></tbody></table></div>
+<ul><li>Gross: 6,000 வாங்கல், 2,000 விற்பனை — 3 trades, 3 settlement-ஆ இருந்திருக்கும் (netting இல்லாத market-ல).</li><li>NSCC net: <b>6,000 − 2,000 = 4,000 shares நிகர வாங்கல்</b> → DTC-ல ஒரே settlement obligation.</li><li>Cash net: 5,000×227.15 + 1,000×227.30 − 2,000×227.50 = 1,135,750 + 227,300 − 455,000 = <b>USD 908,050 நிகரமா கட்டணும்</b>.</li></ul>
+<p>Reporting system "3 trades → 3 settlements"ன்னு எதிர்பார்த்தா, இங்க 3 → 1 வருது.</p>
+    </section>
+    <section class="mod" id="6-united-kingdom-systems-data-flow">
+      <p class="sec-eyebrow"><span class="n">06</span></p>
+      <h2>6. United Kingdom — Systems &amp; Data Flow</h2>
+      <h3>Front &amp; Middle Office</h3>
+<p>Canada, US-ஓட கிட்டத்தட்ட அதே vendor landscape (Bloomberg AIM/EMSX, Charles River, Murex, Calypso) — front/middle office tooling market உண்மையிலயே உலகளாவியது. வேறுபடுவது back office.</p>
+<h3>Back Office — Market Infrastructure</h3>
+<ul><li><b>CREST</b>, <b>Euroclear UK &amp; International</b> நடத்துவது (Euroclear 2002-ல Bank of England-ல இருந்து CREST business-ஐ வாங்கியது), UK-ன் CSD — UK equities, gilts, money market instruments-ஐ book-entry வடிவில settle பண்ணும்.</li><li><b>LCH (London Clearing House)</b>, London Stock Exchange Group-ன் பகுதி, UK (மற்றும் இன்னும் பரந்த ஐரோப்பிய / உலகளாவிய) interest rate swap clearing-ல ஆதிக்கமான CCP — <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §6, §11-ல illustrative CCP-ஆ பெயரிட்ட அதே "LCH".</li><li><b>CHAPS</b> (Clearing House Automated Payment System), Bank of England நடத்துவது — UK-ன் real-time high-value cash payment system; Fedwire-க்கு UK இணை.</li><li>Brexit-க்கு பிறகு UK தன் சொந்த <b>UK EMIR</b>, <b>UK MiFIR</b> reporting regimes-ஐ ஓட்டுது — EU பதிப்புகளை (Section 7) நெருக்கமா பிரதிபலிச்சாலும் தனியா; <b>DTCC Derivatives Repository Ltd</b>, <b>UnaVista</b> (LSEG) போன்ற trade repositories UK market-ஐ குறிப்பா சேவை செய்யுது.</li></ul>
+<h3>Worked example — Bank Of Toronto-வின் London desk UK equity விற்கிறது, T+2</h3>
+<div class="ticket"><pre>UNITED KINGDOM  —  DATA FLOW FOR ONE EQUITY TRADE
+========================================================================
+
+  11:00:00  ORDER captured in Charles River IMS (OMS)
+              SELL 200,000 shares, Tesco PLC (LSE: TSCO)
+
+  11:00:04  Routed via FIX to the London Stock Exchange (EMS/venue)
+
+  11:00:06  EXECUTION @ GBP 3.42
+              Trade Value = 200,000 x 3.42 = GBP 684,000
+
+  11:00:06  TRADE CAPTURE — Trade ID BOT-UK-2026-005580
+
+  11:20:00  CONFIRMATION/MATCHING -&gt; MATCHED
+
+  Settlement Date = T+2  (UK equities have NOT yet moved to
+              T+1 — that move is targeted for October 2027)
+              CREST performs DvP: shares move in Euroclear UK &amp;
+              International's book-entry system; cash settles
+              via the linked banking payment rails.</pre></div>
+<p><b>Takeaway:</b> UK equities-க்கு இன்னும் T+2 ஓடுது, Canada/US T+1 — அதனால Bank Of Toronto-வின் ஒரு global desk-க்கு, ஒரே நாளில் அருகருகே <i>ரெண்டு வேறு settlement கடிகாரங்கள்</i> ஓடுது; trade எந்த market-ல execute ஆச்சுங்கறதை பொறுத்து மட்டும். Section 9 இதை ஒரே நாள், நாலு-market ஒப்பீட்டால உறுதிப்படுத்துது.</p>
+    </section>
+    <section class="mod" id="7-european-union-systems-data-flow">
+      <p class="sec-eyebrow"><span class="n">07</span></p>
+      <h2>7. European Union — Systems &amp; Data Flow</h2>
+      <h3>Front &amp; Middle Office</h3>
+<p>மறுபடியும் அதே உலகளாவிய vendor landscape (Bloomberg, Charles River, Murex, Calypso) — ஆனா கவனிக்க: EU என்பது பல தேசிய markets-ஐ தாண்டிய <b>ஒரே regulatory framework</b>; அதனாலதான் அதன் back-office infrastructure மற்ற மூணிலிருந்தும் வேறு (Canada/US/UK-ஓட "முழு market-க்கும் ஒரு CSD" போல இல்லாம, ஒவ்வொரு நாட்டுக்கும் ஒரு CSD).</p>
+<h3>Back Office — Market Infrastructure</h3>
+<ul><li>பெரும்பாலான EU தேசிய CSDs (ஒரே "EU CSD" இல்ல — ஜெர்மனியின் Clearstream, பெல்ஜியத்தின் Euroclear Bank, பிரான்சின் Euroclear France… ஒவ்வொண்ணும் தனி legal entity) <b>T2S (TARGET2-Securities)</b> வழியா settle ஆகுது — ECB நடத்தும் pan-European settlement platform; பங்கேற்கும் எல்லா CSDs-உம் ஒரே பகிரப்பட்ட technical platform-ல, central bank money-ல securities transactions-ஐ settle பண்ண உதவுது.</li><li><b>Euroclear</b>, <b>Clearstream</b> (Deutsche Börse Group பகுதி) — ரெண்டு பெரிய <b>ICSDs (International Central Securities Depositories)</b>; தங்கள் உள்நாட்டு CSD role-க்கு கூடுதலா cross-border, Eurobond settlement-ஐ கையாளுது.</li><li><b>Eurex Clearing</b> (Deutsche Börse Group), <b>LCH SA</b> (LCH-ன் Paris-based, EU-regulated பிரிவு) — cleared derivatives, repo-க்கான ரெண்டு பெரிய EU CCPs.</li><li><b>EMIR</b>-ன் கீழ trade repositories: <b>REGIS-TR</b>, <b>DTCC Derivatives Repository</b>, <b>UnaVista</b>, மற்றவை — firms எந்த EMIR-authorized TR-க்கும் report பண்ணலாம்; தேசிய regulators ஒரு counterparty பயன்படுத்தின TR-ல இருந்து data இழுக்கும்.</li></ul>
+<h3>Worked example — Bank Of Toronto-வின் Frankfurt desk ஒரு German Bund வாங்குது, T+2</h3>
+<div class="ticket"><pre>EUROPEAN UNION  —  DATA FLOW FOR ONE BOND TRADE
+========================================================================
+
+  13:00:00  ORDER captured in Bloomberg AIM (OMS)
+              BUY EUR 30,000,000 face value, Germany 3% Bund 2033
+
+  13:00:05  EXECUTION @ Price 99.10 (interbank market)
+              Trade Value = 30,000,000 x 99.10 / 100 = EUR 29,730,000
+
+  13:00:05  TRADE CAPTURE — Trade ID BOT-EU-2026-007742
+
+  13:30:00  CONFIRMATION/MATCHING -&gt; MATCHED
+
+  Settlement Date = T+2  (EU securities settlement is still T+2
+              as of 2026; a coordinated move to T+1 alongside the
+              UK is targeted for October 2027)
+              Settlement instructed to Clearstream (as the German
+              CSD/ICSD), which settles on the shared T2S platform
+              in central bank money — the German Bundesbank's
+              books ultimately reflect the cash leg.</pre></div>
+<p><b>Takeaway:</b> T2S தேசிய CSDs-ஐ (Clearstream, Euroclear France…) மாற்றாது — அவை எல்லாம் plug-in ஆகும் பகிரப்பட்ட settlement <i>engine்</i>; அதனாலதான் ஒரு EUR bond trade-ல உண்மையான DvP mechanics கீழே pan-European T2S platform-ல ஓடினாலும் CSD-ஆ "Clearstream" பெயர் வருது. இது Canada/US/UK-ல இருந்து கட்டமைப்பில வேறு — அவை ஒவ்வொண்ணுக்கும் ஒரே, தேசிய CSD.</p>
+    </section>
+    <section class="mod" id="8-side-by-side-settlement-cycles-csds-ccps-trade-repositories">
+      <p class="sec-eyebrow"><span class="n">08</span></p>
+      <h2>8. Side-by-Side — Settlement Cycles, CSDs, CCPs &amp; Trade Repositories</h2>
+      <div class="table-scroll"><table><thead><tr><th></th><th><b>Canada</b></th><th><b>United States</b></th><th><b>United Kingdom</b></th><th><b>European Union</b></th></tr></thead><tbody><tr><td>Equity settlement cycle</td><td>T+1</td><td>T+1</td><td>T+2 (T+1 இலக்கு Oct 2027)</td><td>T+2 (T+1 இலக்கு Oct 2027)</td></tr><tr><td>Government bond settlement</td><td>T+1 அல்லது T+2</td><td>T+1</td><td>T+1 (gilts)</td><td>T+2</td></tr><tr><td>Central Securities Depository (CSD)</td><td>CDS (CDSX)</td><td>DTC</td><td>CREST (Euroclear UK &amp; Int'l)</td><td>தேசிய CSDs (Clearstream, Euroclear France…) T2S வழியா</td></tr><tr><td>முக்கிய CCP(s)</td><td>CDCC</td><td>NSCC (equities), FICC (Treasuries/repo)</td><td>LCH</td><td>Eurex Clearing, LCH SA</td></tr><tr><td>Cash settlement rail</td><td>Large Value Transfer System (LVTS)</td><td>Fedwire</td><td>CHAPS</td><td>TARGET2 / T2S cash leg</td></tr><tr><td>Trade Repository (OTC derivatives)</td><td>Canadian TRs (எ.கா. DTCC Data Repository (Canada))</td><td>DTCC GTR, ICE Trade Vault</td><td>DTCC Derivatives Repository Ltd, UnaVista (UK EMIR)</td><td>REGIS-TR, DTCC Derivatives Repository, UnaVista (EU EMIR)</td></tr><tr><td>Derivatives reporting-ன் முதன்மை விதி</td><td>மாகாண (CSA / OSC) OTC derivatives rules</td><td>CFTC (Dodd-Frank)</td><td>UK EMIR</td><td>EMIR</td></tr><tr><td>Securities financing (repo / sec-lending) reporting regime</td><td>2026-ல் SFTR-க்கு இணையான தனி regime இல்ல (Section 12)</td><td>SEC Rule 10c-1a, FINRA-வின் SLATE வழியா (securities lending மட்டும், படிப்படியா அமல்)</td><td>UK SFTR</td><td>SFTR</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> எந்த cross-border reporting field-ஐயும் sanity-check பண்ண இந்த table தான் வேகமான வழி — ஒரு Canadian equity trade record-ல T+2 settlement date இருந்தாலோ, ஒரு US trade-ல "DTC" CSD-ஆவும் "CDSX" settlement system-ஆவும் இருந்தாலோ, அந்த fields-ல ஒண்ணு தவறு; 2026-ல ஒவ்வொரு market-லயும் "சரி" எப்படி இருக்கும்னு மேல உள்ள table காட்டுது.</p>
+    </section>
+    <section class="mod" id="9-cross-border-worked-example-ஒரே-trade-date-நாலு-markets">
+      <p class="sec-eyebrow"><span class="n">09</span></p>
+      <h2>9. Cross-Border Worked Example — ஒரே Trade Date, நாலு Markets</h2>
+      <p>Bank Of Toronto நான்கு jurisdictions-லயும் desks உள்ள ஒரு global dealer. <b>ஒரே calendar Trade Date</b>-ல, திங்கள் 17-Aug-2026, நாலு desks ஒவ்வொண்ணும் ஒரு trade செய்யுது. Sections 3–7-ஓட ஒருங்கிணைந்த மிகத் தெளிவான விளக்கம் இந்த ஒரே table:</p>
+<div class="ticket"><pre>BANK OF TORONTO  —  FOUR DESKS, ONE TRADE DATE, FOUR DIFFERENT CLOCKS
+========================================================================
+
+Desk        Trade                              T+n    Settlement Date
+--------------------------------------------------------------------
+Toronto     BUY 50,000 sh Loblaw (TSX: L)       T+1    Tue 18-Aug-2026
+            @ CAD 178.40  -- CDSX / CDS
+
+New York    BUY 5,000 sh Apple (NASDAQ: AAPL)   T+1    Tue 18-Aug-2026
+            @ USD 227.15  -- NSCC/DTC
+
+London      SELL 200,000 sh Tesco (LSE: TSCO)   T+2    Wed 19-Aug-2026
+            @ GBP 3.42    -- CREST
+
+Frankfurt   BUY EUR 30M Germany 3% Bund 2033    T+2    Wed 19-Aug-2026
+            @ Price 99.10 -- Clearstream / T2S
+--------------------------------------------------------------------
+
+Same Trade Date. Two different Settlement Dates, purely because of
+which market each trade executed in -- nothing about the trades
+themselves (all clean, all matched same-day) caused the difference.</pre></div>
+<p><b>Takeaway:</b> Trades-ஐ Trade Date வாரியா குழுவாக்கி, எல்லாம் ஒரே calendar நாளில settle ஆகும்னு எதிர்பார்க்கும் ஒரு global reporting system, எந்த ஒரு நாளும் Bank Of Toronto-ஓட book-ல கிட்டத்தட்ட பாதியை தவறா வகைப்படுத்தும் — settlement date ஒவ்வொரு market-க்கும் தனித்தனியா derive பண்ணணும் (Section 3-ஓட table), trade date-ல இருந்து ஒரு நிலையான offset-ஆ ஒருபோதும் assume பண்ணக்கூடாது.</p>
+    </section>
+    <section class="mod" id="10-regulatory-bodies-நாடு-வாரியா">
+      <p class="sec-eyebrow"><span class="n">10</span></p>
+      <h2>10. Regulatory Bodies — நாடு வாரியா</h2>
+      <h3>Canada</h3>
+<div class="table-scroll"><table><thead><tr><th>Body</th><th>Role</th></tr></thead><tbody><tr><td><b>CSA (Canadian Securities Administrators)</b></td><td>Umbrella council of the 10 provincial/territorial securities regulators; coordinates national policy (Canada has no single federal securities regulator)</td></tr><tr><td><b>OSC (Ontario Securities Commission)</b></td><td>The largest individual provincial regulator, given Toronto's role as Canada's primary financial centre</td></tr><tr><td><b>CIRO (Canadian Investment Regulatory Organization)</b></td><td>The national self-regulatory organization (SRO) for investment dealers and trading activity, formed in 2023 from the merger of IIROC and the MFDA</td></tr><tr><td><b>Bank of Canada</b></td><td>Central bank; oversees systemically important financial market infrastructure, including CDS/CDSX and CDCC</td></tr><tr><td><b>OSFI (Office of the Superintendent of Financial Institutions)</b></td><td>Prudential regulator of federally regulated banks and insurers, including capital adequacy</td></tr></tbody></table></div>
+<h3>United States</h3>
+<div class="table-scroll"><table><thead><tr><th>Body</th><th>Role</th></tr></thead><tbody><tr><td><b>SEC (Securities and Exchange Commission)</b></td><td>Primary regulator of securities markets, equities, corporate bonds, and securities-based swaps</td></tr><tr><td><b>CFTC (Commodity Futures Trading Commission)</b></td><td>Regulator of most OTC derivatives (interest rate swaps, CDS index products, commodities) under Dodd-Frank</td></tr><tr><td><b>FINRA (Financial Industry Regulatory Authority)</b></td><td>The SRO overseeing broker-dealer conduct and trade reporting</td></tr><tr><td><b>Federal Reserve</b></td><td>Central bank; supervises bank holding companies, operates Fedwire</td></tr><tr><td><b>OCC (Office of the Comptroller of the Currency)</b></td><td>Prudential regulator/charterer of national banks</td></tr></tbody></table></div>
+<h3>United Kingdom</h3>
+<div class="table-scroll"><table><thead><tr><th>Body</th><th>Role</th></tr></thead><tbody><tr><td><b>FCA (Financial Conduct Authority)</b></td><td>Conduct regulator for markets, firms, and consumer protection; administers UK MiFIR/UK EMIR reporting</td></tr><tr><td><b>PRA (Prudential Regulation Authority)</b></td><td>Part of the Bank of England; prudential regulator of banks, insurers, and major investment firms</td></tr><tr><td><b>Bank of England</b></td><td>Central bank; financial stability, oversight of systemically important FMIs (CREST, LCH)</td></tr></tbody></table></div>
+<h3>European Union</h3>
+<div class="table-scroll"><table><thead><tr><th>Body</th><th>Role</th></tr></thead><tbody><tr><td><b>ESMA (European Securities and Markets Authority)</b></td><td>EU-level coordinator of securities market regulation; sets technical standards for MiFID II/MiFIR and EMIR reporting</td></tr><tr><td><b>EBA (European Banking Authority)</b></td><td>EU-level banking regulator; sets prudential standards across member states</td></tr><tr><td><b>ECB (European Central Bank)</b></td><td>Monetary policy for the euro area; direct prudential supervisor of "significant" banks via the Single Supervisory Mechanism (SSM); operator of T2S</td></tr><tr><td><b>National Competent Authorities (NCAs)</b></td><td>Each member state's own regulator implements EU rules locally — e.g. <b>BaFin</b> (Germany), <b>AMF</b> (France), <b>CSSF</b> (Luxembourg)</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> நாலு jurisdictions-லயும் ஒரே மூன்று-வழி பிரிவு: ஒரு அமைப்பு <b>market conduct / reporting</b>-க்கு (OSC/CSA, SEC, FCA, ESMA+NCAs), ஒண்ணு <b>prudential / bank safety</b>-க்கு (OSFI, OCC/Fed, PRA, EBA/ECB), ஒண்ணு market infrastructure-ஐயே மேற்பார்வையிடும் <b>மத்திய வங்கி</b> (Bank of Canada, Federal Reserve, Bank of England, ECB). ஒரு regulator இந்த மூணில் எதைச் சேர்ந்ததுன்னு அடையாளம் கண்டா, அது என்ன வகை report/requirement கேக்கும்னு புரிஞ்சுக்கலாம்.</p>
+<p>(விரிவான acronyms: <a href="./Abbreviations-Glossary-Tamil.html">Abbreviations Glossary — Section 9</a>)</p>
+    </section>
+    <section class="mod" id="11-otc-derivatives-cash-equities-system-stacks">
+      <p class="sec-eyebrow"><span class="n">11</span></p>
+      <h2>11. OTC Derivatives &amp; Cash Equities — System Stacks</h2>
+      <p>Sections 4–7 <i>நாடு வாரியா</i> front/middle/back office systems-ஐ பெயரிட்டுச்சு. இந்த section அதை <i>asset class வாரியா</i> குறுக்கே வெட்டுது — ஏன்னா OTC derivatives, cash equities, treasury/FX-க்கான vendor landscape உண்மையிலயே உலகளாவியது, நாடு-குறிப்பிட்டது இல்ல. ஒரு trading floor-ல "Imagine", "Calypso", "WSS"ன்னு சொல்லும்போது மக்கள் குறிப்பிடுற உண்மையான platform பெயர்கள் இவை.</p>
+<h3>OTC Derivatives stack</h3>
+<div class="table-scroll"><table><thead><tr><th>Function</th><th>Systems</th></tr></thead><tbody><tr><td>Front-to-back OTC derivatives platform</td><td><b>Calypso</b> (இப்போ <b>Adenza</b>-ன் பகுதி, Nasdaq-க்கு சொந்தம்) — trade capture, valuation, collateral/margin (Uncleared Margin Rules உட்பட), regulatory-reporting connectivity எல்லாம் ஒரே platform-ல; <b>Murex</b>; <b>Summit</b> (Finastra)</td></tr><tr><td>Real-time risk &amp; margin engine</td><td><b>ION IMAGINE</b> — prime brokers, futures commission merchants (FCMs), clearing firms OTC + listed derivatives positions-ஐ real-time-ல cross-margin பண்ண பரவலா பயன்படுத்துது</td></tr><tr><td>Trade confirmation / eConfirmation</td><td><b>MarkitWire</b> (S&amp;P Global) — Markit 2007-ல வாங்கியப்புறம் <b>SwapsWire</b> ஆன platform; OTC derivative electronic confirmation-க்கு இன்னும் மிகப் பொதுவான பெயர்; <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §04-ல குறிப்பிட்ட அதே system</td></tr><tr><td>CCP clearing service (interest rate swaps)</td><td><b>SwapClear</b> — LCH-ன் interest rate swaps-க்கான குறிப்பிட்ட clearing service; <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §06, §11-ல illustrative CCP-ஆ சொன்ன பொதுவான "LCH"-க்கு பின்னாடி இருக்கும் உறுதியான, பெயரிட்ட service</td></tr><tr><td>Portfolio compression &amp; reconciliation</td><td><b>triReduce</b> / <b>triResolve</b> (இப்போ <b>OSTTRA</b>-வின் பகுதி — MarkitServ, TriOptima, Reset-ல இருந்து உருவான CME Group + S&amp;P Global joint venture)</td></tr><tr><td>Collateral management &amp; margin messaging</td><td><b>AcadiaSoft</b> (Uncleared Margin Rules-க்கான industry-standard margin call messaging utility), கூட Calypso/Adenza-ல உள்ள collateral modules</td></tr><tr><td>Analytics / pricing libraries</td><td><b>Numerix</b>, <b>FINCAD</b></td></tr></tbody></table></div>
+<h3>Cash equities stack</h3>
+<div class="table-scroll"><table><thead><tr><th>Function</th><th>Systems</th></tr></thead><tbody><tr><td>Order/Execution Management (OMS/EMS)</td><td>Charles River IMS, Bloomberg AIM/EMSX, FlexTrade, Eze, மற்றும் <b>Fidessa</b> (இப்போ ION-ன் பகுதி) — Fidessa குறிப்பா UK, ஐரோப்பாவில sell-side equities trading-ல இன்னும் கனமா பயன்படுது</td></tr><tr><td>Post-trade equities processing</td><td><b>Broadridge</b> (BPS/Impact), <b>SS&amp;C</b> (GMI, Geneva), <b>Torstone Technology</b> (Inferno — multi-asset post-trade processing), <b>TCS BaNCS</b> (custodians core securities processing-க்கு பரவலா பயன்படுத்துது)</td></tr><tr><td>Trade matching / affirmation</td><td>DTCC-ன் <b>CTM</b>; DTCC-ன் <b>ALERT</b> (standing settlement instruction repository, முன்னாள் Omgeo Alert)</td></tr><tr><td>Settlement/custody record-keeping</td><td>Custodian core platforms (TCS BaNCS, Broadridge…) — Sections 4–7-படி ஒவ்வொரு நாட்டுக்கும் CDSX / DTC / CREST / T2S-ல இணையுது</td></tr></tbody></table></div>
+<h3>Treasury / FX / money markets stack</h3>
+<div class="table-scroll"><table><thead><tr><th>Function</th><th>Systems</th></tr></thead><tbody><tr><td>Treasury, cash management &amp; FX processing</td><td><b>Wall Street Systems (WSS)</b> — இப்போ <b>ION Treasury</b>-ன் பகுதி — FX, money markets, intraday liquidity, cash management-க்கு பரவலா deploy ஆன platform; மேலுள்ள derivatives platforms-க்கு <i>பக்கத்துல</i> (மாற்றாம) உட்காருது</td></tr><tr><td>FX execution venues</td><td><b>FXall</b> (LSEG), <b>360T</b> (Deutsche Börse)</td></tr><tr><td>E-trading for fixed income</td><td><b>MarketAxess</b>, <b>Tradeweb</b></td></tr></tbody></table></div>
+<div class="callout"><b>"swapone" பற்றி ஒரு குறிப்பு:</b> இது ஒரு standard product பெயர் இல்ல; ஆனா கிட்டத்தட்ட நிச்சயமா ரெண்டு உண்மையான systems-ல ஒண்ணு: <b>SwapClear</b> (LCH-ன் IRS clearing service, மேலே) அல்லது <b>SwapsWire</b> (முதல் electronic OTC confirmation platform, இப்போ MarkitWire). ரெண்டும் உண்மையிலயே முக்கியம் என்பதால் மேலே ரெண்டையும் சேர்த்திருக்கு — அந்த பெயரை யாரிடமிருந்து கேட்டீங்களோ அவர்களிடம் எதை சொன்னாங்கன்னு உறுதி செஞ்சுக்கோங்க.</div>
+<p><b>Takeaway:</b> OTC derivatives stack (Calypso/Murex + IMAGINE + MarkitWire + SwapClear + triReduce/AcadiaSoft), cash equities stack (OMS/EMS + Broadridge/TCS BaNCS + CTM/ALERT) — ரெண்டும் ஒரே bank-க்குள்ள பெரும்பாலும் தனி toolchains, ஆனா இறுதியில ரெண்டும் Section 2-ன் ஒரே ஐந்து-அடுக்கு architecture-க்குள்ள ஊட்டுது. Bank Of Toronto-வில ஒரு derivatives desk-உம் ஒரு equities desk-உம் ஒரே Middle/Back Office functions-க்கு முற்றிலும் வேறு screens-ஐ பாக்கறாங்க என்பது மிகவும் சாத்தியம்.</p>
+    </section>
+    <section class="mod" id="12-securities-financing-transaction-reporting-sftr-நாடு-வாரியா-இணைகள்">
+      <p class="sec-eyebrow"><span class="n">12</span></p>
+      <h2>12. Securities Financing Transaction Reporting — SFTR &amp; நாடு வாரியா இணைகள்</h2>
+      <p><b>Definition:</b> <b>SFTR (Securities Financing Transactions Regulation)</b> EU-ன் reporting regime — 2020 முதல் அமலில், Brexit-க்கு பிறகு UK-க்கு <b>UK SFTR</b>-ஆ நீட்டிக்கப்பட்டது — குறிப்பா <b>SFTs (Securities Financing Transactions)</b>-க்காக: repos, reverse repos, buy-sell backs, securities/commodities lending &amp; borrowing, margin lending. இது EMIR-க்கும் (<a href="../docs/1-capital-markets/module-02-hierarchy.html">Module 2</a> §07, <a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §09) MiFIR-க்கும் (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §09) பக்கத்துல மூன்றாவது reporting regime — ஆனா அந்த ரெண்டும் கவராத product family-க்கு.</p>
+<div class="ticket"><pre>WHERE SFTR SITS AMONG THE REPORTING REGIMES
+========================================================================
+
+  MiFIR   -&gt;  reports EXECUTED TRANSACTIONS (mainly cash securities,
+               some derivatives) — Module 3 §09
+
+  EMIR    -&gt;  reports OTC DERIVATIVES specifically — Module 2 §07,
+               Module 3 §09
+
+  SFTR    -&gt;  reports SECURITIES FINANCING TRANSACTIONS specifically —
+               repo, reverse repo, buy-sell back, securities lending/
+               borrowing, margin lending — THIS SECTION
+
+  All three flow to a Trade Repository (Module 1 §05), often the SAME
+  TR (REGIS-TR, DTCC Derivatives Repository, UnaVista all accept
+  EMIR AND SFTR reports) — but each is a legally distinct reporting
+  obligation, with its own schema and its own deadline.</pre></div>
+<p>SFTR-க்கு EMIR/MiFIR-ல இல்லாத ஒரு அம்சம் இருக்கு: <b>collateral reuse reporting</b>. Goldman Sachs ஒரு repo-ல German Bunds-ஐ collateral-ஆ பெற்று, அதே Bunds-ஐ <i>வேறு</i> ஒரு transaction-ல re-use (rehypothecate) செஞ்சா, அந்த reuse-உம் தனியா report ஆகணும் — 2008 நெருக்கடியில collateral rehypothecation சங்கிலிகள் systemic risk-ஐ பெருக்கும் காரணியா அடையாளம் காணப்பட்டதால், குறிப்பா அறிமுகப்படுத்தப்பட்ட வெளிப்படைத்தன்மை தேவை.</p>
+<h3>Worked example — Bank Of Toronto-வின் overnight repo, SFTR-ன் கீழ report</h3>
+<div class="ticket"><pre>SFTR REPORTING  —  Overnight Repo, Bank Of Toronto with Goldman Sachs
+========================================================================
+
+  Trade: Bank Of Toronto lends EUR 50,000,000 cash overnight to
+         Goldman Sachs, collateralized by Germany 3% Bund 2033
+         (the same instrument from Section 7's worked example)
+  Repo Rate: 3.15%
+  Trade Date: Mon 17-Aug-2026    Maturity: Tue 18-Aug-2026 (overnight)
+
+  Overnight interest = 50,000,000 x 3.15% x (1/365) = EUR 4,315
+
+  SFTR Reporting Deadline: T+1 (by end of Tue 18-Aug-2026), same
+  reporting-window discipline as EMIR/MiFIR (Module 3 §09) — reported
+  to REGIS-TR by both counterparties (SFTR, like EMIR, is a dual-
+  sided reporting obligation)
+
+  SEPARATE REPORT — Collateral Reuse:
+  If Goldman Sachs then re-uses the German Bunds it received as
+  collateral in a different repo with a third counterparty before
+  returning them to Bank Of Toronto, THAT reuse is its own SFTR
+  report — distinct from the original repo trade report above.</pre></div>
+<h3>நாடு வாரியா இணைகள்</h3>
+<div class="table-scroll"><table><thead><tr><th>Jurisdiction</th><th>Regime</th><th>Scope</th><th>Notes</th></tr></thead><tbody><tr><td>European Union</td><td><b>SFTR</b></td><td>Repo, reverse repo, buy-sell back, securities/commodities lending, margin lending</td><td>Reports to REGIS-TR/DTCC/UnaVista under ESMA technical standards</td></tr><tr><td>United Kingdom</td><td><b>UK SFTR</b></td><td>Same scope as EU SFTR</td><td>Onshored post-Brexit, administered by the FCA, reported to UK-authorized TRs</td></tr><tr><td>United States</td><td><b>SEC Rule 10c-1a</b>, via FINRA's <b>SLATE</b> (Securities Lending and Transparency Engine)</td><td>Securities lending only — narrower than SFTR, does <b>not</b> cover repo, buy-sell back, or margin lending</td><td>Adopted 2023, phasing in through 2025–2026; the closest US analog, but deliberately narrower in product scope</td></tr><tr><td>Canada</td><td>No dedicated SFTR-equivalent as of 2026</td><td>—</td><td>Repo activity is captured indirectly through CDCC's central clearing records; existing provincial OTC derivatives rules (e.g. CSA Multilateral Instrument 96-101) don't extend to plain repo — a genuine gap relative to the EU/UK/US</td></tr></tbody></table></div>
+<p><b>Takeaway:</b> SFTR reporting, EMIR/MiFIR reporting நடக்கும் அதே lifecycle stage-லயே நடக்குது (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §09) — நிகழ்வது ஒன்பது-stage lifecycle-ன் "Regulatory Reporting" stage தான் — வேறு product family-க்கு, தன் சொந்த T+1 deadline-ஓட, plain cash bond அல்லது cleared swap-க்கு இணையே இல்லாத கூடுதல் தொடர் கடமையோட (collateral reuse reporting). repo / securities lending-க்கு reporting logic கட்டச் சொன்னா, இருக்கும் EMIR அல்லது MiFIR reporting pipeline-ஐ வெறுமனே நீட்டாதீங்க — schema, reuse-reporting தேவை, (மேலுள்ள table படி) regulator கூட வேறுபடலாம்.</p>
+    </section>
+    <section class="mod" id="recap-quiz-எண்கள்-பதிப்பு">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Recap Quiz — எண்கள் பதிப்பு</h2>
+      <ol><li>Bank Of Toronto-வின் Toronto desk-உம் Frankfurt desk-உம் ஒரே திங்கள்ல ஒவ்வொரு trade execute பண்ணுது. எது முதல்ல settle ஆகும், ஏன்? Section 3-ஓட table-ல இருந்து ரெண்டு settlement cycles-ஐயும் walk through பண்ணுங்க.</li><li>Canada, US, UK, EU ஒவ்வொண்ணுக்கும் CSD-யையும் CCP-யையும் சொல்லுங்க (EU-க்கு ஒரே CSD இல்லாததால், settlement <i>platform</i>-ஐ சொல்லுங்க).</li><li>Section 5-ஓட US Apple trade-ல, Bank Of Toronto desk அதே நாள் முன்னாடி 2,000 Apple shares-ஐயும் விற்றிருந்தா, central netting CCP இல்லாத market-ஓட ஒப்பிட்டா, NSCC settlement instruction-ஐ எப்படி வேறு மாதிரி செய்யும்?</li><li>Section 7-ல ஒரு EUR bond trade, settlement இயந்திரரீதியா T2S-ல நடந்தாலும், CSD-ஆ "Clearstream"-ஐ ஏன் இன்னும் பெயரிடுது?</li><li>இந்த module-ஓட நாலு jurisdictions-ல எந்த ரெண்டு இப்போ ஒரே equity settlement cycle-ஐ பகிருது, எந்த ரெண்டு October 2027-க்கு பகிரப்பட்ட cycle மாற்றத்தை இலக்கு வெச்சிருக்கு?</li><li>UK-ல ஒரு trade அதன் regulatory reporting deadline-ஐ மீறுது. எந்த regulator-ஓட rulebook மீறப்பட்டது — FCA-வின் கீழ UK EMIR/UK MiFIR, அல்லது ESMA-வின் கீழ EU EMIR — மேலும் பதில் counterparties யாருங்கறதை மட்டுமில்லாம trade எங்க book ஆச்சுங்கறதை ஏன் சார்ந்திருக்கு?</li><li>Section 2-ஓட architecture படி, இந்த systems ஒவ்வொண்ணையும் Front Office, Middle Office, அல்லது Back Office-க்கு பொருத்துங்க: Charles River IMS, Murex, DTC, CDSX matching module, Fedwire.</li><li>Bank Of Toronto-வின் Goldman Sachs உடனான overnight repo EUR 50,000,000-க்கு ஒரு நாளுக்கு 3.15% (actual/365) தருது. வட்டித் தொகை என்ன, SFTR-ன் கீழ ரெண்டு counterparties-உம் எப்போதுக்குள்ள report பண்ணணும்?</li><li>எந்த jurisdiction-ஓட securities-financing reporting regime மற்றவற்றை விட product scope-ல குறுகியது — securities lending-ஐ மட்டும் கவர் பண்ணி, repo, buy-sell back, margin lending-ஐ இல்லாம — மேலும் அந்த reports-ஐ உண்மையில எந்த system சேகரிக்குது?</li></ol>
+<p>நீங்க தயாரானப்போ பதில் பாருங்க — அப்புறம் முக்கிய curriculum வரிசைக்கு திரும்புங்க: <b><a href="../docs/1-capital-markets/module-04-equity.html">Module 4</a></b>.</p>
+    </section>
+    <section class="mod" id="answers-recap-quiz-விளக்கத்தோட">
+      <p class="sec-eyebrow"><span class="n">★</span></p>
+      <h2>Answers — Recap Quiz, விளக்கத்தோட</h2>
+      <p><b>1. Toronto desk-ஓட trade முதல்ல settle ஆகுது — செவ்வாய் 18-Aug-2026, T+1-ல — Frankfurt desk-ஓட trade புதன் 19-Aug-2026, T+2-ல.</b></p>
+<p>Section 3-ஓட table படி, Canadian equities T+1 (2024 May முதல் US-உடன் ஒருங்கிணைந்து), EU government bonds 2026-லயும் T+2. ரெண்டு trades-உம் ஒரே திங்கள் Trade Date-ல execute ஆச்சு; ஆனா Canada-ஓட settlement infrastructure (CDSX) EU-ஓட T2S-அடிப்படையிலான settlement-ஐ விட ஒரு business day குறைவான cycle-ஐ அமல்படுத்துது — Section 9-ல வேலை செய்த அதே சூழல்.</p>
+<p><b>2. Canada: CDS (CDSX) / CDCC. US: DTC / NSCC (equities), FICC (Treasuries/repo). UK: CREST (Euroclear UK &amp; International) / LCH. EU: T2S (பகிரப்பட்ட settlement platform; Clearstream, Euroclear France போன்ற தேசிய CSDs அதுல plug-in ஆகும்) / Eurex Clearing, LCH SA.</b></p>
+<p>இது Section 8-ஓட ஒப்பீட்டு table-ல இருந்து நேரடி வாசிப்பு — முக்கிய நுணுக்கம்: மற்ற மூணு markets மாதிரி EU-க்கு ஒரு "CSD" இல்ல; T2S தான் platform, உண்மையான legal CSD என்பது security settle ஆகும் தேசிய ஒண்ணு (Clearstream, Euroclear France…).</p>
+<p><b>3. NSCC settlement instruction உருவாக்கும் முன் ரெண்டு trades-ஐ net பண்ணும் — Bank Of Toronto 5,000 மற்றும் 2,000 shares-ன் ரெண்டு தனி gross instructions-ஐ இல்லாம, நிகர 3,000-share வித்தியாசத்தை (5,000 வாங்கல் − 2,000 விற்பனை) மட்டும் settle பண்ணும்.</b></p>
+<p>Section 5 குறிப்பா சொல்றது — NSCC ஒரே நாளில் ஒரே security-ல ஒரு firm-ஓட trades முழுக்க multilateral netting செய்யும்; central netting CCP இல்லாத market (அல்லது bilateral-only settlement model) அதுக்கு பதிலா, இரண்டும் தனித்தனியா DvP முடிக்க வேண்டிய ரெண்டு தனி gross settlement obligations-ஐ உருவாக்கும்.</p>
+<p><b>4. ஏன்னா T2S ஒரு பகிரப்பட்ட settlement <i>engine்</i>, தன் சொந்த legal/regulatory அர்த்தத்தில CSD இல்ல — Clearstream தான் ஜெர்மன் securities-க்கு உண்மையான central securities depository (legal book-entry record-ஐயும் CSD license-ஐயும் வெச்சிருக்கும் entity); T2S வெறும், பங்கேற்கும் மற்ற எல்லா தேசிய CSDs-ஓட instructions-ஓட சேர்ந்து, Clearstream-ஓட settlement instructions execute ஆகும் பொதுவான technical platform.</b></p>
+<p>Section 7 இதை வெளிப்படையா சொல்லுது: T2S தேசிய CSDs-ஐ மாற்றாது, அவை எல்லாம் plug-in ஆகும் platform — இது Canada/US/UK-ல இருந்து கட்டமைப்பில வேறு; அங்க CSD (CDS, DTC, CREST) legal entity-யும் settlement engine-உம் ஒரே இடத்துல.</p>
+<p><b>5. Canada, US இப்போ equities-க்கு T+1-ஐ பகிருது (ரெண்டும் 2024 May-ல ஒண்ணா மாறின). UK, EU October 2027-க்கு T+1-க்கு ஒருங்கிணைந்த மாற்றத்தை இலக்கு வெச்சிருக்கிற ரெண்டு jurisdictions.</b></p>
+<p>Section 3-ஓட table-உம் Sections 6/7-ஓட takeaways-உம் இந்த இணையை சுட்டுது — Canada/US ஒண்ணா மாறியதும் (அந்த border-ஐ கடக்கும் order flow காரணமா), இப்போ UK/EU அதே காரணத்துக்காக தங்கள் சொந்த ஒருங்கிணைந்த மாற்றத்தை திட்டமிடுவதும் தற்செயல் இல்ல.</p>
+<p><b>6. FCA-வின் கீழ UK EMIR/UK MiFIR — ஏன்னா Brexit-க்கு பிறகு UK, EU-ஓட EMIR/MiFIR-ல இருந்து தனி, தன் சொந்த reporting regime-ஐ இயக்குது; ரெண்டு rulebooks-உம் நெருக்கமா பிரதிபலிச்சாலும் வேறு. கட்டுப்படுத்தும் regime, trade எங்க book / report ஆனதுங்கறதை (executing entity எந்த jurisdiction-ஓட விதிகளுக்கு உட்பட்டது) சார்ந்தது, ரெண்டு counterparties தற்செயலா எந்த நாடுகளில இருக்காங்கங்கறதை மட்டும் சார்ந்தது இல்ல.</b></p>
+<p>Section 6 இதை நேரடியா சொல்றது: Brexit முதல் UK தன் சொந்த UK EMIR, UK MiFIR-ஐ ஓட்டுது, Section 7-ஓட EU பதிப்புகளில் இருந்து தனி; ஒவ்வொண்ணுக்கும் தன் சொந்த authorized trade repositories. UK-booked entity-க்கும் EU-booked entity-க்கும் இடையிலான ஒரு trade கொள்கையளவில ரெண்டு regimes-லயும் report ஆக வேண்டியிருக்கலாம் — ஆனா <i>UK</i> deadline-ஐ மீறுவது FCA-வின் rulebook மீறல், ESMA-வின்து இல்ல.</p>
+<p><b>7. Charles River IMS = Front Office (OMS). Murex = Middle Office (risk/valuation engine). DTC = Back Office (CSD/settlement). CDSX matching module = Middle Office (confirmation/matching) — CDS தானே ஒரு Back Office/CSD organization ஆனாலும், matching function குறிப்பா lifecycle-ன் Middle Office stage-ல உட்காருது (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §5). Fedwire = Back Office (cash settlement rail).</b></p>
+<p>இது Section 2-ஓட பொதுவான architecture-ஐ பின்தொடருது: Front Office Order/Execution-ஐ உருவாக்குது (Charles River); Middle Office confirm, match, risk price பண்ணுது (Murex, மற்றும் CDSX-ஓட தனி DvP settlement role-ல இருந்து வேறுபட்ட CDSX matching function); Back Office securities (DTC), cash (Fedwire)-ஐ physically settle பண்ணுது. ஒரே <i>organization</i> (CDS) ஒன்றுக்கு மேற்பட்ட lifecycle stages-ஐ தாண்டும் systems-ஐ இயக்கலாம்னு காட்ட CDSX உதாரணம் வேண்டுமென்றே சேர்க்கப்பட்டது — matching module-உம் DvP settlement engine-உம் ஒரே corporate கூரையின் கீழ வேறு functions.</p>
+<p><b>8. வட்டி = EUR 4,315. ரெண்டு counterparties-உம் REGIS-TR (அல்லது வேறு authorized TR)-க்கு செவ்வாய் 18-Aug-2026 முடிவுக்குள் — T+1 — report பண்ணணும்.</b></p>
+<div class="ticket"><pre>Overnight interest = 50,000,000 x 3.15% x (1/365) = EUR 4,315</pre></div>
+<p>Section 12-ஓட worked example, <a href="../docs/1-capital-markets/module-01-fundamentals.html">Module 1</a> §08-ஓட swap உதாரணத்தின் அதே actual/365 day-count convention-ஐ பயன்படுத்துது. SFTR, EMIR/MiFIR-ஓட அதே T+1 reporting-window ஒழுக்கத்தை (<a href="../docs/1-capital-markets/module-03-trade-lifecycle.html">Module 3</a> §09) ஓட்டுது, EMIR மாதிரியே dual-sided கடமை — Bank Of Toronto, Goldman Sachs இருவரும் ஒரே repo-ஓட தங்கள் தங்கள் பக்கத்தை தனித்தனியா report பண்ணுது.</p>
+<p><b>9. United States, SEC Rule 10c-1a வழியா — reports-ஐ FINRA-வின் SLATE (Securities Lending and Transparency Engine) சேகரிக்குது.</b></p>
+<p>Section 12-ஓட country-equivalents table இதை வெளிப்படையா சுட்டுது: SFTR (EU), UK SFTR ரெண்டும் முழு SFT product family-யையும் — repo, reverse repo, buy-sell back, securities/commodities lending, margin lending — கவர் பண்ணுது; US விதி வேண்டுமென்றே securities lending-க்கு மட்டும் வரையறுக்கப்பட்டு, repo, buy-sell back transactions-ஐ SLATE-ன் சேகரிப்புக்கு வெளியே விடுது. Canada-வுக்கு (table குறிப்பிடுவது போல) எந்த scope-லயும் தனி regime இன்னும் இல்ல.</p>
+    </section>
+  </main>
+
+  <footer>Capital Markets Tamil Notes &middot; Systems Landscape (பேச்சுத் தமிழில்)</footer>
+</div>
+
+<script>
+  (function () {
+    var KEY = "cm-theme";
+    var root = document.documentElement;
+
+    function apply(mode) {
+      if (mode === "light" || mode === "dark") {
+        root.setAttribute("data-theme", mode);
+      } else {
+        root.removeAttribute("data-theme");
+        mode = "system";
+      }
+      document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", btn.dataset.mode === mode ? "true" : "false");
+      });
+    }
+
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    apply(stored);
+
+    document.querySelectorAll(".theme-switch button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.dataset.mode;
+        apply(mode);
+        try {
+          if (mode === "system") localStorage.removeItem(KEY);
+          else localStorage.setItem(KEY, mode);
+        } catch (e) {}
+      });
+    });
+  })();
+</script>
